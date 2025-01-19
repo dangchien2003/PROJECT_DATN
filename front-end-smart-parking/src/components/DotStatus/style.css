@@ -1,0 +1,17 @@
+.dot-status {
+  display: inline-block;
+  height: 14px;
+  width: 14px;
+  position: relative;
+  margin: 0 4px;
+}
+.dot-status::after {
+  content: ''; /* Quan trọng: cần khai báo content */
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background-color: red;
+  top: 0;
+  right: 0;
+}

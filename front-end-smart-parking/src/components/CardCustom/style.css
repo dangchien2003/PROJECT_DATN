@@ -1,0 +1,8 @@
+.body > * {
+  padding: 4px 0;
+}
+
+.ant-card-head-title {
+  font-size: 20px;
+  color: white;
+}
