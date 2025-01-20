@@ -1,32 +1,28 @@
-import React from 'react';
-import { DownOutlined } from '@ant-design/icons';
-import { Dropdown, Space, Typography } from 'antd';
+import React from "react";
+import { DownOutlined } from "@ant-design/icons";
+import { Dropdown, Space, Typography } from "antd";
 
-const MenuAccount = ({ avatar }) => {
+const MenuAccount = ({ linkAvatar }) => {
   const items = [
-    // {
-    //   key: '1',
-    //   label: (
-    //     <Link to="/account-info">
-    //       Thông tin tài khoản
-    //     </Link>
-    //   ),
-    // },
-    // {
-    //   key: '2',
-    //   label: (
-    //     <Link to="/account-info">
-    //       Đổi mật khẩu
-    //     </Link>
-    //   ),
-    // },
     {
-      type: 'divider',
+      key: "1",
+      label: <a href="/account-info">Thông tin tài khoản</a>,
     },
     {
-      key: '3',
+      key: "2",
+      label: <a href="/account-info">Đổi mật khẩu</a>,
+    },
+    {
+      type: "divider",
+    },
+    {
+      key: "3",
       label: (
-        <a href="https://www.aliyun.com" target="_blank" rel="noopener noreferrer">
+        <a
+          href="https://www.aliyun.com"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           Đăng xuất
         </a>
       ),
@@ -36,17 +32,22 @@ const MenuAccount = ({ avatar }) => {
     <Dropdown
       menu={{
         items,
-        selectable: true
+        selectable: true,
       }}
+      trigger={"click"}
     >
       <Typography.Link>
         <Space>
-          <img src={avatar} alt="avatar" style={{ borderRadius: '50%', width: 50, height: 50 }} />
-          <DownOutlined />
+          <img
+            src={linkAvatar}
+            alt="avatar"
+            style={{ borderRadius: "50%", width: 50, height: 50 }}
+          />
+          <DownOutlined style={{ color: "black" }} />
         </Space>
       </Typography.Link>
     </Dropdown>
-  )
-}
+  );
+};
 
-export default MenuAccount
+export default MenuAccount;

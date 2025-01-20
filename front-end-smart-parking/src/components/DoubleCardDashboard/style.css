@@ -1,0 +1,9 @@
+.title {
+  height: 30px;
+  color: #666;
+  /* font-size: 16px; */
+}
+.value {
+  font-size: 18px;
+  font-weight: bold;
+}

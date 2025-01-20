@@ -1,0 +1,25 @@
+.ant-menu-submenu {
+  padding: 5px 0;
+}
+
+.content::-webkit-scrollbar {
+  width: 10px; /* Độ rộng của thanh cuộn */
+}
+
+/* Track của thanh cuộn (nền) */
+.content::-webkit-scrollbar-track {
+  background: #f3f3f3; /* Màu nền của track */
+  border-radius: 10px; /* Bo tròn track */
+}
+
+/* Phần nút cuộn (thumb) */
+.content::-webkit-scrollbar-thumb {
+  background: #bdbdbd; /* Màu của thumb */
+  border-radius: 10px; /* Bo tròn thumb */
+  border: 2px solid #f3f3f3; /* Viền xung quanh thumb */
+}
+
+/* Hiệu ứng khi hover vào thumb */
+.content::-webkit-scrollbar-thumb:hover {
+  background: #a5a5a5; /* Màu thay đổi khi hover */
+}
