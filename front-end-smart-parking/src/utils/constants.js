@@ -1,5 +1,4 @@
 import { HomeOutlined, UserOutlined } from "@ant-design/icons";
-import pieChart from "../assets/image/pie-chart.png";
 import { IoTicket, IoCard } from "react-icons/io5";
 import { FaLocationDot, FaChartPie } from "react-icons/fa6";
 import { Link } from "react-router-dom";
@@ -17,11 +16,11 @@ export const ADMIN_MENU = [
     children: [
       {
         key: "2.1",
-        label: <Link to={"/account"}>Khách hàng</Link>,
+        label: <Link to={"/account/customer"}>Khách hàng</Link>,
       },
       {
         key: "2.2",
-        label: "Đối tác",
+        label: <Link to={"/account/partner"}>Đối tác</Link>,
       },
     ],
   },
@@ -98,3 +97,41 @@ export const ADMIN_MENU = [
     ],
   },
 ];
+
+export const GENDER = [
+  {
+    value: 0,
+    label: "Nam",
+  },
+  {
+    value: 1,
+    label: "Nữ",
+  },
+];
+
+export const ACCOUNT_STATUS = [
+  {
+    value: 0,
+    label: "Đã khoá",
+  },
+  {
+    value: 1,
+    label: "Khoá tạm thời",
+  },
+  {
+    value: 2,
+    label: "Đang hoạt động",
+  },
+];
+
+export const ACCOUNT_STATUS_OBJECT = {
+  0: "Đã khoá",
+  1: "Khoá tạm thời",
+  2: "Đang hoạt động",
+};
+
+export const COLOR_BUTTON_ACCOUNT_STATUS = {
+  0: "danger",
+  1: "default",
+  2: "cyan",
+};

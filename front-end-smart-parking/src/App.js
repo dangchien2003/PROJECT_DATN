@@ -1,7 +1,8 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import AdminLayout from "./components/layout/admin";
 import DashBoardAdmin from "./pages/DashBoardAdmin";
-import CardCustom from "./components/CardCustom";
+import AccountCustomerList from "./pages/AccountCustomerList";
+import TableCustomListAccountCustomer from "./components/TableCustomListAccountCustomer";
 
 const router = createBrowserRouter([
   {
@@ -9,7 +10,8 @@ const router = createBrowserRouter([
     element: <AdminLayout />,
     children: [
       { index: true, element: <DashBoardAdmin /> },
-      { path: "/account", element: <CardCustom /> },
+      { path: "/account/partner", element: <TableCustomListAccountCustomer /> },
+      { path: "/account/*", element: <AccountCustomerList /> },
       { path: "/dashboard", element: <DashBoardAdmin /> },
       // {
       //   path: "dashboard",
