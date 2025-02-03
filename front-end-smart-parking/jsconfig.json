@@ -1,22 +1,14 @@
 {
-    "compilerOptions": {
-        "baseUrl": "src",
-        "paths": {
-            "@/*": [
-                "*"
-            ],
-            "@Components/*": [
-                "components/*"
-            ],
-            "@image/*": [
-                "assets/*"
-            ]
-        }
-    },
-    "include": [
-        "src/**/*"
-    ],
-    "editor.codeActionsOnSave": {
-        "source.fixAll.eslint": true
+  "compilerOptions": {
+    "baseUrl": "src",
+    "paths": {
+      "@/*": ["*"],
+      "@Components/*": ["components/*"],
+      "@image/*": ["assets/image/*"]
     }
+  },
+  "include": ["src/**/*"],
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  }
 }

@@ -1,12 +1,8 @@
 import { useState, useEffect } from "react";
 import { Table } from "antd";
-import {
-  ACCOUNT_STATUS_OBJECT,
-  COLOR_BUTTON_ACCOUNT_STATUS,
-} from "@/utils/constants";
+import { convertToTime, formatTimestamp } from "@/utils/time";
+import { dataInOut } from "./dataTest";
 import ButtonStatus from "../ButtonStatus";
-import { formatCurrency } from "@/utils/number";
-import { useNavigate } from "react-router-dom";
 
 const columns = [
   {
@@ -14,61 +10,71 @@ const columns = [
     dataIndex: "stt",
     key: "0",
     sorter: false,
-    width: 50,
+    width: 1,
   },
   {
-    title: "ID",
-    dataIndex: "id",
+    title: "checkin",
+    dataIndex: "checkin",
     key: "1",
     sorter: false,
-    width: 200,
+    width: 100,
   },
   {
-    title: "Trạng thái",
-    dataIndex: "status",
+    title: "checkout",
+    dataIndex: "checkout",
     key: "2",
     sorter: false,
-    width: 150,
+    width: 100,
   },
   {
-    title: "Tên tài khoản",
-    dataIndex: "full_name",
+    title: "Tổng thời gian",
+    dataIndex: "total",
     key: "3",
-    sorter: true,
-    width: 200,
+    sorter: false,
+    width: 100,
   },
   {
-    title: "Email",
-    dataIndex: "email",
+    title: "Địa điểm",
+    dataIndex: "locationPrint",
     key: "4",
-    sorter: true,
-    width: 200,
-  },
-  {
-    title: "Số dư",
-    dataIndex: "balance",
-    key: "5",
-    sorter: true,
+    sorter: false,
     width: 200,
   },
 ];
 
 const convertResponseToDataTable = (response, currentPage, pageSize) => {
   return response.data.map((item, index) => {
-    item.status = (
-      <ButtonStatus
-        color={COLOR_BUTTON_ACCOUNT_STATUS[item.status]}
-        label={ACCOUNT_STATUS_OBJECT[item.status]}
-      />
+    item.checkin = (
+      <>
+        {formatTimestamp(item.checkinAt, "DD/MM/YYYY")}
+        <br />
+        {formatTimestamp(item.checkinAt, "HH:mm:ss")}
+      </>
     );
-    item.balance = formatCurrency(item.balance) + " đ";
+    if (item.checkoutAt !== null) {
+      item.checkout = (
+        <>
+          {formatTimestamp(item.checkoutAt, "DD/MM/YYYY")}
+          <br />
+          {formatTimestamp(item.checkoutAt, "HH:mm:ss")}
+        </>
+      );
+      item.total = `${convertToTime(item.checkoutAt - item.checkinAt)}`;
+    } else {
+      item.total = (
+        <>
+          <ButtonStatus label="Đã đỗ" color="danger" />
+          <br />
+          {convertToTime(new Date().getTime() - item.checkinAt)}
+        </>
+      );
+    }
     item.stt = (currentPage - 1) * pageSize + index + 1;
     return item;
   });
 };
 
-const TableCustomListAccountCustomer = () => {
-  const navigate = useNavigate();
+const TableCustomHistoryInOut = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState({
@@ -93,43 +99,7 @@ const TableCustomListAccountCustomer = () => {
     setTimeout(() => {
       setLoading(false);
       const dataResponse = {
-        data: [
-          {
-            id: 1,
-            status: 1,
-            full_name: "Lê Đăng Chiến",
-            email: "dangchien@gmail.com",
-            balance: 100000,
-          },
-          {
-            id: 2,
-            status: 2,
-            full_name: "Lê Đăng Chiến",
-            email: "dangchien@gmail.com",
-            balance: 100000,
-          },
-          {
-            id: 3,
-            status: 0,
-            full_name: "Lê Đăng Chiến",
-            email: "dangchien@gmail.com",
-            balance: 100000,
-          },
-          {
-            id: 4,
-            status: 1,
-            full_name: "Lê Đăng Chiến",
-            email: "dangchien@gmail.com",
-            balance: 100000,
-          },
-          {
-            id: 5,
-            status: 1,
-            full_name: "Lê Đăng Chiến",
-            email: "dangchien@gmail.com",
-            balance: 100000,
-          },
-        ],
+        data: dataInOut,
         totalElement: 60,
         totalPage: 10,
       };
@@ -157,10 +127,6 @@ const TableCustomListAccountCustomer = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleClickRow = (data) => {
-    navigate(`/account/customer/${data.id}`);
-  };
-
   return (
     <Table
       columns={columns}
@@ -176,13 +142,8 @@ const TableCustomListAccountCustomer = () => {
         showSizeChanger: true,
         pageSizeOptions: ["10", "20", "50", "100"],
       }}
-      onRow={(record) => {
-        return {
-          onClick: () => handleClickRow(record),
-        };
-      }}
     />
   );
 };
 
-export default TableCustomListAccountCustomer;
+export default TableCustomHistoryInOut;

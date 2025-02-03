@@ -1,0 +1,85 @@
+.ant-layout-header {
+  line-height: normal !important;
+}
+
+.layer1 {
+  position: absolute;
+  top: 50px;
+  right: -40px;
+  width: 350px;
+  height: 400px;
+  background: white;
+  z-index: 1000;
+  border-radius: 8px;
+  box-shadow: 0px 0px 5px #b9b7b7;
+}
+
+.item-notify {
+  padding: 8px;
+  border-bottom: 1px solid #b9b7b7;
+}
+.item-notify:hover {
+  background-color: #f1f1f1;
+  border-radius: 8px 8px 0 0;
+}
+
+.content {
+  padding: 3px;
+  height: 350px;
+  overflow-y: scroll;
+}
+
+.category {
+  padding: 8px;
+  font-size: 16px;
+  border-bottom: 1px solid #b9b7b7;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+}
+
+.mark-viewed-notify {
+  font-size: 13px;
+  text-decoration: underline;
+  padding-top: 3px;
+  color: #026ef1;
+  font-weight: normal;
+  cursor: pointer;
+}
+
+.count-notity {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  top: 0;
+  right: -8px;
+  /* background: #f0f0f0; */
+  background: #e04343;
+  border: 1px solid #e5e2e2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12;
+  /* color: #e53333; */
+  color: white;
+  font-weight: bold;
+}
+
+.view-not-yet {
+  position: relative;
+  width: 100%;
+  /* height: 200px; Chiều cao tuỳ chỉnh */
+  background: linear-gradient(to right, #f8f8f8 0%, #e2e2e2 30%, #f8f8f8 100%);
+  background-size: 200% auto;
+  animation: moveBackground 4s linear infinite;
+}
+
+@keyframes moveBackground {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}

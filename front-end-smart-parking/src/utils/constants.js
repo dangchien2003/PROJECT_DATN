@@ -134,4 +134,48 @@ export const COLOR_BUTTON_ACCOUNT_STATUS = {
   0: "danger",
   1: "default",
   2: "cyan",
+  3: "warning",
 };
+
+export const PAYMENT_METHOD = {
+  0: "Số dư",
+  1: "Vnpay",
+  2: "Banking",
+};
+
+export const PAYMENT_TYPE = {
+  0: "Mua vé",
+  1: "Gia hạn vé",
+  2: "Nạp tiền",
+  3: "Thu hồi",
+};
+
+export const PAYMENT_STATUS = {
+  0: {
+    label: "Chờ thanh toán",
+    color: "default",
+  },
+  1: {
+    label: "Đang xử lý",
+    color: "warning",
+  },
+  2: {
+    label: "Thành công",
+    color: "cyan",
+  },
+  3: {
+    label: "Thất bại",
+    color: "danger",
+  },
+};
+
+export const COLORS_CHART = [
+  "#0088FE", // Xanh dương
+  "#00C49F", // Xanh lục
+  "#FFBB28", // Vàng
+  "#FF8042", // Cam
+  "#A28DFF", // Tím nhạt
+  "#FF6699", // Hồng
+  "#66CCFF", // Xanh da trời nhạt
+  "#33CC99", // Xanh lá mạ
+];

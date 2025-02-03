@@ -1,37 +1,41 @@
-import React from "react";
+import { useState } from "react";
 import { MdNotifications } from "react-icons/md";
 import { MdNotificationsActive } from "react-icons/md";
+import "./style.css";
+import CardNotify from "./CardNotify";
 
 const Notifitation = () => {
-  const count = 1;
+  const [showNotify, setShowNotify] = useState(false);
+  const [countNotify, setCountNotify] = useState(1);
+
+  const handleToggleNotify = () => {
+    setShowNotify((pre) => !pre);
+  };
+
   return (
     <div style={{ paddingLeft: 60 }}>
-      {!count || count === 0 ? (
-        <MdNotifications style={{ fontSize: 25 }} />
-      ) : (
-        <div style={{ position: "relative" }}>
-          <MdNotificationsActive style={{ fontSize: 25 }} />
-          <div
-            style={{
-              position: "absolute",
-              width: 18,
-              height: 18,
-              borderRadius: "50%",
-              top: "8px",
-              right: "-8px",
-              background: "#F0F0F0",
-              border: "1px solid #E5E2E2",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: 12,
-              color: "#E53333",
-            }}
-          >
-            {count}
-          </div>
-        </div>
-      )}
+      <div style={{ position: "relative" }}>
+        {countNotify === 0 ? (
+          <MdNotifications
+            style={{ fontSize: 25, marginTop: 8 }}
+            onClick={handleToggleNotify}
+          />
+        ) : (
+          <>
+            <MdNotificationsActive
+              style={{ fontSize: 25, marginTop: 8 }}
+              onClick={handleToggleNotify}
+            />
+            <div className="count-notity">{countNotify}</div>
+          </>
+        )}
+        {showNotify && (
+          <CardNotify
+            setCountNotify={setCountNotify}
+            onClose={() => setShowNotify(false)}
+          />
+        )}
+      </div>
     </div>
   );
 };

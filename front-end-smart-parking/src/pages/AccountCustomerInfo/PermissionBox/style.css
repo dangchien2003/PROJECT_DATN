@@ -1,0 +1,24 @@
+:where(.css-dev-only-do-not-override-nqoqt9).ant-transfer .ant-transfer-list {
+  height: 400px;
+}
+
+.view-show .ant-transfer-list {
+  width: 250px !important;
+}
+
+.ant-drawer-content-wrapper {
+  width: 800px !important;
+  max-width: 95% !important;
+}
+
+.tree-transfer .ant-transfer-list:first-child {
+  flex: none;
+  width: 50%;
+}
+
+.tree-permission
+  :where(.css-dev-only-do-not-override-nqoqt9).ant-tree
+  .ant-tree-treenode-disabled
+  .ant-tree-node-content-wrapper {
+  color: rgba(0, 0, 0, 0.625) !important;
+}

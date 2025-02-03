@@ -3,6 +3,8 @@ import AdminLayout from "./components/layout/admin";
 import DashBoardAdmin from "./pages/DashBoardAdmin";
 import AccountCustomerList from "./pages/AccountCustomerList";
 import TableCustomListAccountCustomer from "./components/TableCustomListAccountCustomer";
+import AccountCustomerInfo from "./pages/AccountCustomerInfo";
+import FullPageLoading from "./components/FullPageLoading";
 
 const router = createBrowserRouter([
   {
@@ -12,6 +14,7 @@ const router = createBrowserRouter([
       { index: true, element: <DashBoardAdmin /> },
       { path: "/account/partner", element: <TableCustomListAccountCustomer /> },
       { path: "/account/*", element: <AccountCustomerList /> },
+      { path: "/account/customer/:id", element: <AccountCustomerInfo /> },
       { path: "/dashboard", element: <DashBoardAdmin /> },
       // {
       //   path: "dashboard",
@@ -26,7 +29,12 @@ const router = createBrowserRouter([
   },
 ]);
 function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <div>
+      <FullPageLoading />
+      <RouterProvider router={router} />
+    </div>
+  );
 }
 
 export default App;

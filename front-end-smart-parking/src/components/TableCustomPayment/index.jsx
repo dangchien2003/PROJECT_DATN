@@ -1,12 +1,17 @@
 import { useState, useEffect } from "react";
 import { Table } from "antd";
-import {
-  ACCOUNT_STATUS_OBJECT,
-  COLOR_BUTTON_ACCOUNT_STATUS,
-} from "@/utils/constants";
-import ButtonStatus from "../ButtonStatus";
+import { fakePayment } from "./dataTest";
 import { formatCurrency } from "@/utils/number";
-import { useNavigate } from "react-router-dom";
+import { formatTimestamp } from "@/utils/time";
+import ButtonStatus from "../ButtonStatus";
+import {
+  COLOR_BUTTON_ACCOUNT_STATUS,
+  COLORS_CHART,
+  PAYMENT_METHOD,
+  PAYMENT_STATUS,
+  PAYMENT_TYPE,
+} from "@/utils/constants";
+import { FaAngleDoubleUp, FaAngleDoubleDown } from "react-icons/fa";
 
 const columns = [
   {
@@ -14,61 +19,96 @@ const columns = [
     dataIndex: "stt",
     key: "0",
     sorter: false,
-    width: 50,
+    width: 1,
   },
   {
-    title: "ID",
-    dataIndex: "id",
+    title: "Thanh toán",
+    dataIndex: "typePrint",
+    align: "center",
     key: "1",
-    sorter: false,
-    width: 200,
-  },
-  {
-    title: "Trạng thái",
-    dataIndex: "status",
-    key: "2",
     sorter: false,
     width: 150,
   },
   {
-    title: "Tên tài khoản",
-    dataIndex: "full_name",
+    title: "Hình thức",
+    dataIndex: "methodPrint",
+    align: "center",
+    key: "2",
+    sorter: false,
+    width: 120,
+  },
+  {
+    title: "Thời gian",
+    dataIndex: "createdTime",
+    align: "center",
     key: "3",
-    sorter: true,
-    width: 200,
+    sorter: false,
+    width: 120,
   },
   {
-    title: "Email",
-    dataIndex: "email",
+    title: "Số tiền",
+    dataIndex: "totalPrint",
     key: "4",
-    sorter: true,
-    width: 200,
+    sorter: false,
+    width: 120,
   },
   {
-    title: "Số dư",
-    dataIndex: "balance",
+    title: "Trạng thái",
+    dataIndex: "statusPrint",
     key: "5",
-    sorter: true,
-    width: 200,
+    sorter: false,
+    width: 150,
   },
 ];
 
 const convertResponseToDataTable = (response, currentPage, pageSize) => {
+  const now = new Date().getTime();
   return response.data.map((item, index) => {
-    item.status = (
-      <ButtonStatus
-        color={COLOR_BUTTON_ACCOUNT_STATUS[item.status]}
-        label={ACCOUNT_STATUS_OBJECT[item.status]}
-      />
+    item.totalPrint = (
+      <span>
+        {item.type === 2 ? (
+          <FaAngleDoubleUp color={COLORS_CHART[1]} />
+        ) : (
+          <FaAngleDoubleDown color={COLORS_CHART[3]} />
+        )}
+        {formatCurrency(item.total) + " đ"}
+      </span>
     );
-    item.balance = formatCurrency(item.balance) + " đ";
+    item.createdTime = formatTimestamp(item.createdAt);
+    item.methodPrint = PAYMENT_METHOD[item.paymentMethod];
+    item.typePrint = PAYMENT_TYPE[item.type];
+    item.statusPrint = (
+      <>
+        <ButtonStatus
+          label={PAYMENT_STATUS[item.status].label}
+          color={PAYMENT_STATUS[item.status].color}
+        />
+      </>
+    );
+    item.ticketNamePrint = (
+      <>
+        <div style={{ textAlign: "center" }}>
+          {now > item.expires ? (
+            <ButtonStatus
+              label="Đã hết hạn"
+              color={COLOR_BUTTON_ACCOUNT_STATUS[0]}
+            />
+          ) : (
+            <ButtonStatus
+              label="Bình thường"
+              color={COLOR_BUTTON_ACCOUNT_STATUS[2]}
+            />
+          )}
+        </div>
+        {`${item.idTicket} - ${item.ticketName}`}
+      </>
+    );
     item.stt = (currentPage - 1) * pageSize + index + 1;
     return item;
   });
 };
 
-const TableCustomListAccountCustomer = () => {
-  const navigate = useNavigate();
+const TableCustomPayment = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState({
@@ -93,43 +133,7 @@ const TableCustomListAccountCustomer = () => {
     setTimeout(() => {
       setLoading(false);
       const dataResponse = {
-        data: [
-          {
-            id: 1,
-            status: 1,
-            full_name: "Lê Đăng Chiến",
-            email: "dangchien@gmail.com",
-            balance: 100000,
-          },
-          {
-            id: 2,
-            status: 2,
-            full_name: "Lê Đăng Chiến",
-            email: "dangchien@gmail.com",
-            balance: 100000,
-          },
-          {
-            id: 3,
-            status: 0,
-            full_name: "Lê Đăng Chiến",
-            email: "dangchien@gmail.com",
-            balance: 100000,
-          },
-          {
-            id: 4,
-            status: 1,
-            full_name: "Lê Đăng Chiến",
-            email: "dangchien@gmail.com",
-            balance: 100000,
-          },
-          {
-            id: 5,
-            status: 1,
-            full_name: "Lê Đăng Chiến",
-            email: "dangchien@gmail.com",
-            balance: 100000,
-          },
-        ],
+        data: fakePayment,
         totalElement: 60,
         totalPage: 10,
       };
@@ -157,10 +161,6 @@ const TableCustomListAccountCustomer = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleClickRow = (data) => {
-    navigate(`/account/customer/${data.id}`);
-  };
-
   return (
     <Table
       columns={columns}
@@ -176,13 +176,8 @@ const TableCustomListAccountCustomer = () => {
         showSizeChanger: true,
         pageSizeOptions: ["10", "20", "50", "100"],
       }}
-      onRow={(record) => {
-        return {
-          onClick: () => handleClickRow(record),
-        };
-      }}
     />
   );
 };
 
-export default TableCustomListAccountCustomer;
+export default TableCustomPayment;

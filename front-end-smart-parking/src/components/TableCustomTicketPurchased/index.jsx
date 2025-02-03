@@ -1,12 +1,10 @@
 import { useState, useEffect } from "react";
 import { Table } from "antd";
-import {
-  ACCOUNT_STATUS_OBJECT,
-  COLOR_BUTTON_ACCOUNT_STATUS,
-} from "@/utils/constants";
-import ButtonStatus from "../ButtonStatus";
+import { fakeTickets } from "./dataTest";
 import { formatCurrency } from "@/utils/number";
-import { useNavigate } from "react-router-dom";
+import { formatTimestamp } from "@/utils/time";
+import ButtonStatus from "../ButtonStatus";
+import { COLOR_BUTTON_ACCOUNT_STATUS } from "@/utils/constants";
 
 const columns = [
   {
@@ -14,61 +12,74 @@ const columns = [
     dataIndex: "stt",
     key: "0",
     sorter: false,
-    width: 50,
+    width: 1,
   },
   {
-    title: "ID",
-    dataIndex: "id",
+    title: "Vé đã mua",
+    dataIndex: "ticketNamePrint",
     key: "1",
     sorter: false,
-    width: 200,
+    width: 150,
   },
   {
-    title: "Trạng thái",
-    dataIndex: "status",
+    title: "Người mua",
+    dataIndex: "purchasedBy",
     key: "2",
     sorter: false,
     width: 150,
   },
   {
-    title: "Tên tài khoản",
-    dataIndex: "full_name",
+    title: "Thời gian",
+    dataIndex: "buyAt",
     key: "3",
-    sorter: true,
-    width: 200,
+    sorter: false,
+    width: 100,
   },
   {
-    title: "Email",
-    dataIndex: "email",
+    title: "Giá vé",
+    dataIndex: "pricePrint",
     key: "4",
-    sorter: true,
-    width: 200,
+    sorter: false,
+    width: 100,
   },
   {
-    title: "Số dư",
-    dataIndex: "balance",
+    title: "Đối tác cung cấp",
+    dataIndex: "partnerFullName",
     key: "5",
-    sorter: true,
+    sorter: false,
     width: 200,
   },
 ];
 
 const convertResponseToDataTable = (response, currentPage, pageSize) => {
+  const now = new Date().getTime();
   return response.data.map((item, index) => {
-    item.status = (
-      <ButtonStatus
-        color={COLOR_BUTTON_ACCOUNT_STATUS[item.status]}
-        label={ACCOUNT_STATUS_OBJECT[item.status]}
-      />
+    item.pricePrint = formatCurrency(item.price) + " đ";
+    item.buyAt = formatTimestamp(item.createdAt);
+    item.ticketNamePrint = (
+      <>
+        <div style={{ textAlign: "center" }}>
+          {now > item.expires ? (
+            <ButtonStatus
+              label="Đã hết hạn"
+              color={COLOR_BUTTON_ACCOUNT_STATUS[0]}
+            />
+          ) : (
+            <ButtonStatus
+              label="Bình thường"
+              color={COLOR_BUTTON_ACCOUNT_STATUS[2]}
+            />
+          )}
+        </div>
+        {`${item.idTicket} - ${item.ticketName}`}
+      </>
     );
-    item.balance = formatCurrency(item.balance) + " đ";
     item.stt = (currentPage - 1) * pageSize + index + 1;
     return item;
   });
 };
 
-const TableCustomListAccountCustomer = () => {
-  const navigate = useNavigate();
+const TableCustomTicketPurchased = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState({
@@ -93,43 +104,7 @@ const TableCustomListAccountCustomer = () => {
     setTimeout(() => {
       setLoading(false);
       const dataResponse = {
-        data: [
-          {
-            id: 1,
-            status: 1,
-            full_name: "Lê Đăng Chiến",
-            email: "dangchien@gmail.com",
-            balance: 100000,
-          },
-          {
-            id: 2,
-            status: 2,
-            full_name: "Lê Đăng Chiến",
-            email: "dangchien@gmail.com",
-            balance: 100000,
-          },
-          {
-            id: 3,
-            status: 0,
-            full_name: "Lê Đăng Chiến",
-            email: "dangchien@gmail.com",
-            balance: 100000,
-          },
-          {
-            id: 4,
-            status: 1,
-            full_name: "Lê Đăng Chiến",
-            email: "dangchien@gmail.com",
-            balance: 100000,
-          },
-          {
-            id: 5,
-            status: 1,
-            full_name: "Lê Đăng Chiến",
-            email: "dangchien@gmail.com",
-            balance: 100000,
-          },
-        ],
+        data: fakeTickets,
         totalElement: 60,
         totalPage: 10,
       };
@@ -157,10 +132,6 @@ const TableCustomListAccountCustomer = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleClickRow = (data) => {
-    navigate(`/account/customer/${data.id}`);
-  };
-
   return (
     <Table
       columns={columns}
@@ -176,13 +147,8 @@ const TableCustomListAccountCustomer = () => {
         showSizeChanger: true,
         pageSizeOptions: ["10", "20", "50", "100"],
       }}
-      onRow={(record) => {
-        return {
-          onClick: () => handleClickRow(record),
-        };
-      }}
     />
   );
 };
 
-export default TableCustomListAccountCustomer;
+export default TableCustomTicketPurchased;
