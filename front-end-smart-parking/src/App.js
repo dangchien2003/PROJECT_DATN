@@ -2,9 +2,10 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import AdminLayout from "./components/layout/admin";
 import DashBoardAdmin from "./pages/DashBoardAdmin";
 import AccountCustomerList from "./pages/AccountCustomerList";
-import TableCustomListAccountCustomer from "./components/TableCustomListAccountCustomer";
 import AccountCustomerInfo from "./pages/AccountCustomerInfo";
 import FullPageLoading from "./components/FullPageLoading";
+import PartnerList from "./pages/PartnerList";
+import PartnerInfo from "./pages/PartnerInfo";
 
 const router = createBrowserRouter([
   {
@@ -12,7 +13,8 @@ const router = createBrowserRouter([
     element: <AdminLayout />,
     children: [
       { index: true, element: <DashBoardAdmin /> },
-      { path: "/account/partner", element: <TableCustomListAccountCustomer /> },
+      { path: "/account/partner", element: <PartnerList /> },
+      { path: "/account/partner/:id", element: <PartnerInfo /> },
       { path: "/account/*", element: <AccountCustomerList /> },
       { path: "/account/customer/:id", element: <AccountCustomerInfo /> },
       { path: "/dashboard", element: <DashBoardAdmin /> },

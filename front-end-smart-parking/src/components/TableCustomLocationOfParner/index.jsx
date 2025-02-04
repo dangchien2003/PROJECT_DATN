@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
 import { Table } from "antd";
-import { fakeTickets } from "./dataTest";
-import { formatCurrency } from "@/utils/number";
+import { fakeDataTable } from "./dataTest";
 import { formatTimestamp } from "@/utils/time";
 import ButtonStatus from "../ButtonStatus";
-import { COLOR_BUTTON_ACCOUNT_STATUS } from "@/utils/constants";
+import { LOCATION_STATUS, MODIFY_STATUS } from "@/utils/constants";
 
 const columns = [
   {
@@ -12,74 +11,81 @@ const columns = [
     dataIndex: "stt",
     key: "0",
     sorter: false,
-    width: 1,
+    width: 0,
   },
   {
-    title: "Vé đã mua",
-    dataIndex: "ticketNamePrint",
+    title: "Địa điểm",
+    dataIndex: "namePrint",
     key: "1",
     sorter: false,
-    width: 150,
+    width: 200,
   },
   {
-    title: "Người mua",
-    dataIndex: "purchasedBy",
+    title: "Toạ độ",
+    dataIndex: "coordinatesPrint",
     key: "2",
     sorter: false,
-    width: 150,
+    align: "center",
+    width: 120,
   },
   {
-    title: "Thời gian",
-    dataIndex: "buyAt",
-    key: "3",
-    sorter: false,
-    width: 100,
-  },
-  {
-    title: "Giá vé",
-    dataIndex: "pricePrint",
+    title: "Sức chứa",
+    dataIndex: "capacity",
+    align: "center",
     key: "4",
     sorter: false,
-    width: 100,
-  },
-  {
-    title: "Đối tác cung cấp",
-    dataIndex: "partnerFullName",
-    key: "5",
-    sorter: false,
-    width: 200,
+    width: 120,
   },
 ];
 
 const convertResponseToDataTable = (response, currentPage, pageSize) => {
-  const now = new Date().getTime();
   return response.data.map((item, index) => {
-    item.pricePrint = formatCurrency(item.price) + " đ";
-    item.buyAt = formatTimestamp(item.createdAt);
-    item.ticketNamePrint = (
-      <>
-        <div style={{ textAlign: "center" }}>
-          {now > item.expires + item.extendTime ? (
-            <ButtonStatus
-              label="Đã hết hạn"
-              color={COLOR_BUTTON_ACCOUNT_STATUS[0]}
-            />
-          ) : (
-            <ButtonStatus
-              label="Bình thường"
-              color={COLOR_BUTTON_ACCOUNT_STATUS[2]}
-            />
-          )}
+    item.namePrint = (
+      <div>
+        <div style={{ textAlign: "center" }}>{item.id}</div>
+        <div>{`${item.name}`}</div>
+      </div>
+    );
+    item.coordinatesPrint = (
+      <div>
+        <div>
+          <>
+            {item.modifyStatus !== null ? (
+              <ButtonStatus
+                label={MODIFY_STATUS[item.modifyStatus].label}
+                color={MODIFY_STATUS[item.modifyStatus].color}
+              />
+            ) : (
+              <ButtonStatus
+                label={LOCATION_STATUS[item.status].label}
+                color={LOCATION_STATUS[item.status].color}
+              />
+            )}
+          </>
         </div>
-        {`${item.idTicket} - ${item.ticketName}`}
-      </>
+        <div>
+          <a
+            href={item.linkGoogleMap}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {item.coordinates}
+          </a>
+        </div>
+      </div>
+    );
+    item.buyTime = (
+      <div>
+        {formatTimestamp(item.createdAt, "DD/MM/YYYY")} <br />
+        {formatTimestamp(item.createdAt, "HH:mm:ss")}
+      </div>
     );
     item.stt = (currentPage - 1) * pageSize + index + 1;
     return item;
   });
 };
 
-const TableCustomTicketPurchased = () => {
+const TableCustomLocationOfParner = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState({
@@ -104,7 +110,7 @@ const TableCustomTicketPurchased = () => {
     setTimeout(() => {
       setLoading(false);
       const dataResponse = {
-        data: fakeTickets,
+        data: fakeDataTable,
         totalElement: 60,
         totalPage: 10,
       };
@@ -151,4 +157,4 @@ const TableCustomTicketPurchased = () => {
   );
 };
 
-export default TableCustomTicketPurchased;
+export default TableCustomLocationOfParner;

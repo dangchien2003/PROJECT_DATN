@@ -55,7 +55,7 @@ const PieChartCustom = ({
       >
         {nameChart}
       </span>
-      <PieChart width={width} height={height}>
+      <PieChart width={width} height={data.length < 4 ? height : height + 50}>
         <Pie
           data={data}
           cx={200}
@@ -69,9 +69,7 @@ const PieChartCustom = ({
             <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
           ))}
         </Pie>
-
         <Tooltip content={<CustomTooltip convert={convert} />} />
-
         <Legend layout="horizontal" verticalAlign="bottom" align="center" />
       </PieChart>
     </div>

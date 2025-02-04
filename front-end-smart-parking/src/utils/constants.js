@@ -1,7 +1,8 @@
 import { HomeOutlined, UserOutlined } from "@ant-design/icons";
 import { IoTicket, IoCard } from "react-icons/io5";
-import { FaLocationDot, FaChartPie } from "react-icons/fa6";
+import { FaLocationDot, FaChartPie, FaMotorcycle } from "react-icons/fa6";
 import { Link } from "react-router-dom";
+import { FaCarAlt } from "react-icons/fa";
 
 export const ADMIN_MENU = [
   {
@@ -179,3 +180,90 @@ export const COLORS_CHART = [
   "#66CCFF", // Xanh da trời nhạt
   "#33CC99", // Xanh lá mạ
 ];
+
+export const COLOR = {
+  _f6a621: "#f6a621",
+  _00c49f: "#00c49f",
+  _ff8042: "#ff8042",
+};
+
+export const VEHICLE = {
+  0: {
+    name: "Ô tô",
+    icon: <FaCarAlt />,
+  },
+  1: {
+    name: "Xe máy",
+    icon: <FaMotorcycle />,
+  },
+  2: {
+    name: "Hỗn hợp",
+    icon: (
+      <>
+        <FaCarAlt />
+        <FaMotorcycle style={{ marginLeft: 4 }} />
+      </>
+    ),
+  },
+};
+
+export const TICKET_STATUS = {
+  0: {
+    label: "Chờ duyệt",
+    color: "warning",
+  },
+  1: {
+    label: "Đang phát hành",
+    color: "cyan",
+  },
+  2: {
+    label: "Tạm dừng phát hành",
+    color: "default",
+  },
+  3: {
+    label: "Đã huỷ",
+    color: "danger",
+  },
+  4: {
+    label: "Từ chối",
+    color: "danger",
+  },
+};
+
+export const LOCATION_STATUS = {
+  0: {
+    label: "Chờ duyệt",
+    color: "warning",
+  },
+  1: {
+    label: "Đang phát hành",
+    color: "cyan",
+  },
+  2: {
+    label: "Tạm dừng phát hành",
+    color: "default",
+  },
+  3: {
+    label: "Đã huỷ",
+    color: "danger",
+  },
+  4: {
+    label: "Từ chối",
+    color: "danger",
+  },
+};
+
+export const MODIFY_STATUS = {
+  0: {
+    label: "Chờ duyệt thay đổi",
+    color: "warning",
+  },
+  1: {
+    label: "Từ chối thay đổi",
+    color: "danger",
+  },
+  2: {
+    label: "Chờ áp dụng thay đổi",
+    color: "cyan",
+  },
+};
