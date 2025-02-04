@@ -29,12 +29,12 @@ const Notifitation = () => {
             <div className="count-notity">{countNotify}</div>
           </>
         )}
-        {showNotify && (
+        <div style={!showNotify ? { display: "none" } : {}}>
           <CardNotify
             setCountNotify={setCountNotify}
             onClose={() => setShowNotify(false)}
           />
-        )}
+        </div>
       </div>
     </div>
   );
