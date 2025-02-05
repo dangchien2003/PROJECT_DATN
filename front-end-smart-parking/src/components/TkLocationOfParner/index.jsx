@@ -1,5 +1,5 @@
 import PieChartCustom from "../PieChartCustom";
-import { dataPie1, dataPie2 } from "./dataTest";
+import { dataPie2 } from "./dataTest";
 
 const TkLocationOfParner = ({ info }) => {
   return (

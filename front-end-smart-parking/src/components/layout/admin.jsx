@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import { Button, Layout, Menu, theme } from "antd";
-import { ADMIN_MENU } from "../../utils/constants";
+import { ADMIN_MENU } from "../../utils/menu";
 import { Outlet } from "react-router-dom";
 import ContactTrouble from "../ContactTrouble";
 import Notifitation from "../Notification";

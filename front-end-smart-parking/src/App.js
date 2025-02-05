@@ -6,6 +6,7 @@ import AccountCustomerInfo from "./pages/AccountCustomerInfo";
 import FullPageLoading from "./components/FullPageLoading";
 import PartnerList from "./pages/PartnerList";
 import PartnerInfo from "./pages/PartnerInfo";
+import CreateAccount from "./pages/CreateAccount";
 
 const router = createBrowserRouter([
   {
@@ -15,8 +16,9 @@ const router = createBrowserRouter([
       { index: true, element: <DashBoardAdmin /> },
       { path: "/account/partner", element: <PartnerList /> },
       { path: "/account/partner/:id", element: <PartnerInfo /> },
-      { path: "/account/*", element: <AccountCustomerList /> },
       { path: "/account/customer/:id", element: <AccountCustomerInfo /> },
+      { path: "/account/create", element: <CreateAccount /> },
+      { path: "/account/*", element: <AccountCustomerList /> },
       { path: "/dashboard", element: <DashBoardAdmin /> },
       // {
       //   path: "dashboard",
