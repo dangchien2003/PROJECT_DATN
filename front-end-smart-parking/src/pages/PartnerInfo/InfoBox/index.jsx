@@ -1,9 +1,13 @@
 import zalo from "@image/zalo.webp";
 import "./style.css";
 import { GENDER } from "@/utils/constants";
-import { Radio } from "antd";
+import { Button, Drawer, Radio } from "antd";
 import Status from "./Status";
+import { FaEdit } from "react-icons/fa";
+import { useState } from "react";
+import ShowBoxEdit from "./ShowBoxEdit";
 const InfoBox = ({ data }) => {
+  const [showEdit, setShowEdit] = useState(false);
   return (
     <div style={{ width: 650, display: "flex" }}>
       <div style={{ width: 300 }}>
@@ -55,7 +59,14 @@ const InfoBox = ({ data }) => {
           </div>
         </div>
       </div>
-      <div style={{ borderLeft: "1px solid #5e5e5e", paddingLeft: 16 }}>
+      <div
+        style={{
+          borderLeft: "1px solid #5e5e5e",
+          paddingLeft: 16,
+          paddingBottom: 50,
+          position: "relative",
+        }}
+      >
         <h3>Thông tin đối tác</h3>
         <div>
           <div className="item">
@@ -90,7 +101,30 @@ const InfoBox = ({ data }) => {
             <span>11/11/2003</span>
           </div>
         </div>
+        <div style={{ position: "absolute", bottom: 16 }}>
+          <Button
+            color="primary"
+            variant="solid"
+            onClick={() => {
+              setShowEdit((pre) => !pre);
+            }}
+          >
+            <FaEdit />
+            Chỉnh sửa
+          </Button>
+        </div>
       </div>
+      {showEdit && (
+        <Drawer
+          title="Chỉnh sửa thông tin đối tác"
+          open={showEdit}
+          onClose={() => {
+            setShowEdit(false);
+          }}
+        >
+          <ShowBoxEdit />
+        </Drawer>
+      )}
     </div>
   );
 };
