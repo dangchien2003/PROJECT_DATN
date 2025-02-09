@@ -3,6 +3,7 @@ import { Table } from "antd";
 import { fakeDataTable } from "./dataTest";
 import ButtonStatus from "../ButtonStatus";
 import { MODIFY_STATUS, TICKET_STATUS, VEHICLE } from "@/utils/constants";
+import { formatTimestamp } from "@/utils/time";
 
 const columns = [
   {
@@ -20,11 +21,18 @@ const columns = [
     width: 150,
   },
   {
+    title: "Đối tác",
+    dataIndex: "partnerPrint",
+    key: "1.1",
+    sorter: false,
+    width: 120,
+  },
+  {
     title: "Trạng thái",
     dataIndex: "statusPrint",
     key: "2",
     sorter: false,
-    width: 120,
+    width: 190,
   },
   {
     title: "Phương tiện",
@@ -34,11 +42,16 @@ const columns = [
     width: 120,
   },
   {
-    title: "Địa điểm",
-    dataIndex: "locationCount",
-    align: "center",
+    title: "Thời phát hành",
+    dataIndex: "releaseTimePrint",
     key: "4",
-    sorter: false,
+    sorter: true,
+    width: 120,
+  },
+  {
+    title: "Giá",
+    dataIndex: "pricePrint",
+    key: "5",
     width: 120,
   },
 ];
@@ -51,20 +64,63 @@ const convertResponseToDataTable = (response, currentPage, pageSize) => {
         {VEHICLE[item.vehicle].name}
       </div>
     );
+    item.partnerPrint = (
+      <div className="d-inline-block">
+        {item.partnerId}1<div style={{ textAlign: "center" }}>-</div>
+        {item.partnerName}12345
+      </div>
+    );
+    item.releaseTime = 114241421;
+    item.releaseTimePrint = (
+      <div style={{ textAlign: "center" }}>
+        {formatTimestamp(item.releaseTime, "DD/MM/YYYY")}
+        <br />
+        {formatTimestamp(item.releaseTime, "HH:mm")}
+      </div>
+    );
+    item.pricePrint = (
+      <div>
+        <div>1 giờ: 12.000 đ</div>
+        <div>1 ngày: 12.000 đ</div>
+        <div>1 tuần: 50.000 đ</div>
+        <div>1 tháng: 120.000 đ</div>
+      </div>
+    );
     item.statusPrint = (
-      <>
-        {item.modifyStatus !== 0 ? (
-          <ButtonStatus
-            label={MODIFY_STATUS[item.modifyStatus].label}
-            color={MODIFY_STATUS[item.modifyStatus].color}
-          />
-        ) : (
-          <ButtonStatus
-            label={TICKET_STATUS[item.status].label}
-            color={TICKET_STATUS[item.status].color}
-          />
-        )}
-      </>
+      <div>
+        <div style={{ margin: 2 }}>
+          <span>PH </span>
+          <span>
+            {item.modifyStatus !== null ? (
+              <ButtonStatus
+                label={MODIFY_STATUS[item.modifyStatus].label}
+                color={MODIFY_STATUS[item.modifyStatus].color}
+              />
+            ) : (
+              <ButtonStatus
+                label={TICKET_STATUS[item.status].label}
+                color={TICKET_STATUS[item.status].color}
+              />
+            )}
+          </span>
+        </div>
+        <div style={{ margin: 2 }}>
+          <span>TĐ </span>
+          <span>
+            {item.modifyStatus !== null ? (
+              <ButtonStatus
+                label={MODIFY_STATUS[item.modifyStatus].label}
+                color={MODIFY_STATUS[item.modifyStatus].color}
+              />
+            ) : (
+              <ButtonStatus
+                label={TICKET_STATUS[item.status].label}
+                color={TICKET_STATUS[item.status].color}
+              />
+            )}
+          </span>
+        </div>
+      </div>
     );
     item.ticketNamePrint = `${item.id} - ${item.name}`;
     item.stt = (currentPage - 1) * pageSize + index + 1;
@@ -72,7 +128,7 @@ const convertResponseToDataTable = (response, currentPage, pageSize) => {
   });
 };
 
-const TableCustomTicketOfPartner = () => {
+const TableListTicket = ({ searchTimes, dataSearch }) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState({
@@ -122,9 +178,9 @@ const TableCustomTicketOfPartner = () => {
 
   useEffect(() => {
     loadData(pagination, sorter);
+    console.log(dataSearch);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
+  }, [searchTimes]);
   return (
     <Table
       columns={columns}
@@ -144,4 +200,4 @@ const TableCustomTicketOfPartner = () => {
   );
 };
 
-export default TableCustomTicketOfPartner;
+export default TableListTicket;

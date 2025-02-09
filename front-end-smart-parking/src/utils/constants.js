@@ -12,6 +12,25 @@ export const GENDER = [
   },
 ];
 
+export const PRICE_CATEGORY = [
+  {
+    value: 1,
+    label: "1 giờ",
+  },
+  {
+    value: 2,
+    label: "1 ngày",
+  },
+  {
+    value: 3,
+    label: "1 tuần",
+  },
+  {
+    value: 4,
+    label: "1 tháng",
+  },
+];
+
 export const ACCOUNT_STATUS = [
   {
     value: 0,
@@ -109,6 +128,26 @@ export const VEHICLE = {
   },
 };
 
+export const VEHICLE_SELECTBOX = [
+  {
+    value: 0,
+    label: <FaCarAlt />,
+  },
+  {
+    value: 1,
+    label: <FaMotorcycle />,
+  },
+  {
+    value: 2,
+    label: (
+      <>
+        <FaCarAlt />
+        <FaMotorcycle style={{ marginLeft: 4 }} />
+      </>
+    ),
+  },
+];
+
 export const TICKET_STATUS = {
   0: {
     label: "Chờ duyệt",
@@ -157,15 +196,37 @@ export const LOCATION_STATUS = {
 
 export const MODIFY_STATUS = {
   0: {
+    label: "Không có thay đổi",
+    color: "default",
+  },
+  1: {
     label: "Chờ duyệt thay đổi",
     color: "warning",
   },
-  1: {
+  2: {
     label: "Từ chối thay đổi",
     color: "danger",
   },
-  2: {
+  3: {
     label: "Chờ áp dụng thay đổi",
     color: "cyan",
   },
 };
+export const MODIFY_STATUS_SELECTBOX = [
+  {
+    label: "Không có thay đổi",
+    value: 0,
+  },
+  {
+    label: "Chờ duyệt thay đổi",
+    value: 1,
+  },
+  {
+    label: "Từ chối thay đổi",
+    value: 2,
+  },
+  {
+    label: "Chờ áp dụng thay đổi",
+    value: 3,
+  },
+];

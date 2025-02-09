@@ -9,7 +9,9 @@ const SelectBoxLabelDash = ({
   data = [],
   callbackChangeValue,
   regex,
+  itemKey,
   prefix,
+  require,
 }) => {
   const [value, setValue] = useState(
     selectIndex ? data[selectIndex] : defaultValue
@@ -33,7 +35,7 @@ const SelectBoxLabelDash = ({
   const setValuePass = (newValue) => {
     setValue(newValue);
     if (callbackChangeValue) {
-      callbackChangeValue(newValue);
+      callbackChangeValue(newValue, itemKey);
     }
   };
 
@@ -64,6 +66,7 @@ const SelectBoxLabelDash = ({
         }}
       >
         {label}
+        {require && <span style={{ color: "red" }}> *</span>}
       </span>
       <Select
         style={{

@@ -1,15 +1,19 @@
-import { Input, Tooltip } from "antd";
+import { DatePicker, Tooltip } from "antd";
 import { useEffect, useState } from "react";
 import { FaAngleUp, FaAngleDown } from "react-icons/fa";
-import { formatCurrency, parseFormattedCurrency } from "@/utils/number";
+import dayjs from "dayjs";
 
-const NumberInputWithSort = ({
+const DateTimePickerWithSort = ({
   min,
   max,
-  addonAfter,
   placeholder,
   itemKey,
   callbackChangeValue,
+  format,
+  formatShowTime = {
+    format: "HH:mm:ss",
+    defaultValue: dayjs("00:00:00", "HH:mm:ss"),
+  },
 }) => {
   const [value, setValue] = useState(null);
   const [sortOrder, setSortOrder] = useState(null);
@@ -24,40 +28,37 @@ const NumberInputWithSort = ({
   // kiểm tra min max
   const validMinMax = (value) => {
     if (min !== null && min !== undefined) {
-      if (value < min) return min;
+      if (value.isBefore(min)) return min;
     }
     if (max !== null && max !== undefined) {
-      if (value > max) return max;
+      if (value.isAfter(max)) return max;
     }
     return value;
   };
   // xử lý khi thay đổi dữ liệu
-  const handleChangeValue = (e) => {
-    // chuyển về dạng số
-    var valueNumber = parseFormattedCurrency(e.target.value);
-    valueNumber = validMinMax(valueNumber);
-    const formattedValue = valueNumber
-      ? formatCurrency(valueNumber)
-      : valueNumber;
-    setValue(formattedValue);
+  const handleChangeValue = (value) => {
+    value = validMinMax(value);
+    setValue(value);
   };
 
   useEffect(() => {
     if (callbackChangeValue) {
-      callbackChangeValue(parseFormattedCurrency(value), sortOrder, itemKey);
+      callbackChangeValue(value?.format(format), sortOrder, itemKey);
     }
   }, [sortOrder, value]);
 
   return (
     <div style={{ display: "flex" }}>
-      <Input
+      <DatePicker
         style={{ width: "100%" }}
-        addonAfter={addonAfter}
-        placeholder={placeholder}
-        value={value}
+        showTime={formatShowTime}
+        format={format}
+        onOk={handleChangeValue}
         allowClear
-        onChange={handleChangeValue}
-        controls={false}
+        value={value}
+        placeholder={placeholder}
+        minDate={min}
+        maxDate={max}
       />
       <div
         style={{
@@ -92,4 +93,4 @@ const NumberInputWithSort = ({
   );
 };
 
-export default NumberInputWithSort;
+export default DateTimePickerWithSort;

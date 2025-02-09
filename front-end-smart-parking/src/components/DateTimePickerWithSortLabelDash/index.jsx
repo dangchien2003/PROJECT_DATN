@@ -1,15 +1,14 @@
-import React from "react";
-import NumberInputWithSort from "../NumberInputWithSort";
+import DateTimePickerWithSort from "../DateTimePickerWithSort";
 
-const NumberInputWithSortLabelDash = ({
+const DateTimePickerWithSortLabelDash = ({
   label,
   min,
   max,
-  addonAfter = false,
   itemKey,
   callbackChangeValue,
   placeholder,
-  require,
+  format,
+  formatShowTime,
 }) => {
   return (
     <div
@@ -37,18 +36,18 @@ const NumberInputWithSortLabelDash = ({
         }}
       >
         {label}
-        {require && <span style={{ color: "red" }}> *</span>}
       </span>
-      <NumberInputWithSort
+      <DateTimePickerWithSort
         min={min}
         max={max}
         placeholder={placeholder}
         itemKey={itemKey}
-        addonAfter={addonAfter}
         callbackChangeValue={callbackChangeValue}
+        format={format}
+        formatShowTime={formatShowTime}
       />
     </div>
   );
 };
 
-export default NumberInputWithSortLabelDash;
+export default DateTimePickerWithSortLabelDash;

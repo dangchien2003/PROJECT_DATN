@@ -35,7 +35,7 @@ export const ADMIN_MENU = [
     children: [
       {
         key: "3.1",
-        label: "Danh sách vé",
+        label:  <Link to={"/ticket"}>Danh sách vé</Link>,
       },
       {
         key: "3.2",

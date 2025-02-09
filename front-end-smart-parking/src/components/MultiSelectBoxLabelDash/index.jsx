@@ -1,20 +1,22 @@
-import { Input } from "antd";
+import { Select } from "antd";
 import { useState } from "react";
 
-const TextFieldLabelDash = ({
+const MultiSelectBoxLabelDash = ({
   placeholder,
   label,
-  defaultValue = "",
+  defaultValue,
+  selectIndex,
+  data = [],
   callbackChangeValue,
   regex,
-  prefix,
   itemKey,
+  prefix,
 }) => {
-  const [value, setValue] = useState(defaultValue);
+  const [value, setValue] = useState(
+    selectIndex ? data[selectIndex] : defaultValue
+  );
 
-  const handleChangeValue = (e) => {
-    const newValue = e.target.value;
-
+  const handleChangeValue = (newValue) => {
     if (newValue === "") {
       setValuePass("");
       return;
@@ -37,7 +39,6 @@ const TextFieldLabelDash = ({
   };
 
   const handleClear = () => setValuePass("");
-
   return (
     <div
       style={{
@@ -65,16 +66,21 @@ const TextFieldLabelDash = ({
       >
         {label}
       </span>
-      <Input
-        placeholder={placeholder}
-        allowClear
-        value={value}
+      <Select
+        mode="multiple"
+        style={{
+          width: "100%",
+        }}
         onChange={handleChangeValue}
         onClear={handleClear}
         prefix={prefix}
+        value={value}
+        allowClear
+        placeholder={placeholder}
+        options={data}
       />
     </div>
   );
 };
 
-export default TextFieldLabelDash;
+export default MultiSelectBoxLabelDash;
