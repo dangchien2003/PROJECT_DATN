@@ -28,6 +28,7 @@ const ListTicket = () => {
   const propTabStatus = {
     onChange: (status) => {
       updateObjectValue(dataSearch, "status", status);
+      onClickSearch();
     },
   };
 

@@ -4,6 +4,7 @@ import { fakeDataTable } from "./dataTest";
 import ButtonStatus from "../ButtonStatus";
 import { MODIFY_STATUS, TICKET_STATUS, VEHICLE } from "@/utils/constants";
 import { formatTimestamp } from "@/utils/time";
+import { useLoading } from "@/utils/loading";
 
 const columns = [
   {
@@ -129,6 +130,7 @@ const convertResponseToDataTable = (response, currentPage, pageSize) => {
 };
 
 const TableListTicket = ({ searchTimes, dataSearch }) => {
+  const { showLoad, hideLoad } = useLoading();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState({
@@ -150,8 +152,12 @@ const TableListTicket = ({ searchTimes, dataSearch }) => {
       setSorter(sorter);
     }
     setLoading(true);
+    if (searchTimes > 0) {
+      showLoad();
+    }
     setTimeout(() => {
       setLoading(false);
+      hideLoad();
       const dataResponse = {
         data: fakeDataTable,
         totalElement: 60,
