@@ -19,6 +19,7 @@ const RequestApproveTicket = () => {
   const [currentTab, setCurrentTab] = useState(items[0].key)
   const [searchTimes, setSearchTimes] = useState(0);
   const [dataSearch] = useState({
+    ticketType: 1,
     partnerId: null,
     ticketName: null,
     releasedOrApplyTime: {
@@ -40,14 +41,19 @@ const RequestApproveTicket = () => {
     console.log(dataSearch)
   };
 
+  const onChangeTab = (value) => { 
+    setCurrentTab(value); 
+    dataSearch.ticketType = value 
+  }
+
   return (
     <div>
       <div className="tabs-ticket">
-        <Tabs defaultActiveKey={1} items={items} onChange={(value) => { setCurrentTab(value) }} />
+        <Tabs defaultActiveKey={1} items={items} onChange={onChangeTab} />
       </div>
       <Search dataSearch={dataSearch} onSearch={onClickSearch} />
       <DividerCustom style={{ width: "80%" }} />
-      {currentTab === 1 ? <TableCustomListRequestCreateTicket searchTimes={searchTimes} /> : <TableCustomListRequestEditTicket />}
+      {currentTab === 1 ? <TableCustomListRequestCreateTicket searchTimes={searchTimes} dataSearch={dataSearch} /> : <TableCustomListRequestEditTicket searchTimes={searchTimes} dataSearch={dataSearch} />}
     </div>
   )
 }

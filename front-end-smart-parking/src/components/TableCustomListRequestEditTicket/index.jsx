@@ -6,6 +6,7 @@ import { useLoading } from "@/utils/loading";
 import { formatTimestamp } from "@/utils/time";
 import { FaRegCheckCircle } from "react-icons/fa";
 import { MdOutlineCancel } from "react-icons/md";
+import './style.css';
 
 const columns = [
   {
@@ -27,7 +28,7 @@ const columns = [
     dataIndex: "modifyDescription",
     key: "2",
     sorter: false,
-    width: 150,
+    width: 250,
   },
   {
     title: "Phương tiện",
@@ -111,7 +112,20 @@ const convertResponseToDataTable = (response, currentPage, pageSize) => {
         </Tooltip>
       </div>
     );
-    item.modifyDescription = "Chỉnh sửa lại tên vé"
+    const modifyDescription = "Chỉnh sửa lại tên vé Chỉnh sửa lại tên vé Chỉnh sửa lại tên vé Chỉnh sửa lại tên vé Chỉnh sửa lại tên vé Chỉnh sửa lại tên vé Chỉnh sửa lại tên vé Chỉnh sửa lại tên vé Chỉnh sửa lại tên vé Chỉnh sửa lại tên vé Chỉnh sửa lại tên vé Chỉnh sửa lại tên vé Chỉnh sửa lại tên vé Chỉnh sửa lại tên vé Chỉnh sửa lại tên vé";
+    item.modifyDescription = (
+      <div
+        style={{
+          maxHeight: 100,
+          overflowY: "auto",
+          scrollbarWidth: "thin",
+          msOverflowStyle: "none",
+        }}
+      >
+        {modifyDescription}
+      </div>
+    );
+
     return item;
   });
 };
