@@ -7,7 +7,7 @@ export const ADMIN_MENU = [
   {
     key: "1",
     icon: <HomeOutlined style={{ fontSize: 20 }} />,
-    label: <Link to={"/dashboard"}>Dashboard</Link>,
+    label: <Link to={"/"}>Dashboard</Link>,
   },
   {
     key: "2",
@@ -39,7 +39,7 @@ export const ADMIN_MENU = [
       },
       {
         key: "3.2",
-        label: "Yêu cầu thêm vé",
+        label: <Link to={"/ticket/request"}>Yêu cầu duyệt vé</Link>,
       },
     ],
   },

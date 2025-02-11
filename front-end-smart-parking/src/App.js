@@ -8,12 +8,14 @@ import PartnerList from "./pages/admin/PartnerList";
 import PartnerInfo from "./pages/admin/PartnerInfo";
 import CreateAccount from "./pages/admin/CreateAccount";
 import ListTicket from "./pages/admin/ListTicket";
+import NotFound from "./components/layout/NotFound";
+import RequestApproveTicket from "./pages/admin/RequestApproveTicket";
 const router = createBrowserRouter([
   {
     path: "/",
     element: <AdminLayout />,
     children: [
-      { index: true, element: <DashBoardAdmin /> },
+      { index: true, path: "/", element: <DashBoardAdmin /> },
       { path: "/account/partner", element: <PartnerList /> },
       { path: "/account/partner/:id", element: <PartnerInfo /> },
       { path: "/account/customer/:id", element: <AccountCustomerInfo /> },
@@ -21,7 +23,9 @@ const router = createBrowserRouter([
       { path: "/account/*", element: <AccountCustomerList /> },
 
       { path: "/ticket", element: <ListTicket /> },
-      { path: "/dashboard", element: <DashBoardAdmin /> },
+      { path: "/ticket/request", element: <RequestApproveTicket /> },
+
+      
       // {
       //   path: "dashboard",
       //   element: <DashboardLayout />,
@@ -32,7 +36,11 @@ const router = createBrowserRouter([
       //   ],
       // },
     ],
-  },
+  }, 
+  {
+    path: "/*",
+    element: <NotFound />,
+  }
 ]);
 function App() {
   return (

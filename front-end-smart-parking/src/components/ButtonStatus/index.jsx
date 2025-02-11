@@ -3,7 +3,7 @@ import React from "react";
 
 const colors = {
   danger: {
-    color: "danger",
+    color: "danger", //#ff4d4f
     background: "#ffe8ec",
   }, // đỏ
   cyan: {
