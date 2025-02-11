@@ -6,7 +6,6 @@ import { useLoading } from "@/utils/loading";
 import { formatTimestamp } from "@/utils/time";
 import { FaRegCheckCircle } from "react-icons/fa";
 import { MdOutlineCancel } from "react-icons/md";
-import './style.css';
 
 const columns = [
   {
