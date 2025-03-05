@@ -5,6 +5,7 @@ import ButtonStatus from "../ButtonStatus";
 import { MODIFY_STATUS, TICKET_STATUS, VEHICLE } from "@/utils/constants";
 import { formatTimestamp } from "@/utils/time";
 import { useLoading } from "@/utils/loading";
+import { useNavigate } from "react-router-dom";
 
 const columns = [
   {
@@ -129,7 +130,8 @@ const convertResponseToDataTable = (response, currentPage, pageSize) => {
   });
 };
 
-const TableListTicket = ({ searchTimes, dataSearch }) => {
+const TableListTicket = ({searchTimes, dataSearch }) => {
+  const navigate = useNavigate()
   const { showLoad, hideLoad } = useLoading();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -182,6 +184,10 @@ const TableListTicket = ({ searchTimes, dataSearch }) => {
     loadData(newPagination, sorter);
   };
 
+  const handleClickRow = (data) => {
+    navigate(`/ticket/detail/0/${dataSearch.status === 0 ? 0 : 1}/${data.id}`)
+  };
+
   useEffect(() => {
     loadData(pagination, sorter);
     console.log(dataSearch);
@@ -201,6 +207,11 @@ const TableListTicket = ({ searchTimes, dataSearch }) => {
         ...pagination,
         showSizeChanger: true,
         pageSizeOptions: ["10", "20", "50", "100"],
+      }}
+      onRow={(record) => {
+        return {
+          onClick: () => handleClickRow(record),
+        };
       }}
     />
   );

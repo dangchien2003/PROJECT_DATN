@@ -6,6 +6,7 @@ import { useLoading } from "@/utils/loading";
 import { formatTimestamp } from "@/utils/time";
 import { FaRegCheckCircle } from "react-icons/fa";
 import { MdOutlineCancel } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
 
 const columns = [
   {
@@ -133,6 +134,7 @@ const sortDefault = {
   order: "ascend",
 }
 const TableCustomListRequestEditTicket = ({ searchTimes, dataSearch }) => {
+  const navigate = useNavigate()
   const { hideLoad, showLoad } = useLoading()
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -183,7 +185,7 @@ const TableCustomListRequestEditTicket = ({ searchTimes, dataSearch }) => {
     loadData(newPagination, sorter);
   };
   const handleClickRow = (data) => {
-    console.log(data)
+    navigate(`/ticket/detail/2/0/${data.id}`)
   };
 
   useEffect(() => {

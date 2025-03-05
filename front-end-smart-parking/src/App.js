@@ -10,6 +10,7 @@ import CreateAccount from "./pages/admin/CreateAccount";
 import ListTicket from "./pages/admin/ListTicket";
 import NotFound from "./components/layout/NotFound";
 import RequestApproveTicket from "./pages/admin/RequestApproveTicket";
+import DetailTicket from "./pages/admin/DetailTicket";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -24,6 +25,7 @@ const router = createBrowserRouter([
 
       { path: "/ticket", element: <ListTicket /> },
       { path: "/ticket/request", element: <RequestApproveTicket /> },
+      { path: "/ticket/detail/:isIdModify/:tabStatus/:id", element: <DetailTicket /> },
 
       
       // {
