@@ -230,3 +230,49 @@ export const MODIFY_STATUS_SELECTBOX = [
     value: 3,
   },
 ];
+
+
+export const CARD_STATUS = {
+  0: {
+    label: "Chờ duyệt",
+    color: "warning",
+  },
+  1: {
+    label: "Chờ cấp",
+    color: "warning",
+  },
+  2: {
+    label: "Chờ cấp",
+    color: "default",
+  },
+  3: {
+    label: "Đang hoạt động",
+    color: "cyan",
+  },
+  4: {
+    label: "Tạm khoá",
+    color: "danger",
+  },
+  5: {
+    label: "Khoá vĩnh viễn",
+    color: "danger",
+  },
+  6: {
+    label: "Từ chối",
+    color: "danger",
+  },
+}
+
+export const CARD_TYPE = {
+  0: {
+    label: "Thẻ cá nhân",
+  },
+  1: {
+    label: "Thẻ doanh nghiệp"
+  },
+}
+
+export const CARD_TYPE_SELECTBOX = [
+  {label: "Thẻ cá nhân", value: 0},
+  {label: "Thẻ doanh nghiệp", value: 1},
+]

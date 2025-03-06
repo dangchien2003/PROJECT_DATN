@@ -1,0 +1,66 @@
+export const fakeDataTable = [
+  {
+    numberCard: "0000000001",
+    issuedDate: 1706654800000,
+    status: 0,
+    type: 0,
+    requestCreateName: "abc",
+  },
+  {
+    numberCard: "0000000002",
+    issuedDate: 1706154800000,
+    status: 1,
+    type: 0,
+    requestCreateName: "abc",
+  },
+  {
+    numberCard: "0000000003",
+    issuedDate: 1706154800000,
+    status: 2,
+    type: 0,
+    requestCreateName: "abc",
+  },
+  {
+    numberCard: "0000000004",
+    issuedDate: 1706154800000,
+    status: 3,
+    type: 0,
+    requestCreateName: "abc",
+  }, {
+    numberCard: "0000000005",
+    issuedDate: 1706154800000,
+    status: 4,
+    type: 0,
+    requestCreateName: "abc",
+  }, {
+    numberCard: "0000000006",
+    issuedDate: 1706154800000,
+    status: 5,
+    type: 0,
+    requestCreateName: "abc",
+  }, {
+    numberCard: "0000000007",
+    issuedDate: 1706154800000,
+    status: 6,
+    type: 0,
+    requestCreateName: "abc",
+  }, {
+    numberCard: "0000000008",
+    issuedDate: 1706154800000,
+    status: 0,
+    type: 0,
+    requestCreateName: "abc",
+  }, {
+    numberCard: "0000000009",
+    issuedDate: 1706154800000,
+    status: 0,
+    type: 0,
+    requestCreateName: "abc",
+  }, {
+    numberCard: "00000000010",
+    issuedDate: 1706154800000,
+    status: 0,
+    type: 0,
+    requestCreateName: "abc",
+  },
+];

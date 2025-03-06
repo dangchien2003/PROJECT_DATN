@@ -35,7 +35,7 @@ export const ADMIN_MENU = [
     children: [
       {
         key: "3.1",
-        label:  <Link to={"/ticket"}>Danh sách vé</Link>,
+        label: <Link to={"/ticket"}>Danh sách vé</Link>,
       },
       {
         key: "3.2",
@@ -50,11 +50,11 @@ export const ADMIN_MENU = [
     children: [
       {
         key: "4.1",
-        label: "Danh sách thẻ",
+        label: <Link to={"/card"}>Danh sách thẻ</Link>,
       },
       {
         key: "4.2",
-        label: "Yêu cầu thêm thẻ",
+        label: <Link to={"/card/wait-approve"}>Yêu cầu thêm thẻ</Link>,
       },
     ],
   },

@@ -2,29 +2,22 @@ import Search from "./Search";
 import TabStatus from "./TabStatus";
 import { useState } from "react";
 import "./style.css";
-import TableListTicket from "@/components/TableListTicket";
 import DividerCustom from "@/components/DividerCustom";
 import { updateObjectValue } from "@/utils/object";
+import TableListCard from "@/components/TableListCard";
 
-const ListTicket = () => {
+const ListCard = () => {
   const [searchTimes, setSearchTimes] = useState(0);
   const [dataSearch] = useState({
-    partnerId: null,
-    ticketName: null,
-    status: 1,
-    modifyStatus: null,
-    releasedTime: {
-      time: null,
-      order: null,
-    },
-    priceSearch: {
-      price: null,
-      order: null,
-    },
-    priceCategory: null,
-    location: null,
-    vehicle: null,
+    numberCard: null,
+    emailOwner: null,
+    type: null,
+    issuedDateFrom: null,
+    issuedDateTo: null,
+    requestName: null,
+    status: 3,
   });
+  
   const propTabStatus = {
     onChange: (status) => {
       updateObjectValue(dataSearch, "status", status);
@@ -33,7 +26,6 @@ const ListTicket = () => {
   };
 
   const onClickSearch = () => {
-    console.log(dataSearch)
     setSearchTimes((pre) => ++pre);
   };
   return (
@@ -41,9 +33,9 @@ const ListTicket = () => {
       <TabStatus {...propTabStatus} />
       <Search onSearch={onClickSearch} dataSearch={dataSearch} />
       <DividerCustom style={{ width: "80%" }} />
-      <TableListTicket searchTimes={searchTimes} dataSearch={dataSearch} />
+      <TableListCard searchTimes={searchTimes} dataSearch={dataSearch} />
     </div>
   );
 };
 
-export default ListTicket;
+export default ListCard;

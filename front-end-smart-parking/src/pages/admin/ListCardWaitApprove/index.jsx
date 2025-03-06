@@ -2,29 +2,21 @@ import Search from "./Search";
 import TabStatus from "./TabStatus";
 import { useState } from "react";
 import "./style.css";
-import TableListTicket from "@/components/TableListTicket";
 import DividerCustom from "@/components/DividerCustom";
 import { updateObjectValue } from "@/utils/object";
+import TableListCardWaitApprove from "@/components/TableListCardWaitApprove";
 
-const ListTicket = () => {
+const ListCardWaitApprove = () => {
   const [searchTimes, setSearchTimes] = useState(0);
   const [dataSearch] = useState({
-    partnerId: null,
-    ticketName: null,
-    status: 1,
-    modifyStatus: null,
-    releasedTime: {
-      time: null,
-      order: null,
-    },
-    priceSearch: {
-      price: null,
-      order: null,
-    },
-    priceCategory: null,
-    location: null,
-    vehicle: null,
+    emailOwner: null,
+    type: null,
+    issuedDateFrom: null,
+    issuedDateTo: null,
+    requestName: null,
+    status: 0,
   });
+  
   const propTabStatus = {
     onChange: (status) => {
       updateObjectValue(dataSearch, "status", status);
@@ -33,7 +25,6 @@ const ListTicket = () => {
   };
 
   const onClickSearch = () => {
-    console.log(dataSearch)
     setSearchTimes((pre) => ++pre);
   };
   return (
@@ -41,9 +32,9 @@ const ListTicket = () => {
       <TabStatus {...propTabStatus} />
       <Search onSearch={onClickSearch} dataSearch={dataSearch} />
       <DividerCustom style={{ width: "80%" }} />
-      <TableListTicket searchTimes={searchTimes} dataSearch={dataSearch} />
+      <TableListCardWaitApprove searchTimes={searchTimes} dataSearch={dataSearch} />
     </div>
   );
 };
 
-export default ListTicket;
+export default ListCardWaitApprove;

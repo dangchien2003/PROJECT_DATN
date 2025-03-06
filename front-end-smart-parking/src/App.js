@@ -11,6 +11,8 @@ import ListTicket from "./pages/admin/ListTicket";
 import NotFound from "./components/layout/NotFound";
 import RequestApproveTicket from "./pages/admin/RequestApproveTicket";
 import DetailTicket from "./pages/admin/DetailTicket";
+import ListCard from "./pages/admin/ListCard";
+import ListCardWaitApprove from "./pages/admin/ListCardWaitApprove";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -27,7 +29,11 @@ const router = createBrowserRouter([
       { path: "/ticket/request", element: <RequestApproveTicket /> },
       { path: "/ticket/detail/:isIdModify/:tabStatus/:id", element: <DetailTicket /> },
 
-      
+      { path: "/card", element: <ListCard /> },
+      { path: "/card/wait-approve", element: <ListCardWaitApprove /> },
+
+
+    
       // {
       //   path: "dashboard",
       //   element: <DashboardLayout />,
