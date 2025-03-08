@@ -65,7 +65,7 @@ export const ADMIN_MENU = [
     children: [
       {
         key: "5.1",
-        label: "Bản đồ",
+        label: <Link to={"/map/all"}>Bản đồ</Link>,
       },
       {
         key: "5.2",

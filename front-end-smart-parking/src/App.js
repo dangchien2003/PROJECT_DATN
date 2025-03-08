@@ -13,6 +13,7 @@ import RequestApproveTicket from "./pages/admin/RequestApproveTicket";
 import DetailTicket from "./pages/admin/DetailTicket";
 import ListCard from "./pages/admin/ListCard";
 import ListCardWaitApprove from "./pages/admin/ListCardWaitApprove";
+import MapAllLocation from "./pages/admin/MapAllLocation";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -32,6 +33,7 @@ const router = createBrowserRouter([
       { path: "/card", element: <ListCard /> },
       { path: "/card/wait-approve", element: <ListCardWaitApprove /> },
 
+       { path: "/map/all", element: <MapAllLocation /> },
 
     
       // {
