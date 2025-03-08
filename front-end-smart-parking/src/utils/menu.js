@@ -65,20 +65,16 @@ export const ADMIN_MENU = [
     children: [
       {
         key: "5.1",
-        label: <Link to={"/map/all"}>Bản đồ</Link>,
+        label: <Link to={"/location/map/all"}>Bản đồ</Link>,
       },
       {
         key: "5.2",
-        label: "Danh sách địa điểm",
+        label: <Link to={"/location"}>Danh sách địa điểm</Link>,
       },
       {
         key: "5.3",
-        label: "Yêu cầu thêm địa điểm",
-      },
-      {
-        key: "5.4",
-        label: "Yêu cầu chỉnh sửa",
-      },
+        label: <Link to={"/location/wait-approve"}>Chờ duyệt</Link>,
+      }
     ],
   },
   {

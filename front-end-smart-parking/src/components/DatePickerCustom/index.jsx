@@ -1,6 +1,5 @@
-import { DatePicker, Tooltip } from "antd";
+import { DatePicker } from "antd";
 import { useEffect, useState } from "react";
-import { FaAngleUp, FaAngleDown } from "react-icons/fa";
 
 const DatePickerCustom = ({
   min,
@@ -31,6 +30,7 @@ const DatePickerCustom = ({
     if (callbackChangeValue) {
       callbackChangeValue(value?.format(format), itemKey);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
 
   return (

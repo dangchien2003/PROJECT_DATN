@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
-import { Table } from "antd";
+import { Table, Tooltip } from "antd";
 import { fakeDataTable } from "./dataTest";
 import ButtonStatus from "../ButtonStatus";
-import { MODIFY_STATUS, TICKET_STATUS, VEHICLE } from "@/utils/constants";
+import { MODIFY_STATUS, TICKET_STATUS } from "@/utils/constants";
 import { formatTimestamp } from "@/utils/time";
 import { useLoading } from "@/utils/loading";
-import { useNavigate } from "react-router-dom";
+import { FaRegCheckCircle } from "react-icons/fa";
+import { MdOutlineCancel } from "react-icons/md";
+// import { useNavigate } from "react-router-dom";
 
 const columns = [
   {
@@ -16,78 +18,56 @@ const columns = [
     width: 1,
   },
   {
-    title: "Tên vé",
+    title: "Tên địa điểm",
     dataIndex: "ticketNamePrint",
     key: "1",
     sorter: false,
     width: 150,
   },
   {
-    title: "Đối tác",
-    dataIndex: "partnerPrint",
-    key: "1.1",
-    sorter: false,
-    width: 120,
-  },
-  {
     title: "Trạng thái",
     dataIndex: "statusPrint",
     key: "2",
     sorter: false,
-    width: 190,
-  },
-  {
-    title: "Phương tiện",
-    dataIndex: "vehiclePrint",
-    key: "3",
-    sorter: false,
     width: 120,
   },
   {
-    title: "Thời phát hành",
-    dataIndex: "releaseTimePrint",
-    key: "4",
+    title: "Ngày yêu cầu",
+    dataIndex: "createdDate",
+    key: "3.1",
+    width: 120,
+    sorter: true,
+    align: "center"
+  },
+  {
+    title: "Thời gian áp dụng",
+    dataIndex: "timeAppliedEditPrint",
+    key: "3",
+    sorter: true,
+    width: 120,
+    align: "center"
+  },
+  {
+    title: "Đối tác",
+    dataIndex: "patnerName",
+    key: "5",
     sorter: true,
     width: 120,
   },
   {
-    title: "Giá",
-    dataIndex: "pricePrint",
-    key: "5",
+    title: "Hành động",
+    dataIndex: "action",
+    key: "6",
+    fixed: "right",
     width: 120,
-  },
+  }
 ];
 
 const convertResponseToDataTable = (response, currentPage, pageSize) => {
   return response.data.map((item, index) => {
-    item.vehiclePrint = (
-      <div>
-        <span style={{ margin: "0 4px" }}>{VEHICLE[item.vehicle].icon}</span>
-        {VEHICLE[item.vehicle].name}
-      </div>
-    );
-    item.partnerPrint = (
-      <div className="d-inline-block">
-        {item.partnerId}1<div style={{ textAlign: "center" }}>-</div>
-        {item.partnerName}12345
-      </div>
-    );
-    item.releaseTime = 114241421;
-    item.releaseTimePrint = (
-      <div style={{ textAlign: "center" }}>
-        {formatTimestamp(item.releaseTime, "DD/MM/YYYY")}
-        <br />
-        {formatTimestamp(item.releaseTime, "HH:mm")}
-      </div>
-    );
-    item.pricePrint = (
-      <div>
-        <div>1 giờ: 12.000 đ</div>
-        <div>1 ngày: 12.000 đ</div>
-        <div>1 tuần: 50.000 đ</div>
-        <div>1 tháng: 120.000 đ</div>
-      </div>
-    );
+    item.ticketNamePrint = `${item.id} - ${item.name}`;
+    item.createdDate = formatTimestamp(item.createdAt, "DD/MM/YYYY")
+    item.timeAppliedEditPrint = formatTimestamp(item.timeAppliedEdit, "DD/MM/YYYY")
     item.statusPrint = (
       <div>
         <div style={{ margin: 2 }}>
@@ -124,16 +104,30 @@ const convertResponseToDataTable = (response, currentPage, pageSize) => {
         </div>
       </div>
     );
-    item.ticketNamePrint = `${item.id} - ${item.name}`;
+    item.action = (
+      <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
+        <Tooltip title="Duyệt">
+          <div>
+            <FaRegCheckCircle style={{ color: "#00c49f", fontSize: 21, cursor: 'pointer' }} />
+          </div>
+        </Tooltip>
+        <Tooltip title="Từ chối">
+          <div>
+            <MdOutlineCancel style={{ color: "#ff4d4f", fontSize: 24, cursor: 'pointer' }} />
+          </div>
+        </Tooltip>
+      </div>
+    );
     item.stt = (currentPage - 1) * pageSize + index + 1;
     return item;
   });
 };
 
-const TableListTicket = ({searchTimes, dataSearch }) => {
-  const navigate = useNavigate()
+const TableListLocationWaitApprove = ({searchTimes, dataSearch }) => {
+  // const navigate = useNavigate()
   const { showLoad, hideLoad } = useLoading();
   const [data, setData] = useState([]);
+  const [columnsShow, setColumnsShow] = useState(columns);
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState({
     current: 1,
@@ -141,9 +135,19 @@ const TableListTicket = ({searchTimes, dataSearch }) => {
     total: 0,
   });
   const [sorter, setSorter] = useState({
-    field: "name",
+    field: "modifyId",
     order: "ascend",
   });
+
+  useEffect(()=> {
+    // ẩn cột khi vào tab từ chối
+    if(dataSearch.type === 3) {
+      const col = columns.filter(item => item.dataIndex !== "action" && item.dataIndex !== "statusPrint");
+      setColumnsShow(col)
+    }else {
+      setColumnsShow(columns)
+    }
+  }, [dataSearch.type])
 
   const loadData = (newPagination, sorter) => {
     if (!sorter.field || !sorter.order) {
@@ -185,7 +189,7 @@ const TableListTicket = ({searchTimes, dataSearch }) => {
   };
 
   const handleClickRow = (data) => {
-    navigate(`/ticket/detail/0/${dataSearch.status === 0 ? 0 : 1}/${data.id}`)
+    // navigate(`/ticket/detail/0/${dataSearch.status === 0 ? 0 : 1}/${data.id}`)
   };
 
   useEffect(() => {
@@ -195,7 +199,7 @@ const TableListTicket = ({searchTimes, dataSearch }) => {
   }, [searchTimes]);
   return (
     <Table
-      columns={columns}
+      columns={columnsShow}
       dataSource={data}
       rowKey="id"
       loading={loading}
@@ -217,4 +221,4 @@ const TableListTicket = ({searchTimes, dataSearch }) => {
   );
 };
 
-export default TableListTicket;
+export default TableListLocationWaitApprove;

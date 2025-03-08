@@ -2,10 +2,10 @@ import { useState, useEffect } from "react";
 import { Table } from "antd";
 import { fakeDataTable } from "./dataTest";
 import ButtonStatus from "../ButtonStatus";
-import { MODIFY_STATUS, TICKET_STATUS, VEHICLE } from "@/utils/constants";
+import { MODIFY_STATUS, TICKET_STATUS } from "@/utils/constants";
 import { formatTimestamp } from "@/utils/time";
 import { useLoading } from "@/utils/loading";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 
 const columns = [
   {
@@ -16,15 +16,15 @@ const columns = [
     width: 1,
   },
   {
-    title: "Tên vé",
+    title: "Tên địa điểm",
     dataIndex: "ticketNamePrint",
     key: "1",
     sorter: false,
     width: 150,
   },
   {
-    title: "Đối tác",
-    dataIndex: "partnerPrint",
+    title: "Toạ độ",
+    dataIndex: "coordinatesPrint",
     key: "1.1",
     sorter: false,
     width: 120,
@@ -34,60 +34,31 @@ const columns = [
     dataIndex: "statusPrint",
     key: "2",
     sorter: false,
-    width: 190,
-  },
-  {
-    title: "Phương tiện",
-    dataIndex: "vehiclePrint",
-    key: "3",
-    sorter: false,
     width: 120,
   },
   {
-    title: "Thời phát hành",
-    dataIndex: "releaseTimePrint",
-    key: "4",
+    title: "Ngày mở cửa",
+    dataIndex: "openDatePrint",
+    key: "3",
     sorter: true,
     width: 120,
+    align: "center"
   },
   {
-    title: "Giá",
-    dataIndex: "pricePrint",
+    title: "Sức chứa",
+    dataIndex: "capacity",
     key: "5",
+    sorter: true,
     width: 120,
   },
 ];
 
 const convertResponseToDataTable = (response, currentPage, pageSize) => {
   return response.data.map((item, index) => {
-    item.vehiclePrint = (
-      <div>
-        <span style={{ margin: "0 4px" }}>{VEHICLE[item.vehicle].icon}</span>
-        {VEHICLE[item.vehicle].name}
-      </div>
-    );
-    item.partnerPrint = (
-      <div className="d-inline-block">
-        {item.partnerId}1<div style={{ textAlign: "center" }}>-</div>
-        {item.partnerName}12345
-      </div>
-    );
-    item.releaseTime = 114241421;
-    item.releaseTimePrint = (
-      <div style={{ textAlign: "center" }}>
-        {formatTimestamp(item.releaseTime, "DD/MM/YYYY")}
-        <br />
-        {formatTimestamp(item.releaseTime, "HH:mm")}
-      </div>
-    );
-    item.pricePrint = (
-      <div>
-        <div>1 giờ: 12.000 đ</div>
-        <div>1 ngày: 12.000 đ</div>
-        <div>1 tuần: 50.000 đ</div>
-        <div>1 tháng: 120.000 đ</div>
-      </div>
-    );
+    item.ticketNamePrint = `${item.id} - ${item.name}`;
+    item.coordinatesPrint = <a href={item.linkGoogleMap}
+    target="_blank" rel="noreferrer">[{item.coordinates}]</a>;
+    item.openDatePrint = formatTimestamp(item.openDate, "DD/MM/YYYY")
     item.statusPrint = (
       <div>
         <div style={{ margin: 2 }}>
@@ -124,14 +95,14 @@ const convertResponseToDataTable = (response, currentPage, pageSize) => {
         </div>
       </div>
     );
-    item.ticketNamePrint = `${item.id} - ${item.name}`;
+    
     item.stt = (currentPage - 1) * pageSize + index + 1;
     return item;
   });
 };
 
-const TableListTicket = ({searchTimes, dataSearch }) => {
-  const navigate = useNavigate()
+const TableListLocation = ({searchTimes, dataSearch }) => {
+  // const navigate = useNavigate()
   const { showLoad, hideLoad } = useLoading();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -141,7 +112,7 @@ const TableListTicket = ({searchTimes, dataSearch }) => {
     total: 0,
   });
   const [sorter, setSorter] = useState({
-    field: "name",
+    field: "id",
     order: "ascend",
   });
 
@@ -185,7 +156,7 @@ const TableListTicket = ({searchTimes, dataSearch }) => {
   };
 
   const handleClickRow = (data) => {
-    navigate(`/ticket/detail/0/${dataSearch.status === 0 ? 0 : 1}/${data.id}`)
+    // navigate(`/ticket/detail/0/${dataSearch.status === 0 ? 0 : 1}/${data.id}`)
   };
 
   useEffect(() => {
@@ -217,4 +188,4 @@ const TableListTicket = ({searchTimes, dataSearch }) => {
   );
 };
 
-export default TableListTicket;
+export default TableListLocation;

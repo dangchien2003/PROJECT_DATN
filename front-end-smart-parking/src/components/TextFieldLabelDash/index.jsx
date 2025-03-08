@@ -21,6 +21,7 @@ const TextFieldLabelDash = ({
     }
 
     if (regex) {
+      console.log(regex)
       if (regex.test(newValue)) {
         setValuePass(newValue);
       }

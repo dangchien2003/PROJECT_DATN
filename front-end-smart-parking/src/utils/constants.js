@@ -177,7 +177,7 @@ export const LOCATION_STATUS = {
     color: "warning",
   },
   1: {
-    label: "Đang phát hành",
+    label: "Đang hoạt động",
     color: "cyan",
   },
   2: {
@@ -185,14 +185,29 @@ export const LOCATION_STATUS = {
     color: "default",
   },
   3: {
-    label: "Đã huỷ",
-    color: "danger",
-  },
-  4: {
     label: "Từ chối",
     color: "danger",
   },
 };
+
+export const LOCATION_MODIFY_STATUS = {
+  0: {
+    label: "Không có/Đã áp dụng chỉnh sửa",
+    color: "warning",
+  },
+  1: {
+    label: "Chờ duyệt",
+    color: "warning",
+  },
+  2: {
+    label: "Từ chối",
+    color: "warning",
+  },
+  3: {
+    label: "Đã duyệt chờ áp dụng",
+    color: "default",
+  },
+}
 
 export const MODIFY_STATUS = {
   0: {
@@ -275,4 +290,10 @@ export const CARD_TYPE = {
 export const CARD_TYPE_SELECTBOX = [
   {label: "Thẻ cá nhân", value: 0},
   {label: "Thẻ doanh nghiệp", value: 1},
+]
+
+export const DATA_OPEN_HOLIDAY_SELECTBOX = [
+  {label: "Tất cả", value: 0},
+  {label: "Đóng cửa", value: 1},
+  {label: "Mở cửa", value: 2},
 ]
