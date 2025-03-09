@@ -76,13 +76,13 @@ const TitleItemCard = () => {
         }}
         trigger={['click']}
       >
-        <a href='#' onClick={(e) => e.preventDefault()}>
+        <a href='/#' onClick={(e) => e.preventDefault()}>
           <Space>
             <MoreOutlined style={{ fontSize: 25, color: 'white' }} />
           </Space>
         </a>
       </Dropdown>
-      {openPopConfirm && (open ? <PopConfirmCustom type="warning" title="Bạn có chắc chắn muốn tiếp tục sử dụng không?" message="Thẻ sẽ hoạt động bình thường sau khi nhấn đồng ý." handleCancel={handleCancel} handleOk={handleOk} /> : <PopConfirmCustom type="warning" title="Bạn có chắc chắn muốn tạm dừng không?" message="Bạn vẫn có thể mở lại trong vòng 1 giớ tới." handleCancel={handleCancel} handleOk={handleOk} />)}
+      {openPopConfirm && (open ? <PopConfirmCustom type="warning" title="Bạn có chắc chắn muốn tiếp tục sử dụng không?" message="Thẻ sẽ hoạt động bình thường sau khi nhấn đồng ý." handleCancel={handleCancel} handleOk={handleOk} /> : <PopConfirmCustom type="warning" title="Bạn có chắc chắn muốn tạm khoá không?" message="Bạn vẫn có thể mở lại trong vòng 1 giớ tới." handleCancel={handleCancel} handleOk={handleOk} />)}
       {openPopConfirmKVV && (!openKVV && <PopConfirmCustom type="warning" title="Bạn có chắc chắn muốn khoá thẻ vĩnh viễn không?" message="Bạn sẽ không thể mở lại sau khi nhấn đồng ý." handleCancel={handleCancelKVV} handleOk={handleOkKVV} />)}
     </div>
   )

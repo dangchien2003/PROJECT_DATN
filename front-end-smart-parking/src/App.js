@@ -16,11 +16,14 @@ import ListCardWaitApprove from "./pages/admin/ListCardWaitApprove";
 import MapAllLocation from "./pages/admin/MapAllLocation";
 import ListLocation from "./pages/admin/ListLocation";
 import ListLocationWaitApprove from "./pages/admin/ListLocationWaitApprove";
+import ComponentDemo from "./pages/ComponentDemo";
+import CardDetail from "./pages/admin/CardDetail";
 const router = createBrowserRouter([
   {
     path: "/",
     element: <AdminLayout />,
     children: [
+      { path: "/demo", element: <ComponentDemo /> },
       { index: true, path: "/", element: <DashBoardAdmin /> },
       { path: "/account/partner", element: <PartnerList /> },
       { path: "/account/partner/:id", element: <PartnerInfo /> },
@@ -34,6 +37,7 @@ const router = createBrowserRouter([
 
       { path: "/card", element: <ListCard /> },
       { path: "/card/wait-approve", element: <ListCardWaitApprove /> },
+      { path: "/card/detail/:id", element: <CardDetail /> },
 
       { path: "/location", element: <ListLocation /> },
       { path: "/location/wait-approve", element: <ListLocationWaitApprove /> },

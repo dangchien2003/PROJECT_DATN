@@ -1,11 +1,8 @@
 import { useState, useEffect } from "react";
 import { Table } from "antd";
-import { fakeDataTable } from "./dataTest";
-import ButtonStatus from "../ButtonStatus";
-import { CARD_STATUS, CARD_TYPE} from "@/utils/constants";
-import { formatTimestamp } from "@/utils/time";
-import { useLoading } from "@/utils/loading";
 import { useNavigate } from "react-router-dom";
+import { listPartner } from "./dataTest";
+import { formatTimestamp } from "@/utils/time";
 
 const columns = [
   {
@@ -13,59 +10,41 @@ const columns = [
     dataIndex: "stt",
     key: "0",
     sorter: false,
-    width: 1,
+    width: 50,
   },
   {
-    title: "Số thẻ",
-    dataIndex: "numberCard",
+    title: "Vé liên kết",
+    dataIndex: "ticketPurchasedId",
     key: "1",
-    sorter: true,
-    // width: 150,
+    sorter: false,
+    width: 200,
   },
   {
-    title: "Ngày phát hành",
-    dataIndex: "issuedDatePrint",
+    title: "Thời gian sử dụng",
+    dataIndex: "usedTime",
     key: "2",
-    sorter: true,
-    align: "center"
-    // width: 120,
+    sorter: false,
+    width: 150,
   },
   {
-    title: "Trạng thái",
-    dataIndex: "statusPrint",
+    title: "Hành động",
+    dataIndex: "action",
     key: "3",
     sorter: false,
-    // width: 190,
-  },
-  {
-    title: "Loại thẻ",
-    dataIndex: "typePrint",
-    key: "4",
-    sorter: false,
-    // width: 120,
-  },
-  {
-    title: "Người yêu cầu",
-    dataIndex: "requestCreateName",
-    key: "5",
-    sorter: true,
-    // width: 120,
-  },
+    width: 120,
+  }
 ];
 
 const convertResponseToDataTable = (response, currentPage, pageSize) => {
   return response.data.map((item, index) => {
-    item.issuedDatePrint = formatTimestamp(item.issuedDate, "DD/MM/YYYY")
-    item.statusPrint = (<ButtonStatus color={CARD_STATUS[item.status]?.color} label = {CARD_STATUS[item.status]?.label} />)
-    item.typePrint = CARD_TYPE[item.type]?.label
+    item.usedTime = formatTimestamp(item.usedAt, "DD/MM/YYYY HH:mm:ss")
     item.stt = (currentPage - 1) * pageSize + index + 1;
     return item;
   });
 };
 
-const TableListCard = ({searchTimes, dataSearch }) => {
-  const navigate = useNavigate()
-  const { showLoad, hideLoad } = useLoading();
+const TableActionHistoryCard = () => {
+  const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState({
@@ -73,27 +52,25 @@ const TableListCard = ({searchTimes, dataSearch }) => {
     pageSize: 10,
     total: 0,
   });
-  const defaultSort = {
-    field: "numberCard",
+  const [sorter, setSorter] = useState({
+    field: "name",
     order: "ascend",
-  }
-  const [sorter, setSorter] = useState(defaultSort);
+  });
 
   const loadData = (newPagination, sorter) => {
     if (!sorter.field || !sorter.order) {
-      sorter = defaultSort;
+      sorter = {
+        field: "name",
+        order: "ascend",
+      };
       setSorter(sorter);
     }
     setLoading(true);
-    if (searchTimes > 0) {
-      showLoad();
-    }
     setTimeout(() => {
       setLoading(false);
-      hideLoad();
       const dataResponse = {
-        data: fakeDataTable,
-        totalElement: 60,
+        data: listPartner,
+        totalElement: 50,
         totalPage: 10,
       };
       setData(
@@ -115,17 +92,18 @@ const TableListCard = ({searchTimes, dataSearch }) => {
     loadData(newPagination, sorter);
   };
 
-  const handleClickRow = (data) => {
-    navigate(`/card/detail/${data.id}`)
-  };
-
   useEffect(() => {
     loadData(pagination, sorter);
-    console.log(dataSearch);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchTimes]);
+  }, []);
+
+  const handleClickRow = (data) => {
+    navigate(`/account/partner/${data.id}`);
+  };
+
   return (
     <Table
+    style={{width: "100%"}}
       columns={columns}
       dataSource={data}
       rowKey="id"
@@ -148,4 +126,4 @@ const TableListCard = ({searchTimes, dataSearch }) => {
   );
 };
 
-export default TableListCard;
+export default TableActionHistoryCard;
