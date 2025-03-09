@@ -1,5 +1,5 @@
+import "./style.css"
 import { Alert, Button, Modal } from 'antd'
-import React from 'react'
 
 const PopConfirmCustom = ({ type, title, message, handleOk, handleCancel }) => {
   return (
@@ -19,6 +19,7 @@ const PopConfirmCustom = ({ type, title, message, handleOk, handleCancel }) => {
         padding: "20px",
         textAlign: "center",
       }}
+      className="popup"
     >
       <Alert
         message={title}

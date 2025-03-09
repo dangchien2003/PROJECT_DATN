@@ -1,9 +1,30 @@
-import React from "react";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import React, { useEffect } from "react";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
+// forcus thẳng tới địa điểm
+const SetViewOnLocation = ({ position }) => {
+  const map = useMap();
+  useEffect(() => {
+    map.setView(position, 13); // mức zoom 13
+  }, [position, map]);
+
+  return null;
+};
+
+// forcus từ từ tới địa điểm
+const FlyToLocation = ({ position }) => {
+  const map = useMap();
+  useEffect(() => {
+    map.flyTo(position, 15, {
+      duration: 1.0, // Thời gian chuyển đổi (giây)
+    });
+  }, [position, map]);
+
+  return null;
+};
 
 const customIcon = new L.Icon({
   iconUrl: markerIcon,
@@ -51,6 +72,7 @@ const Map = ({ data = [], ...prop }) => {
   return (
     <MapContainer center={position1} zoom={13} {...prop}>
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+      <FlyToLocation position={position2} />
       {data.map((location) => {
         return (
           <Marker position={location.position} icon={customIcon}>

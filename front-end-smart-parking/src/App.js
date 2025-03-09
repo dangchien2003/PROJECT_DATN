@@ -37,7 +37,7 @@ const router = createBrowserRouter([
 
       { path: "/card", element: <ListCard /> },
       { path: "/card/wait-approve", element: <ListCardWaitApprove /> },
-      { path: "/card/detail/:id", element: <CardDetail /> },
+      { path: "/card/detail/:waiting/:id", element: <CardDetail /> },
 
       { path: "/location", element: <ListLocation /> },
       { path: "/location/wait-approve", element: <ListLocationWaitApprove /> },

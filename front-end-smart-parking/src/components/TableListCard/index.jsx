@@ -116,7 +116,7 @@ const TableListCard = ({searchTimes, dataSearch }) => {
   };
 
   const handleClickRow = (data) => {
-    navigate(`/card/detail/${data.id}`)
+    navigate(`/card/detail/0/${data.numberCard}`)
   };
 
   useEffect(() => {

@@ -133,7 +133,7 @@ const TableListCardWaitApprove = ({searchTimes, dataSearch }) => {
   };
 
   const handleClickRow = (data) => {
-    navigate(`/ticket/detail/0/${dataSearch.status === 0 ? 0 : 1}/${data.id}`)
+    navigate(`/card/detail/1/${data.id}`)
   };
 
   useEffect(() => {

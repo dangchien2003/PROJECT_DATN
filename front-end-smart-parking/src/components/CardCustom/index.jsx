@@ -5,13 +5,13 @@ import TitleItemCard from '../TitleItemCard';
 import { CARD_TYPE } from '@/utils/constants';
 import { Link } from 'react-router-dom';
 
-const CardCustom = ({isAdmin}) => {
+const CardCustom = ({isAdmin, isWaitApprove}) => {
   const ticketLink = "TICKET12421412412";
-  const type = 1;
+  const type = 0;
   return (
     <div style={{ display: 'flex' }}>
       <Card
-        title={<TitleItemCard />}
+        title={<TitleItemCard isAdmin={isAdmin}/>}
         bordered={false}
         style={{
           width: 500,
@@ -23,30 +23,32 @@ const CardCustom = ({isAdmin}) => {
         bodyStyle={{ paddingTop: 24 }}
       >
         <div className="body">
-          <div>
+          {!isWaitApprove && <div>
             <span>Số thẻ: </span>
             <span style={{ fontSize: 20 }}>012345678900</span>
-          </div>
+          </div>}
           {isAdmin && <>
-            <div>Chủ sở hữu: LÊ ĐĂNG CHIẾN</div>
+            <div>Chủ sở hữu: <Link to={"/account/customer/1"} style={{color: "white", textDecoration: "underline"}}>LÊ ĐĂNG CHIẾN</Link></div>
             <div>Loại thẻ: {CARD_TYPE[type].label}</div>
           </>}
-          <div>Lần cấp: 1</div>
-          <div>Ngày cấp: 18/01/2025</div>
-          <div>Thời hạn: Vô hạn</div>
-          <div>Số lần sử dụng: 500</div>
+          <div>{isWaitApprove ? "Lần yêu cầu" : "Lần cấp"}: 1</div>
+          {!isWaitApprove && <>
+            <div>Ngày cấp: 18/01/2025</div>
+            <div>Thời hạn: Vô hạn</div>
+            <div>Số lần sử dụng: 500</div>
+          </>}
           <div>
             <span>Trạng thái: </span>
             <DotStatus />
             <span>Đang hoạt động</span>
           </div>
-          {ticketLink  && 
+          {ticketLink && !isWaitApprove && 
             <div>
-              Đang liên kết với id vé: <Link to={isAdmin ? "/demo": "/"}>{ticketLink}</Link>
+              Đang liên kết với id vé: <Link to={isAdmin ? "/demo": "/"} style={{color: "white", textDecoration: "underline"}}>{ticketLink}</Link>
             </div>
           }
           {isAdmin && <>
-            <div>Người yêu cầu: LÊ ĐĂNG CHIẾN</div>
+            <div>Người yêu cầu: <Link to={"/account/customer/1"} style={{color: "white", textDecoration: "underline"}}>LÊ ĐĂNG CHIẾN</Link></div>
             <div>Ngày yêu cầu: 20/10/2003</div>
           </>}
         </div>

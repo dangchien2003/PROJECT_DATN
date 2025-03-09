@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { MoreOutlined } from '@ant-design/icons';
 import PopConfirmCustom from '../PopConfirmCustom';
 
-const TitleItemCard = () => {
+const TitleItemCard = ({isAdmin}) => {
   const [open, setOpen] = useState(false);
   const [openKVV, setOpenKVV] = useState(false);
   const [openPopConfirm, setOpenPopConfirm] = useState(false);
@@ -70,20 +70,24 @@ const TitleItemCard = () => {
       <span>
         THẺ TỰ LIÊN KẾT
       </span>
-      <Dropdown
-        menu={{
-          items,
-        }}
-        trigger={['click']}
-      >
-        <a href='/#' onClick={(e) => e.preventDefault()}>
-          <Space>
-            <MoreOutlined style={{ fontSize: 25, color: 'white' }} />
-          </Space>
-        </a>
-      </Dropdown>
-      {openPopConfirm && (open ? <PopConfirmCustom type="warning" title="Bạn có chắc chắn muốn tiếp tục sử dụng không?" message="Thẻ sẽ hoạt động bình thường sau khi nhấn đồng ý." handleCancel={handleCancel} handleOk={handleOk} /> : <PopConfirmCustom type="warning" title="Bạn có chắc chắn muốn tạm khoá không?" message="Bạn vẫn có thể mở lại trong vòng 1 giớ tới." handleCancel={handleCancel} handleOk={handleOk} />)}
-      {openPopConfirmKVV && (!openKVV && <PopConfirmCustom type="warning" title="Bạn có chắc chắn muốn khoá thẻ vĩnh viễn không?" message="Bạn sẽ không thể mở lại sau khi nhấn đồng ý." handleCancel={handleCancelKVV} handleOk={handleOkKVV} />)}
+      {!isAdmin && 
+      <>
+        <Dropdown
+          menu={{
+            items,
+          }}
+          trigger={['click']}
+        >
+          <a href='/#' onClick={(e) => e.preventDefault()}>
+            <Space>
+              <MoreOutlined style={{ fontSize: 25, color: 'white' }} />
+            </Space>
+          </a>
+        </Dropdown>
+        {openPopConfirm && (open ? <PopConfirmCustom type="warning" title="Bạn có chắc chắn muốn tiếp tục sử dụng không?" message="Thẻ sẽ hoạt động bình thường sau khi nhấn đồng ý." handleCancel={handleCancel} handleOk={handleOk} /> : <PopConfirmCustom type="warning" title="Bạn có chắc chắn muốn tạm khoá không?" message="Bạn vẫn có thể mở lại trong vòng 1 giớ tới." handleCancel={handleCancel} handleOk={handleOk} />)}
+        {openPopConfirmKVV && (!openKVV && <PopConfirmCustom type="warning" title="Bạn có chắc chắn muốn khoá thẻ vĩnh viễn không?" message="Bạn sẽ không thể mở lại sau khi nhấn đồng ý." handleCancel={handleCancelKVV} handleOk={handleOkKVV} />)}
+      </>
+      }
     </div>
   )
 }

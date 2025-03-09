@@ -2,7 +2,7 @@ import PopConfirmCustom from "@/components/PopConfirmCustom"
 import { Button } from "antd"
 import { useState } from "react";
 
-const CardAction = () => {
+const CardAction = ({isWaitApprove}) => {
   const [openPopupConfirm, setOpenPopupConfirm] = useState(false);
   const [messagePopup, setMessagePopup] = useState("");
   const [titlePopup, setTitlePopup] = useState("");
@@ -10,6 +10,11 @@ const CardAction = () => {
   
   const handleConfirmAction = (actionType) => {
     switch(actionType) {
+      case 1:
+        setTypePopup("warning");
+        setTitlePopup("Bạn có chắc chắn muốn cấp thẻ cho Lê Đăng Chiến không?");
+        setMessagePopup("Thẻ sẽ được đưa vào danh sách chờ cấp.");
+        break;
       case 3:
         setTypePopup("warning");
         setTitlePopup("Bạn có chắc chắn muốn mở khoá thẻ 012345678900 không?");
@@ -25,6 +30,11 @@ const CardAction = () => {
         setTitlePopup("Bạn có chắc chắn muốn khoá vĩnh viễn thẻ 012345678900 không?");
         setMessagePopup("Hành động này sẽ khiến thẻ không thể hoạt động trở lại.");
         break;
+      case 6:
+        setTypePopup("warning");
+        setTitlePopup("Bạn có chắc chắn muốn từ chối yêu cầu cấp thẻ cho Lê Đăng Chiến Không?");
+        setMessagePopup("");
+        break;
       default: return;
     }
     setOpenPopupConfirm(true)
@@ -38,16 +48,24 @@ const CardAction = () => {
   }
   return (
     <div>
-      <div className="wrap container-action">
-        <Button color="primary" variant="outlined" onClick={()=> {
-          handleConfirmAction(4)
-        }}>Tạm khoá</Button>
-        <Button color="danger" variant="outlined" onClick={()=> {
-          handleConfirmAction(5)
-        }}>Khoá vĩnh viễn</Button>
-        <Button color="cyan" variant="outlined" onClick={()=> {
-          handleConfirmAction(3)
-        }}>Mở khoá</Button>
+      <div className={isWaitApprove ? "wrap container-action jcc" : "wrap container-action"}>
+        {isWaitApprove 
+        ? <>
+            <Button color="primary" variant="outlined" onClick={()=> { handleConfirmAction(1)}}>Duyệt</Button>
+            <Button color="danger" variant="outlined" onClick={()=> { handleConfirmAction(6)}}>Từ chối</Button>
+          </>
+        : <>
+            <Button color="primary" variant="outlined" onClick={()=> {
+            handleConfirmAction(4)
+            }}>Tạm khoá</Button>
+            <Button color="danger" variant="outlined" onClick={()=> {
+              handleConfirmAction(5)
+            }}>Khoá vĩnh viễn</Button>
+            <Button color="cyan" variant="outlined" onClick={()=> {
+              handleConfirmAction(3)
+            }}>Mở khoá</Button>
+        </>
+      }
       </div>
        {openPopupConfirm && <PopConfirmCustom type={typePopup} title={titlePopup} message={messagePopup} handleCancel={handleCancel} handleOk={handleOk} />}
     </div>
