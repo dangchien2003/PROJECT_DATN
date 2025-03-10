@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="391326a7-c794-4161-81a9-afe6cb8db5e5" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/bussiness-service.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/jpa-buddy.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/entity/Account.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/entity/Card.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/entity/Deposit.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/entity/Location.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/entity/LocationModify.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/entity/LogAction.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/entity/Notification.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/entity/Partner.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/entity/Permission.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/entity/Role.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/entity/StatisticsReport.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/entity/Ticket.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/entity/TicketInOut.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/entity/TicketLocation.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/entity/TicketModify.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/entity/TicketPrice.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/entity/TicketPurchased.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PaymentService/src/main/java/com/example/payment_service/entity/Payment.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PaymentService/src/main/resources/application.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/common/.gitattributes" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/common/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/common/.mvn/wrapper/maven-wrapper.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/common/HELP.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/common/mvnw" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/common/mvnw.cmd" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/common/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/common/src/main/java/com/example/common/CommonApplication.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/common/src/main/java/com/example/common/entity/BaseEntity.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/common/src/main/resources/application.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/common/src/test/java/com/example/common/CommonApplicationTests.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="FormatOnSaveOptions">
+    <option name="myRunOnSave" value="true" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="JpbToolWindowState">
+    <option name="isToolWindowVisible" value="false" />
+  </component>
+  <component name="KubernetesApiProvider"><![CDATA[{
+  "isMigrated": true
+}]]></component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="OptimizeOnSaveOptions">
+    <option name="myRunOnSave" value="true" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 0
+}</component>
+  <component name="ProjectId" id="2u7VtnUSi09QEJN9Qak19mhzJG0" />
+  <component name="ProjectViewState">
+    <option name="autoscrollToSource" value="true" />
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Spring Boot.CommonApplication.executor": "Run",
+    "Spring Boot.GatewayApplication.executor": "Run",
+    "Spring Boot.ParkingServiceApplication.executor": "Run",
+    "Spring Boot.PaymentServiceApplication.executor": "Run",
+    "git-widget-placeholder": "back-end",
+    "jdk.selected.JAVA_MODULE": "21",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "E:/DH_CNDA/DATN/PROJECT_DATN/bussiness-service/PaymentService/src/main/resources",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "rearrange.code.on.save": "true",
+    "run.configurations.included.in.services": "true",
+    "settings.editor.selected.configurable": "actions.on.save",
+    "vue.rearranger.settings.migration": "true"
+  },
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "mysql_aurora_aws"
+    ]
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="E:\DH_CNDA\DATN\PROJECT_DATN\bussiness-service\PaymentService\src\main\resources" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.example.payment_service.entity" />
+      <recent name="com.example.parking_service.entity" />
+      <recent name="com.example.common.entity" />
+    </key>
+  </component>
+  <component name="RunDashboard">
+    <option name="configurationTypes">
+      <set>
+        <option value="MicronautRunConfigurationType" />
+        <option value="QuarkusRunConfigurationType" />
+        <option value="SpringBootApplicationConfigurationType" />
+      </set>
+    </option>
+  </component>
+  <component name="RunManager" selected="Spring Boot.GatewayApplication">
+    <configuration name="GatewayApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="gateway" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.example.gateway.GatewayApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ParkingServiceApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="ParkingService" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.example.parking_service.ParkingServiceApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="PaymentServiceApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="PaymentService" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.example.payment_service.PaymentServiceApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="391326a7-c794-4161-81a9-afe6cb8db5e5" name="Changes" comment="" />
+      <created>1741599816409</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1741599816409</updated>
+      <workItem from="1741599817533" duration="59000" />
+      <workItem from="1741599970851" duration="123000" />
+      <workItem from="1741601305148" duration="477000" />
+      <workItem from="1741601902294" duration="844000" />
+      <workItem from="1741621370770" duration="9068000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>
