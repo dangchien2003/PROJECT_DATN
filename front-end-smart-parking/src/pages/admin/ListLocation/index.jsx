@@ -11,15 +11,15 @@ const ListLocation = () => {
   const [dataSearch] = useState({
     partnerName: null,
     name: null,
-    status: 1,
+    tab: 1,
     modifyStatus: null,
     openTime: null,
     closeTime: null,
     capacity: null
   });
   const propTabStatus = {
-    onChange: (status) => {
-      updateObjectValue(dataSearch, "status", status);
+    onChange: (tab) => {
+      updateObjectValue(dataSearch, "tab", tab);
       onClickSearch();
     },
   };

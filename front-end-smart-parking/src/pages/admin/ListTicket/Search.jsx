@@ -5,7 +5,6 @@ import SelectBoxLabelDash from "@/components/SelectBoxLabelDash";
 import TextFieldLabelDash from "@/components/TextFieldLabelDash";
 import {
   GENDER,
-  MODIFY_STATUS,
   MODIFY_STATUS_SELECTBOX,
   PRICE_CATEGORY,
   VEHICLE_SELECTBOX,

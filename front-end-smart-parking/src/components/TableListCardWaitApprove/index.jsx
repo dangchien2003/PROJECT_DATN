@@ -5,7 +5,7 @@ import ButtonStatus from "../ButtonStatus";
 import { CARD_STATUS, CARD_TYPE} from "@/utils/constants";
 import { formatTimestamp } from "@/utils/time";
 import { useLoading } from "@/utils/loading";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { FaRegCheckCircle } from "react-icons/fa";
 import { MdOutlineCancel } from "react-icons/md";
 

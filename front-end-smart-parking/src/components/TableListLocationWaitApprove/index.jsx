@@ -7,7 +7,7 @@ import { formatTimestamp } from "@/utils/time";
 import { useLoading } from "@/utils/loading";
 import { FaRegCheckCircle } from "react-icons/fa";
 import { MdOutlineCancel } from "react-icons/md";
-// import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const columns = [
   {
@@ -124,7 +124,7 @@ const convertResponseToDataTable = (response, currentPage, pageSize) => {
 };
 
 const TableListLocationWaitApprove = ({searchTimes, dataSearch }) => {
-  // const navigate = useNavigate()
+  const navigate = useNavigate()
   const { showLoad, hideLoad } = useLoading();
   const [data, setData] = useState([]);
   const [columnsShow, setColumnsShow] = useState(columns);
@@ -189,7 +189,7 @@ const TableListLocationWaitApprove = ({searchTimes, dataSearch }) => {
   };
 
   const handleClickRow = (data) => {
-    // navigate(`/ticket/detail/0/${dataSearch.status === 0 ? 0 : 1}/${data.id}`)
+    navigate(`/location/detail/${dataSearch.tab}/${data.id}`)
   };
 
   useEffect(() => {

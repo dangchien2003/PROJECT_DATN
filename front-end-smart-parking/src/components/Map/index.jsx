@@ -1,18 +1,17 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
 // forcus thẳng tới địa điểm
-const SetViewOnLocation = ({ position }) => {
-  const map = useMap();
-  useEffect(() => {
-    map.setView(position, 13); // mức zoom 13
-  }, [position, map]);
-
-  return null;
-};
+// const SetViewOnLocation = ({ position }) => {
+//   const map = useMap();
+//   useEffect(() => {
+//     map.setView(position, 13); // mức zoom 13
+//   }, [position, map]);
+//   return null;
+// };
 
 // forcus từ từ tới địa điểm
 const FlyToLocation = ({ position }) => {
@@ -22,7 +21,6 @@ const FlyToLocation = ({ position }) => {
       duration: 1.0, // Thời gian chuyển đổi (giây)
     });
   }, [position, map]);
-
   return null;
 };
 
@@ -73,9 +71,9 @@ const Map = ({ data = [], ...prop }) => {
     <MapContainer center={position1} zoom={13} {...prop}>
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
       <FlyToLocation position={position2} />
-      {data.map((location) => {
+      {data.map((location, index) => {
         return (
-          <Marker position={location.position} icon={customIcon}>
+          <Marker position={location.position} icon={customIcon} key={index}>
             <Popup>{location.popupContent}</Popup>
           </Marker>
         );
