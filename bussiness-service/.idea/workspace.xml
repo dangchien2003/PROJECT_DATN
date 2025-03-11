@@ -5,46 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="391326a7-c794-4161-81a9-afe6cb8db5e5" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/bussiness-service.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/jpa-buddy.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/entity/Account.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/entity/Card.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/entity/Deposit.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/entity/Location.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/entity/LocationModify.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/entity/LogAction.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/entity/Notification.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/entity/Partner.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/entity/Permission.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/entity/Role.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/entity/StatisticsReport.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/entity/Ticket.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/entity/TicketInOut.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/entity/TicketLocation.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/entity/TicketModify.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/entity/TicketPrice.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/entity/TicketPurchased.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/PaymentService/src/main/java/com/example/payment_service/entity/Payment.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/PaymentService/src/main/resources/application.yaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/common/.gitattributes" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/common/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/common/.mvn/wrapper/maven-wrapper.properties" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/common/HELP.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/common/mvnw" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/common/mvnw.cmd" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/common/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/common/src/main/java/com/example/common/CommonApplication.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/common/src/main/java/com/example/common/entity/BaseEntity.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/common/src/main/resources/application.properties" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/common/src/test/java/com/example/common/CommonApplicationTests.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/19b86dbd-c6f5-4abb-915e-11631b84feed.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/entity/Location.java" beforeDir="false" afterPath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/entity/Location.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/entity/LocationModify.java" beforeDir="false" afterPath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/entity/LocationModify.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -67,9 +32,9 @@
   <component name="JpbToolWindowState">
     <option name="isToolWindowVisible" value="false" />
   </component>
-  <component name="KubernetesApiProvider"><![CDATA[{
-  "isMigrated": true
-}]]></component>
+  <component name="KubernetesApiProvider">{
+  &quot;isMigrated&quot;: true
+}</component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
@@ -85,39 +50,39 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RequestMappingsPanelOrder0": "0",
-    "RequestMappingsPanelOrder1": "1",
-    "RequestMappingsPanelWidth0": "75",
-    "RequestMappingsPanelWidth1": "75",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "Spring Boot.CommonApplication.executor": "Run",
-    "Spring Boot.GatewayApplication.executor": "Run",
-    "Spring Boot.ParkingServiceApplication.executor": "Run",
-    "Spring Boot.PaymentServiceApplication.executor": "Run",
-    "git-widget-placeholder": "back-end",
-    "jdk.selected.JAVA_MODULE": "21",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "E:/DH_CNDA/DATN/PROJECT_DATN/bussiness-service/PaymentService/src/main/resources",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "rearrange.code.on.save": "true",
-    "run.configurations.included.in.services": "true",
-    "settings.editor.selected.configurable": "actions.on.save",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;Spring Boot.CommonApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.GatewayApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.ParkingServiceApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.PaymentServiceApplication.executor&quot;: &quot;Run&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;back-end&quot;,
+    &quot;jdk.selected.JAVA_MODULE&quot;: &quot;21&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;E:/DH_CNDA/DATN/PROJECT_DATN/bussiness-service/PaymentService/src/main/resources&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;rearrange.code.on.save&quot;: &quot;true&quot;,
+    &quot;run.configurations.included.in.services&quot;: &quot;true&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;actions.on.save&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "DatabaseDriversLRU": [
-      "mysql_aurora_aws"
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;mysql_aurora_aws&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="E:\DH_CNDA\DATN\PROJECT_DATN\bussiness-service\PaymentService\src\main\resources" />
@@ -173,6 +138,7 @@
       <workItem from="1741601305148" duration="477000" />
       <workItem from="1741601902294" duration="844000" />
       <workItem from="1741621370770" duration="9068000" />
+      <workItem from="1741709301987" duration="103000" />
     </task>
     <servers />
   </component>
