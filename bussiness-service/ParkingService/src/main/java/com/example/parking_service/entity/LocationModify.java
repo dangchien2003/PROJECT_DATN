@@ -60,6 +60,8 @@ public class LocationModify extends BaseEntity {
 
     LocalDateTime timeAppliedEdit;
 
+    Integer urgentApprovalRequest;
+
     Long capacity;
 
     @Lob
