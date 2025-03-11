@@ -45,7 +45,7 @@ const DateTimePickerWithSort = ({
     if (callbackChangeValue) {
       callbackChangeValue(value?.format(format), sortOrder, itemKey);
     }
-  }, [sortOrder, value]);
+  }, [sortOrder, value, callbackChangeValue, itemKey, format]);
 
   return (
     <div style={{ display: "flex" }}>

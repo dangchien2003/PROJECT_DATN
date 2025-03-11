@@ -16,10 +16,11 @@ const ListLocationWaitApprove = () => {
       order: null,
     },
     urgent: true,
+    tab: 3
   });
   const propTabStatus = {
-    onChange: (status) => {
-      updateObjectValue(dataSearch, "type", status);
+    onChange: (tab) => {
+      updateObjectValue(dataSearch, "tab", tab);
       onClickSearch();
     },
   };

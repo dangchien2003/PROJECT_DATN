@@ -2,15 +2,15 @@ import { Tabs } from "antd";
 import React from "react";
 const items = [
   {
-    key: 1,
+    key: 3,
     label: "Thêm mới",
   },
   {
-    key: 2,
+    key: 4,
     label: "Chỉnh sửa",
   },
   {
-    key: 3,
+    key: 5,
     label: "Từ chối",
   },
 ];

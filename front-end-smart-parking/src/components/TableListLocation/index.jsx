@@ -5,7 +5,7 @@ import ButtonStatus from "../ButtonStatus";
 import { MODIFY_STATUS, TICKET_STATUS } from "@/utils/constants";
 import { formatTimestamp } from "@/utils/time";
 import { useLoading } from "@/utils/loading";
-// import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const columns = [
   {
@@ -102,7 +102,7 @@ const convertResponseToDataTable = (response, currentPage, pageSize) => {
 };
 
 const TableListLocation = ({searchTimes, dataSearch }) => {
-  // const navigate = useNavigate()
+  const navigate = useNavigate()
   const { showLoad, hideLoad } = useLoading();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -156,7 +156,7 @@ const TableListLocation = ({searchTimes, dataSearch }) => {
   };
 
   const handleClickRow = (data) => {
-    // navigate(`/ticket/detail/0/${dataSearch.status === 0 ? 0 : 1}/${data.id}`)
+    navigate(`/location/detail/${dataSearch.tab}/${data.id}`)
   };
 
   useEffect(() => {
