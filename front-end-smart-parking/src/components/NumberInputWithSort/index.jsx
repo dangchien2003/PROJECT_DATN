@@ -46,7 +46,7 @@ const NumberInputWithSort = ({
     if (callbackChangeValue) {
       callbackChangeValue(parseFormattedCurrency(value), sortOrder, itemKey);
     }
-  }, [sortOrder, value]);
+  }, [sortOrder, value, callbackChangeValue, itemKey]);
 
   return (
     <div style={{ display: "flex" }}>

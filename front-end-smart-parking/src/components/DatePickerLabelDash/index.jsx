@@ -1,5 +1,4 @@
 import DatePickerCustom from "../DatePickerCustom";
-import DateTimePickerWithSort from "../DateTimePickerWithSort";
 
 const DatePickerLabelDash = ({
   label,

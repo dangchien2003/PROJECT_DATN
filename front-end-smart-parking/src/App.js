@@ -18,6 +18,7 @@ import ListLocation from "./pages/admin/ListLocation";
 import ListLocationWaitApprove from "./pages/admin/ListLocationWaitApprove";
 import ComponentDemo from "./pages/ComponentDemo";
 import CardDetail from "./pages/admin/CardDetail";
+import DetailLocation from "./pages/admin/DetailLocation";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -40,6 +41,7 @@ const router = createBrowserRouter([
       { path: "/card/detail/:waiting/:id", element: <CardDetail /> },
 
       { path: "/location", element: <ListLocation /> },
+      { path: "/location/detail/:tab/:id", element: <DetailLocation /> },
       { path: "/location/wait-approve", element: <ListLocationWaitApprove /> },
       { path: "/location/map/all", element: <MapAllLocation /> },
       
