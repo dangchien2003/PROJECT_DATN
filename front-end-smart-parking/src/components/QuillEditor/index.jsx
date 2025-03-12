@@ -1,27 +1,22 @@
-import ReactQuill from 'react-quill'
+import ReactQuill from 'react-quill-new'
 import 'react-quill/dist/quill.snow.css'
 
 const modules = {
-  toolbar: {
-    container: [
-      [{ header: '1' }, { header: '2' }, { font: [] }],
-      [{ size: [] }],
-      ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-      [
-        { list: 'ordered' },
-        { list: 'bullet' },
-        { indent: '-1' },
-        { indent: '+1' }
-      ],
-      ['link', 'image', 'video'],
-      ['code-block'],
-      ['clean']
-    ]
-  },
+  toolbar: [
+    [{ header: '1' }, { header: '2' }, { font: [] }],
+    [{ size: [] }],
+    ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+    [{ list: 'ordered' }, { list: 'bullet' }], // ✅ Định nghĩa chính xác
+    [{ indent: '-1' }, { indent: '+1' }],
+    ['link', 'image', 'video'],
+    ['code-block'],
+    ['clean']
+  ],
   clipboard: {
     matchVisual: false
   }
-}
+};
+
 
 const formats = [
   'header',
@@ -33,7 +28,6 @@ const formats = [
   'strike',
   'blockquote',
   'list',
-  'bullet',
   'indent',
   'link',
   'image',

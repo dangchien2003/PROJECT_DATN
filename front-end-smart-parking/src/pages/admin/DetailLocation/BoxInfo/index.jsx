@@ -8,17 +8,17 @@ import { Button } from "antd"
 import { MdOutlineCancel } from "react-icons/md"
 import { Typography } from "antd";
 import Avatar from "../../AccountCustomerInfo/Avatar"
-// import QuillEditor from "@/components/QuillEditor"
+import QuillEditor from "@/components/QuillEditor"
 import { useEffect, useState } from "react"
 const { Title } = Typography;
 const linkImage = "https://i0.wp.com/plopdo.com/wp-content/uploads/2021/11/feature-pic.jpg?w=537&ssl=1"
-const BoxInfo = ({data, isModify}) => {
+const BoxInfo = ({data, isModify, widthPage}) => {
   const [styleParent, setStyleParent] = useState({})
   useEffect(() => {
     const handleResize = () => {
       let style = {};
       if(isModify) {
-        if(window.innerWidth <= 1288) {
+        if(widthPage <= 1288) {
           style = {
             borderTop: "1px solid rgb(185, 183, 183)",
             paddingTop: 8,
@@ -37,7 +37,7 @@ const BoxInfo = ({data, isModify}) => {
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-  }, [isModify]);
+  }, [isModify, widthPage]);
   return (
     <div>
       {data !== null && <div style={styleParent}>
@@ -51,7 +51,7 @@ const BoxInfo = ({data, isModify}) => {
           <div style={{flex: 1}}>
             {true ? 
               <div style={{width: "100%"}}>
-                <iframe width={"100%"} height={210} src="https://www.youtube.com/embed/m6P5XLSKMnk?si=OAXSDfqe1vpf02LQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <iframe width={"100%"} height={210} src="https://www.youtube.com/embed/m6P5XLSKMnk?si=OAXSDfqe1vpf02LQ" title="YouTube video player"  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" ></iframe>
                 <Title level={5} style={{textAlign: "center"}}>Video giới thiệu</Title>
               </div> 
               : <div>
@@ -64,19 +64,19 @@ const BoxInfo = ({data, isModify}) => {
           <BoxTextField label="Tên địa điểm" value={data.name} disabled={true} colorGray={false} key={"nt"}/>
           <BoxTextField label={<span>Tạo độ {data.linkGoogleMap && <a href={data.linkGoogleMap} target="_blank" rel="noreferrer">google map</a>}</span>} value={data.coordinates} disabled={true} colorGray={false} key={"tđ"}/>
           <BoxTextField label="Lần chỉnh sửa" value={data.modifyCount} disabled={true} colorGray={false} key={"lcs"}/>
-          <BoxTextField label="Sức chứa" value={133} disabled={true} colorGray={false} key={"nđvhđ"}/>
+          <BoxTextField label="Sức chứa" value={133} disabled={true} colorGray={false} key={"sc"}/>
           <BoxTextField label="Mở cửa lúc" value={"00:00"} disabled={true} colorGray={false} key={"mc"}/>
           <BoxTextField label="Đóng cửa lúc" value={"00:00"} disabled={true} colorGray={false} key={"đc"}/>
           <BoxTextField label="Ngày đi vào hoạt động" value={formatTimestamp(data.releasedTime, "DD/MM/YYYY")} disabled={true} colorGray={false} key={"nđvhđ"}/>
-          <BoxTextField label="Trạng thái" value={TICKET_STATUS[data.status].label} disabled={true} colorGray={false} key={"nt"}/>
-          <BoxTextField label="Lý do thay đổi trạng thái" value={data.reason} disabled={true} colorGray={false} key={"nt"}/>
+          <BoxTextField label="Trạng thái" value={TICKET_STATUS[data.status].label} disabled={true} colorGray={false} key={"tt"}/>
+          <BoxTextField label="Lý do thay đổi trạng thái" value={data.reason} disabled={true} colorGray={false} key={"ldtđtt"}/>
         </div>
         {/* checkbox */}
         <div>
           <BoxCheckBox label={"Mở cửa ngày lễ"} checked={true}/>
         </div>
         <div>
-          {/* <QuillEditor style={{margin: 10}}/> */}
+          <QuillEditor style={{margin: 10}} value={data.description} readonly={true} key={"description"}/>
         </div>
         {isModify && 
         <div>
