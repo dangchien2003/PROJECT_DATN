@@ -57,7 +57,7 @@ const convertResponseToDataTable = (response, currentPage, pageSize) => {
   return response.data.map((item, index) => {
     item.ticketNamePrint = `${item.id} - ${item.name}`;
     item.coordinatesPrint = <a href={item.linkGoogleMap}
-    target="_blank" rel="noreferrer">[{item.coordinates}]</a>;
+    target="_blank" rel="noreferrer" onClick={(event)=> {event.stopPropagation()}}>[{item.coordinates}]</a>;
     item.openDatePrint = formatTimestamp(item.openDate, "DD/MM/YYYY")
     item.statusPrint = (
       <div>

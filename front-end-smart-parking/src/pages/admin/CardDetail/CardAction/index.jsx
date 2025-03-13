@@ -1,4 +1,5 @@
 import PopConfirmCustom from "@/components/PopConfirmCustom"
+import { useLoading } from "@/utils/loading";
 import { Button } from "antd"
 import { useState } from "react";
 
@@ -7,33 +8,34 @@ const CardAction = ({isWaitApprove}) => {
   const [messagePopup, setMessagePopup] = useState("");
   const [titlePopup, setTitlePopup] = useState("");
   const [typePopup, setTypePopup] = useState("warning");
+  const {showLoad, hideLoad} = useLoading();
   
   const handleConfirmAction = (actionType) => {
     switch(actionType) {
       case 1:
         setTypePopup("warning");
-        setTitlePopup("Bạn có chắc chắn muốn cấp thẻ cho Lê Đăng Chiến không?");
-        setMessagePopup("Thẻ sẽ được đưa vào danh sách chờ cấp.");
+        setTitlePopup("Bạn có chắc chắn việc tiếp tục cấp thẻ cho Lê Đăng Chiến không?");
+        setMessagePopup("Yêu cầu sẽ được chuyển sang trạng thái chờ cấp");
         break;
       case 3:
         setTypePopup("warning");
-        setTitlePopup("Bạn có chắc chắn muốn mở khoá thẻ 012345678900 không?");
-        setMessagePopup("Hành động này sẽ mở khoá thẻ của người dùng.");
+        setTitlePopup("Bạn có chắc chắn thực hiện việc mở khoá thẻ 012345678900 không?");
+        setMessagePopup("Hành động này sẽ mở khoá thẻ của người dùng");
         break;
       case 4: 
         setTypePopup("warning");
-        setTitlePopup("Bạn có chắc chắn muốn tạm khoá thẻ 012345678900 không?");
-        setMessagePopup("Hành động này sẽ ngăn chặn việc sử dụng dịch vụ của khách hàng.");
+        setTitlePopup("Bạn có chắc chắn thực hiện việc tạm khoá thẻ 012345678900 không?");
+        setMessagePopup("Hành động này sẽ ngăn chặn việc sử dụng dịch vụ của khách hàng");
         break;
       case 5:
         setTypePopup("warning");
-        setTitlePopup("Bạn có chắc chắn muốn khoá vĩnh viễn thẻ 012345678900 không?");
-        setMessagePopup("Hành động này sẽ khiến thẻ không thể hoạt động trở lại.");
+        setTitlePopup("Bạn có chắc chắn thực hiện việc khoá vĩnh viễn thẻ 012345678900 không?");
+        setMessagePopup("Hành động này sẽ khiến thẻ không thể hoạt động trở lại");
         break;
       case 6:
         setTypePopup("warning");
-        setTitlePopup("Bạn có chắc chắn muốn từ chối yêu cầu cấp thẻ cho Lê Đăng Chiến Không?");
-        setMessagePopup("");
+        setTitlePopup("Bạn có chắc chắn việc từ chối cấp thẻ cho Lê Đăng Chiến không?");
+        setMessagePopup("Yêu cầu sẽ được chuyển sang trạng thái bị từ chối");
         break;
       default: return;
     }
@@ -45,6 +47,10 @@ const CardAction = ({isWaitApprove}) => {
   }
   const handleOk= ()=> {
     setOpenPopupConfirm(false)
+    showLoad("Đang xử lý");
+    setTimeout(()=> {
+      hideLoad();
+    }, 3000)
   }
   return (
     <div>

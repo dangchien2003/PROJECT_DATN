@@ -7,13 +7,15 @@ const { Title } = Typography;
 
 const DetailTicket = () => {
   const {isIdModify, tabStatus, id} = useParams();
-  const isModifyDetail = tabStatus === "0"
+  const tabStatusNumber = Number(tabStatus);
+  const isModifyDetail = Number(isIdModify) === 1;
   let dataModify = null;
   let dataRoot = null;
-  // 1: tạo mới, 2: chỉnh sửa
-  if(["1", "2"].includes(isIdModify)) {
+  // 1: tạo mới, 2: chỉnh sửa, 3: đang phát hành, 4: tạm dừng phát hành, 5: từ chối
+  if([1, 2, 5].includes(tabStatusNumber)) {
+    console.log("object")
     dataModify = modifyInfoTicket;
-    if(dataModify.ticketid && isIdModify === "2") {
+    if(dataModify.ticketid && tabStatusNumber === 2) {
       dataRoot = infoTicket;
     }
   } else if(isModifyDetail) {
@@ -33,10 +35,10 @@ const DetailTicket = () => {
         >Thông tin vé: {id} - của đối tác: {infoTicket.partnerName}</Title>
       <div className = {isModifyDetail && "modify"}>
         <div>
-          <BoxInfo data={dataRoot} isModify={false}/>
+          <BoxInfo data={dataRoot} isModify={false} tabStatus={tabStatusNumber}/>
         </div>
         {isModifyDetail && <div>
-          <BoxInfo data={dataModify} isModify={true}/>
+          <BoxInfo data={dataModify} isModify={true} tabStatus={tabStatusNumber}/>
         </div>}
       </div>
     </div>
