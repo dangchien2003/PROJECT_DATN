@@ -12,6 +12,7 @@ const ListTicket = () => {
     partnerId: null,
     ticketName: null,
     status: 1,
+    tab: 3,
     modifyStatus: null,
     releasedTime: {
       time: null,
@@ -26,7 +27,16 @@ const ListTicket = () => {
     vehicle: null,
   });
   const propTabStatus = {
-    onChange: (status) => {
+    onChange: (tab) => {
+      updateObjectValue(dataSearch, "tab", tab);
+      let status = null;
+      if(tab === 3) {
+        status = 1;
+      }else if(tab === 4) {
+        status = 2;
+      }else if(tab === 5) {
+        status = 0;
+      }
       updateObjectValue(dataSearch, "status", status);
       onClickSearch();
     },

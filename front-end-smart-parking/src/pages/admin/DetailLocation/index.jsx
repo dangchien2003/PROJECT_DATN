@@ -12,9 +12,9 @@ const DetailLocation = () => {
   const [widthPage, setWidthPage] = useState(window.innerWidth)
   const [dataModify, setDataModify] = useState(null)
   const [dataRoot, setDataRoot] = useState(null)
+  const tabNumber = Number(tab);
   console.log(id)
   useEffect(()=> {
-    const tabNumber = Number(tab);
     // 1: đang hoạt động, 2: tạm dừng hoạt động, 3: thêm mới, 4: chỉnh sửa, 5: từ chối
     if([1, 2, 4].includes(tabNumber)) {
       setDataRoot(infoTicket);
@@ -23,7 +23,7 @@ const DetailLocation = () => {
     if([3, 4, 5].includes(tabNumber)){
       setDataModify(modifyInfoTicket);
     }
-  }, [])
+  }, [tabNumber])
 
   // responsive
   useEffect(() => {
@@ -40,13 +40,13 @@ const DetailLocation = () => {
       }
       
       setStyleParent(style)
+      setWidthPage(window.innerWidth)
     }
-    setWidthPage(window.innerWidth)
     window.addEventListener("resize", handleResize)
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-  });
+  }, []);
 
   return (
     <div>
@@ -59,10 +59,10 @@ const DetailLocation = () => {
         >Thông tin địa điểm: {dataRoot && dataRoot?.id !== null ? dataRoot?.id : dataModify?.modifyId} - Quản lý bởi: {dataRoot && dataRoot?.partnerName !== null ? dataRoot?.partnerName : dataModify?.partnerName}</Title>
       <div className = {dataModify && "modify"}>
         <div style={styleParent}>
-          <BoxInfo data={dataRoot} isModify={false} widthPage={widthPage}/>
+          <BoxInfo data={dataRoot} isModify={false} widthPage={widthPage} tab={tabNumber}/>
         </div>
         {dataModify && <div style={styleParent}>
-          <BoxInfo data={dataModify} isModify={true} widthPage={widthPage}/>
+          <BoxInfo data={dataModify} isModify={true} widthPage={widthPage} tab={tabNumber}/>
         </div>}
       </div>
     </div>

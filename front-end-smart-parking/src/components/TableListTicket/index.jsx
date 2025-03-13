@@ -185,7 +185,7 @@ const TableListTicket = ({searchTimes, dataSearch }) => {
   };
 
   const handleClickRow = (data) => {
-    navigate(`/ticket/detail/0/${dataSearch.status === 0 ? 0 : 1}/${data.id}`)
+    navigate(`/ticket/detail/${dataSearch.tab === 5 ? 1 : 0}/${dataSearch.tab}/${data.id}`)
   };
 
   useEffect(() => {

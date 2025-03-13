@@ -6,6 +6,7 @@ import { useSelector } from "react-redux";
 const FullPageLoading = () => {
   const [dot, setDot] = useState(".");
   const isLoading = useSelector((state) => state.loading.isLoading);
+  const title = useSelector((state) => state.loading.title);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -50,7 +51,7 @@ const FullPageLoading = () => {
           color: "#1890ff", // Đồng màu với icon
         }}
       >
-        Đang tải dữ liệu{dot}
+        {title ? title : "Đang tải dữ liệu"}{dot}
       </div>
     </div>
   );
