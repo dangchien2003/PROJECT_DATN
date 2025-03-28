@@ -19,43 +19,49 @@ import ListLocationWaitApprove from "./pages/admin/ListLocationWaitApprove";
 import ComponentDemo from "./pages/ComponentDemo";
 import CardDetail from "./pages/admin/CardDetail";
 import DetailLocation from "./pages/admin/DetailLocation";
+import PartnerLayout from "./components/layout/partner";
+import DashboardPartner from "./pages/partner/DashBoardPartner";
+import AddLocation from "./pages/partner/AddLocation";
+import ListLocationPartner from "./pages/partner/ListLocation";
 const router = createBrowserRouter([
   {
     path: "/",
     element: <AdminLayout />,
     children: [
-      { path: "/demo", element: <ComponentDemo /> },
-      { index: true, path: "/", element: <DashBoardAdmin /> },
-      { path: "/account/partner", element: <PartnerList /> },
-      { path: "/account/partner/:id", element: <PartnerInfo /> },
-      { path: "/account/customer/:id", element: <AccountCustomerInfo /> },
-      { path: "/account/create", element: <CreateAccount /> },
-      { path: "/account/*", element: <AccountCustomerList /> },
+      { path: "demo", element: <ComponentDemo /> },
+      { index: true, element: <DashBoardAdmin /> },
+      { path: "account/partner", element: <PartnerList /> },
+      { path: "account/partner/:id", element: <PartnerInfo /> },
+      { path: "account/customer/:id", element: <AccountCustomerInfo /> },
+      { path: "account/create", element: <CreateAccount /> },
+      { path: "account/*", element: <AccountCustomerList /> },
 
-      { path: "/ticket", element: <ListTicket /> },
-      { path: "/ticket/request", element: <RequestApproveTicket /> },
-      { path: "/ticket/detail/:isIdModify/:tabStatus/:id", element: <DetailTicket /> },
+      { path: "ticket", element: <ListTicket /> },
+      { path: "ticket/request", element: <RequestApproveTicket /> },
+      { path: "ticket/detail/:isIdModify/:tabStatus/:id", element: <DetailTicket /> },
 
-      { path: "/card", element: <ListCard /> },
-      { path: "/card/wait-approve", element: <ListCardWaitApprove /> },
-      { path: "/card/detail/:waiting/:id", element: <CardDetail /> },
+      { path: "card", element: <ListCard /> },
+      { path: "card/wait-approve", element: <ListCardWaitApprove /> },
+      { path: "card/detail/:waiting/:id", element: <CardDetail /> },
 
-      { path: "/location", element: <ListLocation /> },
-      { path: "/location/detail/:tab/:id", element: <DetailLocation /> },
-      { path: "/location/wait-approve", element: <ListLocationWaitApprove /> },
-      { path: "/location/map/all", element: <MapAllLocation /> },
-      
-    
-      // {
-      //   path: "dashboard",
-      //   element: <DashboardLayout />,
-      //   children: [
-      //     { index: true, element: <Overview /> },
-      //     { path: "overview", element: <Overview /> },
-      //     { path: "settings", element: <Settings /> },
-      //   ],
-      // },
+      { path: "location", element: <ListLocation /> },
+      { path: "location/detail/:tab/:id", element: <DetailLocation /> },
+      { path: "location/wait-approve", element: <ListLocationWaitApprove /> },
+      { path: "location/map/all", element: <MapAllLocation /> },
     ],
+  }, 
+  {
+    path: "/partner",
+    element: <PartnerLayout />,
+    children: [
+      { path: "demo", element: <ComponentDemo /> },
+      { index: true, element: <DashboardPartner /> },
+      { path: "location/add", element: <AddLocation /> },
+      { path: "location/list", element: <ListLocationPartner /> },
+      { path: "account/partner/:id", element: <PartnerInfo /> },
+      { path: "account/customer/:id", element: <AccountCustomerInfo /> },
+      
+    ]
   }, 
   {
     path: "/*",

@@ -1,15 +1,16 @@
-import DateTimePickerWithSort from "../DateTimePickerWithSort";
+import { DatePicker } from 'antd';
 
-const DateTimePickerWithSortLabelDash = ({
+const { RangePicker } = DatePicker;
+
+const DatePickerFromToLabelDash = ({
   label,
-  min,
-  max,
+  minDate,
+  maxDate,
   itemKey,
   callbackChangeValue,
-  placeholder,
-  format,
-  formatShowTime,
-  sort = true
+  placeholder = ["Từ ngày", "Đến ngày"],
+  format = "DD/MM/YYYY",
+  ...prop
 }) => {
   return (
     <div
@@ -38,18 +39,18 @@ const DateTimePickerWithSortLabelDash = ({
       >
         {label}
       </span>
-      <DateTimePickerWithSort
-        min={min}
-        max={max}
+      <RangePicker
+        minDate={minDate}
+        maxDate={maxDate}
         placeholder={placeholder}
         itemKey={itemKey}
         callbackChangeValue={callbackChangeValue}
         format={format}
-        formatShowTime={formatShowTime}
-        sort={sort}
+        onChange={(date, dateString) => {console.log(date, dateString)}}
+        {...prop}
       />
     </div>
   );
 };
 
-export default DateTimePickerWithSortLabelDash;
+export default DatePickerFromToLabelDash;

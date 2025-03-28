@@ -9,6 +9,7 @@ const TextFieldLabelDash = ({
   regex,
   prefix,
   itemKey,
+  disable
 }) => {
   const [value, setValue] = useState(defaultValue);
 
@@ -73,6 +74,7 @@ const TextFieldLabelDash = ({
         onChange={handleChangeValue}
         onClear={handleClear}
         prefix={prefix}
+        disabled={disable}
       />
     </div>
   );

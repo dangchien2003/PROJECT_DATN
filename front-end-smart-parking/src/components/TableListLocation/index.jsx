@@ -7,7 +7,7 @@ import { formatTimestamp } from "@/utils/time";
 import { useLoading } from "@/utils/loading";
 import { useNavigate } from "react-router-dom";
 
-const columns = [
+const BaseColumns = [
   {
     title: "STT",
     dataIndex: "stt",
@@ -25,21 +25,21 @@ const columns = [
   {
     title: "Toạ độ",
     dataIndex: "coordinatesPrint",
-    key: "1.1",
+    key: "2",
     sorter: false,
     width: 120,
   },
   {
     title: "Trạng thái",
     dataIndex: "statusPrint",
-    key: "2",
+    key: "3",
     sorter: false,
     width: 120,
   },
   {
     title: "Ngày mở cửa",
     dataIndex: "openDatePrint",
-    key: "3",
+    key: "4",
     sorter: true,
     width: 120,
     align: "center"
@@ -50,60 +50,21 @@ const columns = [
     key: "5",
     sorter: true,
     width: 120,
+    align: "center"
+  },    
+  {
+    title: "Phân loại",
+    dataIndex: "categoryPrint",
+    key: "6",
+    sorter: false,
+    width: 150,
   },
 ];
-
-const convertResponseToDataTable = (response, currentPage, pageSize) => {
-  return response.data.map((item, index) => {
-    item.ticketNamePrint = `${item.id} - ${item.name}`;
-    item.coordinatesPrint = <a href={item.linkGoogleMap}
-    target="_blank" rel="noreferrer" onClick={(event)=> {event.stopPropagation()}}>[{item.coordinates}]</a>;
-    item.openDatePrint = formatTimestamp(item.openDate, "DD/MM/YYYY")
-    item.statusPrint = (
-      <div>
-        <div style={{ margin: 2 }}>
-          <span>PH </span>
-          <span>
-            {item.modifyStatus !== null ? (
-              <ButtonStatus
-                label={MODIFY_STATUS[item.status].label}
-                color={MODIFY_STATUS[item.modifyStatus].color}
-              />
-            ) : (
-              <ButtonStatus
-                label={TICKET_STATUS[item.status].label}
-                color={TICKET_STATUS[item.status].color}
-              />
-            )}
-          </span>
-        </div>
-        <div style={{ margin: 2 }}>
-          <span>TĐ </span>
-          <span>
-            {item.modifyStatus !== null ? (
-              <ButtonStatus
-                label={MODIFY_STATUS[item.modifyStatus].label}
-                color={MODIFY_STATUS[item.modifyStatus].color}
-              />
-            ) : (
-              <ButtonStatus
-                label={TICKET_STATUS[item.status].label}
-                color={TICKET_STATUS[item.status].color}
-              />
-            )}
-          </span>
-        </div>
-      </div>
-    );
-    
-    item.stt = (currentPage - 1) * pageSize + index + 1;
-    return item;
-  });
-};
 
 const TableListLocation = ({searchTimes, dataSearch }) => {
   const navigate = useNavigate()
   const { showLoad, hideLoad } = useLoading();
+  const [columns, setColumns] = useState(BaseColumns);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState({
@@ -115,6 +76,66 @@ const TableListLocation = ({searchTimes, dataSearch }) => {
     field: "id",
     order: "ascend",
   });
+  
+  useEffect(() => {
+    let newColumns;
+    if(dataSearch.tab !== 2) {
+     newColumns = [...BaseColumns].filter((item) => item.key !== "6");
+    }else {
+      newColumns = [...BaseColumns];
+    }
+    setColumns(newColumns);
+  }, [dataSearch.tab])
+
+  const convertResponseToDataTable = (response, currentPage, pageSize) => {
+    return response.data.map((item, index) => {
+      item.ticketNamePrint = `${item.id} - ${item.name}`;
+      item.coordinatesPrint = <a href={item.linkGoogleMap}
+      target="_blank" rel="noreferrer" onClick={(event)=> {event.stopPropagation()}}>[{item.coordinates}]</a>;
+      item.openDatePrint = formatTimestamp(item.openDate, "DD/MM/YYYY")
+      item.statusPrint = (
+        <div>
+          <div style={{ margin: 2 }}>
+            <span>PH </span>
+            <span>
+              {item.modifyStatus !== null ? (
+                <ButtonStatus
+                  label={MODIFY_STATUS[item.status].label}
+                  color={MODIFY_STATUS[item.modifyStatus].color}
+                />
+              ) : (
+                <ButtonStatus
+                  label={TICKET_STATUS[item.status].label}
+                  color={TICKET_STATUS[item.status].color}
+                />
+              )}
+            </span>
+          </div>
+          <div style={{ margin: 2 }}>
+            <span>TĐ </span>
+            <span>
+              {item.modifyStatus !== null ? (
+                <ButtonStatus
+                  label={MODIFY_STATUS[item.modifyStatus].label}
+                  color={MODIFY_STATUS[item.modifyStatus].color}
+                />
+              ) : (
+                <ButtonStatus
+                  label={TICKET_STATUS[item.status].label}
+                  color={TICKET_STATUS[item.status].color}
+                />
+              )}
+            </span>
+          </div>
+        </div>
+      );
+      if(dataSearch.tab === 2) {
+        item.categoryPrint = "Chỉnh sửa"
+      }
+      item.stt = (currentPage - 1) * pageSize + index + 1;
+      return item;
+    });
+  };
 
   const loadData = (newPagination, sorter) => {
     if (!sorter.field || !sorter.order) {

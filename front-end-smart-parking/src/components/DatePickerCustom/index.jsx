@@ -8,6 +8,7 @@ const DatePickerCustom = ({
   itemKey,
   format,
   callbackChangeValue,
+  disable
 }) => {
   const [value, setValue] = useState(null);
   // kiểm tra min max
@@ -44,6 +45,7 @@ const DatePickerCustom = ({
         placeholder={placeholder}
         minDate={min}
         maxDate={max}
+        disabled={disable}
       />
     </div>
   );

@@ -6,8 +6,9 @@ const modules = {
     [{ header: '1' }, { header: '2' }, { font: [] }],
     [{ size: [] }],
     ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-    [{ list: 'ordered' }, { list: 'bullet' }], // ✅ Định nghĩa chính xác
+    [{ list: 'ordered' }, { list: 'bullet' }],
     [{ indent: '-1' }, { indent: '+1' }],
+    [{ align: '' }, { align: 'center' }, { align: 'right' }, { align: 'justify' }],
     ['link', 'image', 'video'],
     ['code-block'],
     ['clean']
@@ -32,7 +33,8 @@ const formats = [
   'link',
   'image',
   'video',
-  'code-block'
+  'code-block',
+  'align'
 ]
 const QuillEditor = ({ onChange, value, readonly, style = {} }) => {
   return (

@@ -4,7 +4,7 @@ import { Checkbox } from "antd";
 const CheckboxWithDash = ({
   label,
   itemKey,
-  value,
+  value = false,
   callbackChangeValue,
   require,
 }) => {
