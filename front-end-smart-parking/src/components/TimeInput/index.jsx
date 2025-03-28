@@ -1,16 +1,21 @@
-import DateTimePickerWithSort from "../DateTimePickerWithSort";
+import { TimePicker } from "antd";
+import { useState } from "react";
 
-const DateTimePickerWithSortLabelDash = ({
+const TimeInput = ({
   label,
   min,
   max,
   itemKey,
   callbackChangeValue,
   placeholder,
-  format,
-  formatShowTime,
-  sort = true
+  format = "HH:mm:ss",
+  defaultValue,
 }) => {
+  const [value, setValue] = useState(defaultValue);
+  const handleChange = (time) => {
+    setValue(time);
+    callbackChangeValue?.(time?.format(format), itemKey);
+  };
   return (
     <div
       style={{
@@ -38,18 +43,18 @@ const DateTimePickerWithSortLabelDash = ({
       >
         {label}
       </span>
-      <DateTimePickerWithSort
+      <TimePicker
         min={min}
         max={max}
+        value={value}
         placeholder={placeholder}
         itemKey={itemKey}
-        callbackChangeValue={callbackChangeValue}
+        onChange={handleChange}
         format={format}
-        formatShowTime={formatShowTime}
-        sort={sort}
+        style={{width: "100%"}}
       />
     </div>
   );
 };
 
-export default DateTimePickerWithSortLabelDash;
+export default TimeInput;

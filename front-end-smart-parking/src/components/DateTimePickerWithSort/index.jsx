@@ -14,6 +14,7 @@ const DateTimePickerWithSort = ({
     format: "HH:mm:ss",
     defaultValue: dayjs("00:00:00", "HH:mm:ss"),
   },
+  sort = true
 }) => {
   const [value, setValue] = useState(null);
   const [sortOrder, setSortOrder] = useState(null);
@@ -60,7 +61,7 @@ const DateTimePickerWithSort = ({
         minDate={min}
         maxDate={max}
       />
-      <div
+      {sort && <div
         style={{
           fontSize: 14,
           display: "flex",
@@ -88,7 +89,7 @@ const DateTimePickerWithSort = ({
             <FaAngleDown style={sortOrder === "desc" && { color: "#22a2fe" }} />
           </div>
         </Tooltip>
-      </div>
+      </div>}
     </div>
   );
 };

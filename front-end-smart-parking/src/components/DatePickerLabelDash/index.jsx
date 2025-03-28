@@ -9,6 +9,7 @@ const DatePickerLabelDash = ({
   placeholder,
   format,
   formatShowTime,
+  disable
 }) => {
   return (
     <div
@@ -45,6 +46,7 @@ const DatePickerLabelDash = ({
         callbackChangeValue={callbackChangeValue}
         format={format}
         formatShowTime={formatShowTime}
+        disable={disable}
       />
     </div>
   );

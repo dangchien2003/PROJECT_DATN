@@ -1,6 +1,6 @@
-import DateTimePickerWithSort from "../DateTimePickerWithSort";
+import DatePickerCustom from "../DatePickerCustom";
 
-const DateTimePickerWithSortLabelDash = ({
+const DatePickerLabelDash = ({
   label,
   min,
   max,
@@ -9,7 +9,6 @@ const DateTimePickerWithSortLabelDash = ({
   placeholder,
   format,
   formatShowTime,
-  sort = true
 }) => {
   return (
     <div
@@ -38,7 +37,7 @@ const DateTimePickerWithSortLabelDash = ({
       >
         {label}
       </span>
-      <DateTimePickerWithSort
+      <DatePickerCustom
         min={min}
         max={max}
         placeholder={placeholder}
@@ -46,10 +45,9 @@ const DateTimePickerWithSortLabelDash = ({
         callbackChangeValue={callbackChangeValue}
         format={format}
         formatShowTime={formatShowTime}
-        sort={sort}
       />
     </div>
   );
 };
 
-export default DateTimePickerWithSortLabelDash;
+export default DatePickerLabelDash;
