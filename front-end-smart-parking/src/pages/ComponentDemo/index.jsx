@@ -2,6 +2,7 @@ import BoxUploadImage from "@/components/BoxUploadImage"
 import CardCustom from "@/components/CardCustom"
 import CoordinateInput from "@/components/CoordinateInput"
 import DatePickerLabelDash from "@/components/DatePickerLabelDash"
+import DatePickerFromToLabelDash from "@/components/DatePickerFromToLabelDash"
 import DateTimePickerWithSortLabelDash from "@/components/DateTimePickerWithSortLabelDash"
 import DividerCustom from "@/components/DividerCustom"
 import TimeInput from "@/components/TimeInput"
@@ -52,6 +53,9 @@ const ComponentDemo = () => {
       <div style={{width: 200}}>
         upload ảnh
         <BoxUploadImage image={null} />
+      </div>
+      <div>
+        <DatePickerFromToLabelDash />
       </div>
     </div>
   )

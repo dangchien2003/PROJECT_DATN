@@ -1,14 +1,16 @@
-import DatePickerCustom from "../DatePickerCustom";
+import { DatePicker } from 'antd';
 
-const DatePickerLabelDash = ({
+const { RangePicker } = DatePicker;
+
+const DatePickerFromToLabelDash = ({
   label,
-  min,
-  max,
+  minDate,
+  maxDate,
   itemKey,
   callbackChangeValue,
-  placeholder,
-  format,
-  formatShowTime,
+  placeholder = ["Từ ngày", "Đến ngày"],
+  format = "DD/MM/YYYY",
+  ...prop
 }) => {
   return (
     <div
@@ -37,17 +39,18 @@ const DatePickerLabelDash = ({
       >
         {label}
       </span>
-      <DatePickerCustom
-        min={min}
-        max={max}
+      <RangePicker
+        minDate={minDate}
+        maxDate={maxDate}
         placeholder={placeholder}
         itemKey={itemKey}
         callbackChangeValue={callbackChangeValue}
         format={format}
-        formatShowTime={formatShowTime}
+        onChange={(date, dateString) => {console.log(date, dateString)}}
+        {...prop}
       />
     </div>
   );
 };
 
-export default DatePickerLabelDash;
+export default DatePickerFromToLabelDash;

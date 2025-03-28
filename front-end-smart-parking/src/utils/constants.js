@@ -297,3 +297,9 @@ export const DATA_OPEN_HOLIDAY_SELECTBOX = [
   {label: "Đóng cửa", value: 1},
   {label: "Mở cửa", value: 2},
 ]
+
+export const DATA_LOCATION_WAIT_APPROVE_CATEGORY_SELECTBOX = [
+  {label: "Thêm mới", value: 1},
+  {label: "Chỉnh sửa", value: 2},
+]
+

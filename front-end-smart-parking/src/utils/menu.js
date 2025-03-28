@@ -115,7 +115,7 @@ export const PARTNER_MENU = [
       },
       {
         key: "2.2",
-        label: "Danh sách địa điểm",
+        label: <Link to={"/partner/location/list"}>Danh sách địa điểm</Link>,
       },
     ],
   },
