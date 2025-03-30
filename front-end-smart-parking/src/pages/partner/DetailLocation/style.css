@@ -1,0 +1,27 @@
+.modify {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.modify > div {
+  min-width: 500px;
+  padding: 0 16px;
+}
+
+.box-ticket-detail {
+  display: flex;
+  flex-wrap: wrap;
+}
+.box-text-field{
+  width: 200px;
+  margin: 16px;
+}
+
+.box-text-field.box-text-area{
+  width: 100%;
+  margin: 16px;
+}
+
+.box-text-field .label {
+  padding: 8px 0;
+}

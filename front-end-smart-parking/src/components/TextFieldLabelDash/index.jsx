@@ -1,5 +1,5 @@
 import { Input } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const TextFieldLabelDash = ({
   placeholder,
@@ -13,6 +13,10 @@ const TextFieldLabelDash = ({
 }) => {
   const [value, setValue] = useState(defaultValue);
 
+  useEffect(() => {
+    setValue(defaultValue);
+  }, [defaultValue]);
+
   const handleChangeValue = (e) => {
     const newValue = e.target.value;
 
@@ -22,7 +26,6 @@ const TextFieldLabelDash = ({
     }
 
     if (regex) {
-      console.log(regex)
       if (regex.test(newValue)) {
         setValuePass(newValue);
       }

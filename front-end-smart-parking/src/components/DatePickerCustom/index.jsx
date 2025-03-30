@@ -6,11 +6,15 @@ const DatePickerCustom = ({
   max,
   placeholder,
   itemKey,
-  format,
+  format, 
+  defaultValue,
   callbackChangeValue,
   disable
 }) => {
-  const [value, setValue] = useState(null);
+  const [value, setValue] = useState(defaultValue)
+  useEffect(() => {
+    setValue(defaultValue)
+  }, [defaultValue])
   // kiểm tra min max
   const validMinMax = (value) => {
     if (min !== null && min !== undefined) {

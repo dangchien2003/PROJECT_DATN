@@ -24,7 +24,7 @@ const Search = ({ onSearch, dataSearch }) => {
       updateObjectValue(dataSearch, key[0], value);
       updateObjectValue(dataSearch, key[1], order);
     } else {
-      updateObjectValue(dataSearch, value, key);
+      updateObjectValue(dataSearch, key, value);
     }
   };
   return (

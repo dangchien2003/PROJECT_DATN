@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import DateTimePickerWithSort from "../DateTimePickerWithSort";
 
 const DateTimePickerWithSortLabelDash = ({
@@ -9,8 +10,13 @@ const DateTimePickerWithSortLabelDash = ({
   placeholder,
   format,
   formatShowTime,
-  sort = true
+  sort = true,
+  defaultValue
 }) => {
+  const [value, setValue] = useState(defaultValue);
+  useEffect(()=> {
+    setValue(defaultValue);
+  }, [defaultValue])
   return (
     <div
       style={{
@@ -47,6 +53,7 @@ const DateTimePickerWithSortLabelDash = ({
         format={format}
         formatShowTime={formatShowTime}
         sort={sort}
+        defaultValue={value}
       />
     </div>
   );

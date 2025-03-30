@@ -1,5 +1,5 @@
 import { TimePicker } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const TimeInput = ({
   label,
@@ -12,6 +12,9 @@ const TimeInput = ({
   defaultValue,
 }) => {
   const [value, setValue] = useState(defaultValue);
+  useEffect(() => {
+    setValue(defaultValue);
+  }, [defaultValue]);
   const handleChange = (time) => {
     setValue(time);
     callbackChangeValue?.(time?.format(format), itemKey);

@@ -3,29 +3,41 @@ import TextFieldLabelDash from "@/components/TextFieldLabelDash";
 import { extractYouTubeVideoId } from "@/utils/extract";
 import { updateObjectValue } from "@/utils/object";
 import { Typography } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 const { Title } = Typography;
 
-const dataAdd = {}
-const AvatarAndVideo = () => {
+const AvatarAndVideo = ({data}) => {
   const [linkVideo, setLinkVideo] = useState(null)
   const [idVideo, setIdVideo] = useState(null)
-
-  const handleChange = (value, key) => {
-    console.log(value)
-    if (dataAdd) {
-      updateObjectValue(dataAdd, key, value);
-      setLinkVideo(value)
-      setIdVideo(extractYouTubeVideoId(value))
+  useEffect(()=> {
+    if(data?.videoTutorial) {
+      setLinkVideo(data?.videoTutorial)
+      setIdVideo(extractYouTubeVideoId(data?.videoTutorial))
     }
+  }, [data])
+  const handleChange = (value, key) => {
+    if (data) {
+      updateObjectValue(data, key, value);
+    }
+    setLinkVideo(value)
+    setIdVideo(extractYouTubeVideoId(value))
   };
+  const inputVideo = <TextFieldLabelDash 
+                      label={"Đường dẫn youtube giới thiệu"} 
+                      placeholder={"Nhập đường dẫn"} 
+                      itemKey={"videoTutorial"} 
+                      key={"videogt"} 
+                      callbackChangeValue={handleChange} 
+                      defaultValue={linkVideo}
+                    />
   return (
     <div>
       <div style={{display: "flex", gap: 8, padding: "0 16px"}}>
         <div>
-          <BoxUploadImage/>
+          <BoxUploadImage image={data?.avatar}/>
           <Title level={5} style={{textAlign: "center"}}>Ảnh đại diện</Title>
         </div>
+        {/* video */}
         <div style={{flex: 1}}>
           {idVideo ? 
             <>
@@ -34,12 +46,12 @@ const AvatarAndVideo = () => {
                 <Title level={5} style={{textAlign: "center"}}>Video giới thiệu</Title>
               </div> 
               <div style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
-                <TextFieldLabelDash label={"Đường dẫn youtube giới thiệu"} placeholder={"Nhập đường dẫn"} itemKey={"videogt"} key={"videogt"} callbackChangeValue={handleChange} defaultValue={linkVideo}/>
+                {inputVideo}
               </div>
             </>
             :
               <div style={{width: "100%", height: 210, display: "flex", justifyContent: "center", alignItems: "center"}}>
-                <TextFieldLabelDash label={"Đường dẫn youtube giới thiệu"} placeholder={"Nhập đường dẫn"} itemKey={"videogt"} key={"videogt"} callbackChangeValue={handleChange} defaultValue={linkVideo}/>
+                {inputVideo}
               </div>
           }
         </div>

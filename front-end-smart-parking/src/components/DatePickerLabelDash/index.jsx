@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import DatePickerCustom from "../DatePickerCustom";
 
 const DatePickerLabelDash = ({
@@ -5,12 +6,17 @@ const DatePickerLabelDash = ({
   min,
   max,
   itemKey,
+  defaultValue,
   callbackChangeValue,
   placeholder,
   format,
   formatShowTime,
   disable
 }) => {
+  const [value, setValue] = useState(defaultValue)
+  useEffect(() => {
+    setValue(defaultValue)
+  }, [defaultValue])
   return (
     <div
       style={{
@@ -47,6 +53,7 @@ const DatePickerLabelDash = ({
         format={format}
         formatShowTime={formatShowTime}
         disable={disable}
+        defaultValue={value}
       />
     </div>
   );

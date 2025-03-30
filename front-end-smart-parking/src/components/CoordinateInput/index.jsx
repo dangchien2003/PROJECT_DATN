@@ -1,5 +1,5 @@
 import { InputNumber, Row, Col } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const CoordinateInput = ({
   label,
@@ -11,6 +11,10 @@ const CoordinateInput = ({
   disable,
 }) => {
   const [value, setValue] = useState(defaultValue);
+  useEffect(() => {
+    setValue(defaultValue);
+  }, [defaultValue]);
+  
   const handleChange = (coord, val) => {
     const newValue = { ...value, [coord]: val };
     setValue(newValue);

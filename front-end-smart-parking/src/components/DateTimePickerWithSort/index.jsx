@@ -14,9 +14,14 @@ const DateTimePickerWithSort = ({
     format: "HH:mm:ss",
     defaultValue: dayjs("00:00:00", "HH:mm:ss"),
   },
-  sort = true
+  sort = true,
+  defaultValue
 }) => {
-  const [value, setValue] = useState(null);
+  const [value, setValue] = useState(defaultValue);
+  useEffect(()=> {
+    setValue(defaultValue);
+  }, [defaultValue])
+
   const [sortOrder, setSortOrder] = useState(null);
   // xử lý khi thay đổi cách sắp xếp
   const handleSortChange = (order) => {
@@ -46,6 +51,7 @@ const DateTimePickerWithSort = ({
     if (callbackChangeValue) {
       callbackChangeValue(value?.format(format), sortOrder, itemKey);
     }
+    console.log("csa")
   }, [sortOrder, value, callbackChangeValue, itemKey, format]);
 
   return (

@@ -4,7 +4,7 @@ import { useState } from "react";
 import "./style.css";
 import DividerCustom from "@/components/DividerCustom";
 import { updateObjectValue } from "@/utils/object";
-import TableListLocation from "@/components/TableListLocation";
+import TableListLocationPartner from "@/components/TableListLocationPartner";
 
 const ListLocation = () => {
   const [searchTimes, setSearchTimes] = useState(0);
@@ -33,7 +33,7 @@ const ListLocation = () => {
       <TabStatus {...propTabStatus} />
       <Search onSearch={onClickSearch} dataSearch={dataSearch} />
       <DividerCustom style={{ width: "80%" }} />
-      <TableListLocation searchTimes={searchTimes} dataSearch={dataSearch} />
+      <TableListLocationPartner searchTimes={searchTimes} dataSearch={dataSearch} />
     </div>
   );
 };
