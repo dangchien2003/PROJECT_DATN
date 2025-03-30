@@ -5,8 +5,34 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="391326a7-c794-4161-81a9-afe6cb8db5e5" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/controller/AuthenticationController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/dto/request/AccountRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/dto/request/PartnerRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/enums/AccountCategory.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/enums/AccountStatus.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/mapper/AccountMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/mapper/PartnerMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/repository/AccountRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/repository/PartnerRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/service/AuthenticationService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/service/PartnerService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/service/impl/AuthenticationServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/service/impl/PartnerServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/common/src/main/java/com/example/common/dto/response/ApiResponse.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/common/src/main/java/com/example/common/exception/AppException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/common/src/main/java/com/example/common/exception/ErrorCode.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/common/src/main/java/com/example/common/exception/GlobalExceptionHandler.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/common/src/main/java/com/example/common/utils/DataUtils.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/common/src/main/java/com/example/common/utils/ENumUtils.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/common/src/main/java/com/example/common/utils/RandomUtils.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/common/src/main/java/com/example/common/utils/RegexUtils.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/entity/LocationModify.java" beforeDir="false" afterPath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/entity/LocationModify.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/ParkingServiceApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/ParkingServiceApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ParkingService/src/main/resources/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/ParkingService/src/main/resources/application.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/common/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common/src/main/java/com/example/common/CommonApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/java/com/example/common/CommonApplication.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -16,7 +42,10 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="package-info" />
+        <option value="Enum" />
         <option value="Class" />
+        <option value="Interface" />
       </list>
     </option>
   </component>
@@ -47,44 +76,50 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
-    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
-    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
-    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;Spring Boot.CommonApplication.executor&quot;: &quot;Run&quot;,
-    &quot;Spring Boot.GatewayApplication.executor&quot;: &quot;Run&quot;,
-    &quot;Spring Boot.ParkingServiceApplication.executor&quot;: &quot;Run&quot;,
-    &quot;Spring Boot.PaymentServiceApplication.executor&quot;: &quot;Run&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;back-end&quot;,
-    &quot;jdk.selected.JAVA_MODULE&quot;: &quot;21&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;E:/DH_CNDA/DATN/PROJECT_DATN/bussiness-service/PaymentService/src/main/resources&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;rearrange.code.on.save&quot;: &quot;true&quot;,
-    &quot;run.configurations.included.in.services&quot;: &quot;true&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;actions.on.save&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Maven.ParkingService [clean].executor": "Run",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "Spring Boot.CommonApplication.executor": "Run",
+    "Spring Boot.GatewayApplication.executor": "Run",
+    "Spring Boot.ParkingServiceApplication.executor": "Debug",
+    "Spring Boot.PaymentServiceApplication.executor": "Run",
+    "git-widget-placeholder": "back-end",
+    "ignore.virus.scanning.warn.message": "true",
+    "jdk.selected.JAVA_MODULE": "21",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "E:/DH_CNDA/DATN/PROJECT_DATN/bussiness-service/common/src/main/java/com/example/common",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "rearrange.code.on.save": "true",
+    "run.configurations.included.in.services": "true",
+    "settings.editor.selected.configurable": "actions.on.save",
+    "vue.rearranger.settings.migration": "true"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;DatabaseDriversLRU&quot;: [
-      &quot;mysql_aurora_aws&quot;
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "mysql_aurora_aws"
     ]
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="E:\DH_CNDA\DATN\PROJECT_DATN\bussiness-service\common\src\main\java\com\example\common" />
       <recent name="E:\DH_CNDA\DATN\PROJECT_DATN\bussiness-service\PaymentService\src\main\resources" />
     </key>
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="com.example.common" />
+    </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.example.common.utils" />
       <recent name="com.example.payment_service.entity" />
       <recent name="com.example.parking_service.entity" />
       <recent name="com.example.common.entity" />
@@ -99,7 +134,20 @@
       </set>
     </option>
   </component>
-  <component name="RunManager" selected="Spring Boot.GatewayApplication">
+  <component name="RunManager" selected="Spring Boot.CommonApplication">
+    <configuration name="CommonApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" temporary="true" nameIsGenerated="true">
+      <module name="common" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.example.common.CommonApplication" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.example.common.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="GatewayApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
       <module name="gateway" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="com.example.gateway.GatewayApplication" />
@@ -125,7 +173,13 @@
       <item itemvalue="Spring Boot.GatewayApplication" />
       <item itemvalue="Spring Boot.ParkingServiceApplication" />
       <item itemvalue="Spring Boot.PaymentServiceApplication" />
+      <item itemvalue="Spring Boot.CommonApplication" />
     </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Spring Boot.CommonApplication" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -141,6 +195,10 @@
       <workItem from="1741601902294" duration="844000" />
       <workItem from="1741621370770" duration="9068000" />
       <workItem from="1741709301987" duration="103000" />
+      <workItem from="1743308404899" duration="117000" />
+      <workItem from="1743308537540" duration="34000" />
+      <workItem from="1743308583561" duration="31000" />
+      <workItem from="1743308625547" duration="19906000" />
     </task>
     <servers />
   </component>
