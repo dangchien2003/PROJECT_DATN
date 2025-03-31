@@ -1,5 +1,8 @@
 import { Select } from "antd";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import InputLabel from "../InputLabel";
+import { useSelector } from "react-redux";
+import InputError from "../InputError";
 
 const SelectBoxLabelDash = ({
   placeholder,
@@ -11,13 +14,37 @@ const SelectBoxLabelDash = ({
   regex,
   itemKey,
   prefix,
-  require,
+  requireKeys,
+  dataError
 }) => {
   const [value, setValue] = useState(
     selectIndex ? data[selectIndex] : defaultValue
   );
+  const keyFocus = useSelector((state) => state.focus);
+  const inputRef = useRef();
+  const [require, setRequire] = useState(false)
+  
+  useEffect(()=> {
+    if(Array.isArray(requireKeys) && itemKey) {
+      setRequire(requireKeys.includes(itemKey))
+    }
+  }, [requireKeys, itemKey])
+
+  useEffect(()=> {
+    if(keyFocus === itemKey) {
+      inputRef.current?.focus();
+    }
+  }, [keyFocus, itemKey])
 
   const handleChangeValue = (newValue) => {
+    if(require) {
+      if(newValue === null || newValue === undefined) {
+        dataError[itemKey] = "Không được để trống trường " + label?.toLowerCase()
+      } else {
+        delete dataError[itemKey]
+      }
+    }
+
     if (newValue === "") {
       setValuePass("");
       return;
@@ -51,24 +78,9 @@ const SelectBoxLabelDash = ({
         margin: 16,
       }}
     >
-      <span
-        className="truncated-text"
-        style={{
-          position: "absolute",
-          display: "inline-block",
-          padding: "3px 5px",
-          top: -14,
-          left: 8,
-          maxWidth: 240,
-          fontSize: 14,
-          background: "white",
-          zIndex: 100,
-        }}
-      >
-        {label}
-        {require && <span style={{ color: "red" }}> *</span>}
-      </span>
+      <InputLabel label={label} require={require}/>
       <Select
+        ref={inputRef}
         style={{
           width: "100%",
         }}
@@ -80,6 +92,7 @@ const SelectBoxLabelDash = ({
         placeholder={placeholder}
         options={data}
       />
+      <InputError dataError={dataError} itemKey={itemKey}/>
     </div>
   );
 };
