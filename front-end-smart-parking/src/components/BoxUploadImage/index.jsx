@@ -19,7 +19,7 @@ export const checkImage = (file) => {
   return ''
 }
 const BoxUploadImage = ({ image, id }) => {
-  const [imgEdited, setImgEdited] = useState(null)
+  const [imgEdited, setImgEdited] = useState(image)
   const [uploading, setUploading] = useState(false)
   const inputRef = useRef(null)
   const localUrlRef = useRef(null)

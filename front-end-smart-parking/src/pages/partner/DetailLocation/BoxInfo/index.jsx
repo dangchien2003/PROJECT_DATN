@@ -3,21 +3,23 @@ import BoxTextField from "@/components/BoxTextField"
 import { TICKET_STATUS } from "@/utils/constants"
 import { formatTimestamp } from "@/utils/time"
 import OtherInfoModify from "./OtherInfoModify"
-import { FaCheck } from "react-icons/fa6"
 import { Button } from "antd"
-import { MdOutlineCancel } from "react-icons/md"
 import { Typography } from "antd";
 import QuillEditor from "@/components/QuillEditor"
 import { useEffect, useState } from "react"
-import { useLoading } from "@/utils/loading"
-import PopConfirmCustom from "@/components/PopConfirmCustom"
 import Avatar from "@/components/Avatar"
+import { FaEdit } from "react-icons/fa"
+import { Link } from "react-router-dom"
 const { Title } = Typography;
 const linkImage = "https://i0.wp.com/plopdo.com/wp-content/uploads/2021/11/feature-pic.jpg?w=537&ssl=1"
-const BoxInfo = ({data, isModify, widthPage, tab}) => {
-  const [styleParent, setStyleParent] = useState({})  
-  const [action, setAction] = useState(null);
-  const {showLoad, hideLoad} = useLoading();
+const BoxInfo = ({
+  data, 
+  isModify, 
+  widthPage, 
+  tab, 
+  hasModify
+}) => {
+  const [styleParent, setStyleParent] = useState({}) 
 
   useEffect(() => {
     let style = {};
@@ -38,72 +40,6 @@ const BoxInfo = ({data, isModify, widthPage, tab}) => {
     setStyleParent(style)
   }, [isModify, widthPage]);
 
-  const resetAction = () => {
-    setAction(null);
-  }
-
-  const handleAllowApprove = () => {
-    console.log("đồng ý duyệt")
-    showLoad("Đang xử lý");
-    setTimeout(()=> {
-      hideLoad();
-      resetAction();
-    }, 3000)
-  }
-
-  const handleCancelApprove = () => {
-    console.log("huỷ việc duyệt")
-    resetAction();
-  }
-
-  const handleAllowReject = () => {
-    console.log("đồng ý từ chối")
-    showLoad("Đang xử lý");
-    setTimeout(()=> {
-      hideLoad();
-      resetAction();
-    }, 3000)
-  }
-
-  const handleCancelReject = () => {
-    console.log("huỷ việc từ chối")
-    resetAction();
-  }
-
-  const handleConfirm = (event, action) => {
-    setAction(action);
-    event.stopPropagation();
-  }
-
-  const getMessagePopup = (action) => {
-    if(tab === 3) {
-      if(action === 1) {
-        return {
-          title: 'Bạn có chắc chắn đồng ý việc thêm địa điểm "EAON MALL Hà Đông" của đối tác "EAON MALL" không?',
-          message: "Địa điểm sẽ đi vào hoạt động vào 20/12/2025 11:11"
-        }
-      }else if(action === 2) {
-        return {
-          title: 'Bạn có chắc chắn từ chối việc thêm địa điểm "EAON MALL Hà Đông" của đối tác "EAON MALL" không?',
-          message: "Yêu cầu sẽ chuyển sang trạng thái bị từ chối"
-        }
-      }
-    }else if (tab === 4){
-      if(action === 1) {
-        return {
-          title: 'Bạn có chắc chắn đồng ý việc sửa thông tin địa điểm "EAON MALL Hà Đông" của đối tác "EAON MALL" không?',
-          message: "Thông tin chỉnh sửa sẽ được áp dụng vào 20/12/2025 11:11"
-        }
-      }else if(action === 2) {
-        return {
-          title: 'Bạn có chắc chắn từ chối việc sửa thông tin địa điểm "EAON MALL Hà Đông" của đối tác "EAON MALL" không?',
-          message: "Yêu cầu sẽ chuyển sang trạng thái bị từ chối"
-        }
-      }
-    }
-
-    return {}
-  }
   return (
     <div>
       {data !== null && <div style={styleParent}>
@@ -149,20 +85,17 @@ const BoxInfo = ({data, isModify, widthPage, tab}) => {
           <div style={{margin: "40px 0"}}>
             <OtherInfoModify data={data} />
           </div>
-          <div style={{ display: "flex", justifyContent: "center", padding: "0 16px" }}>
-            <Button color="primary" variant="solid" style={{margin: "0 8px"}} onClick={(event)=> {handleConfirm(event, 1)}}>
-              <FaCheck />
-              Duyệt
-            </Button>
-            <Button color="danger" variant="outlined" style={{margin: "0 8px"}} onClick={(event)=> {handleConfirm(event, 2)}}>
-              <MdOutlineCancel />
-              Từ chối
-            </Button>
-          <div>
-            {action === 1 && <PopConfirmCustom type="warning" {...getMessagePopup(1)} handleOk={handleAllowApprove} handleCancel={handleCancelApprove} key={"approve"}/>}
-            {action === 2 && <PopConfirmCustom type="warning" {...getMessagePopup(2)} handleOk={handleAllowReject} handleCancel={handleCancelReject} key={"reject"}/>}
+        </div> }
+        {!hasModify && !isModify && 
+        <div>
+          <div style={{ display: "flex", justifyContent: "center", padding: "0 16px", margin: "80px 0" }}>
+            <Link to={"/partner/location/edit/" + data.id}>
+              <Button color="primary" variant="solid" style={{margin: "0 8px"}}>
+                <FaEdit />
+                Chỉnh sửa
+              </Button>
+            </Link>
           </div>
-        </div>
         </div> }
       </div>}
     </div>

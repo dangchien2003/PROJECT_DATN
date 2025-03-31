@@ -7,11 +7,15 @@ const items = [
   },
   {
     key: 2,
-    label: "Chờ duyệt",
+    label: "Tạm dừng hoạt động",
   },
   {
     key: 3,
-    label: "Tạm dừng hoạt động",
+    label: "Chờ duyệt",
+  },
+  {
+    key: 4,
+    label: "Từ chối",
   }
 ];
 const TabStatus = ({ ...prop }) => {

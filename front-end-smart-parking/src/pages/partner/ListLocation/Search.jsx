@@ -68,7 +68,7 @@ const Search = ({ onSearch, dataSearch }) => {
           data={DATA_OPEN_HOLIDAY_SELECTBOX}
           callbackChangeValue={handleChange}
         />
-        {dataSearch.tab === 2 && <>
+        {[3, 4].includes(dataSearch.tab) && <>
           <DateTimePickerWithSortLabelDash key={"nad"} placeholder={"Chọn ngày áp dụng"} label={"Ngày áp dụng"}/>
           <DatePickerFromToLabelDash key={"nad"} placeholder={["Từ ngày", "Đến ngày"]} label={"Ngày gửi yêu cầu"}/>
           <SelectBoxLabelDash 
@@ -76,7 +76,6 @@ const Search = ({ onSearch, dataSearch }) => {
           itemKey={"category"}
           label={"Phân loại"}
           placeholder={"Chọn phân loại"}
-          defaultValue={0}
           data={DATA_LOCATION_WAIT_APPROVE_CATEGORY_SELECTBOX}
           callbackChangeValue={handleChange}
         />

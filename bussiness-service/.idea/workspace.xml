@@ -4,17 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="391326a7-c794-4161-81a9-afe6cb8db5e5" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/configuration/CustomJwtDecoder.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/configuration/JwtAuthenticationEntryPoint.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/configuration/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/19b86dbd-c6f5-4abb-915e-11631b84feed.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/19b86dbd-c6f5-4abb-915e-11631b84feed.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/controller/AuthenticationController.java" beforeDir="false" afterPath="$PROJECT_DIR$/ParkingService/src/main/java/com/example/parking_service/controller/AuthenticationController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/common/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../front-end-smart-parking/src/pages/admin/CreateAccount/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end-smart-parking/src/pages/admin/CreateAccount/index.jsx" afterDir="false" />
-    </list>
+    <list default="true" id="391326a7-c794-4161-81a9-afe6cb8db5e5" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -68,13 +58,13 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "Spring Boot.CommonApplication.executor": "Run",
     "Spring Boot.GatewayApplication.executor": "Run",
-    "Spring Boot.ParkingServiceApplication.executor": "Run",
+    "Spring Boot.ParkingServiceApplication.executor": "Debug",
     "Spring Boot.PaymentServiceApplication.executor": "Run",
-    "git-widget-placeholder": "back-end",
+    "git-widget-placeholder": "front-end",
     "ignore.virus.scanning.warn.message": "true",
     "jdk.selected.JAVA_MODULE": "21",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "E:/DH_CNDA/DATN/PROJECT_DATN/bussiness-service/common/src/main/java/com/example/common",
+    "last_opened_file_path": "F:/clone code datn/be/PROJECT_DATN",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -94,7 +84,6 @@
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="E:\DH_CNDA\DATN\PROJECT_DATN\bussiness-service\common\src\main\java\com\example\common" />
-      <recent name="E:\DH_CNDA\DATN\PROJECT_DATN\bussiness-service\common\src\main\java\com\example\common\configuration" />
       <recent name="E:\DH_CNDA\DATN\PROJECT_DATN\bussiness-service\PaymentService\src\main\resources" />
     </key>
     <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
@@ -180,8 +169,7 @@
       <workItem from="1743308404899" duration="117000" />
       <workItem from="1743308537540" duration="34000" />
       <workItem from="1743308583561" duration="31000" />
-      <workItem from="1743308625547" duration="19906000" />
-      <workItem from="1743443435170" duration="810000" />
+      <workItem from="1743308625547" duration="20531000" />
     </task>
     <servers />
   </component>

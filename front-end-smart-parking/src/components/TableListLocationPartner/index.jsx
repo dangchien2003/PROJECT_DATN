@@ -7,7 +7,7 @@ import { formatTimestamp } from "@/utils/time";
 import { useLoading } from "@/utils/loading";
 import { useNavigate } from "react-router-dom";
 
-const columns = [
+const BaseColumns = [
   {
     title: "STT",
     dataIndex: "stt",
@@ -51,10 +51,43 @@ const columns = [
     sorter: true,
     width: 120,
     align: "center"
-  }
+  },    
+  {
+    title: "Phân loại",
+    dataIndex: "categoryPrint",
+    key: "6",
+    sorter: false,
+    width: 150,
+  },
 ];
 
-const convertResponseToDataTable = (response, currentPage, pageSize) => {
+const TableListLocationPartner = ({searchTimes, dataSearch }) => {
+  const navigate = useNavigate()
+  const { showLoad, hideLoad } = useLoading();
+  const [columns, setColumns] = useState(BaseColumns);
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+    total: 0,
+  });
+  const [sorter, setSorter] = useState({
+    field: "id",
+    order: "ascend",
+  });
+  
+  useEffect(() => {
+    let newColumns;
+    if(![3, 4].includes(dataSearch.tab) ) {
+     newColumns = [...BaseColumns].filter((item) => item.key !== "6");
+    }else {
+      newColumns = [...BaseColumns];
+    }
+    setColumns(newColumns);
+  }, [dataSearch.tab])
+
+  const convertResponseToDataTable = (response, currentPage, pageSize) => {
     return response.data.map((item, index) => {
       item.ticketNamePrint = `${item.id} - ${item.name}`;
       item.coordinatesPrint = <a href={item.linkGoogleMap}
@@ -96,25 +129,13 @@ const convertResponseToDataTable = (response, currentPage, pageSize) => {
           </div>
         </div>
       );
+      if(dataSearch.tab === 2) {
+        item.categoryPrint = "Chỉnh sửa"
+      }
       item.stt = (currentPage - 1) * pageSize + index + 1;
       return item;
     });
   };
-
-const TableListLocation = ({searchTimes, dataSearch }) => {
-  const navigate = useNavigate()
-  const { showLoad, hideLoad } = useLoading();
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [pagination, setPagination] = useState({
-    current: 1,
-    pageSize: 10,
-    total: 0,
-  });
-  const [sorter, setSorter] = useState({
-    field: "id",
-    order: "ascend",
-  });
 
   const loadData = (newPagination, sorter) => {
     if (!sorter.field || !sorter.order) {
@@ -188,4 +209,4 @@ const TableListLocation = ({searchTimes, dataSearch }) => {
   );
 };
 
-export default TableListLocation;
+export default TableListLocationPartner;

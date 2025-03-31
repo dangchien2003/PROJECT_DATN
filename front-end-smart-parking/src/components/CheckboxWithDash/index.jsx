@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Checkbox } from "antd";
 
 const CheckboxWithDash = ({
@@ -7,12 +7,18 @@ const CheckboxWithDash = ({
   value = false,
   callbackChangeValue,
   require,
+  reaonly
 }) => {
-  const [checked, setChecked] = useState(value ? value : false)
+  const [checked, setChecked] = useState(value ? true : false)
+  useEffect(() => {
+    setChecked(value ? true : false)
+  }, [value])
   const handleChange = (e) => {
+    const newChecked = e.target.checked;
     if (callbackChangeValue) {
-      const newChecked = e.target.checked;
       callbackChangeValue(newChecked, itemKey)
+    }
+    if(!reaonly) {
       setChecked(newChecked)
     }
   }

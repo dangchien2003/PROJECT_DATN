@@ -1,8 +1,8 @@
 import { useParams } from "react-router-dom";
-import Avatar from "./Avatar";
 import InfoBox from "./InfoBox";
 import PermissionBox from "./PermissionBox/PermissionBox";
 import StatisticalReport from "./StatisticalReport";
+import Avatar from "@/components/Avatar";
 
 const AccountCustomerInfo = () => {
   const { id } = useParams();

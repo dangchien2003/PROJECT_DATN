@@ -1,28 +1,76 @@
 import { Input } from "antd";
-import { useState } from "react";
+import { useRef, useEffect, useState } from "react";
+import InputError from "../InputError";
+import { useSelector } from "react-redux";
+import InputLabel from "../InputLabel";
 
 const TextFieldLabelDash = ({
   placeholder,
   label,
   defaultValue = "",
+  dataError,
   callbackChangeValue,
   regex,
   prefix,
   itemKey,
-  disable
+  disable,
+  maxLength,
+  minLength,
+  requireKeys
 }) => {
   const [value, setValue] = useState(defaultValue);
+  const keyFocus = useSelector((state) => state.focus);
+  const inputRef = useRef();
+  const [require, setRequire] = useState(false)
+
+  useEffect(()=> {
+    if(Array.isArray(requireKeys) && itemKey) {
+      setRequire(requireKeys.includes(itemKey))
+    }
+  }, [requireKeys, itemKey])
+
+  useEffect(()=> {
+    if(keyFocus === itemKey) {
+      inputRef.current?.focus();
+    }
+  }, [keyFocus, itemKey])
+
+  useEffect(() => {
+    setValue(defaultValue);
+  }, [defaultValue]);
 
   const handleChangeValue = (e) => {
     const newValue = e.target.value;
+    const sizePrefix = prefix !== undefined && prefix !== null ? prefix?.toString().length : 0;
+
+    if(require) {
+      if(newValue.length === 0) {
+        dataError[itemKey] = "Không được để trống trường " + label?.toLowerCase()
+      } else {
+        delete dataError[itemKey]
+      }
+    }
+
+    if(minLength) {
+      if(newValue.length + sizePrefix < minLength) {
+        dataError[itemKey] = "Dữ liệu " + label?.toLowerCase() + " chưa đủ " + minLength + " ký tự"
+      } else {
+        delete dataError[itemKey]
+      }
+    }
+
+    if(maxLength) {
+      if(newValue.length + sizePrefix > maxLength) {
+        return;
+      }
+    }
 
     if (newValue === "") {
-      setValuePass("");
+      setValuePass(null);
       return;
     }
 
     if (regex) {
-      console.log(regex)
       if (regex.test(newValue)) {
         setValuePass(newValue);
       }
@@ -34,12 +82,15 @@ const TextFieldLabelDash = ({
   const setValuePass = (newValue) => {
     setValue(newValue);
     if (callbackChangeValue) {
-      callbackChangeValue(newValue, itemKey);
+      if(prefix) {
+        callbackChangeValue(prefix + newValue, itemKey);
+      } else {
+        callbackChangeValue(newValue, itemKey);
+      }
     }
   };
 
   const handleClear = () => setValuePass("");
-
   return (
     <div
       style={{
@@ -51,23 +102,9 @@ const TextFieldLabelDash = ({
         margin: 16,
       }}
     >
-      <span
-        className="truncated-text"
-        style={{
-          position: "absolute",
-          display: "inline-block",
-          padding: "3px 5px",
-          top: -14,
-          left: 8,
-          maxWidth: 240,
-          fontSize: 14,
-          background: "white",
-          zIndex: 100,
-        }}
-      >
-        {label}
-      </span>
+      <InputLabel label={label} require={require}/>
       <Input
+        ref={inputRef}
         placeholder={placeholder}
         allowClear
         value={value}
@@ -76,6 +113,7 @@ const TextFieldLabelDash = ({
         prefix={prefix}
         disabled={disable}
       />
+      <InputError dataError={dataError} itemKey={itemKey}/>
     </div>
   );
 };

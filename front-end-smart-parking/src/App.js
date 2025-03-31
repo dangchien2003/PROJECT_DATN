@@ -23,6 +23,7 @@ import PartnerLayout from "./components/layout/partner";
 import DashboardPartner from "./pages/partner/DashBoardPartner";
 import AddLocation from "./pages/partner/AddLocation";
 import ListLocationPartner from "./pages/partner/ListLocation";
+import DetailLocationPartner from "./pages/partner/DetailLocation";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -56,8 +57,10 @@ const router = createBrowserRouter([
     children: [
       { path: "demo", element: <ComponentDemo /> },
       { index: true, element: <DashboardPartner /> },
-      { path: "location/add", element: <AddLocation /> },
+      { path: "location/add", element: <AddLocation isModify={false}/> },
+      { path: "location/edit/:id", element: <AddLocation isModify={true}/> },
       { path: "location/list", element: <ListLocationPartner /> },
+      { path: "location/detail/:tab/:id", element: <DetailLocationPartner /> },
       { path: "account/partner/:id", element: <PartnerInfo /> },
       { path: "account/customer/:id", element: <AccountCustomerInfo /> },
       

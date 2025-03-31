@@ -303,3 +303,9 @@ export const DATA_LOCATION_WAIT_APPROVE_CATEGORY_SELECTBOX = [
   {label: "Chỉnh sửa", value: 2},
 ]
 
+export const DATA_ACCOUNT_STATUS_SELECTBOX = [
+  {label: "Khoá", value: 0},
+  {label: "Tạm khoá", value: 1},
+  {label: "Đang hoạt động", value: 2},
+]
+
