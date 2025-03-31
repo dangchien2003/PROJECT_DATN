@@ -33,6 +33,9 @@ public class LocationModify extends BaseEntity {
 
     String name;
 
+    @Column(nullable = false)
+    Integer modifyCount;
+
     String coordinates;
 
     String linkGoogleMap;
@@ -56,6 +59,8 @@ public class LocationModify extends BaseEntity {
     Integer openHoliday;
 
     LocalDateTime timeAppliedEdit;
+
+    Integer urgentApprovalRequest;
 
     Long capacity;
 

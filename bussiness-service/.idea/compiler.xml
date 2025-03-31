@@ -9,8 +9,8 @@
         <outputRelativeToContentRoot value="true" />
         <module name="common" />
         <module name="gateway" />
-        <module name="ParkingService" />
         <module name="PaymentService" />
+        <module name="ParkingService" />
       </profile>
     </annotationProcessing>
   </component>

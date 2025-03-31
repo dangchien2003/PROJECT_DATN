@@ -30,6 +30,9 @@ public class Location extends BaseEntity {
 
     String name;
 
+    @Column(nullable = false)
+    Integer modifyCount;
+
     String coordinates;
 
     String linkGoogleMap;
