@@ -14,17 +14,19 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/auth")
+@RequestMapping("/account")
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class AccountController {
     AccountService accountService;
 
     @PostMapping("/create")
+        // all role
     ApiResponse<Object> createAccount(@Valid @RequestBody AccountRequest request) {
         return accountService.createAccount(request, null);
     }
 
-    @PostMapping("/create")
+    @PostMapping("/create-by-admin")
+        // role admin
     ApiResponse<Object> createAccountByAdmin(@Valid @RequestBody AccountRequest request) {
         return accountService.createAccount(request, "admin");
     }
