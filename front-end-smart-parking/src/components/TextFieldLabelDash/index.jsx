@@ -3,12 +3,12 @@ import { useRef, useEffect, useState } from "react";
 import InputError from "../InputError";
 import { useSelector } from "react-redux";
 import InputLabel from "../InputLabel";
+import { useMessageError } from "@/hook/validate";
 
 const TextFieldLabelDash = ({
   placeholder,
   label,
   defaultValue = "",
-  dataError,
   callbackChangeValue,
   regex,
   prefix,
@@ -16,12 +16,14 @@ const TextFieldLabelDash = ({
   disable,
   maxLength,
   minLength,
-  requireKeys
 }) => {
   const [value, setValue] = useState(defaultValue);
   const keyFocus = useSelector((state) => state.focus);
+  const fieldError = useSelector(state => state.fieldError);
+  const requireKeys = useSelector(state => state.requireField);
   const inputRef = useRef();
   const [require, setRequire] = useState(false)
+  const {pushMessage, deleteKey} = useMessageError();
 
   useEffect(()=> {
     if(Array.isArray(requireKeys) && itemKey) {
@@ -36,26 +38,28 @@ const TextFieldLabelDash = ({
   }, [keyFocus, itemKey])
 
   useEffect(() => {
-    setValue(defaultValue);
+    if (value !== defaultValue) {
+      setValue(defaultValue);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultValue]);
 
   const handleChangeValue = (e) => {
     const newValue = e.target.value;
     const sizePrefix = prefix !== undefined && prefix !== null ? prefix?.toString().length : 0;
-
     if(require) {
       if(newValue.length === 0) {
-        dataError[itemKey] = "Không được để trống trường " + label?.toLowerCase()
+        pushMessage(itemKey, "Không được để trống trường " + label?.toLowerCase());
       } else {
-        delete dataError[itemKey]
+        deleteKey(itemKey);
       }
     }
 
     if(minLength) {
       if(newValue.length + sizePrefix < minLength) {
-        dataError[itemKey] = "Dữ liệu " + label?.toLowerCase() + " chưa đủ " + minLength + " ký tự"
-      } else {
-        delete dataError[itemKey]
+        pushMessage(itemKey, "Dữ liệu " + label?.toLowerCase() + " chưa đủ " + minLength + " ký tự");
+      } else if(fieldError) {
+        deleteKey(itemKey);
       }
     }
 
@@ -113,7 +117,7 @@ const TextFieldLabelDash = ({
         prefix={prefix}
         disabled={disable}
       />
-      <InputError dataError={dataError} itemKey={itemKey}/>
+      <InputError itemKey={itemKey}/>
     </div>
   );
 };

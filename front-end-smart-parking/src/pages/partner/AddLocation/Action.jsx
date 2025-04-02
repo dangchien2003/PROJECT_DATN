@@ -1,5 +1,5 @@
 import PopConfirmCustom from "@/components/PopConfirmCustom";
-import { useLoading } from "@/utils/loading";
+import { useLoading } from "@/hook/loading";
 import { Button } from "antd";
 import { useState } from "react";
 

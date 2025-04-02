@@ -51,7 +51,6 @@ const DateTimePickerWithSort = ({
     if (callbackChangeValue) {
       callbackChangeValue(value?.format(format), sortOrder, itemKey);
     }
-    console.log("csa")
   }, [sortOrder, value, callbackChangeValue, itemKey, format]);
 
   return (

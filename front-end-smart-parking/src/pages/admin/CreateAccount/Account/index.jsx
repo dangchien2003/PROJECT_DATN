@@ -3,13 +3,20 @@ import TextFieldLabelDash from "@/components/TextFieldLabelDash";
 import { DATA_ACCOUNT_STATUS_SELECTBOX, GENDER } from "@/utils/constants";
 import { Button } from "antd";
 import imgExcel from "@image/excel.png";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CreateByExcel from "./CreateByExcel";
 import { updateObjectValue } from "@/utils/object";
+import { useRequireField } from "@/hook/useRequireField";
 
-const Account = ({data, requireKeys}) => {
+const requireKeys = ["fullName", "email", "phoneNumber", "gender", "status"]
+const Account = ({data}) => {
+  const {setRequireField} = useRequireField();
   const [showViewCreateByExcel, setShowViewCreateByExcel] = useState(false);
   
+  useEffect(()=> {
+    setRequireField(requireKeys)
+  }, [])
+
   const handleClickCreateByExcel = () => {
     setShowViewCreateByExcel(true);
   };
@@ -56,8 +63,6 @@ const Account = ({data, requireKeys}) => {
           key={"ten kh"}
           itemKey={"fullName"}
           callbackChangeValue={handleChange}
-          dataError={data.error}
-          requireKeys={requireKeys}
         />
         <TextFieldLabelDash
           label={"Địa chỉ email-Tên đăng nhập"}
@@ -65,8 +70,6 @@ const Account = ({data, requireKeys}) => {
           key={"email"}
           itemKey={"email"}
           callbackChangeValue={handleChange}
-          dataError={data.error}
-          requireKeys={requireKeys}
         />
         <TextFieldLabelDash
           key={"sdt"}
@@ -77,10 +80,8 @@ const Account = ({data, requireKeys}) => {
           prefix={0}
           itemKey={"phoneNumber"}
           callbackChangeValue={handleChange}
-          dataError={data.error}
           maxLength={10}
           minLength={10}
-          requireKeys={requireKeys}
         />
         <SelectBoxLabelDash
           itemKey={"gender"}
@@ -89,8 +90,6 @@ const Account = ({data, requireKeys}) => {
           key={"gioi tinh"}
           placeholder={"Chọn giới tính"}
           callbackChangeValue={handleChange}
-          dataError={data.error}
-          requireKeys={requireKeys}
         />
         <SelectBoxLabelDash
           label={"Trạng thái sau khi tạo"}
@@ -99,9 +98,7 @@ const Account = ({data, requireKeys}) => {
           placeholder={"Chọn trạng thái"}
           itemKey={"status"}
           callbackChangeValue={handleChange}
-          dataError={data.error}
-          requireKeys={requireKeys}
-          defaultValue={1}
+          defaultValue={data.status}
         />
       </div>
     </div>

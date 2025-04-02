@@ -13,7 +13,8 @@ const CoordinateInput = ({
   const [value, setValue] = useState(defaultValue);
   useEffect(() => {
     setValue(defaultValue);
-  }, [defaultValue]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   
   const handleChange = (coord, val) => {
     const newValue = { ...value, [coord]: val };

@@ -9,7 +9,7 @@ import { MdOutlineCancel } from "react-icons/md"
 import { formatCurrency } from "@/utils/number"
 import { Typography } from "antd";
 import { useState } from "react"
-import { useLoading } from "@/utils/loading"
+import { useLoading } from "@/hook/loading"
 import PopConfirmCustom from "@/components/PopConfirmCustom"
 const { Title } = Typography;
 

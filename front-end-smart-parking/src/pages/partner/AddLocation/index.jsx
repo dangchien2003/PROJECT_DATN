@@ -12,16 +12,25 @@ import { dataEdit } from "./fakeData";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import dayj from "dayjs";
-import { useLoading } from "@/utils/loading";
+import { useLoading } from "@/hook/loading";
 import { updateObjectValue } from "@/utils/object";
 import { extractGoogleMapCoords } from "@/utils/extract";
+import { useMessageError } from "@/hook/validate";
 
+const requireKeys = ["address"]
+// const indexKeys = ["address"]
 const AddLocation = ({isModify = false}) => {
   const [dataModify, setDataModify] = useState({})
   const [disableCoordinates, setDisableCoordinates] = useState(false)
   const {hideLoad, showLoad} = useLoading()
   const {id} = useParams()
-  console.log(id)
+  const {reset} = useMessageError()
+
+  useEffect(()=> {
+    reset()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+  
   useEffect(() => {
     let timeOutId;
     if(id) {
@@ -30,12 +39,12 @@ const AddLocation = ({isModify = false}) => {
         setDataModify(dataEdit)
         hideLoad()
       }, 1000)
-    }else {
-      setDataModify({})
     }
+    
     return () => {
       clearTimeout(timeOutId)
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id])
 
   const handleChange = (value, key) => {
@@ -70,7 +79,7 @@ const AddLocation = ({isModify = false}) => {
   const handleClick = () => {
     console.log(dataModify)
   }
-
+  console.log(dataModify)
   return (
     <div>
       <button onClick={handleClick}>click</button>
@@ -86,6 +95,16 @@ const AddLocation = ({isModify = false}) => {
           itemKey={"name"}
           defaultValue={dataModify?.name}
           callbackChangeValue={handleChange}
+          requireKeys={requireKeys}
+        />
+        <TextFieldLabelDash
+          label={"Địa chỉ"}
+          placeholder={"Nhập địa chỉ"}
+          key={"dia_chi"}
+          itemKey={"address"}
+          defaultValue={dataModify?.name}
+          callbackChangeValue={handleChange}
+          requireKeys={requireKeys}
         />
         <TextFieldLabelDash
           label={"Đường dẫn đến Google Map"}
