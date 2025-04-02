@@ -11,6 +11,8 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.Date;
 
 @Entity
 @Table(name = "location_modify")
@@ -25,13 +27,13 @@ public class LocationModify extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long modifyId;
 
-    @Column(nullable = false)
     Long locationId;
 
     @Column(nullable = false)
     String partnerId;
 
     String name;
+    String address;
 
     @Column(nullable = false)
     Integer modifyCount;
@@ -50,11 +52,11 @@ public class LocationModify extends BaseEntity {
 
     String reason;
 
-    LocalDateTime openTime;
+    LocalTime openTime;
 
-    LocalDateTime closeTime;
+    LocalTime closeTime;
 
-    String openDate;
+    Date openDate;
 
     Integer openHoliday;
 

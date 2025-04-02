@@ -1,7 +1,7 @@
 package com.example.parking_service.controller;
 
 import com.example.common.dto.response.ApiResponse;
-import com.example.parking_service.dto.request.AccountRequest;
+import com.example.parking_service.dto.request.CreateAccountRequest;
 import com.example.parking_service.service.AccountService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -21,13 +21,13 @@ public class AccountController {
 
     @PostMapping("/create")
         // all role
-    ApiResponse<Object> createAccount(@Valid @RequestBody AccountRequest request) {
+    ApiResponse<Object> createAccount(@Valid @RequestBody CreateAccountRequest request) {
         return accountService.createAccount(request, null);
     }
 
     @PostMapping("/create-by-admin")
         // role admin
-    ApiResponse<Object> createAccountByAdmin(@Valid @RequestBody AccountRequest request) {
+    ApiResponse<Object> createAccountByAdmin(@Valid @RequestBody CreateAccountRequest request) {
         return accountService.createAccount(request, "admin");
     }
 }

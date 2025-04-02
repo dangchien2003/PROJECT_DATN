@@ -13,7 +13,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class AccountRequest {
+public class CreateAccountRequest {
     String fullName;
     Integer gender;
     @NotBlank(message = "Vui lòng nhập email và thử lại")

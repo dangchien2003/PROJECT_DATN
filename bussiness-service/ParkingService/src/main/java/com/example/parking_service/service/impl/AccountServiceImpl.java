@@ -7,7 +7,7 @@ import com.example.common.utils.DataUtils;
 import com.example.common.utils.ENumUtils;
 import com.example.common.utils.RandomUtils;
 import com.example.common.utils.RegexUtils;
-import com.example.parking_service.dto.request.AccountRequest;
+import com.example.parking_service.dto.request.CreateAccountRequest;
 import com.example.parking_service.dto.request.PartnerRequest;
 import com.example.parking_service.entity.Account;
 import com.example.parking_service.enums.AccountCategory;
@@ -39,7 +39,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public ApiResponse<Object> createAccount(AccountRequest request, String idAdmin) {
+    public ApiResponse<Object> createAccount(CreateAccountRequest request, String idAdmin) {
         boolean isAdmin = !DataUtils.isNullOrEmpty(idAdmin);
         Account accountEntity = commonCreateAccount(request, isAdmin);
         if (isAdmin) {
@@ -51,7 +51,6 @@ public class AccountServiceImpl implements AccountService {
         accountRepository.save(accountEntity);
 
         return ApiResponse.builder()
-                .result(accountEntity)
                 .build();
     }
 
@@ -64,7 +63,7 @@ public class AccountServiceImpl implements AccountService {
         }
     }
 
-    Account commonCreateAccount(AccountRequest request, boolean isAdmin) {
+    Account commonCreateAccount(CreateAccountRequest request, boolean isAdmin) {
         // kiểm tra sự tồn tại email
         Optional<Account> existEmail = accountRepository.findAllByEmail(request.getEmail());
         if (existEmail.isPresent()) {
