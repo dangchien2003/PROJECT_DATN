@@ -74,4 +74,6 @@ public class LocationModify extends BaseEntity {
 
     @Lob
     String modifyDescription;
+
+    Integer isDel;
 }

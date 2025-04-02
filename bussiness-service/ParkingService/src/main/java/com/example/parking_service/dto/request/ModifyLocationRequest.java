@@ -28,11 +28,11 @@ public class ModifyLocationRequest {
     String videoTutorial;
     LocalTime openTime;
     LocalTime closeTime;
-    @NotNull
+    @NotNull(message = "Không tìm thấy dữ liệu mở cửa ngày lễ")
     Integer openHoliday;
-    @NotNull
+    @NotNull(message = "Thời gian áp dụng chỉnh sửa không được để trống")
     LocalDateTime timeAppliedEdit;
-    @NotNull
+    @NotNull(message = "Không tìm thấy dữ liệu yêu cầu duyệt khẩn cấp")
     Integer urgentApprovalRequest;
     String description;
     String infoLocation;

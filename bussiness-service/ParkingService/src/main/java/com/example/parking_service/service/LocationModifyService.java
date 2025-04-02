@@ -6,4 +6,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 public interface LocationModifyService {
     ApiResponse<Object> modifyLocation(ModifyLocationRequest request, String actionBy) throws JsonProcessingException;
+
+    ApiResponse<Object> deleteModify(Long modifyId);
 }
