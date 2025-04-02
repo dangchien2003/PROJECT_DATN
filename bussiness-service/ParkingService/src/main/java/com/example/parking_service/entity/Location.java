@@ -10,7 +10,8 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 
-import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.Date;
 
 @Entity
 @Table(name = "location")
@@ -47,11 +48,11 @@ public class Location extends BaseEntity {
 
     String reason;
 
-    LocalDateTime openTime;
+    LocalTime openTime;
 
-    LocalDateTime closeTime;
+    LocalTime closeTime;
 
-    String openDate;
+    Date openDate;
 
     Integer openHoliday;
 

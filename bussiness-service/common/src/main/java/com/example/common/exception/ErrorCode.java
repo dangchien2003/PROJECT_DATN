@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatusCode;
 public enum ErrorCode {
     INVALID_DATA(1001, HttpStatus.BAD_REQUEST, "Kiểm tra dữ liệu vào thử lại"),
     DATA_EXISTED(1002, HttpStatus.CONFLICT, "Dữ liệu đã tồn tại"),
+    NOT_FOUND(1003, HttpStatus.NOT_FOUND, "Không tìm thấy dữ liệu bản ghi"),
 
     INVALID_PAGE_NUMBER(1030, HttpStatus.BAD_REQUEST, "Invalid page number"),
 
