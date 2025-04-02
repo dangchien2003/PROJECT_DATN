@@ -1,31 +1,32 @@
 import DividerCustom from "@/components/DividerCustom";
 import Account from "./Account";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Checkbox } from "antd";
 import Partner from "./Partner";
 import PopConfirmCustom from "@/components/PopConfirmCustom";
-import { useLoading } from "@/utils/loading";
-import { useDispatch } from "react-redux";
+import { useLoading } from "@/hook/loading";
+import { useDispatch, useSelector } from "react-redux";
 import { checkRequireInput, validateInput } from "@/utils/validateAction";
+import { useMessageError } from "@/hook/validate";
+import { useRequireField } from "@/hook/useRequireField";
 
-const indexKey = ["fullName", "email", "phoneNumber", "gender"]
-const requireKeys = ["fullName", "email", "phoneNumber", "gender"]
+const indexKey = ["fullName", "email", "phoneNumber", "gender", "status", "partner.partnerFullName"]
+const partnerRequireKeys = ["partner.partnerFullName"]
 const CreateAccount = () => {
-  const [data] = useState({
-    error: {},
-    keyFocus: null 
-  })
+  const [data] = useState({status: 1});
   const [showBoxPartner, setShowBoxPartner] = useState(false);
+  const [clickCreate, setClickCreate] = useState(false);
   const [confirm, setConfirm] = useState(false);
-  const {hideLoad, showLoad} = useLoading()
+  const {hideLoad, showLoad} = useLoading();
   const dispatch = useDispatch();
+  const fieldError = useSelector(state => state.fieldError);
+  const requireKeys = useSelector(state => state.requireField);
+  const {pushMessage} = useMessageError();
+  const {pushRequireField, deleteRequireField} = useRequireField();
 
-  const handleClickCreate = () => {
-    console.log(data)
-    // valid data
-    checkRequireInput(data, requireKeys);
-    if(!validateInput(data.error, indexKey, dispatch)) {
-      return
+  const handleActionCreate = () => {
+    if(!validateInput(fieldError, indexKey, dispatch)) {
+        return
     }
     
     // confirm
@@ -38,8 +39,30 @@ const CreateAccount = () => {
     }
   }
 
+  useEffect(() => {
+    if(clickCreate) {
+      handleActionCreate()
+      setClickCreate(false)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [clickCreate])
+  
+
+  const handleClickCreate = () => {
+    console.log(data)
+    // valid data
+    checkRequireInput(data, fieldError, pushMessage, requireKeys);
+    setClickCreate(true)
+  }
+
   const onChangeValueCheckbox = (e) => {
     setShowBoxPartner(e.target.checked);
+    // set key bắt buộc nhập
+    if(e.target.checked) {
+      pushRequireField(partnerRequireKeys);
+    } else {
+      deleteRequireField(partnerRequireKeys);
+    }
   }
 
   const getTitlePopConfirm = () => {
@@ -63,7 +86,7 @@ const CreateAccount = () => {
   }
   return (
     <div>
-      <Account data={data} requireKeys={requireKeys}/>
+      <Account data={data}/>
       <div>
         <Checkbox
           onChange={onChangeValueCheckbox}

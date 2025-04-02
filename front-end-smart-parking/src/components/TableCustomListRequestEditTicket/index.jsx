@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Table, Tooltip } from "antd";
 import { fakeDataTable } from "./dataTest";
 import { VEHICLE } from "@/utils/constants";
-import { useLoading } from "@/utils/loading";
+import { useLoading } from "@/hook/loading";
 import { formatTimestamp } from "@/utils/time";
 import { FaRegCheckCircle } from "react-icons/fa";
 import { MdOutlineCancel } from "react-icons/md";

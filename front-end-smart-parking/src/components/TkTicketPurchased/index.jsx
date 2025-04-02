@@ -1,7 +1,7 @@
 import { Select } from "antd";
 import React, { useState } from "react";
 import DoubleCardDashboard from "../DoubleCardDashboard";
-import { useLoading } from "@/utils/loading";
+import { useLoading } from "@/hook/loading";
 
 const TkTicketPurchased = ({ info }) => {
   const { showLoad, hideLoad } = useLoading();

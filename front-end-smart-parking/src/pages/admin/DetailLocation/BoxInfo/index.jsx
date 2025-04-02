@@ -9,7 +9,7 @@ import { MdOutlineCancel } from "react-icons/md"
 import { Typography } from "antd";
 import QuillEditor from "@/components/QuillEditor"
 import { useEffect, useState } from "react"
-import { useLoading } from "@/utils/loading"
+import { useLoading } from "@/hook/loading"
 import PopConfirmCustom from "@/components/PopConfirmCustom"
 import Avatar from "@/components/Avatar"
 const { Title } = Typography;

@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import InputLabel from "../InputLabel";
 import { useSelector } from "react-redux";
 import InputError from "../InputError";
+import { useMessageError } from "@/hook/validate";
 
 const SelectBoxLabelDash = ({
   placeholder,
@@ -14,15 +15,15 @@ const SelectBoxLabelDash = ({
   regex,
   itemKey,
   prefix,
-  requireKeys,
-  dataError
 }) => {
   const [value, setValue] = useState(
     selectIndex ? data[selectIndex] : defaultValue
   );
   const keyFocus = useSelector((state) => state.focus);
+  const requireKeys = useSelector((state) => state.requireField);
   const inputRef = useRef();
   const [require, setRequire] = useState(false)
+  const {pushMessage, deleteKey} = useMessageError()
   
   useEffect(()=> {
     if(Array.isArray(requireKeys) && itemKey) {
@@ -39,9 +40,9 @@ const SelectBoxLabelDash = ({
   const handleChangeValue = (newValue) => {
     if(require) {
       if(newValue === null || newValue === undefined) {
-        dataError[itemKey] = "Không được để trống trường " + label?.toLowerCase()
+        pushMessage(itemKey, "Không được để trống trường " + label?.toLowerCase())
       } else {
-        delete dataError[itemKey]
+        deleteKey(itemKey)
       }
     }
 
@@ -92,7 +93,7 @@ const SelectBoxLabelDash = ({
         placeholder={placeholder}
         options={data}
       />
-      <InputError dataError={dataError} itemKey={itemKey}/>
+      <InputError itemKey={itemKey}/>
     </div>
   );
 };

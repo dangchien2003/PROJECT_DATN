@@ -4,7 +4,7 @@ import { fakeDataTable } from "./dataTest";
 import ButtonStatus from "../ButtonStatus";
 import { MODIFY_STATUS, TICKET_STATUS } from "@/utils/constants";
 import { formatTimestamp } from "@/utils/time";
-import { useLoading } from "@/utils/loading";
+import { useLoading } from "@/hook/loading";
 import { FaRegCheckCircle } from "react-icons/fa";
 import { MdOutlineCancel } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
