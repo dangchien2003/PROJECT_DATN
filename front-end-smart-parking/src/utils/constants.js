@@ -309,3 +309,8 @@ export const DATA_ACCOUNT_STATUS_SELECTBOX = [
   {label: "Đang hoạt động", value: 2},
 ]
 
+export const ACCOUNT_CATEGORY = {
+  ADMIN: 0,
+  PARTNER: 1,
+  CUSTOMER: 2,
+}

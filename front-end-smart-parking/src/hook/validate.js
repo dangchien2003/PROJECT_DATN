@@ -1,4 +1,4 @@
-import { addError, removeError, resetError } from "@/store/fieldErrorSlice";
+import { addError, removeError, removeManyKeyError, resetError } from "@/store/fieldErrorSlice";
 import { useDispatch } from "react-redux";
 
 export function useMessageError() {
@@ -12,9 +12,13 @@ export function useMessageError() {
     dispatch(removeError(key))
   }
 
+  const deleteManyKey = (keys) => {
+    dispatch(removeManyKeyError(keys))
+  }
+
   const reset = () => {
     dispatch(resetError())
   }
 
-  return { pushMessage, deleteKey, reset };
+  return { pushMessage, deleteKey, deleteManyKey, reset };
 }

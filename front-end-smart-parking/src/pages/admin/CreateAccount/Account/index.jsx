@@ -15,6 +15,7 @@ const Account = ({data}) => {
   
   useEffect(()=> {
     setRequireField(requireKeys)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const handleClickCreateByExcel = () => {

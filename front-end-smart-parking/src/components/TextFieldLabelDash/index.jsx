@@ -86,7 +86,7 @@ const TextFieldLabelDash = ({
   const setValuePass = (newValue) => {
     setValue(newValue);
     if (callbackChangeValue) {
-      if(prefix) {
+      if(prefix !== undefined) {
         callbackChangeValue(prefix + newValue, itemKey);
       } else {
         callbackChangeValue(newValue, itemKey);

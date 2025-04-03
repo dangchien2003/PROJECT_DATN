@@ -7,7 +7,6 @@ export const validateInput = (error, indexKey, dispatch) => {
     // forcus
     const firstKeyError = indexKey.find((key) => error[key]);
     if (firstKeyError) {
-      console.log(firstKeyError)
       dispatch(setFocusWithAutoClear(firstKeyError));
     }
     return false;

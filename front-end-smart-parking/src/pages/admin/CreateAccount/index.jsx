@@ -9,8 +9,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { checkRequireInput, validateInput } from "@/utils/validateAction";
 import { useMessageError } from "@/hook/validate";
 import { useRequireField } from "@/hook/useRequireField";
+import { createAccountByAdmin } from "@/service/accountService";
+import { ACCOUNT_CATEGORY } from "@/utils/constants";
+import { toastError, toastSuccess } from "@/utils/toast";
 
-const indexKey = ["fullName", "email", "phoneNumber", "gender", "status", "partner.partnerFullName"]
+const indexKeyAccount = ["fullName", "email", "phoneNumber", "gender", "status"];
+const indexKeyPartner = ["partner.partnerFullName"];
+const indexKey = indexKeyAccount.concat(indexKeyPartner);
 const partnerRequireKeys = ["partner.partnerFullName"]
 const CreateAccount = () => {
   const [data] = useState({status: 1});
@@ -21,22 +26,15 @@ const CreateAccount = () => {
   const dispatch = useDispatch();
   const fieldError = useSelector(state => state.fieldError);
   const requireKeys = useSelector(state => state.requireField);
-  const {pushMessage} = useMessageError();
+  const {pushMessage, deleteManyKey} = useMessageError();
   const {pushRequireField, deleteRequireField} = useRequireField();
 
   const handleActionCreate = () => {
     if(!validateInput(fieldError, indexKey, dispatch)) {
         return
     }
-    
     // confirm
     setConfirm(true)
-    if(!showBoxPartner) {
-      const { partner, ...newData } = data;
-      console.log(newData)
-    } else {
-      console.log(data)
-    }
   }
 
   useEffect(() => {
@@ -47,9 +45,21 @@ const CreateAccount = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [clickCreate])
   
+  const saveData = (dataSave) => {
+    createAccountByAdmin(dataSave)
+    .then(() => {
+      toastSuccess("Tạo mới thành công")
+    })
+    .catch(e => {
+      const objectError = e.response?.data
+      toastError(objectError?.message)
+    })
+    .finally(()=> {
+      hideLoad();
+    })
+  }
 
   const handleClickCreate = () => {
-    console.log(data)
     // valid data
     checkRequireInput(data, fieldError, pushMessage, requireKeys);
     setClickCreate(true)
@@ -62,6 +72,7 @@ const CreateAccount = () => {
       pushRequireField(partnerRequireKeys);
     } else {
       deleteRequireField(partnerRequireKeys);
+      deleteManyKey(indexKeyPartner)
     }
   }
 
@@ -75,10 +86,16 @@ const CreateAccount = () => {
 
   const handleOk = () => {
     showLoad("Đang xử lý")
-    setTimeout(()=> {
-      setConfirm(false);
-      hideLoad()
-    }, 2000)
+    setConfirm(false);
+    // lấy dữ liệu payload
+    if(!showBoxPartner) {
+      const { partner, ...newData } = data;
+      newData.category = ACCOUNT_CATEGORY.CUSTOMER;
+      saveData(newData);
+    } else {
+      data.category = ACCOUNT_CATEGORY.PARTNER;
+      saveData(data);
+    }
   }
 
   const handleCancel = () => {
