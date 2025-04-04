@@ -1,6 +1,7 @@
 package com.example.parking_service.service.impl;
 
 import com.example.common.dto.response.ApiResponse;
+import com.example.common.dto.response.PageResponse;
 import com.example.common.exception.AppException;
 import com.example.common.exception.ErrorCode;
 import com.example.common.utils.DataUtils;
@@ -9,6 +10,7 @@ import com.example.common.utils.RandomUtils;
 import com.example.common.utils.RegexUtils;
 import com.example.parking_service.dto.request.CreateAccountRequest;
 import com.example.parking_service.dto.request.PartnerRequest;
+import com.example.parking_service.dto.request.SearchListCustomerRequest;
 import com.example.parking_service.entity.Account;
 import com.example.parking_service.enums.AccountCategory;
 import com.example.parking_service.enums.AccountStatus;
@@ -20,11 +22,14 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
+import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 @Service
@@ -36,6 +41,41 @@ public class AccountServiceImpl implements AccountService {
     AccountRepository accountRepository;
     PartnerService partnerService;
     AccountMapper accountMapper;
+
+    @Override
+    public ApiResponse<Object> searchListCustomer(SearchListCustomerRequest request, Pageable pageable) {
+        String fullName = DataUtils.convertStringSearchLike(request.getFullName());
+        String email = DataUtils.convertStringSearchLike(request.getEmail());
+        String phoneNumber = DataUtils.convertStringSearchLike(request.getPhoneNumber());
+        // số dư
+        Long balance = null;
+        String balanceTrend = null;
+        if (!DataUtils.isNullOrEmpty(request.getBalance())) {
+            // dữ liệu số dư
+            if (!DataUtils.isNullOrEmpty(request.getBalance().getValue())) {
+                balance = Long.parseLong(request.getBalance().getValue().toString());
+            }
+            // cách tìm kiếm kết quả
+            if (!DataUtils.isNullOrEmpty(request.getBalance().getTrend())) {
+                balanceTrend = request.getBalance().getTrend().toUpperCase(Locale.ROOT);
+            }
+        }
+        // lấy dữ liệu db
+        Page<Account> result = accountRepository.searchListCustomer(
+                AccountCategory.KHACH_HANG.getValue(),
+                fullName,
+                email,
+                phoneNumber,
+                request.getGender(),
+                request.getStatus(),
+                balance,
+                balanceTrend,
+                pageable
+        );
+        return ApiResponse.builder()
+                .result(new PageResponse<>(accountMapper.toSearchListCustomerResponse(result.getContent()), result.getTotalPages(), result.getTotalElements()))
+                .build();
+    }
 
     @Override
     @Transactional
@@ -65,9 +105,13 @@ public class AccountServiceImpl implements AccountService {
 
     Account commonCreateAccount(CreateAccountRequest request, boolean isAdmin) {
         // kiểm tra sự tồn tại email
-        Optional<Account> existEmail = accountRepository.findAllByEmail(request.getEmail());
-        if (existEmail.isPresent()) {
-            throw new AppException(ErrorCode.DATA_EXISTED.withMessage("Email đã tồn tại trong hệ thống"));
+        List<Account> resultCheckDuplicate = accountRepository.findAllByEmailOrPhoneNumber(request.getEmail(), request.getPhoneNumber());
+        if (!resultCheckDuplicate.isEmpty()) {
+            if (resultCheckDuplicate.getFirst().getEmail().equals(request.getEmail())) {
+                throw new AppException(ErrorCode.DATA_EXISTED.withMessage("Email đã tồn tại trong hệ thống"));
+            } else {
+                throw new AppException(ErrorCode.DATA_EXISTED.withMessage("Số điện thoại đã tồn tại trong hệ thống"));
+            }
         }
 
         // kiểm tra và tạo ngẫu nhiên mật khẩu

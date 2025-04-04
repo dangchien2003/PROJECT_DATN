@@ -26,6 +26,7 @@ public class LocationController {
     }
 
     @DeleteMapping("delete-modify")
+        // role đối tác
     ApiResponse<Object> deleteModify(@RequestBody Long modifyId) {
         return locationModifyService.deleteModify(modifyId);
     }
