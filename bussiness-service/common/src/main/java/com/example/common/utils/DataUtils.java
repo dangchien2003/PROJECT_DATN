@@ -47,4 +47,13 @@ public class DataUtils {
     public static Date convertToDate(LocalDateTime localDateTime) {
         return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
     }
+
+    public static String convertStringSearchLike(String data) {
+        if (isNullOrEmpty(data))
+            return null;
+        return data
+                .replace("!", "!!")
+                .replace("_", "!_")
+                .replace("%", "!%");
+    }
 }

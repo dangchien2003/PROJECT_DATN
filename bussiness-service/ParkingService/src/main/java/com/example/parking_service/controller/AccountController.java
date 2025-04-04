@@ -2,11 +2,13 @@ package com.example.parking_service.controller;
 
 import com.example.common.dto.response.ApiResponse;
 import com.example.parking_service.dto.request.CreateAccountRequest;
+import com.example.parking_service.dto.request.SearchListCustomerRequest;
 import com.example.parking_service.service.AccountService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,5 +31,11 @@ public class AccountController {
         // role admin
     ApiResponse<Object> createAccountByAdmin(@Valid @RequestBody CreateAccountRequest request) {
         return accountService.createAccount(request, "admin");
+    }
+
+    @PostMapping("/search/customer")
+        // role admin
+    ApiResponse<Object> searchCustomer(@RequestBody SearchListCustomerRequest request, Pageable pageable) {
+        return accountService.searchListCustomer(request, pageable);
     }
 }
