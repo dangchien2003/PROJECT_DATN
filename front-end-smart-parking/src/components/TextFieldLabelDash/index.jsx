@@ -83,13 +83,18 @@ const TextFieldLabelDash = ({
     }
   };
 
+  const handleBlur = (e) => {
+    const newValue = e.target.value;
+    setValuePass(newValue.trim());
+  }
+
   const setValuePass = (newValue) => {
     setValue(newValue);
     if (callbackChangeValue) {
       if(prefix !== undefined) {
-        callbackChangeValue(prefix + newValue, itemKey);
+        callbackChangeValue(itemKey, prefix + newValue);
       } else {
-        callbackChangeValue(newValue, itemKey);
+        callbackChangeValue(itemKey, newValue);
       }
     }
   };
@@ -113,6 +118,7 @@ const TextFieldLabelDash = ({
         allowClear
         value={value}
         onChange={handleChangeValue}
+        onBlur={handleBlur}
         onClear={handleClear}
         prefix={prefix}
         disabled={disable}

@@ -22,7 +22,7 @@ const Account = ({data}) => {
     setShowViewCreateByExcel(true);
   };
 
-  const handleChange = (value, key) => {
+  const handleChange = (key, value) => {
     if (data) {
       updateObjectValue(data, key, value);
     }
