@@ -63,7 +63,7 @@ const SelectBoxLabelDash = ({
   const setValuePass = (newValue) => {
     setValue(newValue);
     if (callbackChangeValue) {
-      callbackChangeValue(newValue, itemKey);
+      callbackChangeValue(itemKey, newValue);
     }
   };
 

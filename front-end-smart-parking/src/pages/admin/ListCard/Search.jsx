@@ -1,15 +1,24 @@
 import DatePickerLabelDash from "@/components/DatePickerLabelDash";
 import SelectBoxLabelDash from "@/components/SelectBoxLabelDash";
 import TextFieldLabelDash from "@/components/TextFieldLabelDash";
+import { useRequireField } from "@/hook/useRequireField";
 import {
   CARD_TYPE_SELECTBOX,
 } from "@/utils/constants";
 import { updateObjectValue } from "@/utils/object";
 import { Button } from "antd";
+import { useEffect } from "react";
 import { IoSearch } from "react-icons/io5";
 // import dayjs from "dayjs";
 
 const Search = ({ onSearch, dataSearch }) => {
+  const {resetRequireField} = useRequireField()
+  
+  useEffect(()=> {
+    console.log("object")
+    resetRequireField()
+  }, [resetRequireField])
+
   const handleChange = (value, key) => {
     if (dataSearch) {
       updateObjectValue(dataSearch, key, value);

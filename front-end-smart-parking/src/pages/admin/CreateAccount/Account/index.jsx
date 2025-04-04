@@ -15,13 +15,14 @@ const Account = ({data}) => {
   
   useEffect(()=> {
     setRequireField(requireKeys)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const handleClickCreateByExcel = () => {
     setShowViewCreateByExcel(true);
   };
 
-  const handleChange = (value, key) => {
+  const handleChange = (key, value) => {
     if (data) {
       updateObjectValue(data, key, value);
     }

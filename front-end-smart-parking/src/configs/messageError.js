@@ -1,0 +1,23 @@
+export const messageError = {
+  1001: 'Dữ liệu không hợp lệ',
+  1002: 'Trường name không phù hợp',
+  1003: 'Không được bỏ trống thông tin',
+  1004: 'Đường dẫn không tồn tại',
+  1006: 'Dữ liệu không được tồn tại khoảng trắng đầu và cuối',
+  1010: 'Quyền này đã tồn tại',
+  1011: 'Không tìm thấy thông tin quyền',
+  1015: 'Vai trò này đã tồn tại',
+  1016: 'Không tìm thấy vai trò',
+  1020: 'Email không hợp lệ',
+  1021: 'Số điện thoại không hợp lệ',
+  1022: 'Mật khẩu không hợp lệ',
+  1023: 'Email đã tồn tại',
+  1024: 'Thông tin tài khoản hoặc mật khẩu không chính xác',
+  1025: 'Tài khoản đã bị khoá',
+  1026: 'Tài khoản chưa được xác thực',
+  1027: 'Không tìm thấy tài khoản',
+  1030: 'Số trang không hợp lệ',
+  1041: 'Chưa đăng nhập',
+  1042: 'Không có quyền truy cập',
+  9999: 'Lỗi hệ thống'
+}

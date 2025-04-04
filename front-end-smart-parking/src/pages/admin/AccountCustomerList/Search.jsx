@@ -1,17 +1,36 @@
 import NumberInputWithSortLabelDash from "@/components/NumberInputWithSortLabelDash";
 import SelectBoxLabelDash from "@/components/SelectBoxLabelDash";
 import TextFieldLabelDash from "@/components/TextFieldLabelDash";
+import { useRequireField } from "@/hook/useRequireField";
+import { setSearching } from "@/store/startSearchSlice";
 import { ACCOUNT_STATUS, GENDER } from "@/utils/constants";
+import { changeInput, changeInputTrend } from "@/utils/handleChange";
 import { Button } from "antd";
+import { useEffect } from "react";
 import { IoSearch } from "react-icons/io5";
+import { useDispatch, useSelector } from "react-redux";
 
-const Search = () => {
-  const handleChange = (value) => {
-    console.log(value);
+const Search = ({dataSearch}) => {
+  const {resetRequireField} = useRequireField()
+  const {isSearching} = useSelector(state => state.startSearch)
+  const dispatch = useDispatch();
+  
+  useEffect(()=> {
+    resetRequireField()
+  }, [resetRequireField])
+
+  const handleChange = (key, value) => {
+    changeInput(dataSearch, key, value)
   };
 
+  const callbackChangeInputTrend = (key, value, trend, skip) => {
+    changeInputTrend(dataSearch, key, value, trend, skip);
+  }
+
   const handleRunSearch = () => {
-    console.log("click");
+    if(!isSearching) {
+      dispatch(setSearching(true))
+    }
   };
 
   return (
@@ -20,72 +39,62 @@ const Search = () => {
         style={{
           display: "flex",
           flexWrap: "wrap",
-          justifyContent: "space-evenly",
-          // gap: 16,
+          gap: 16,
         }}
       >
         <TextFieldLabelDash
+          itemKey={"fullName"}
           key={"name"}
           label="Tên người dùng"
-          defaultValue={""}
+          defaultValue={dataSearch.fullName}
           placeholder={"Nhập tên người dùng"}
           callbackChangeValue={handleChange}
         />
         <TextFieldLabelDash
+          itemKey={"email"}
           key={"email"}
           label="Địa chỉ email"
-          defaultValue={""}
+          defaultValue={dataSearch.email}
           placeholder={"Nhập địa chỉ email"}
           callbackChangeValue={handleChange}
         />
         <TextFieldLabelDash
+          itemKey={"phoneNumber"}
           key={"sdt"}
           label="Số điện thoại"
-          defaultValue={""}
+          defaultValue={dataSearch.phoneNumber}
           placeholder={"Nhập số điện thoại"}
           callbackChangeValue={handleChange}
-          regex={/^\d{0,9}$/}
-          prefix={0}
+          regex={/^\d*$/}
+          maxLength={10}
         />
         <SelectBoxLabelDash
+          itemKey={"gender"}
           label={"Giới tính"}
           data={GENDER}
           key={"gioi tinh"}
           placeholder={"Chọn giới tính"}
+          defaultValue={dataSearch.gender}
+          callbackChangeValue={handleChange}
         />
-      </div>
-      <div
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          justifyContent: "space-evenly",
-          // gap: 16,
-        }}
-      >
         <SelectBoxLabelDash
+          itemKey={"status"}
           label={"Trạng thái tài khoản"}
           data={ACCOUNT_STATUS}
           key={"trang thai"}
           placeholder={"Chọn trạng thái"}
-        />
-        <SelectBoxLabelDash
-          label={"Vai trò"}
-          data={ACCOUNT_STATUS}
-          key={"vai tro"}
-          placeholder={"Chọn vai trò"}
-        />
-        <SelectBoxLabelDash
-          label={"Quyền truy cập"}
-          data={ACCOUNT_STATUS}
-          key={"quyen truy cap"}
-          placeholder={"Chọn quyền truy cập"}
+          defaultValue={dataSearch.status}
+          callbackChangeValue={handleChange}
         />
         <NumberInputWithSortLabelDash
+          itemKey={"balance"}
           label={"Số dư tài khoản"}
           min={-10}
           max={1000000000}
           placeholder={"Nhập số dư"}
           addonAfter={"vnđ"}
+          defaultValue={dataSearch.balance}
+          callbackChangeValue={callbackChangeInputTrend}
         />
       </div>
       <div style={{ display: "flex", justifyContent: "center" }}>

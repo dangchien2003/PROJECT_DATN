@@ -7,6 +7,7 @@ import ContactTrouble from "../ContactTrouble";
 import Notifitation from "../Notification";
 import Account from "../Account";
 import "./style.css";
+import { ToastContainer } from "react-toastify";
 const { Header, Sider, Content } = Layout;
 
 const PartnerLayout = () => {
@@ -17,6 +18,7 @@ const PartnerLayout = () => {
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
+      <ToastContainer />
       <Sider trigger={null} collapsible collapsed={collapsed}>
         <div className="demo-logo-vertical">các</div>
         <Menu

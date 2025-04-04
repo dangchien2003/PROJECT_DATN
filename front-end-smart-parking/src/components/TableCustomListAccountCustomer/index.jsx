@@ -7,6 +7,10 @@ import {
 import ButtonStatus from "../ButtonStatus";
 import { formatCurrency } from "@/utils/number";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { setSearching } from "@/store/startSearchSlice";
+import { searchAccountCustomer } from "@/service/accountService";
+import { convertDataSort } from "@/utils/api";
 
 const columns = [
   {
@@ -17,22 +21,8 @@ const columns = [
     width: 50,
   },
   {
-    title: "ID",
-    dataIndex: "id",
-    key: "1",
-    sorter: false,
-    width: 200,
-  },
-  {
-    title: "Trạng thái",
-    dataIndex: "status",
-    key: "2",
-    sorter: false,
-    width: 150,
-  },
-  {
     title: "Tên tài khoản",
-    dataIndex: "full_name",
+    dataIndex: "fullName",
     key: "3",
     sorter: true,
     width: 200,
@@ -45,6 +35,13 @@ const columns = [
     width: 200,
   },
   {
+    title: "Trạng thái",
+    dataIndex: "status",
+    key: "2",
+    sorter: false,
+    width: 150,
+  },
+  {
     title: "Số dư",
     dataIndex: "balance",
     key: "5",
@@ -53,109 +50,79 @@ const columns = [
   },
 ];
 
-const convertResponseToDataTable = (response, currentPage, pageSize) => {
-  return response.data.map((item, index) => {
+const convertResponseToDataTable = (data, currentPage, pageSize) => {
+  return data.map((item, index) => {
     item.status = (
       <ButtonStatus
         color={COLOR_BUTTON_ACCOUNT_STATUS[item.status]}
         label={ACCOUNT_STATUS_OBJECT[item.status]}
       />
     );
-    item.balance = formatCurrency(item.balance) + " đ";
+    item.balance = (item.balance === 0 ? 0 : formatCurrency(item.balance)) + " đ";
     item.stt = (currentPage - 1) * pageSize + index + 1;
     return item;
   });
 };
 
-const TableCustomListAccountCustomer = () => {
+const TableCustomListAccountCustomer = ({dataSearch}) => {
   const navigate = useNavigate();
+  const {isSearching} = useSelector(state => state.startSearch)
+  const dispatch = useDispatch();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [firstSearch, setFirstSearch] = useState(false);
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 10,
     total: 0,
   });
-  const [sorter, setSorter] = useState({
-    field: "name",
-    order: "ascend",
+  const [sorter] = useState({
+    field: null,
+    order: null,
   });
 
   const loadData = (newPagination, sorter) => {
-    if (!sorter.field || !sorter.order) {
-      sorter = {
-        field: "name",
-        order: "ascend",
-      };
-      setSorter(sorter);
-    }
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      const dataResponse = {
-        data: [
-          {
-            id: 1,
-            status: 1,
-            full_name: "Lê Đăng Chiến",
-            email: "dangchien@gmail.com",
-            balance: 100000,
-          },
-          {
-            id: 2,
-            status: 2,
-            full_name: "Lê Đăng Chiến",
-            email: "dangchien@gmail.com",
-            balance: 100000,
-          },
-          {
-            id: 3,
-            status: 0,
-            full_name: "Lê Đăng Chiến",
-            email: "dangchien@gmail.com",
-            balance: 100000,
-          },
-          {
-            id: 4,
-            status: 1,
-            full_name: "Lê Đăng Chiến",
-            email: "dangchien@gmail.com",
-            balance: 100000,
-          },
-          {
-            id: 5,
-            status: 1,
-            full_name: "Lê Đăng Chiến",
-            email: "dangchien@gmail.com",
-            balance: 100000,
-          },
-        ],
-        totalElement: 60,
-        totalPage: 10,
-      };
-      setData(
-        convertResponseToDataTable(
-          dataResponse,
-          newPagination.current,
-          newPagination.pageSize
-        )
-      );
-      setPagination({
-        ...newPagination,
-        total: dataResponse.totalElement,
+
+    searchAccountCustomer(dataSearch, newPagination.current - 1, newPagination.pageSize, sorter.field, sorter.order)
+      .then((response) => {
+        const data = response.data?.result?.data;
+        const total = response.data?.result?.totalElements;
+        setData(
+          convertResponseToDataTable(
+            data,
+            newPagination.current,
+            newPagination.pageSize
+          )
+        );
+        setPagination({
+          ...newPagination,
+          total: total,
+        });
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      })
+      .finally(() => {
+        setLoading(false);
+        dispatch(setSearching(false))
       });
-    }, 1000);
   };
 
   const handleTableChange = (newPagination, _, sorter) => {
-    setPagination(newPagination);
+    convertDataSort(sorter)
     loadData(newPagination, sorter);
   };
 
   useEffect(() => {
-    loadData(pagination, sorter);
+    if(isSearching || !firstSearch) {
+      loadData(pagination, sorter);
+      if(!firstSearch) {
+        setFirstSearch(true)
+      }
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [isSearching]);
 
   const handleClickRow = (data) => {
     navigate(`/account/customer/${data.id}`);
@@ -175,6 +142,10 @@ const TableCustomListAccountCustomer = () => {
         ...pagination,
         showSizeChanger: true,
         pageSizeOptions: ["10", "20", "50", "100"],
+        showTotal: (total, range) =>
+          <div className="page-detail-table">
+            {range[0]} - {range[1]} / {total} bản ghi
+          </div>,
       }}
       onRow={(record) => {
         return {

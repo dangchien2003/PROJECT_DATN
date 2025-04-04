@@ -7,6 +7,7 @@ import {
 import ButtonStatus from "../ButtonStatus";
 import { useNavigate } from "react-router-dom";
 import { listPartner } from "./dataTest";
+import { convertDataSort } from "@/utils/api";
 
 const columns = [
   {
@@ -112,6 +113,7 @@ const TableCustomListPartner = () => {
   };
 
   const handleTableChange = (newPagination, _, sorter) => {
+    convertDataSort(sorter)
     setPagination(newPagination);
     loadData(newPagination, sorter);
   };
