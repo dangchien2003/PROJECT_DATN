@@ -1,7 +1,6 @@
 package com.example.parking_service.dto.response;
 
 
-import com.example.common.entity.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -10,13 +9,15 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 
+import java.time.LocalDateTime;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class SearchListCustomerResponse extends BaseEntity {
+public class AccountResponse {
     String id;
     String fullName;
     Integer gender;
@@ -28,4 +29,13 @@ public class SearchListCustomerResponse extends BaseEntity {
     Integer category;
     String avatar;
     Long balance;
+    PartnerResponse partner;
+    // đối tác
+    String partnerId;
+    String partnerFullName;
+    String representativeFullName;
+    String partnerPhoneNumber;
+    String partnerEmail;
+    String partnerAddress;
+    LocalDateTime createdAt;
 }

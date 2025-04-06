@@ -10,8 +10,6 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 
-import java.util.List;
-
 @Entity
 @Table(name = "account")
 @Data
@@ -23,6 +21,7 @@ public class Account extends BaseEntity {
 
     @Id
     @Column(nullable = false, unique = true)
+    @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
     String fullName;
@@ -49,6 +48,18 @@ public class Account extends BaseEntity {
 
     Long balance;
 
-    @OneToMany
-    List<Role> roles;
+    // thông tin đối tác
+    String partnerFullName;
+
+    String representativeFullName;
+
+    String partnerPhoneNumber;
+
+    @Column(unique = true)
+    String partnerEmail;
+
+    String partnerAddress;
+
+    //    @OneToMany
+    //    List<Role> roles;
 }

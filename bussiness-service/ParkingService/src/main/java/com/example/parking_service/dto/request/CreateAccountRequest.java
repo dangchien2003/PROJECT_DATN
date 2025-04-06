@@ -24,4 +24,10 @@ public class CreateAccountRequest {
     Integer category;
     PartnerRequest partner;
     Integer status;
+    // đối tác
+    String partnerFullName;
+    String representativeFullName;
+    String partnerPhoneNumber;
+    String partnerEmail;
+    String partnerAddress;
 }
