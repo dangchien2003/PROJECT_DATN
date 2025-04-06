@@ -11,11 +11,15 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class SearchListCustomerRequest {
+public class SearchListAccountRequest {
     String fullName;
     String email;
     String phoneNumber;
     Integer gender;
     Integer status;
     DataTrend balance;
+    // search đối tác
+    String partnerFullName;
+    String partnerEmail;
+    String partnerPhoneNumber;
 }
