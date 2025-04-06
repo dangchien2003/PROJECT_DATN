@@ -1,4 +1,5 @@
 export function formatCurrency(number) {
+  if (number === 0) return "0";
   if (!number) return "";
   return number.toLocaleString("vi-VN");
 }

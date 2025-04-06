@@ -6,16 +6,18 @@ import Status from "./Status";
 import { FaEdit } from "react-icons/fa";
 import { useState } from "react";
 import ShowBoxEdit from "./ShowBoxEdit";
+import dayj from "dayjs";
+
 const InfoBox = ({ data }) => {
   const [showEdit, setShowEdit] = useState(false);
   return (
-    <div style={{ width: 650, display: "flex" }}>
+    <div style={{display: "flex" }}>
       <div style={{ width: 300 }}>
         <div>
           <h3>Thông tin tài khoản</h3>
           <div className="item">
             <span>Tên tài khoản: </span>
-            <span>Lê đăng chiến</span>
+            <span>{data.fullName}</span>
           </div>
           <div className="item">
             <span>Giới tính: </span>
@@ -24,21 +26,20 @@ const InfoBox = ({ data }) => {
                 name="gender"
                 options={GENDER.map((item) => ({
                   ...item,
-                  disabled: item.value !== 1,
                 }))}
-                value={1}
+                value={data.gender}
               />
             </span>
           </div>
           <div className="item">
             <span>Email: </span>
-            <span>dangchien@gmail.com</span>
+            <span>{data.email}</span>
           </div>
           <div className="item">
             <span>Số điện thoại: </span>
-            <span>0333757429</span>
+            <span>{data.phoneNumber}</span>
             <a
-              href={`https://zalo.me/${data?.phone}`}
+              href={`https://zalo.me/${data?.phoneNumber}`}
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -51,7 +52,7 @@ const InfoBox = ({ data }) => {
           </div>
           <div className="item">
             <span>Trạng thái: </span>
-            <Status info={{ id: 1, status: 1, full_name: "le dang chien" }} />
+            <Status info={{ id: data.id, status: data.status, fullName: data.fullName }} />
           </div>
           <div className="item">
             <span>Lý do: </span>
@@ -71,13 +72,13 @@ const InfoBox = ({ data }) => {
         <div>
           <div className="item">
             <span>Người đại diện: </span>
-            <span>Lê Văn A</span>
+            <span>{data.representativeFullName}</span>
           </div>
           <div className="item">
             <span>Số điện thoại: </span>
-            <span>0333757429</span>
+            <span>{data.partnerPhoneNumber}</span>
             <a
-              href={`https://zalo.me/${data?.phone}`}
+              href={`https://zalo.me/${data?.partnerPhoneNumber}`}
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -90,15 +91,15 @@ const InfoBox = ({ data }) => {
           </div>
           <div className="item">
             <span>Email: </span>
-            <span>dangchien@gmail.com</span>
+            <span>{data.partnerEmail}</span>
           </div>
           <div className="item">
             <span>Địa chỉ: </span>
-            <span>Cầu Diễn, Bắc Từ Liêm, Hà Nội</span>
+            <span>{data.partnerAddress}</span>
           </div>
           <div className="item">
             <span>Hợp tác: </span>
-            <span>11/11/2003</span>
+            <span>{dayj(data.createdAt).format("DD/MM/YYYY")}</span>
           </div>
         </div>
         <div style={{ position: "absolute", bottom: 16 }}>
@@ -122,7 +123,7 @@ const InfoBox = ({ data }) => {
             setShowEdit(false);
           }}
         >
-          <ShowBoxEdit />
+          <ShowBoxEdit info={data}/>
         </Drawer>
       )}
     </div>

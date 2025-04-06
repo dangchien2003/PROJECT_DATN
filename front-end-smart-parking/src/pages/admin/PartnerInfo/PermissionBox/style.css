@@ -6,11 +6,6 @@
   width: 250px !important;
 }
 
-.ant-drawer-content-wrapper {
-  width: 800px !important;
-  max-width: 95% !important;
-}
-
 .tree-transfer .ant-transfer-list:first-child {
   flex: none;
   width: 50%;

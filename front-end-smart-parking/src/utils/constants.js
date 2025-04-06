@@ -314,3 +314,9 @@ export const ACCOUNT_CATEGORY = {
   PARTNER: 1,
   CUSTOMER: 2,
 }
+
+export const ACCOUNT_CATEGORY_NAME = [
+  {code: 0, value: "Quản trị viên"},
+  {code: 1, value: "Đối tác"},
+  {code: 2, value: "Khách hàng"},
+]
