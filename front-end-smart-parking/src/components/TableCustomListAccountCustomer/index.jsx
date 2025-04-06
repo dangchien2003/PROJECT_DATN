@@ -10,7 +10,8 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setSearching } from "@/store/startSearchSlice";
 import { searchAccountCustomer } from "@/service/accountService";
-import { convertDataSort } from "@/utils/api";
+import { convertDataSort, getDataApi } from "@/utils/api";
+import { toastError } from "@/utils/toast";
 
 const columns = [
   {
@@ -101,7 +102,8 @@ const TableCustomListAccountCustomer = ({dataSearch}) => {
         });
       })
       .catch((error) => {
-        console.error("Error fetching data:", error);
+        error = getDataApi(error);
+        toastError(error.message)
       })
       .finally(() => {
         setLoading(false);

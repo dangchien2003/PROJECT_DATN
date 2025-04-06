@@ -1,15 +1,16 @@
 import zalo from "@image/zalo.webp";
 import "./style.css";
-import { GENDER } from "@/utils/constants";
+import { ACCOUNT_CATEGORY_NAME, GENDER } from "@/utils/constants";
 import { Radio } from "antd";
 import Status from "./Status";
+import { formatCurrency } from "@/utils/number";
 const InfoBox = ({ data }) => {
   return (
     <div style={{ width: 500 }}>
       <div>
         <div className="item">
           <span>Loại tài khoản: </span>
-          <span>Khách hàng</span>
+          <span>{data.category && ACCOUNT_CATEGORY_NAME.filter(item => item.code === data.category)[0].value}</span>
         </div>
         <div className="item">
           <span>Giới tính: </span>
@@ -18,21 +19,20 @@ const InfoBox = ({ data }) => {
               name="gender"
               options={GENDER.map((item) => ({
                 ...item,
-                disabled: item.value !== 1,
               }))}
-              value={1}
+              value={data.gender}
             />
           </span>
         </div>
         <div className="item">
           <span>Email: </span>
-          <span>dangchien@gmail.com</span>
+          <span>{data.email}</span>
         </div>
         <div className="item">
           <span>Số điện thoại: </span>
-          <span>0333757429</span>
+          <span>{data.phoneNumber}</span>
           <a
-            href={`https://zalo.me/${data?.phone}`}
+            href={`https://zalo.me/${data?.phoneNumber}`}
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -45,15 +45,15 @@ const InfoBox = ({ data }) => {
         </div>
         <div className="item">
           <span>Trạng thái: </span>
-          <Status info={{ id: 1, status: 1, full_name: "le dang chien" }} />
+          <Status info={{ id: data.id, status: data.status, fullName: data.fullName }} />
         </div>
         <div className="item">
           <span>Lý do: </span>
-          <span></span>
+          <span>{data.reason}</span>
         </div>
         <div className="item">
           <span>Số dư tài khoản: </span>
-          <span style={{ fontWeight: "bold" }}>100.000 đ</span>
+          <span style={{ fontWeight: "bold" }}>{formatCurrency(data.balance)} đ</span>
         </div>
       </div>
     </div>

@@ -59,7 +59,7 @@ const Status = ({ info }) => {
       />
       <div>
         <Modal
-          title={`Xác nhận thay đổi trạng thái tài khoản ${info.full_name} thành "${ACCOUNT_STATUS_OBJECT[pendingStatus]}"`}
+          title={`Xác nhận thay đổi trạng thái tài khoản ${info.fullName} thành "${ACCOUNT_STATUS_OBJECT[pendingStatus]}"`}
           open={pendingStatus !== null}
           onCancel={handleCancel}
           onOk={handleOk}

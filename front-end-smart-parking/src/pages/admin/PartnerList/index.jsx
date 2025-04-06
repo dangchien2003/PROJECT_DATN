@@ -1,14 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
 import Search from "./Search";
 import DividerCustom from "@/components/DividerCustom";
 import TableCustomListPartner from "@/components/TableCustomListPartner";
 
 const PartnerList = () => {
+  const [dataSearch] = useState({
+    partnerFullName: null, 
+    email: null, 
+    phoneNumber: null, 
+    status: null
+  });
   return (
     <div>
-      <Search />
+      <Search dataSearch={dataSearch}/>
       <DividerCustom style={{ width: "80%" }} />
-      <TableCustomListPartner />
+      <TableCustomListPartner dataSearch={dataSearch}/>
     </div>
   );
 };
