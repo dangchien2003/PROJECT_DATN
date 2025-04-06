@@ -6,11 +6,8 @@ import {
 } from "@/utils/constants";
 import ButtonStatus from "../ButtonStatus";
 import { useNavigate } from "react-router-dom";
-import { convertDataSort, getDataApi } from "@/utils/api";
-import { useDispatch, useSelector } from "react-redux";
-import { searchPartner } from "@/service/accountService";
-import { setSearching } from "@/store/startSearchSlice";
-import { toastError } from "@/utils/toast";
+import { listPartner } from "./dataTest";
+import { convertDataSort } from "@/utils/api";
 
 const columns = [
   {
@@ -21,107 +18,110 @@ const columns = [
     width: 50,
   },
   {
-    title: "Tên đối tác",
-    dataIndex: "partnerFullName",
+    title: "ID - AccountId",
+    dataIndex: "idPrint",
     key: "1",
-    sorter: true,
-    width: 150,
+    sorter: false,
+    width: 200,
   },
   {
     title: "Trạng thái",
     dataIndex: "statusPrint",
     key: "2",
     sorter: false,
-    width: 100,
+    width: 150,
   },
   {
-    title: "Email",
-    dataIndex: "partnerEmail",
+    title: "Tên đối tác",
+    dataIndex: "partnerFullName",
     key: "3",
     sorter: true,
     width: 200,
   },
   {
-    title: "Địa chỉ",
-    dataIndex: "partnerAddress",
+    title: "Email",
+    dataIndex: "email",
     key: "4",
     sorter: true,
-    width: 400,
+    width: 200,
+  },
+  {
+    title: "Địa chỉ",
+    dataIndex: "address",
+    key: "5",
+    sorter: true,
+    width: 200,
   },
 ];
 
-const convertResponseToDataTable = (data, currentPage, pageSize) => {
-  return data.map((item, index) => {
+const convertResponseToDataTable = (response, currentPage, pageSize) => {
+  return response.data.map((item, index) => {
     item.statusPrint = (
       <ButtonStatus
         color={COLOR_BUTTON_ACCOUNT_STATUS[item.status]}
         label={ACCOUNT_STATUS_OBJECT[item.status]}
       />
     );
+    item.idPrint = item.id + " - " + item.accountId;
     item.stt = (currentPage - 1) * pageSize + index + 1;
     return item;
   });
 };
 
-const TableCustomListPartner = ({dataSearch}) => {
+const TableCustomListPartner = () => {
   const navigate = useNavigate();
-  const {isSearching} = useSelector(state => state.startSearch)
-  const dispatch = useDispatch();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [firstSearch, setFirstSearch] = useState(false);
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 10,
     total: 0,
   });
-  const [sorter] = useState({
-    field: null,
-    order: null,
+  const [sorter, setSorter] = useState({
+    field: "name",
+    order: "ascend",
   });
 
   const loadData = (newPagination, sorter) => {
+    if (!sorter.field || !sorter.order) {
+      sorter = {
+        field: "name",
+        order: "ascend",
+      };
+      setSorter(sorter);
+    }
     setLoading(true);
-    searchPartner(dataSearch, newPagination.current - 1, newPagination.pageSize, sorter.field, sorter.order)
-      .then((response) => {
-        const data = response.data?.result?.data;
-        const total = response.data?.result?.totalElements;
-        setData(
-          convertResponseToDataTable(
-            data,
-            newPagination.current,
-            newPagination.pageSize
-          )
-        );
-        setPagination({
-          ...newPagination,
-          total: total,
-        });
-      })
-      .catch((error) => {
-        error = getDataApi(error);
-        toastError(error.message)
-      })
-      .finally(() => {
-        setLoading(false);
-        dispatch(setSearching(false))
+    setTimeout(() => {
+      setLoading(false);
+      const dataResponse = {
+        data: listPartner,
+        totalElement: 50,
+        totalPage: 10,
+      };
+      setData(
+        convertResponseToDataTable(
+          dataResponse,
+          newPagination.current,
+          newPagination.pageSize
+        )
+      );
+      setPagination({
+        ...newPagination,
+        total: dataResponse.totalElement,
       });
+    }, 1000);
   };
 
   const handleTableChange = (newPagination, _, sorter) => {
     convertDataSort(sorter)
+    setPagination(newPagination);
     loadData(newPagination, sorter);
   };
 
   useEffect(() => {
-    if(isSearching || !firstSearch) {
-      loadData(pagination, sorter);
-      if(!firstSearch) {
-        setFirstSearch(true)
-      }
-    }
+    loadData(pagination, sorter);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSearching]);
+  }, []);
 
   const handleClickRow = (data) => {
     navigate(`/account/partner/${data.id}`);
