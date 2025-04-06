@@ -9,15 +9,14 @@ import com.example.common.utils.ENumUtils;
 import com.example.common.utils.RandomUtils;
 import com.example.common.utils.RegexUtils;
 import com.example.parking_service.dto.request.CreateAccountRequest;
-import com.example.parking_service.dto.request.PartnerRequest;
-import com.example.parking_service.dto.request.SearchListCustomerRequest;
+import com.example.parking_service.dto.request.SearchListAccountRequest;
+import com.example.parking_service.dto.response.AccountResponse;
 import com.example.parking_service.entity.Account;
 import com.example.parking_service.enums.AccountCategory;
 import com.example.parking_service.enums.AccountStatus;
 import com.example.parking_service.mapper.AccountMapper;
 import com.example.parking_service.repository.AccountRepository;
 import com.example.parking_service.service.AccountService;
-import com.example.parking_service.service.PartnerService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -30,7 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
-import java.util.UUID;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -39,11 +38,49 @@ import java.util.UUID;
 @Slf4j
 public class AccountServiceImpl implements AccountService {
     AccountRepository accountRepository;
-    PartnerService partnerService;
     AccountMapper accountMapper;
 
     @Override
-    public ApiResponse<Object> searchListCustomer(SearchListCustomerRequest request, Pageable pageable) {
+    public ApiResponse<Object> detail(String idAccount, Integer category) {
+        Optional<Account> entity = Optional.empty();
+        // lấy data
+        if (!DataUtils.isNullOrEmpty(idAccount) && !DataUtils.isNullOrEmpty(category)) {
+            entity = accountRepository.findByIdAndCategory(idAccount, category);
+        }
+        // not found
+        if (entity.isEmpty()) {
+            throw new AppException(ErrorCode.NOT_FOUND.withMessage("Tài khoản không xác định"));
+        } else {
+            Account account = entity.get();
+            AccountResponse accountResponse = accountMapper.toAccountResponse(account);
+            return ApiResponse.builder()
+                    .result(accountResponse)
+                    .build();
+        }
+    }
+
+    @Override
+    public ApiResponse<Object> searchListPartner(SearchListAccountRequest request, Pageable pageable) {
+        String partnerFullName = DataUtils.convertStringSearchLike(request.getPartnerFullName());
+        String partnerEmail = DataUtils.convertStringSearchLike(request.getPartnerEmail());
+        String partnerPhoneNumber = DataUtils.convertStringSearchLike(request.getPartnerPhoneNumber());
+
+        // lấy dữ liệu db
+        Page<Account> result = accountRepository.searchListPartner(
+                AccountCategory.DOI_TAC.getValue(),
+                partnerFullName,
+                partnerEmail,
+                partnerPhoneNumber,
+                request.getStatus(),
+                pageable
+        );
+        return ApiResponse.builder()
+                .result(new PageResponse<>(accountMapper.toListAccountResponses(result.getContent()), result.getTotalPages(), result.getTotalElements()))
+                .build();
+    }
+
+    @Override
+    public ApiResponse<Object> searchListCustomer(SearchListAccountRequest request, Pageable pageable) {
         String fullName = DataUtils.convertStringSearchLike(request.getFullName());
         String email = DataUtils.convertStringSearchLike(request.getEmail());
         String phoneNumber = DataUtils.convertStringSearchLike(request.getPhoneNumber());
@@ -73,7 +110,7 @@ public class AccountServiceImpl implements AccountService {
                 pageable
         );
         return ApiResponse.builder()
-                .result(new PageResponse<>(accountMapper.toSearchListCustomerResponse(result.getContent()), result.getTotalPages(), result.getTotalElements()))
+                .result(new PageResponse<>(accountMapper.toListAccountResponses(result.getContent()), result.getTotalPages(), result.getTotalElements()))
                 .build();
     }
 
@@ -82,24 +119,55 @@ public class AccountServiceImpl implements AccountService {
     public ApiResponse<Object> createAccount(CreateAccountRequest request, String idAdmin) {
         boolean isAdmin = !DataUtils.isNullOrEmpty(idAdmin);
         Account accountEntity = commonCreateAccount(request, isAdmin);
+        boolean createPartner = false;
         if (isAdmin) {
             accountEntity.setCreatedBy(idAdmin);
             if (request.getCategory().equals(AccountCategory.DOI_TAC.getValue())) {
-                createPartner(accountEntity.getId(), request.getPartner());
+                // xử lý nếu tạo đối tác
+                processPartner(accountEntity);
+                createPartner = true;
             }
         }
+        if (!createPartner) {
+            // xoá dữ liệu thừa
+            removePartnerInfo(accountEntity);
+        }
         accountRepository.save(accountEntity);
-
         return ApiResponse.builder()
                 .build();
     }
 
-    void createPartner(String accountId, PartnerRequest partnerRequest) {
-        if (!DataUtils.isNullOrEmpty(partnerRequest)) {
-            // tạo đối tác
-            partnerService.createPartner(partnerRequest, accountId);
+    void removePartnerInfo(Account entity) {
+        entity.setPartnerFullName(null);
+        entity.setPartnerEmail(null);
+        entity.setRepresentativeFullName(null);
+        entity.setPartnerPhoneNumber(null);
+        entity.setPartnerAddress(null);
+    }
+
+    void processPartner(Account entity) {
+        // kiểm tra email
+        if (!DataUtils.isNullOrEmpty(entity.getPartnerEmail())) {
+            if (!RegexUtils.checkData(entity.getPartnerEmail(), RegexUtils.REGEX_EMAIL)) {
+                throw new AppException(ErrorCode.INVALID_DATA.withMessage("Vui lòng nhập đúng email và thử lại"));
+            }
         } else {
-            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Không tìm thấy thông tin đối tác vui lòng bổ sung và thử lại"));
+            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Vui lòng cung cấp email đối tác để tiếp tục"));
+        }
+        // kiểm tra số điện thoại
+        if (!DataUtils.isNullOrEmpty(entity.getPartnerPhoneNumber())) {
+            if (!RegexUtils.checkData(entity.getPartnerPhoneNumber(), RegexUtils.REGEX_PHONE_NUMBER_VI)) {
+                throw new AppException(ErrorCode.INVALID_DATA.withMessage("Số điện thoại không phù hợp vui lòng nhập và thử lại"));
+            }
+        }
+        // kiểm tra tên đối tác
+        if (!DataUtils.isNullOrEmpty(entity.getPartnerFullName())) {
+            Optional<Account> nameExist = accountRepository.findByPartnerFullNameIgnoreCase(entity.getPartnerFullName());
+            if (nameExist.isPresent()) {
+                throw new AppException(ErrorCode.DATA_EXISTED.withMessage("Đối tác \"" + entity.getPartnerFullName() + "\" đã tồn tại, vui lòng thay đổi tên và thử lại"));
+            }
+        } else {
+            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Vui lòng cung cấp tên đối tác để tiếp tục"));
         }
     }
 
@@ -159,8 +227,6 @@ public class AccountServiceImpl implements AccountService {
             accountEntity.setStatus(AccountStatus.DANG_HOAT_DONG.getValue());
             accountEntity.setCategory(AccountCategory.KHACH_HANG.getValue());
         }
-        //id
-        accountEntity.setId(UUID.randomUUID().toString());
         // số dư
         accountEntity.setBalance(0L);
         // mã hoá mật khẩu

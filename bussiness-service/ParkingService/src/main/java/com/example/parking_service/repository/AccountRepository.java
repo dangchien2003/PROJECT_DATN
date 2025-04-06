@@ -8,9 +8,25 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface AccountRepository extends JpaRepository<Account, String> {
     List<Account> findAllByEmailOrPhoneNumber(String email, String phoneNumber);
+
+    @Query("SELECT a FROM Account a WHERE a.category = :category " +
+            "AND (:partnerFullName IS NULL OR a.partnerFullName LIKE CONCAT('%', :partnerFullName, '%') ESCAPE '!') " +
+            "AND (:partnerEmail IS NULL OR a.partnerEmail LIKE CONCAT('%', :partnerEmail, '%') ESCAPE '!') " +
+            "AND (:partnerPhoneNumber IS NULL OR a.partnerPhoneNumber LIKE CONCAT('%', :partnerPhoneNumber, '%') ESCAPE '!') " +
+            "AND (:status IS NULL OR a.status = :status ) "
+    )
+    Page<Account> searchListPartner(
+            @Param("category") Integer category,
+            @Param("partnerFullName") String partnerFullName,
+            @Param("partnerEmail") String partnerEmail,
+            @Param("partnerPhoneNumber") String partnerPhoneNumber,
+            @Param("status") Integer status,
+            Pageable pageable
+    );
 
     @Query("SELECT a FROM Account a WHERE a.category = :category " +
             "AND (:fullName IS NULL OR a.fullName LIKE CONCAT('%', :fullName, '%') ESCAPE '!') " +
@@ -35,4 +51,8 @@ public interface AccountRepository extends JpaRepository<Account, String> {
             @Param("balanceTrend") String balanceTrend,
             Pageable pageable
     );
+
+    Optional<Account> findByIdAndCategory(String id, Integer category);
+
+    Optional<Account> findByPartnerFullNameIgnoreCase(String partnerName);
 }
