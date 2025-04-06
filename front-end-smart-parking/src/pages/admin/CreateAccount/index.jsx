@@ -14,9 +14,9 @@ import { ACCOUNT_CATEGORY } from "@/utils/constants";
 import { toastError, toastSuccess } from "@/utils/toast";
 
 const indexKeyAccount = ["fullName", "email", "phoneNumber", "gender", "status"];
-const indexKeyPartner = ["partner.partnerFullName"];
+const indexKeyPartner = ["partnerFullName", "partnerEmail"];
 const indexKey = indexKeyAccount.concat(indexKeyPartner);
-const partnerRequireKeys = ["partner.partnerFullName"]
+const partnerRequireKeys = ["partnerFullName", "partnerEmail"]
 const CreateAccount = () => {
   const [data] = useState({status: 1});
   const [showBoxPartner, setShowBoxPartner] = useState(false);

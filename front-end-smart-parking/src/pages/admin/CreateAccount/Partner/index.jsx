@@ -1,11 +1,9 @@
 import TextFieldLabelDash from "@/components/TextFieldLabelDash";
-import { updateObjectValue } from "@/utils/object";
+import { changeInput } from "@/utils/handleChange";
 
 const Partner = ({data}) => {
-  const handleChange = (value, key) => {
-    if (data) {
-      updateObjectValue(data, key, value);
-    }
+  const handleChange = (key, value) => {
+    changeInput(data, key, value);
   };
   return (
     <div>
@@ -15,21 +13,21 @@ const Partner = ({data}) => {
           label={"Tên đối tác"}
           placeholder={"Nhập tên đối tác"}
           key={"ten dt"}
-          itemKey={"partner.partnerFullName"}
+          itemKey={"partnerFullName"}
           callbackChangeValue={handleChange}
         />
         <TextFieldLabelDash
           label={"Người đại diện"}
           placeholder={"Nhập người đại diện"}
           key={"nguoi dd"}
-          itemKey={"partner.representativeFullName"}
+          itemKey={"representativeFullName"}
           callbackChangeValue={handleChange}
         />
         <TextFieldLabelDash
           label={"Email liên hệ"}
           placeholder={"Nhập địa chỉ email"}
-          key={"email"}
-          itemKey={"partner.email"}
+          key={"partnerEmail"}
+          itemKey={"partnerEmail"}
           callbackChangeValue={handleChange}
         />
         <TextFieldLabelDash
@@ -40,14 +38,14 @@ const Partner = ({data}) => {
           // callbackChangeValue={handleChange}
           regex={/^\d{0,9}$/}
           prefix={0}
-          itemKey={"partner.phoneNumber"}
+          itemKey={"partnerPhoneNumber"}
           callbackChangeValue={handleChange}
         />
         <TextFieldLabelDash
           label={"Địa chỉ"}
           placeholder={"Nhập địa chỉ"}
           key={"dia chi"}
-          itemKey={"partner.address"}
+          itemKey={"partnerAddress"}
           callbackChangeValue={handleChange}
         />
       </div>
