@@ -121,7 +121,7 @@ const TableListLocationPartner = ({dataSearch }) => {
               )}
             </span>
           </div>
-          {tab === 3 || tab === 4 && <div style={{ margin: 2 }}>
+          {dataSearch.tab === 3 || dataSearch.tab === 4 && <div style={{ margin: 2 }}>
             <span>TĐ </span>
             <span>
               {item.modifyStatus !== null ? (
