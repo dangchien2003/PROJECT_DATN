@@ -19,7 +19,6 @@ const TextFieldLabelDash = ({
 }) => {
   const [value, setValue] = useState(defaultValue);
   const keyFocus = useSelector((state) => state.focus);
-  const fieldError = useSelector(state => state.fieldError);
   const requireKeys = useSelector(state => state.requireField);
   const inputRef = useRef();
   const [require, setRequire] = useState(false)
@@ -58,7 +57,7 @@ const TextFieldLabelDash = ({
     if(minLength) {
       if(newValue.length + sizePrefix < minLength) {
         pushMessage(itemKey, "Dữ liệu " + label?.toLowerCase() + " chưa đủ " + minLength + " ký tự");
-      } else if(fieldError) {
+      } else {
         deleteKey(itemKey);
       }
     }

@@ -15,7 +15,7 @@ const AvatarAndVideo = ({data}) => {
       setIdVideo(extractYouTubeVideoId(data?.videoTutorial))
     }
   }, [data])
-  const handleChange = (value, key) => {
+  const handleChange = (key, value) => {
     if (data) {
       updateObjectValue(data, key, value);
     }

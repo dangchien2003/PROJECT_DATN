@@ -1,9 +1,22 @@
 export function extractGoogleMapCoords(url) {
-  const match = url.match(/\/dir\/.*?\/([-+]?[0-9]*\.?[0-9]+),([-+]?[0-9]*\.?[0-9]+)/);
+  if(!url) return null 
+
+  // Ưu tiên tọa độ chính xác từ `/place/.../data=!4m6...!3dLAT!4dLNG`
+  let match = url.match(/!3d([-+]?[0-9]*\.?[0-9]+)!4d([-+]?[0-9]*\.?[0-9]+)/);
   if (match) {
-    const x = parseFloat(match[1]);
-    const y = parseFloat(match[2]);
-    return { x, y };
+    return {
+      x: parseFloat(match[1]),
+      y: parseFloat(match[2])
+    };
+  }
+
+  // Nếu không có thì lấy tọa độ từ `/@LAT,LNG,...`
+  match = url.match(/@([-+]?[0-9]*\.?[0-9]+),([-+]?[0-9]*\.?[0-9]+)/);
+  if (match) {
+    return {
+      x: parseFloat(match[1]),
+      y: parseFloat(match[2])
+    };
   }
   return null;
 }

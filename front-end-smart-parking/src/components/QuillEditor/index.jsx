@@ -1,5 +1,7 @@
+import { useEffect, useRef } from 'react';
 import ReactQuill from 'react-quill-new'
 import 'react-quill/dist/quill.snow.css'
+import { useSelector } from 'react-redux';
 
 const modules = {
   toolbar: [
@@ -36,9 +38,18 @@ const formats = [
   'code-block',
   'align'
 ]
-const QuillEditor = ({ onChange, value, readonly, style = {} }) => {
+const QuillEditor = ({ onChange, value, readonly, itemKey, style = {} }) => {
+  const keyFocus = useSelector((state) => state.focus);
+  const inputRef = useRef();
+
+  useEffect(()=> {
+    if(keyFocus === itemKey) {
+      inputRef.current?.focus();
+    }
+  }, [keyFocus, itemKey])
   return (
     <ReactQuill theme='snow' value={value}
+      ref={inputRef}
       modules={modules}
       formats={formats}
       style={{ ...style, height: '400px', paddingBottom: '20px' }}
