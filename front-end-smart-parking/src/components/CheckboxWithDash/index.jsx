@@ -16,7 +16,7 @@ const CheckboxWithDash = ({
   const handleChange = (e) => {
     const newChecked = e.target.checked;
     if (callbackChangeValue) {
-      callbackChangeValue(newChecked, itemKey)
+      callbackChangeValue(itemKey, newChecked)
     }
     if(!reaonly) {
       setChecked(newChecked)

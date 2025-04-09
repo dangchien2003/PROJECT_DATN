@@ -1,6 +1,6 @@
 import SelectBoxLabelDash from "@/components/SelectBoxLabelDash";
 import TextFieldLabelDash from "@/components/TextFieldLabelDash";
-import { ACCOUNT_CATEGORY, ACCOUNT_CATEGORY_NAME, ACCOUNT_STATUS, GENDER } from "@/utils/constants";
+import { ACCOUNT_STATUS, GENDER } from "@/utils/constants";
 import { Button } from "antd";
 
 const ShowBoxEdit = ({ info }) => {

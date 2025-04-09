@@ -2,6 +2,7 @@ import NumberInputWithSortLabelDash from "@/components/NumberInputWithSortLabelD
 import SelectBoxLabelDash from "@/components/SelectBoxLabelDash";
 import TextFieldLabelDash from "@/components/TextFieldLabelDash";
 import { useRequireField } from "@/hook/useRequireField";
+import { useMessageError } from "@/hook/validate";
 import { setSearching } from "@/store/startSearchSlice";
 import { ACCOUNT_STATUS, GENDER } from "@/utils/constants";
 import { changeInput, changeInputTrend } from "@/utils/handleChange";
@@ -11,13 +12,15 @@ import { IoSearch } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
 
 const Search = ({dataSearch}) => {
+  const {reset} = useMessageError();
   const {resetRequireField} = useRequireField()
   const {isSearching} = useSelector(state => state.startSearch)
   const dispatch = useDispatch();
   
   useEffect(()=> {
-    resetRequireField()
-  }, [resetRequireField])
+    resetRequireField();
+    reset();
+  }, [resetRequireField, reset])
 
   const handleChange = (key, value) => {
     changeInput(dataSearch, key, value)

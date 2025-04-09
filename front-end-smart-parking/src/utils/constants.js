@@ -177,71 +177,60 @@ export const LOCATION_STATUS = {
     color: "warning",
   },
   1: {
-    label: "Đang hoạt động",
+    label: "Đã duyệt",
     color: "cyan",
   },
   2: {
-    label: "Tạm dừng phát hành",
-    color: "default",
+    label: "Đang hoạt động",
+    color: "cyan",
   },
   3: {
-    label: "Từ chối",
+    label: "tạm dừng hoạt động",
+    color: "default",
+  },
+  4: {
+    label: "không hoạt động",
+    color: "default",
+  },
+  5: {
+    label: "Bị từ chối",
     color: "danger",
   },
 };
 
-export const LOCATION_MODIFY_STATUS = {
+export const MODIFY_STATUS = {
   0: {
-    label: "Không có/Đã áp dụng chỉnh sửa",
-    color: "warning",
-  },
-  1: {
     label: "Chờ duyệt",
     color: "warning",
   },
-  2: {
-    label: "Từ chối",
-    color: "warning",
-  },
-  3: {
-    label: "Đã duyệt chờ áp dụng",
-    color: "default",
-  },
-}
-
-export const MODIFY_STATUS = {
-  0: {
-    label: "Không có thay đổi",
-    color: "default",
-  },
   1: {
-    label: "Chờ duyệt thay đổi",
-    color: "warning",
-  },
-  2: {
-    label: "Từ chối thay đổi",
+    label: "Bị từ chối",
     color: "danger",
   },
+  2: {
+    label: "Chờ áp dụng",
+    color: "default",
+  },
   3: {
-    label: "Chờ áp dụng thay đổi",
+    label: "Đã áp dụng",
     color: "cyan",
   },
 };
 export const MODIFY_STATUS_SELECTBOX = [
   {
-    label: "Không có thay đổi",
+    label: "Chờ duyệt",
     value: 0,
   },
   {
-    label: "Chờ duyệt thay đổi",
+    label: "Bị từ chối",
     value: 1,
   },
   {
-    label: "Từ chối thay đổi",
+    label: "Chờ áp dụng",
     value: 2,
   },
   {
-    label: "Chờ áp dụng thay đổi",
+    label: "Đã áp dụng",
     value: 3,
   },
 ];
@@ -293,7 +282,6 @@ export const CARD_TYPE_SELECTBOX = [
 ]
 
 export const DATA_OPEN_HOLIDAY_SELECTBOX = [
-  {label: "Tất cả", value: 0},
   {label: "Đóng cửa", value: 1},
   {label: "Mở cửa", value: 2},
 ]
