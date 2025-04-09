@@ -75,7 +75,7 @@ public class LocationModifyServiceImpl implements LocationModifyService {
             location.setModifyStatus(LocationModifyStatus.CHO_DUYET.getValue());
             DataUtils.setDataAction(location, actionBy, false);
             // modify
-            Integer modifyCount = locationModifyRepository.getMaxModifyCountByLocationId(location.getId()) + 1;
+            Integer modifyCount = locationModifyRepository.getMaxModifyCountByLocationId(location.getLocationId()) + 1;
             entityModify.setModifyCount(modifyCount);
             DataUtils.setDataAction(entityModify, actionBy, true);
         }

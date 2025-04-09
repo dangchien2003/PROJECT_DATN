@@ -1,45 +1,34 @@
-package com.example.parking_service.entity;
+package com.example.parking_service.dto.response;
 
 
-import com.example.common.entity.BaseEntity;
-import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.example.common.dto.Coordinates;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
-import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Date;
 
-@Entity
-@Table(name = "location_modify")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@SuperBuilder
+@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class LocationModify extends BaseEntity {
+public class LocationModifyResponse {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long modifyId;
 
     Long locationId;
 
-    @Column(nullable = false)
     String partnerId;
 
     String name;
 
     String address;
 
-    @Column(nullable = false)
     Integer modifyCount;
 
-    String coordinates;
+    Coordinates coordinates;
 
     String linkGoogleMap;
 
@@ -59,22 +48,21 @@ public class LocationModify extends BaseEntity {
 
     Date openDate;
 
-    Integer openHoliday;
+    Boolean openHoliday;
 
     LocalDateTime timeAppliedEdit;
 
-    Integer urgentApprovalRequest;
+    Boolean urgentApprovalRequest;
 
     Long capacity;
 
-    @Lob
     String description;
 
-    @Lob
     String infoLocation;
 
-    @Lob
     String modifyDescription;
 
-    Integer isDel;
+    Boolean isDel;
+
+    LocalDateTime createdAt;
 }

@@ -24,7 +24,7 @@ public class Location extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    Long locationId;
 
     @Column(nullable = false)
     String partnerId;
@@ -63,4 +63,6 @@ public class Location extends BaseEntity {
 
     @Lob
     String infoLocation;
+
+    Integer isDel;
 }

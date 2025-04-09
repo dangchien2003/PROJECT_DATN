@@ -3,12 +3,15 @@ package com.example.parking_service.controller;
 import com.example.common.dto.response.ApiResponse;
 import com.example.parking_service.ParkingServiceApplication;
 import com.example.parking_service.dto.request.ModifyLocationRequest;
+import com.example.parking_service.dto.request.PartnerSearchLocation;
 import com.example.parking_service.service.LocationModifyService;
+import com.example.parking_service.service.LocationService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class LocationController {
     LocationModifyService locationModifyService;
+    LocationService locationService;
 
     @PostMapping("modify")
         // role đối tác
@@ -29,5 +33,11 @@ public class LocationController {
         // role đối tác
     ApiResponse<Object> deleteModify(@RequestBody Long modifyId) {
         return locationModifyService.deleteModify(modifyId);
+    }
+
+    @PostMapping("partner/search")
+        // role partner
+    ApiResponse<Object> partnerSearch(@RequestBody PartnerSearchLocation modifyId, Pageable pageable) {
+        return locationService.searchLocationByPartner(modifyId, pageable);
     }
 }
