@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 import DateTimePickerWithSort from "../DateTimePickerWithSort";
+import InputLabel from "../InputLabel";
+import { useSelector } from "react-redux";
+import InputError from "../InputError";
 
 const DateTimePickerWithSortLabelDash = ({
   label,
@@ -14,6 +17,15 @@ const DateTimePickerWithSortLabelDash = ({
   defaultValue
 }) => {
   const [value, setValue] = useState(defaultValue);
+  const requireKeys = useSelector(state => state.requireField);
+  const [require, setRequire] = useState(false)
+  
+  useEffect(()=> {
+    if(Array.isArray(requireKeys) && itemKey) {
+      setRequire(requireKeys.includes(itemKey))
+    }
+  }, [requireKeys, itemKey])
+
   useEffect(()=> {
     setValue(defaultValue);
   }, [defaultValue])
@@ -28,22 +40,7 @@ const DateTimePickerWithSortLabelDash = ({
         margin: 16,
       }}
     >
-      <span
-        className="truncated-text"
-        style={{
-          position: "absolute",
-          display: "inline-block",
-          padding: "3px 5px",
-          top: -14,
-          left: 8,
-          maxWidth: 240,
-          fontSize: 14,
-          background: "white",
-          zIndex: 100,
-        }}
-      >
-        {label}
-      </span>
+      <InputLabel label={label} key={itemKey} require={require}/>
       <DateTimePickerWithSort
         min={min}
         max={max}
@@ -54,7 +51,9 @@ const DateTimePickerWithSortLabelDash = ({
         formatShowTime={formatShowTime}
         sort={sort}
         defaultValue={value}
+        label={label}
       />
+      <InputError itemKey={itemKey}/>
     </div>
   );
 };

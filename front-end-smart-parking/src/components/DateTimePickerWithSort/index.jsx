@@ -1,11 +1,20 @@
 import { DatePicker, Tooltip } from "antd";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FaAngleUp, FaAngleDown } from "react-icons/fa";
 import dayjs from "dayjs";
-
+import { useSelector } from "react-redux";
+import { useMessageError } from "@/hook/validate";
+const getValueDate = (valueInput) => {
+  if(valueInput && valueInput.value !== undefined) {
+    return valueInput.value ? dayjs(valueInput.value) : null;
+  }else if(valueInput) {
+    return(valueInput);
+  }
+  return null;
+}
 const DateTimePickerWithSort = ({
-  min,
-  max,
+  min = null,
+  max = null,
   placeholder,
   itemKey,
   callbackChangeValue,
@@ -15,14 +24,32 @@ const DateTimePickerWithSort = ({
     defaultValue: dayjs("00:00:00", "HH:mm:ss"),
   },
   sort = true,
-  defaultValue
+  defaultValue,
+  label
 }) => {
-  const [value, setValue] = useState(defaultValue);
-  useEffect(()=> {
-    setValue(defaultValue);
-  }, [defaultValue])
-
+  const [value, setValue] = useState(getValueDate(defaultValue));
+  const requireKeys = useSelector(state => state.requireField);
+  const [require, setRequire] = useState(false)
+  const keyFocus = useSelector((state) => state.focus);
   const [sortOrder, setSortOrder] = useState(null);
+  const inputRef = useRef();
+  const {pushMessage, deleteKey} = useMessageError();
+  useEffect(()=> {
+    if(Array.isArray(requireKeys) && itemKey) {
+      setRequire(requireKeys.includes(itemKey))
+    }
+  }, [requireKeys, itemKey])
+
+  useEffect(()=> {
+    if(keyFocus === itemKey) {
+      inputRef.current?.focus();
+    }
+  }, [keyFocus, itemKey])
+
+  useEffect(()=> {
+    setValue(getValueDate(defaultValue));
+  // eslint-disable-next-line
+  }, [defaultValue]) 
   // xử lý khi thay đổi cách sắp xếp
   const handleSortChange = (order) => {
     if (sortOrder !== order) {
@@ -42,24 +69,37 @@ const DateTimePickerWithSort = ({
     return value;
   };
   // xử lý khi thay đổi dữ liệu
-  const handleChangeValue = (value) => {
-    value = validMinMax(value);
-    setValue(value);
+  const handleChangeValue = (newValue) => {
+    newValue = validMinMax(newValue);
+    if(require) {
+      if(!newValue || newValue.length === 0) {
+        pushMessage(itemKey, "Không được để trống trường " + label?.toLowerCase());
+      } else {
+        deleteKey(itemKey);
+      }
+    }
+    setValue(newValue);
   };
 
   useEffect(() => {
     if (callbackChangeValue) {
-      callbackChangeValue(value?.format(format), sortOrder, itemKey);
+      let viewValue = null;
+      if(value && value.value) {
+        viewValue = value.value;
+      }
+      const formattedValue = viewValue ? viewValue.format("YYYY-MM-DDTHH:mm:ss") : null;
+      callbackChangeValue(itemKey, formattedValue, sortOrder);
     }
   }, [sortOrder, value, callbackChangeValue, itemKey, format]);
 
   return (
     <div style={{ display: "flex" }}>
       <DatePicker
+        ref={inputRef}
         style={{ width: "100%" }}
         showTime={formatShowTime}
         format={format}
-        onOk={handleChangeValue}
+        onChange={handleChangeValue}
         allowClear
         value={value}
         placeholder={placeholder}

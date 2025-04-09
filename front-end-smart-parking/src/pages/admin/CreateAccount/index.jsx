@@ -26,8 +26,14 @@ const CreateAccount = () => {
   const dispatch = useDispatch();
   const fieldError = useSelector(state => state.fieldError);
   const requireKeys = useSelector(state => state.requireField);
-  const {pushMessage, deleteManyKey} = useMessageError();
-  const {pushRequireField, deleteRequireField} = useRequireField();
+  const {pushMessage, deleteManyKey, reset} = useMessageError();
+  const {pushRequireField, deleteRequireField, resetRequireField} = useRequireField();
+
+  useEffect(() => {
+    reset();
+    resetRequireField();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const handleActionCreate = () => {
     if(!validateInput(fieldError, indexKey, dispatch)) {

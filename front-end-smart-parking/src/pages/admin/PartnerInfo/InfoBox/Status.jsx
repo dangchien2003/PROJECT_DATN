@@ -21,7 +21,6 @@ const renderOptionsSelectBox = () => {
 };
 
 const Status = ({ info }) => {
-  const [status, setStatus] = useState(info.status);
   const [inputValue, setInputValue] = useState("");
   const [pendingStatus, setPendingStatus] = useState(null);
 
@@ -37,7 +36,6 @@ const Status = ({ info }) => {
       });
       return;
     }
-    setStatus(pendingStatus);
     setPendingStatus(null);
     setInputValue("");
   };
@@ -53,7 +51,7 @@ const Status = ({ info }) => {
         style={{
           width: 180,
         }}
-        value={status}
+        value={info.status}
         onChange={handleChange}
         options={renderOptionsSelectBox()}
       />

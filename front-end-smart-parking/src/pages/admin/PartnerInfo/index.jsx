@@ -5,8 +5,8 @@ import { useEffect, useState } from "react";
 import { getDataApi } from "@/utils/api";
 import { toastError } from "@/utils/toast";
 import { detailPartner } from "@/service/accountService";
-import PermissionBox from "./PermissionBox/PermissionBox";
 import "./style.css"
+
 const PartnerInfo = () => {
   const { id } = useParams();
   const [data, setData] = useState({});
