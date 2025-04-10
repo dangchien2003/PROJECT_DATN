@@ -1,16 +1,21 @@
 import { useState, useEffect } from "react";
 import { Table, Tooltip } from "antd";
-import { fakeDataTable } from "./dataTest";
 import ButtonStatus from "../ButtonStatus";
-import { MODIFY_STATUS, TICKET_STATUS } from "@/utils/constants";
+import { LOCATION_STATUS, MODIFY_STATUS } from "@/utils/constants";
 import { formatTimestamp } from "@/utils/time";
 import { useLoading } from "@/hook/loading";
 import { FaRegCheckCircle } from "react-icons/fa";
 import { MdOutlineCancel } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import PopConfirmCustom from "../PopConfirmCustom";
+import { useDispatch, useSelector } from "react-redux";
+import { adminSearchWaitApprove } from "@/service/locationService";
+import { convertDataSort, getDataApi } from "@/utils/api";
+import { toastError } from "@/utils/toast";
+import { setSearching } from "@/store/startSearchSlice";
+import { showTotal } from "@/utils/table";
 
-const columns = [
+const baseColumns = [
   {
     title: "STT",
     dataIndex: "stt",
@@ -20,9 +25,9 @@ const columns = [
   },
   {
     title: "Tên địa điểm",
-    dataIndex: "ticketNamePrint",
+    dataIndex: "namePrint",
     key: "1",
-    sorter: false,
+    sorter: true,
     width: 150,
   },
   {
@@ -50,7 +55,7 @@ const columns = [
   },
   {
     title: "Đối tác",
-    dataIndex: "patnerName",
+    dataIndex: "partnerFullName",
     key: "5",
     sorter: true,
     width: 120,
@@ -64,85 +69,90 @@ const columns = [
   }
 ];
 
+const mapFieldSort = {
+  createdDate: "createdAt",
+  timeAppliedEditPrint: "timeAppliedEdit",
+  namePrint: "name",
+}
 
-
-const TableListLocationWaitApprove = ({searchTimes, dataSearch }) => {
+const TableListLocationWaitApprove = ({dataSearch }) => {
   const navigate = useNavigate()
-  const { showLoad, hideLoad } = useLoading();
+  const {isSearching} = useSelector(state => state.startSearch)
+  const dispatch = useDispatch();
+  const [columns, setColumns] = useState(baseColumns);
   const [data, setData] = useState([]);
-  const [columnsShow, setColumnsShow] = useState(columns);
   const [loading, setLoading] = useState(false);
+  const [firstSearch, setFirstSearch] = useState(false);
   const [action, setAction] = useState(null);
   const [dataAction, setDataAction] = useState(null);
+  const { showLoad, hideLoad } = useLoading();
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 10,
     total: 0,
   });
-  const [sorter, setSorter] = useState({
-    field: "modifyId",
-    order: "ascend",
+  const [sorter] = useState({
+    field: null,
+    order: null,
   });
 
-  useEffect(()=> {
-    console.log(dataSearch.tab)
-    // ẩn cột khi vào tab từ chối
+  useEffect(() => {
+    let newColumns;
     if(dataSearch.tab === 5) {
-      const col = columns.filter(item => item.dataIndex !== "action" && item.dataIndex !== "statusPrint");
-      setColumnsShow(col)
+     newColumns = [...baseColumns].filter((item) => item.key !== "6");
     }else {
-      setColumnsShow(columns)
+      newColumns = [...baseColumns];
     }
+    setColumns(newColumns);
   }, [dataSearch.tab])
 
   const loadData = (newPagination, sorter) => {
-    if (!sorter.field || !sorter.order) {
-      sorter = {
-        field: "name",
-        order: "ascend",
-      };
-      setSorter(sorter);
-    }
     setLoading(true);
-    if (searchTimes > 0) {
-      showLoad();
-    }
-    setTimeout(() => {
-      setLoading(false);
-      hideLoad();
-      const dataResponse = {
-        data: fakeDataTable,
-        totalElement: 60,
-        totalPage: 10,
-      };
-      setData(
-        convertResponseToDataTable(
-          dataResponse,
-          newPagination.current,
-          newPagination.pageSize
-        )
-      );
-      setPagination({
-        ...newPagination,
-        total: dataResponse.totalElement,
+    setData([])
+    adminSearchWaitApprove(dataSearch, newPagination.current - 1, newPagination.pageSize, sorter.field, sorter.order)
+      .then((response) => {
+        const data = response.data?.result?.data;
+        const total = response.data?.result?.totalElements;
+        setData(
+          convertResponseToDataTable(
+            data,
+            newPagination.current,
+            newPagination.pageSize
+          )
+        );
+        setPagination({
+          ...newPagination,
+          total: total,
+        });
+      })
+      .catch((error) => {
+        error = getDataApi(error);
+        toastError(error.message)
+      })
+      .finally(() => {
+        setLoading(false);
+        dispatch(setSearching(false))
       });
-    }, 1000);
   };
 
   const handleTableChange = (newPagination, _, sorter) => {
-    setPagination(newPagination);
+    convertDataSort(sorter, mapFieldSort)
     loadData(newPagination, sorter);
   };
+
+  useEffect(() => {
+    if(isSearching || !firstSearch) {
+      loadData(pagination, sorter);
+      if(!firstSearch) {
+        setFirstSearch(true)
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSearching]);
 
   const handleClickRow = (data) => {
     navigate(`/location/detail/${dataSearch.tab}/${data.id}`)
   };
-
-  useEffect(() => {
-    loadData(pagination, sorter);
-    console.log(dataSearch);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchTimes]);
   
   const resetAction = () => {
     setAction(null);
@@ -150,7 +160,6 @@ const TableListLocationWaitApprove = ({searchTimes, dataSearch }) => {
   }
 
   const handleAllowApprove = () => {
-    console.log("đồng ý duyệt")
     showLoad("Đang xử lý");
     setTimeout(()=> {
       hideLoad();
@@ -185,43 +194,29 @@ const TableListLocationWaitApprove = ({searchTimes, dataSearch }) => {
     event.stopPropagation();
   }
 
-  const convertResponseToDataTable = (response, currentPage, pageSize) => {
-    return response.data.map((item, index) => {
-      item.ticketNamePrint = `${item.id} - ${item.name}`;
+  const convertResponseToDataTable = (data, currentPage, pageSize) => {
+    return data.map((item, index) => {
       item.createdDate = formatTimestamp(item.createdAt, "DD/MM/YYYY")
+      item.namePrint = item.modifyId + " - " + item.name;
       item.timeAppliedEditPrint = formatTimestamp(item.timeAppliedEdit, "DD/MM/YYYY")
       item.statusPrint = (
         <div>
           <div style={{ margin: 2 }}>
             <span>PH </span>
             <span>
-              {item.modifyStatus !== null ? (
-                <ButtonStatus
-                  label={MODIFY_STATUS[item.status].label}
-                  color={MODIFY_STATUS[item.modifyStatus].color}
-                />
-              ) : (
-                <ButtonStatus
-                  label={TICKET_STATUS[item.status].label}
-                  color={TICKET_STATUS[item.status].color}
-                />
-              )}
+              <ButtonStatus
+                label={LOCATION_STATUS[item.status].label}
+                color={LOCATION_STATUS[item.status].color}
+              />
             </span>
           </div>
           <div style={{ margin: 2 }}>
             <span>TĐ </span>
             <span>
-              {item.modifyStatus !== null ? (
-                <ButtonStatus
-                  label={MODIFY_STATUS[item.modifyStatus].label}
-                  color={MODIFY_STATUS[item.modifyStatus].color}
-                />
-              ) : (
-                <ButtonStatus
-                  label={TICKET_STATUS[item.status].label}
-                  color={TICKET_STATUS[item.status].color}
-                />
-              )}
+              <ButtonStatus
+                label={MODIFY_STATUS[item.modifyStatus].label}
+                color={MODIFY_STATUS[item.modifyStatus].color}
+              />
             </span>
           </div>
         </div>
@@ -249,8 +244,8 @@ const TableListLocationWaitApprove = ({searchTimes, dataSearch }) => {
     if(dataSearch.tab === 3) {
       if(action === 1) {
         return {
-          title: 'Bạn có chắc chắn đồng ý việc thêm địa điểm "EAON MALL Hà Đông" của đối tác "EAON MALL" không?',
-          message: "Địa điểm sẽ đi vào hoạt động vào 20/12/2025 11:11"
+          title: `Bạn có chắc chắn đồng ý việc thêm địa điểm "${dataAction.name}" của đối tác "${dataAction.partnerName}" không?`,
+          message: "Địa điểm sẽ đi vào hoạt động vào " + formatTimestamp(dataAction.timeAppliedEdit, "DD/MM/YYYY HH:mm")
         }
       }else if(action === 2) {
         return {
@@ -261,8 +256,8 @@ const TableListLocationWaitApprove = ({searchTimes, dataSearch }) => {
     }else if (dataSearch.tab === 4){
       if(action === 1) {
         return {
-          title: 'Bạn có chắc chắn đồng ý việc sửa thông tin địa điểm "EAON MALL Hà Đông" của đối tác "EAON MALL" không?',
-          message: "Thông tin chỉnh sửa sẽ được áp dụng vào 20/12/2025 11:11"
+          title: `Bạn có chắc chắn đồng ý việc sửa thông tin địa điểm "${dataAction.name}" của đối tác "${dataAction.partnerName}" không?`,
+          message: "Thông tin chỉnh sửa sẽ được áp dụng vào "+ formatTimestamp(dataAction.timeAppliedEdit, "DD/MM/YYYY HH:mm")
         }
       }else if(action === 2) {
         return {
@@ -277,7 +272,7 @@ const TableListLocationWaitApprove = ({searchTimes, dataSearch }) => {
   return (
     <>
       <Table
-        columns={columnsShow}
+        columns={columns}
         dataSource={data}
         rowKey="id"
         loading={loading}
@@ -289,6 +284,7 @@ const TableListLocationWaitApprove = ({searchTimes, dataSearch }) => {
           ...pagination,
           showSizeChanger: true,
           pageSizeOptions: ["10", "20", "50", "100"],
+          showTotal: showTotal
         }}
         onRow={(record) => {
           return {

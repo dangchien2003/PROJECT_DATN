@@ -5,6 +5,7 @@ import { formatCurrency } from "@/utils/number";
 import { formatTimestamp } from "@/utils/time";
 import ButtonStatus from "../ButtonStatus";
 import { COLOR_BUTTON_ACCOUNT_STATUS } from "@/utils/constants";
+import { showTotal } from "@/utils/table";
 
 const columns = [
   {
@@ -146,6 +147,7 @@ const TableCustomTicketPurchased = () => {
         ...pagination,
         showSizeChanger: true,
         pageSizeOptions: ["10", "20", "50", "100"],
+        showTotal: showTotal,
       }}
     />
   );

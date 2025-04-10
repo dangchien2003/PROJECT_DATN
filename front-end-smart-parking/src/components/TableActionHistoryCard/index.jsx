@@ -3,6 +3,7 @@ import { Table } from "antd";
 import { useNavigate } from "react-router-dom";
 import { listPartner } from "./dataTest";
 import { formatTimestamp } from "@/utils/time";
+import { showTotal } from "@/utils/table";
 
 const columns = [
   {
@@ -66,6 +67,7 @@ const TableActionHistoryCard = () => {
       setSorter(sorter);
     }
     setLoading(true);
+    setData([]);
     setTimeout(() => {
       setLoading(false);
       const dataResponse = {
@@ -116,6 +118,7 @@ const TableActionHistoryCard = () => {
         ...pagination,
         showSizeChanger: true,
         pageSizeOptions: ["10", "20", "50", "100"],
+        showTotal: showTotal,
       }}
       onRow={(record) => {
         return {

@@ -18,7 +18,7 @@ const ListLocation = () => {
     name: null,
     openTime: null,
     closeTime: null,
-    openHoliday: false,
+    openHoliday: null,
     tab: 1,
     timeAppliedEdit: {
       value: null,
@@ -26,7 +26,7 @@ const ListLocation = () => {
     },
     createdDate: [],
     category: null,
-    urgentApprovalRequest: false
+    urgentApprovalRequest: null
   });
 
   useEffect(()=> {

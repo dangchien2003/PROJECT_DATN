@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Table } from "antd";
 import ButtonStatus from "../ButtonStatus";
-import { LOCATION_STATUS, MODIFY_STATUS, TICKET_STATUS } from "@/utils/constants";
+import { LOCATION_STATUS, MODIFY_STATUS } from "@/utils/constants";
 import { formatTimestamp } from "@/utils/time";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -9,9 +9,9 @@ import { partnerSearch } from "@/service/locationService";
 import { convertDataSort, getDataApi } from "@/utils/api";
 import { setSearching } from "@/store/startSearchSlice";
 import { toastError } from "@/utils/toast";
-import { tab } from "@testing-library/user-event/dist/tab";
+import { showTotal } from "@/utils/table";
 
-const BaseColumns = [
+const baseColumns = [
   {
     title: "STT",
     dataIndex: "stt",
@@ -23,7 +23,7 @@ const BaseColumns = [
     title: "Tên địa điểm",
     dataIndex: "name",
     key: "1",
-    sorter: false,
+    sorter: true,
     width: 150,
   },
   {
@@ -73,7 +73,7 @@ const TableListLocationPartner = ({dataSearch }) => {
   const navigate = useNavigate()
   const {isSearching} = useSelector(state => state.startSearch)
   const dispatch = useDispatch();
-  const [columns, setColumns] = useState(BaseColumns);
+  const [columns, setColumns] = useState(baseColumns);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [firstSearch, setFirstSearch] = useState(false);
@@ -89,10 +89,10 @@ const TableListLocationPartner = ({dataSearch }) => {
   
   useEffect(() => {
     let newColumns;
-    if(![3, 4].includes(dataSearch.tab) ) {
-     newColumns = [...BaseColumns].filter((item) => item.key !== "6");
+    if(![3, 4, 5].includes(dataSearch.tab) ) {
+     newColumns = [...baseColumns].filter((item) => item.key !== "6");
     }else {
-      newColumns = [...BaseColumns];
+      newColumns = [...baseColumns];
     }
     setColumns(newColumns);
   }, [dataSearch.tab])
@@ -108,33 +108,19 @@ const TableListLocationPartner = ({dataSearch }) => {
           <div style={{ margin: 2 }}>
             <span>PH </span>
             <span>
-              {item.modifyStatus !== null ? (
-                <ButtonStatus
-                  label={LOCATION_STATUS[item.status].label}
-                  color={LOCATION_STATUS[item.status].color}
-                />
-              ) : (
-                <ButtonStatus
-                  label={MODIFY_STATUS[item.modifyStatus].label}
-                  color={MODIFY_STATUS[item.modifyStatus].color}
-                />
-              )}
+              <ButtonStatus
+                label={LOCATION_STATUS[item.status].label}
+                color={LOCATION_STATUS[item.status].color}
+              />
             </span>
           </div>
-          {dataSearch.tab === 3 || dataSearch.tab === 4 && <div style={{ margin: 2 }}>
+          {(dataSearch.tab === 3 || dataSearch.tab === 4 || dataSearch.tab === 5) && <div style={{ margin: 2 }}>
             <span>TĐ </span>
             <span>
-              {item.modifyStatus !== null ? (
-                <ButtonStatus
-                  label={MODIFY_STATUS[item.modifyStatus].label}
-                  color={MODIFY_STATUS[item.modifyStatus].color}
-                />
-              ) : (
-                <ButtonStatus
-                  label={TICKET_STATUS[item.status].label}
-                  color={TICKET_STATUS[item.status].color}
-                />
-              )}
+              <ButtonStatus
+                label={MODIFY_STATUS[item.modifyStatus].label}
+                color={MODIFY_STATUS[item.modifyStatus].color}
+              />
             </span>
           </div>}
         </div>
@@ -149,6 +135,7 @@ const TableListLocationPartner = ({dataSearch }) => {
 
   const loadData = (newPagination, sorter) => {
     setLoading(true);
+    setData([])
     partnerSearch(dataSearch, newPagination.current - 1, newPagination.pageSize, sorter.field, sorter.order)
       .then((response) => {
         const data = response.data?.result?.data;
@@ -207,6 +194,7 @@ const TableListLocationPartner = ({dataSearch }) => {
         ...pagination,
         showSizeChanger: true,
         pageSizeOptions: ["10", "20", "50", "100"],
+        showTotal: showTotal,
       }}
       onRow={(record) => {
         return {

@@ -1,4 +1,3 @@
-import CheckboxWithDash from "@/components/CheckboxWithDash";
 import DatePickerFromToLabelDash from "@/components/DatePickerFromToLabelDash";
 import DateTimePickerWithSortLabelDash from "@/components/DateTimePickerWithSortLabelDash";
 import SelectBoxLabelDash from "@/components/SelectBoxLabelDash";
@@ -8,10 +7,12 @@ import { useRequireField } from "@/hook/useRequireField";
 import { useMessageError } from "@/hook/validate";
 import { setSearching } from "@/store/startSearchSlice";
 import {
-  DATA_LOCATION_WAIT_APPROVE_CATEGORY_SELECTBOX,
-  DATA_OPEN_HOLIDAY_SELECTBOX,
+  DATA_LOCATION_WAIT_APPROVE_CATEGORY,
+  DATA_OPEN_HOLIDAY,
+  DATA_URGENT_APPROVAL_REQUEST,
 } from "@/utils/constants";
 import { changeInput, changeInputTrend } from "@/utils/handleChange";
+import { convertObjectToDataSelectBox } from "@/utils/object";
 import { Button } from "antd";
 import { useEffect } from "react";
 import { IoSearch } from "react-icons/io5";
@@ -81,11 +82,11 @@ const Search = ({ dataSearch }) => {
           itemKey={"openHoliday"}
           label={"Mở cửa ngày lễ"}
           placeholder={"--Chọn--"}
-          defaultValue={DATA_OPEN_HOLIDAY_SELECTBOX[0].value}
-          data={DATA_OPEN_HOLIDAY_SELECTBOX}
+          defaultValue={dataSearch.openHoliday}
+          data={convertObjectToDataSelectBox(DATA_OPEN_HOLIDAY)}
           callbackChangeValue={handleChange}
         />
-        {[3, 4].includes(dataSearch.tab) && <>
+        {[3, 4, 5].includes(dataSearch.tab) && <>
           <DateTimePickerWithSortLabelDash 
             itemKey={"timeAppliedEdit"} 
             key={"timeAppliedEdit"} 
@@ -109,11 +110,20 @@ const Search = ({ dataSearch }) => {
             itemKey={"category"}
             label={"Phân loại"}
             placeholder={"Chọn phân loại"}
-            data={DATA_LOCATION_WAIT_APPROVE_CATEGORY_SELECTBOX}
+            data={convertObjectToDataSelectBox(DATA_LOCATION_WAIT_APPROVE_CATEGORY)}
             callbackChangeValue={handleChange}
             defaultValue={dataSearch.category}
           />
-          <CheckboxWithDash itemKey={"urgentApprovalRequest"} label={"Yêu cầu khẩn cấp"}/>
+          <SelectBoxLabelDash 
+          key={"urgentApprovalRequest"}
+          itemKey={"urgentApprovalRequest"}
+          label={"Yêu cầu khẩn cấp"}
+          placeholder={"--Chọn--"}
+          defaultValue={dataSearch.urgentApprovalRequest}
+          data={convertObjectToDataSelectBox(DATA_URGENT_APPROVAL_REQUEST)}
+          callbackChangeValue={handleChange}
+        />
+          {/* <CheckboxWithDash itemKey={"urgentApprovalRequest"} label={"Yêu cầu khẩn cấp"}/> */}
         </>}
       </div>
       <div style={{ display: "flex", justifyContent: "center" }}>

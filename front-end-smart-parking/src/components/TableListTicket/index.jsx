@@ -6,6 +6,7 @@ import { MODIFY_STATUS, TICKET_STATUS, VEHICLE } from "@/utils/constants";
 import { formatTimestamp } from "@/utils/time";
 import { useLoading } from "@/hook/loading";
 import { useNavigate } from "react-router-dom";
+import { showTotal } from "@/utils/table";
 
 const columns = [
   {
@@ -207,6 +208,7 @@ const TableListTicket = ({searchTimes, dataSearch }) => {
         ...pagination,
         showSizeChanger: true,
         pageSizeOptions: ["10", "20", "50", "100"],
+        showTotal: showTotal
       }}
       onRow={(record) => {
         return {

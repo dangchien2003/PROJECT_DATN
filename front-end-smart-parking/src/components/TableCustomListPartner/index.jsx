@@ -11,6 +11,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { searchPartner } from "@/service/accountService";
 import { setSearching } from "@/store/startSearchSlice";
 import { toastError } from "@/utils/toast";
+import { showTotal } from "@/utils/table";
 
 const columns = [
   {
@@ -82,6 +83,8 @@ const TableCustomListPartner = ({dataSearch}) => {
 
   const loadData = (newPagination, sorter) => {
     setLoading(true);
+    setData([]);
+    
     searchPartner(dataSearch, newPagination.current - 1, newPagination.pageSize, sorter.field, sorter.order)
       .then((response) => {
         const data = response.data?.result?.data;
@@ -141,6 +144,7 @@ const TableCustomListPartner = ({dataSearch}) => {
         ...pagination,
         showSizeChanger: true,
         pageSizeOptions: ["10", "20", "50", "100"],
+        showTotal: showTotal,
       }}
       onRow={(record) => {
         return {

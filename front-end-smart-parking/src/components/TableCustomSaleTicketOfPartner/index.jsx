@@ -4,6 +4,7 @@ import { fakeDataTable } from "./dataTest";
 import { VEHICLE } from "@/utils/constants";
 import { formatTimestamp } from "@/utils/time";
 import { formatCurrency } from "@/utils/number";
+import { showTotal } from "@/utils/table";
 
 const columns = [
   {
@@ -92,6 +93,7 @@ const TableCustomSaleTicketOfPartner = () => {
       setSorter(sorter);
     }
     setLoading(true);
+    setData([]);
     setTimeout(() => {
       setLoading(false);
       const dataResponse = {
@@ -137,6 +139,7 @@ const TableCustomSaleTicketOfPartner = () => {
         ...pagination,
         showSizeChanger: true,
         pageSizeOptions: ["10", "20", "50", "100"],
+        showTotal: showTotal,
       }}
     />
   );

@@ -4,6 +4,7 @@ import { fakeDataTable } from "./dataTest";
 import { formatTimestamp } from "@/utils/time";
 import ButtonStatus from "../ButtonStatus";
 import { LOCATION_STATUS, MODIFY_STATUS } from "@/utils/constants";
+import { showTotal } from "@/utils/table";
 
 const columns = [
   {
@@ -107,6 +108,7 @@ const TableCustomLocationOfParner = () => {
       setSorter(sorter);
     }
     setLoading(true);
+    setData([]);
     setTimeout(() => {
       setLoading(false);
       const dataResponse = {
@@ -152,6 +154,7 @@ const TableCustomLocationOfParner = () => {
         ...pagination,
         showSizeChanger: true,
         pageSizeOptions: ["10", "20", "50", "100"],
+        showTotal: showTotal,
       }}
     />
   );
