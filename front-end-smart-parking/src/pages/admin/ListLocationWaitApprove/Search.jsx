@@ -1,22 +1,39 @@
-import CheckboxWithDash from "@/components/CheckboxWithDash";
 import DateTimePickerWithSortLabelDash from "@/components/DateTimePickerWithSortLabelDash";
+import SelectBoxLabelDash from "@/components/SelectBoxLabelDash";
 import TextFieldLabelDash from "@/components/TextFieldLabelDash";
-import { updateObjectValue } from "@/utils/object";
+import { useRequireField } from "@/hook/useRequireField";
+import { useMessageError } from "@/hook/validate";
+import { setSearching } from "@/store/startSearchSlice";
+import { DATA_URGENT_APPROVAL_REQUEST } from "@/utils/constants";
+import { changeInput, changeInputTrend } from "@/utils/handleChange";
+import { convertObjectToDataSelectBox } from "@/utils/object";
 import { Button } from "antd";
+import { useEffect } from "react";
 import { IoSearch } from "react-icons/io5";
+import { useDispatch, useSelector } from "react-redux";
 
-const Search = ({ onSearch, dataSearch }) => {
-  const handleChange = (value, key) => {
-    if (dataSearch) {
-      updateObjectValue(dataSearch, key, value);
-    }
+const Search = ({ dataSearch }) => {
+  const {reset} = useMessageError();
+  const {resetRequireField} = useRequireField();
+  const {isSearching} = useSelector(state => state.startSearch)
+  const dispatch = useDispatch();
+
+  useEffect(()=> {
+    reset();
+    resetRequireField();
+  }, [resetRequireField, reset])
+
+  const handleChange = (key, value) => {
+    changeInput(dataSearch, key, value)
   };
-  const handleChangeValueInputOrder = (value, order, key) => {
-    if (typeof key === "object" && key.length === 2) {
-      updateObjectValue(dataSearch, key[0], value);
-      updateObjectValue(dataSearch, key[1], order);
-    } else {
-      updateObjectValue(dataSearch, key, value);
+
+  const callbackChangeInputTrend = (key, value, trend, skip) => {
+    changeInputTrend(dataSearch, key, value, trend, skip);
+  }
+
+  const handleRunSearch = () => {
+    if(!isSearching) {
+      dispatch(setSearching(true))
     }
   };
   return (
@@ -32,31 +49,41 @@ const Search = ({ onSearch, dataSearch }) => {
         <TextFieldLabelDash
           key={"parnerName"}
           label="Tên đối tác"
-          defaultValue={""}
           placeholder={"Nhập tên đối tác"}
           itemKey="parnerName"
           callbackChangeValue={handleChange}
+          defaultValue={dataSearch.partnerName}
         />
         <DateTimePickerWithSortLabelDash
           label={"Thời gian yêu cầu"}
-          itemKey={["request.time", "request.order"]}
-          placeholder={"Chọn thời gian phát hành"}
-          format="DD/MM/YYYY HH:mm"
-          formatShowTime={{ format: "HH:mm" }}
-          callbackChangeValue={handleChangeValueInputOrder}
+          itemKey={"createdAt"}
+          placeholder={"Chọn thời gian yêu cầu"}
+          format="DD/MM/YYYY HH:mm:ss"
+          formatShowTime={{ format: "HH:mm:ss" }}
+          callbackChangeValue={callbackChangeInputTrend}
+          defaultValue={dataSearch.createdAt}
         />
         <DateTimePickerWithSortLabelDash
           label={"Thời gian phát hành/Áp dụng"}
-          itemKey={["releasedOrApplyTime.time", "releasedOrApplyTime.order"]}
+          itemKey={"timeAppliedEdit"}
           placeholder={"Chọn thời gian phát hành"}
           format="DD/MM/YYYY HH:mm"
           formatShowTime={{ format: "HH:mm" }}
-          callbackChangeValue={handleChangeValueInputOrder}
+          callbackChangeValue={callbackChangeInputTrend}
+          defaultValue={dataSearch.timeAppliedEdit}
         />
-        {dataSearch.type !== 3 && <CheckboxWithDash label={"Duyệt khẩn cấp"} itemKey={"urgent"} callbackChangeValue={handleChange} value={dataSearch?.urgent}/>}
+        {dataSearch.tab !== 5 && <SelectBoxLabelDash 
+          key={"urgentApprovalRequest"}
+          itemKey={"urgentApprovalRequest"}
+          label={"Yêu cầu khẩn cấp"}
+          placeholder={"--Chọn--"}
+          defaultValue={dataSearch.urgentApprovalRequest}
+          data={convertObjectToDataSelectBox(DATA_URGENT_APPROVAL_REQUEST)}
+          callbackChangeValue={handleChange}
+        />}
       </div>
       <div style={{ display: "flex", justifyContent: "center" }}>
-        <Button color="primary" variant="outlined" onClick={onSearch}>
+        <Button color="primary" variant="outlined" onClick={handleRunSearch}>
           <IoSearch />
           Tìm kiếm
         </Button>

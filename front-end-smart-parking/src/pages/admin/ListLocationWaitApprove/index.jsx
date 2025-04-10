@@ -1,40 +1,49 @@
 import Search from "./Search";
 import TabStatus from "./TabStatus";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./style.css";
 import DividerCustom from "@/components/DividerCustom";
 import { updateObjectValue } from "@/utils/object";
 import TableListLocationWaitApprove from "@/components/TableListLocationWaitApprove";
+import { useDispatch, useSelector } from "react-redux";
+import { useRequireField } from "@/hook/useRequireField";
+import { setSearching } from "@/store/startSearchSlice";
 
 const ListLocationWaitApprove = () => {
-  const [searchTimes, setSearchTimes] = useState(0);
+  const {resetRequireField} = useRequireField()
+  const {isSearching} = useSelector(state => state.startSearch)
+  const dispatch = useDispatch();
   const [dataSearch] = useState({
     partnerName: null,
-    type: 1,
-    releasedOrApplyTime: {
-      time: null,
-      order: null,
+    createdAt: {
+      value: null,
+      trend: null,
     },
-    urgent: true,
+    timeAppliedEdit: {
+      value: null,
+      trend: null,
+    },
+    urgentApprovalRequest: null,
     tab: 3
   });
+  useEffect(()=> {
+    resetRequireField()
+  }, [resetRequireField])
+
   const propTabStatus = {
     onChange: (tab) => {
       updateObjectValue(dataSearch, "tab", tab);
-      onClickSearch();
+        if(!isSearching) {
+        dispatch(setSearching(true))
+      }
     },
-  };
-
-  const onClickSearch = () => {
-    console.log(dataSearch)
-    setSearchTimes((pre) => ++pre);
   };
   return (
     <div>
       <TabStatus {...propTabStatus} />
-      <Search onSearch={onClickSearch} dataSearch={dataSearch} />
+      <Search dataSearch={dataSearch} />
       <DividerCustom style={{ width: "80%" }} />
-      <TableListLocationWaitApprove searchTimes={searchTimes} dataSearch={dataSearch} />
+      <TableListLocationWaitApprove dataSearch={dataSearch} />
     </div>
   );
 };

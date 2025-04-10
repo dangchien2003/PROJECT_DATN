@@ -1,7 +1,7 @@
 import SelectBoxLabelDash from "@/components/SelectBoxLabelDash";
 import TextFieldLabelDash from "@/components/TextFieldLabelDash";
 import {
-  DATA_OPEN_HOLIDAY_SELECTBOX,
+  DATA_OPEN_HOLIDAY,
 } from "@/utils/constants";
 import { updateObjectValue } from "@/utils/object";
 import { Button } from "antd";
@@ -70,7 +70,7 @@ const Search = ({ onSearch, dataSearch }) => {
           label={"Mở cửa ngày lễ"}
           placeholder={"--Chọn--"}
           defaultValue={0}
-          data={DATA_OPEN_HOLIDAY_SELECTBOX}
+          data={DATA_OPEN_HOLIDAY}
           callbackChangeValue={handleChange}
         />
       </div>

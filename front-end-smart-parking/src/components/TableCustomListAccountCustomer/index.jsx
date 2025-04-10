@@ -12,6 +12,7 @@ import { setSearching } from "@/store/startSearchSlice";
 import { searchAccountCustomer } from "@/service/accountService";
 import { convertDataSort, getDataApi } from "@/utils/api";
 import { toastError } from "@/utils/toast";
+import { showTotal } from "@/utils/table";
 
 const columns = [
   {
@@ -84,6 +85,7 @@ const TableCustomListAccountCustomer = ({dataSearch}) => {
 
   const loadData = (newPagination, sorter) => {
     setLoading(true);
+    setData([]);
 
     searchAccountCustomer(dataSearch, newPagination.current - 1, newPagination.pageSize, sorter.field, sorter.order)
       .then((response) => {
@@ -144,10 +146,7 @@ const TableCustomListAccountCustomer = ({dataSearch}) => {
         ...pagination,
         showSizeChanger: true,
         pageSizeOptions: ["10", "20", "50", "100"],
-        showTotal: (total, range) =>
-          <div className="page-detail-table">
-            {range[0]} - {range[1]} / {total} bản ghi
-          </div>,
+        showTotal: showTotal,
       }}
       onRow={(record) => {
         return {

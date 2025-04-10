@@ -281,15 +281,43 @@ export const CARD_TYPE_SELECTBOX = [
   {label: "Thẻ doanh nghiệp", value: 1},
 ]
 
-export const DATA_OPEN_HOLIDAY_SELECTBOX = [
-  {label: "Đóng cửa", value: 1},
-  {label: "Mở cửa", value: 2},
-]
+export const DATA_OPEN_HOLIDAY = {
+  DONG_CUA: {
+    label: "Đóng cửa",
+    value: 0,
+  },
+  MO_CUA: {
+    label: "Mở cửa",
+    value: 1,
+  },
+}
+
+export const DATA_URGENT_APPROVAL_REQUEST = {
+  KHONG: {
+    label: "Không khẩn cấp",
+    value: 0,
+  },
+  CO: {
+    label: "Có khẩn cấp",
+    value: 1,
+  },
+}
 
 export const DATA_LOCATION_WAIT_APPROVE_CATEGORY_SELECTBOX = [
   {label: "Thêm mới", value: 1},
   {label: "Chỉnh sửa", value: 2},
 ]
+
+export const DATA_LOCATION_WAIT_APPROVE_CATEGORY = {
+  THEM_MOI: {
+    label: "Thêm mới",
+    value: 1,
+  },
+  CHINH_SUA: {
+    label: "Chỉnh sửa",
+    value: 2,
+  },
+}
 
 export const DATA_ACCOUNT_STATUS_SELECTBOX = [
   {label: "Khoá", value: 0},

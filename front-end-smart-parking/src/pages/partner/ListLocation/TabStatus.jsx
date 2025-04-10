@@ -16,6 +16,10 @@ const items = [
   {
     key: 4,
     label: "Từ chối",
+  },
+  {
+    key: 5,
+    label: "Chờ áp dụng",
   }
 ];
 const TabStatus = ({ ...prop }) => {

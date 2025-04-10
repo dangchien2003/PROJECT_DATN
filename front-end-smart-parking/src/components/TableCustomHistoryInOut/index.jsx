@@ -3,6 +3,7 @@ import { Table } from "antd";
 import { convertToTime, formatTimestamp } from "@/utils/time";
 import { dataInOut } from "./dataTest";
 import ButtonStatus from "../ButtonStatus";
+import { showTotal } from "@/utils/table";
 
 const columns = [
   {
@@ -96,6 +97,7 @@ const TableCustomHistoryInOut = () => {
       setSorter(sorter);
     }
     setLoading(true);
+    setData([]);
     setTimeout(() => {
       setLoading(false);
       const dataResponse = {
@@ -141,6 +143,7 @@ const TableCustomHistoryInOut = () => {
         ...pagination,
         showSizeChanger: true,
         pageSizeOptions: ["10", "20", "50", "100"],
+        showTotal: showTotal,
       }}
     />
   );
