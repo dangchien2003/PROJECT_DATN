@@ -7,23 +7,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class PartnerSearchLocation {
-    String name;
-    LocalTime openTime;
-    LocalTime closeTime;
-    Integer openHoliday;
-    Integer tab;
-    // chờ duyệt
+public class AdminSearchLocation {
+    String partnerName;
+    DataTrend createdAt;
     DataTrend timeAppliedEdit;
-    List<LocalDate> createdDate;
-    Integer category;
     Integer urgentApprovalRequest;
+    Integer tab;
 }

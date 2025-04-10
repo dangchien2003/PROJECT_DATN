@@ -63,6 +63,4 @@ public class Location extends BaseEntity {
 
     @Lob
     String infoLocation;
-
-    Integer isDel;
 }

@@ -2,6 +2,7 @@ package com.example.parking_service.controller;
 
 import com.example.common.dto.response.ApiResponse;
 import com.example.parking_service.ParkingServiceApplication;
+import com.example.parking_service.dto.request.AdminSearchLocation;
 import com.example.parking_service.dto.request.ModifyLocationRequest;
 import com.example.parking_service.dto.request.PartnerSearchLocation;
 import com.example.parking_service.service.LocationModifyService;
@@ -37,7 +38,13 @@ public class LocationController {
 
     @PostMapping("partner/search")
         // role partner
-    ApiResponse<Object> partnerSearch(@RequestBody PartnerSearchLocation modifyId, Pageable pageable) {
-        return locationService.searchLocationByPartner(modifyId, pageable);
+    ApiResponse<Object> partnerSearch(@RequestBody PartnerSearchLocation data, Pageable pageable) {
+        return locationService.searchLocationByPartner(data, pageable);
+    }
+
+    @PostMapping("admin/search/wait-approve")
+        // role admin
+    ApiResponse<Object> adminSearchWaitApprove(@RequestBody AdminSearchLocation data, Pageable pageable) {
+        return locationService.searchLocationWaitApproveByAdmin(data, pageable);
     }
 }

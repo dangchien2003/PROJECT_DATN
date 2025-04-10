@@ -12,6 +12,6 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PageResponse<T> {
     List<T> data;
-    int totalPages;
+    long totalPages;
     long totalElements;
 }

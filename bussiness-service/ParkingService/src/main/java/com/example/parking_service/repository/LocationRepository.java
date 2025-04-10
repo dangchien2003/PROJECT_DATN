@@ -12,7 +12,7 @@ import java.util.Optional;
 
 public interface LocationRepository extends JpaRepository<Location, Long> {
     @Query("SELECT l FROM Location l " +
-            "WHERE l.partnerId = :partnerId AND l.status = :status " +
+            "WHERE l.partnerId = :partnerId AND l.status = :status and l.isDel = :isDel " +
             "AND (:name IS NULL OR l.name LIKE CONCAT('%', :name, '%') ESCAPE '!') " +
             "AND (:openTime IS NULL OR l.openTime = :openTime) " +
             "AND (:closeTime IS NULL OR l.closeTime = :closeTime) " +
@@ -25,6 +25,7 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
             @Param("openHoliday") Integer openHoliday,
             @Param("status") Integer status,
             @Param("partnerId") String partnerId,
+            @Param("isDel") Integer isDel,
             Pageable pageable
     );
 
@@ -48,4 +49,6 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
             "AND l.modifyStatus = :modifyStatus " +
             "AND l.modifyCount = MAX(l.modifyCount)")
     Optional<Location> findByLocationIdAndIsDel(String locationId, Long isDel, Long modifyStatus);
+
+    Optional<Location> findByLocationIdAndIsDel(Long locationId, Integer isDel);
 }

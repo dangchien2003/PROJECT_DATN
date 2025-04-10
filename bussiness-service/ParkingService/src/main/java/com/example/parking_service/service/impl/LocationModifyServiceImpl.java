@@ -56,6 +56,7 @@ public class LocationModifyServiceImpl implements LocationModifyService {
         entityModify.setPartnerId(actionBy);
         entityModify.setModifyStatus(LocationModifyStatus.CHO_DUYET.getValue());
         entityModify.setCoordinates(objectMapper.writeValueAsString(request.getCoordinates()));
+        entityModify.setIsDel(IsDel.DELETE_NOT_YET.getValue());
         // action
         if (DataUtils.isNullOrEmpty(location)) {
             // khi tạo mới
