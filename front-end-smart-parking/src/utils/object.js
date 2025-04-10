@@ -13,3 +13,15 @@ export const updateObjectValue = (obj, path, value) => {
     current[keys[keys.length - 1]] = value;
   }
 };
+
+
+export const convertObjectToDataSelectBox = (data) => {
+  
+  return Object.keys(data).map((key) => {
+    const item = data[key];
+    return {
+      label: item.label,
+      value: item.value,
+    };
+  });
+}

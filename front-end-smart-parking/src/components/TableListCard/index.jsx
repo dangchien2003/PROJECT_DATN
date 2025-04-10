@@ -6,6 +6,7 @@ import { CARD_STATUS, CARD_TYPE} from "@/utils/constants";
 import { formatTimestamp } from "@/utils/time";
 import { useLoading } from "@/hook/loading";
 import { useNavigate } from "react-router-dom";
+import { showTotal } from "@/utils/table";
 
 const columns = [
   {
@@ -85,6 +86,7 @@ const TableListCard = ({searchTimes, dataSearch }) => {
       setSorter(sorter);
     }
     setLoading(true);
+    setData([]);
     if (searchTimes > 0) {
       showLoad();
     }
@@ -138,6 +140,7 @@ const TableListCard = ({searchTimes, dataSearch }) => {
         ...pagination,
         showSizeChanger: true,
         pageSizeOptions: ["10", "20", "50", "100"],
+        showTotal: showTotal
       }}
       onRow={(record) => {
         return {

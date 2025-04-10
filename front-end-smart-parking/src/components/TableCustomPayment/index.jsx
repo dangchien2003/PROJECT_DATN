@@ -12,6 +12,7 @@ import {
   PAYMENT_TYPE,
 } from "@/utils/constants";
 import { FaAngleDoubleUp, FaAngleDoubleDown } from "react-icons/fa";
+import { showTotal } from "@/utils/table";
 
 const columns = [
   {
@@ -130,6 +131,7 @@ const TableCustomPayment = () => {
       setSorter(sorter);
     }
     setLoading(true);
+    setData([]);
     setTimeout(() => {
       setLoading(false);
       const dataResponse = {
@@ -175,6 +177,7 @@ const TableCustomPayment = () => {
         ...pagination,
         showSizeChanger: true,
         pageSizeOptions: ["10", "20", "50", "100"],
+        showTotal: showTotal,
       }}
     />
   );

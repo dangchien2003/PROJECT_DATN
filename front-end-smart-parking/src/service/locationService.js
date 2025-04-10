@@ -18,3 +18,10 @@ export async function partnerSearch(data, page, size, field, sort) {
   })
 }
 
+export async function adminSearchWaitApprove(data, page, size, field, sort) {
+  return await httpClient.post(PARKING_SERVICE.location.adminSearchWaitApprove + "?" + getParamsSorting(page, size, field, sort), data, {
+    headers: {
+      Authorization: undefined
+    }
+  })
+}
