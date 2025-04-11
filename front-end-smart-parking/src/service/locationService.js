@@ -25,3 +25,12 @@ export async function adminSearchWaitApprove(data, page, size, field, sort) {
     }
   })
 }
+
+export async function approve(action) {
+  return await httpClient.post(PARKING_SERVICE.location.approve, action, {
+    headers: {
+      Authorization: undefined
+    }
+  })
+}
+

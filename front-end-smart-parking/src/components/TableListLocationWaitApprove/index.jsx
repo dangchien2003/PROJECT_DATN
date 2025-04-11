@@ -9,11 +9,13 @@ import { MdOutlineCancel } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import PopConfirmCustom from "../PopConfirmCustom";
 import { useDispatch, useSelector } from "react-redux";
-import { adminSearchWaitApprove } from "@/service/locationService";
+import { adminSearchWaitApprove, approve } from "@/service/locationService";
 import { convertDataSort, getDataApi } from "@/utils/api";
 import { toastError } from "@/utils/toast";
 import { setSearching } from "@/store/startSearchSlice";
 import { showTotal } from "@/utils/table";
+import MessageReject from "../MessageReject";
+import { useMessageError } from "@/hook/validate";
 
 const baseColumns = [
   {
@@ -74,7 +76,9 @@ const mapFieldSort = {
   timeAppliedEditPrint: "timeAppliedEdit",
   namePrint: "name",
 }
-
+const resonReject = {
+  value: null
+};
 const TableListLocationWaitApprove = ({dataSearch }) => {
   const navigate = useNavigate()
   const {isSearching} = useSelector(state => state.startSearch)
@@ -86,6 +90,7 @@ const TableListLocationWaitApprove = ({dataSearch }) => {
   const [action, setAction] = useState(null);
   const [dataAction, setDataAction] = useState(null);
   const { showLoad, hideLoad } = useLoading();
+  const {pushMessage, deleteKey} = useMessageError();
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 10,
@@ -160,30 +165,60 @@ const TableListLocationWaitApprove = ({dataSearch }) => {
   }
 
   const handleAllowApprove = () => {
+    const payload  = {
+      id: dataAction.modifyId,
+      approve: true,
+    }
     showLoad("Đang xử lý");
-    setTimeout(()=> {
-      hideLoad();
-      resetAction();
-    }, 3000)
+    processAction(payload);
   }
 
   const handleCancelApprove = () => {
-    console.log("huỷ việc duyệt")
     resetAction();
   }
 
   const handleAllowReject = () => {
-    console.log("đồng ý từ chối")
+    const payload  = {
+      id: dataAction.modifyId,
+      approve: false,
+      reason: resonReject.value,
+    };
+    // không thực thi khi không có lý do
+    if(!resonReject.value || resonReject.value === "") {
+      pushMessage("reasonReject", "Vui lòng nhập lý do từ chối")
+      return
+    }
     showLoad("Đang xử lý");
-    setTimeout(()=> {
+    processAction(payload);
+  }
+
+  const processAction = (payload)=> {
+    approve(payload)
+    .then((response) => {
+      const dataResponse = getDataApi(response);
+      if(dataResponse.code === 1000) {
+        const newData = [...data].filter(item => item.modifyId !== dataAction.modifyId);
+        console.log(newData)
+        setData(newData);
+        setPagination({
+          ...pagination,
+          total: pagination.total - 1,
+        });
+      }
+    })
+    .catch((error) => {
+      const dataError = getDataApi(error);
+      toastError(dataError.message)
+    })
+    .finally(() => {
       hideLoad();
       resetAction();
-    }, 3000)
+      resonReject.value = null;
+    })
   }
 
   const handleCancelReject = () => {
-    console.log("huỷ việc từ chối")
-    console.log(dataAction)
+    deleteKey("reasonReject")
     resetAction();
   }
 
@@ -198,7 +233,7 @@ const TableListLocationWaitApprove = ({dataSearch }) => {
     return data.map((item, index) => {
       item.createdDate = formatTimestamp(item.createdAt, "DD/MM/YYYY")
       item.namePrint = item.modifyId + " - " + item.name;
-      item.timeAppliedEditPrint = formatTimestamp(item.timeAppliedEdit, "DD/MM/YYYY")
+      item.timeAppliedEditPrint = formatTimestamp(item.timeAppliedEdit, "DD/MM/YYYY HH:mm")
       item.statusPrint = (
         <div>
           <div style={{ margin: 2 }}>
@@ -244,13 +279,13 @@ const TableListLocationWaitApprove = ({dataSearch }) => {
     if(dataSearch.tab === 3) {
       if(action === 1) {
         return {
-          title: `Bạn có chắc chắn đồng ý việc thêm địa điểm "${dataAction.name}" của đối tác "${dataAction.partnerName}" không?`,
+          title: `Bạn có chắc chắn đồng ý việc thêm địa điểm "${dataAction.name}" của đối tác "${dataAction.partnerFullName}" không?`,
           message: "Địa điểm sẽ đi vào hoạt động vào " + formatTimestamp(dataAction.timeAppliedEdit, "DD/MM/YYYY HH:mm")
         }
       }else if(action === 2) {
         return {
-          title: 'Bạn có chắc chắn từ chối việc thêm địa điểm "EAON MALL Hà Đông" của đối tác "EAON MALL" không?',
-          message: "Yêu cầu sẽ chuyển sang trạng thái bị từ chối"
+          title: `Bạn có chắc chắn từ chối việc thêm địa điểm "${dataAction.name}" của đối tác "${dataAction.partnerFullName}" không?`,
+          message: <MessageReject key={"MessageReject"} data={resonReject}/>
         }
       }
     }else if (dataSearch.tab === 4){
@@ -261,7 +296,7 @@ const TableListLocationWaitApprove = ({dataSearch }) => {
         }
       }else if(action === 2) {
         return {
-          title: 'Bạn có chắc chắn từ chối việc sửa thông tin địa điểm "EAON MALL Hà Đông" của đối tác "EAON MALL" không?',
+          title: `Bạn có chắc chắn từ chối việc sửa thông tin địa điểm "${dataAction.name}" của đối tác "${dataAction.partnerFullName}" không?`,
           message: "Yêu cầu sẽ chuyển sang trạng thái bị từ chối"
         }
       }

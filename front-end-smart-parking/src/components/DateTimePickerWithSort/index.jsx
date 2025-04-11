@@ -47,7 +47,15 @@ const DateTimePickerWithSort = ({
   }, [keyFocus, itemKey])
 
   useEffect(()=> {
-    setValue(getValueDate(defaultValue));
+    if(defaultValue?.trend != undefined) {
+    // khi có trend
+      setSortOrder(defaultValue.trend);
+      setValue(getValueDate(defaultValue.value));
+    } else {
+      // khi không có trend
+      setValue(getValueDate(defaultValue));
+    }
+    
   // eslint-disable-next-line
   }, [defaultValue]) 
   // xử lý khi thay đổi cách sắp xếp
@@ -83,11 +91,7 @@ const DateTimePickerWithSort = ({
 
   useEffect(() => {
     if (callbackChangeValue) {
-      let viewValue = null;
-      if(value && value.value) {
-        viewValue = value.value;
-      }
-      const formattedValue = viewValue ? viewValue.format("YYYY-MM-DDTHH:mm:ss") : null;
+      const formattedValue = value ? value.format("YYYY-MM-DDTHH:mm:ss") : null;
       callbackChangeValue(itemKey, formattedValue, sortOrder);
     }
   }, [sortOrder, value, callbackChangeValue, itemKey, format]);
