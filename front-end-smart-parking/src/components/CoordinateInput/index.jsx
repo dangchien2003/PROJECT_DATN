@@ -35,7 +35,6 @@ const CoordinateInput = ({
   }, [keyFocus, itemKey])
   
   const handleChange = (coord, val) => {
-    debugger
     const newValue = { ...value, [coord]: val };
     if(require) {
       if(newValue.length === 0) {

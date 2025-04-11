@@ -109,20 +109,20 @@ const TableListLocationPartner = ({dataSearch }) => {
             <span>PH </span>
             <span>
               <ButtonStatus
-                label={LOCATION_STATUS[item.status].label}
-                color={LOCATION_STATUS[item.status].color}
+                label={LOCATION_STATUS[item.status]?.label}
+                color={LOCATION_STATUS[item.status]?.color}
               />
             </span>
           </div>
-          {(dataSearch.tab === 3 || dataSearch.tab === 4 || dataSearch.tab === 5) && <div style={{ margin: 2 }}>
+          <div style={{ margin: 2 }}>
             <span>TĐ </span>
             <span>
               <ButtonStatus
-                label={MODIFY_STATUS[item.modifyStatus].label}
-                color={MODIFY_STATUS[item.modifyStatus].color}
+                label={MODIFY_STATUS[item.modifyStatus]?.label}
+                color={MODIFY_STATUS[item.modifyStatus]?.color}
               />
             </span>
-          </div>}
+          </div>
         </div>
       );
       if(dataSearch.tab === 3 || dataSearch.tab === 4) {
@@ -184,7 +184,7 @@ const TableListLocationPartner = ({dataSearch }) => {
     <Table
       columns={columns}
       dataSource={data}
-      rowKey="id"
+      rowKey="modifyId"
       loading={loading}
       scroll={{
         x: "max-content",
