@@ -28,14 +28,16 @@ public class DataUtils {
         LocalDateTime now = LocalDateTime.now();
 
         try {
+            Method setCreatedAt = data.getClass().getMethod("setCreatedAt", LocalDateTime.class);
+            Method setCreatedBy = data.getClass().getMethod("setCreatedBy", String.class);
+            Method setModifiedAt = data.getClass().getMethod("setModifiedAt", LocalDateTime.class);
+            Method setModifiedBy = data.getClass().getMethod("setModifiedBy", String.class);
             if (isCreate) {
-                Method setCreatedAt = data.getClass().getMethod("setCreatedAt", LocalDateTime.class);
-                Method setCreatedBy = data.getClass().getMethod("setCreatedBy", String.class);
                 setCreatedAt.invoke(data, now);
                 setCreatedBy.invoke(data, actionBy);
+                setModifiedAt.invoke(data, (Object) null);
+                setModifiedBy.invoke(data, (Object) null);
             } else {
-                Method setModifiedAt = data.getClass().getMethod("setModifiedAt", LocalDateTime.class);
-                Method setModifiedBy = data.getClass().getMethod("setModifiedBy", String.class);
                 setModifiedAt.invoke(data, now);
                 setModifiedBy.invoke(data, actionBy);
             }

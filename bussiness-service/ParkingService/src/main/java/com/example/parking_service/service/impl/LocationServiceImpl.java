@@ -61,7 +61,7 @@ public class LocationServiceImpl implements LocationService {
         // trạng thái
         Integer status = null;
         if (request.getTab().equals(1)) {
-            status = LocationStatus.DANG_HOAT_DONG.getValue();
+            status = LocationStatus.DA_DUYET_DANG_HOAT_DONG.getValue();
         } else if (request.getTab().equals(2)) {
             status = LocationStatus.TAM_DUNG_HOAT_DONG.getValue();
         } else if (request.getTab().equals(3)) {
@@ -69,7 +69,7 @@ public class LocationServiceImpl implements LocationService {
         } else if (request.getTab().equals(4)) {
             status = LocationModifyStatus.TU_CHOI_PHE_DUYET.getValue();
         } else if (request.getTab().equals(5)) {
-            status = LocationModifyStatus.DA_DUYET.getValue();
+            status = LocationModifyStatus.DA_DUYET_CHO_AP_DUNG.getValue();
         }
 
         if (List.of(1, 2).contains(request.getTab())) {
@@ -81,7 +81,6 @@ public class LocationServiceImpl implements LocationService {
                     request.getOpenHoliday(),
                     status,
                     ParkingServiceApplication.testPartnerActionBy,
-                    IsDel.DELETE_NOT_YET.getValue(),
                     pageable
             );
             List<LocationResponse> dataResponse = dataPage.stream()
@@ -201,7 +200,7 @@ public class LocationServiceImpl implements LocationService {
                 category,
                 partnerName,
                 modifyStatus,
-                request.getUrgentApprovalRequest(),
+                urgentApprovalRequest,
                 applyTime,
                 trendApplyTime,
                 createdTime,

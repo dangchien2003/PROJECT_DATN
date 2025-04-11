@@ -48,6 +48,8 @@ public class LocationResponse {
 
     Long capacity;
 
+    String approveBy;
+
     String description;
 
     String infoLocation;

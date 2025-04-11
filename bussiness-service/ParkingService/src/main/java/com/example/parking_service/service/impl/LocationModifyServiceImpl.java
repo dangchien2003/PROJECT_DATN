@@ -6,11 +6,13 @@ import com.example.common.exception.AppException;
 import com.example.common.exception.ErrorCode;
 import com.example.common.utils.DataUtils;
 import com.example.parking_service.ParkingServiceApplication;
+import com.example.parking_service.dto.request.ApproveRequest;
 import com.example.parking_service.dto.request.ModifyLocationRequest;
 import com.example.parking_service.entity.Location;
 import com.example.parking_service.entity.LocationModify;
 import com.example.parking_service.enums.LocationModifyStatus;
 import com.example.parking_service.enums.LocationStatus;
+import com.example.parking_service.mapper.LocationMapper;
 import com.example.parking_service.mapper.LocationModifyMapper;
 import com.example.parking_service.repository.LocationModifyRepository;
 import com.example.parking_service.repository.LocationRepository;
@@ -24,6 +26,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
@@ -33,7 +38,67 @@ public class LocationModifyServiceImpl implements LocationModifyService {
     LocationModifyRepository locationModifyRepository;
     LocationRepository locationRepository;
     LocationModifyMapper locationModifyMapper;
+    LocationMapper locationMapper;
     ObjectMapper objectMapper;
+
+    @Override
+    public ApiResponse<Object> approve(ApproveRequest request) {
+        Long modifyId = Long.parseLong(request.getId());
+        LocationModify modifyEntity = locationModifyRepository.findByModifyIdAndIsDel(modifyId, IsDel.DELETE_NOT_YET.getValue())
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
+        // kiểm tra thời hạn
+        Duration duration = Duration.between(LocalDateTime.now(), modifyEntity.getTimeAppliedEdit());
+        if (duration.toSeconds() < 0) {
+            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Yêu cầu đã vượt quá thời được duyệt"));
+        }
+        if (Boolean.TRUE.equals(request.getApprove())) {
+            // xử lý khi duyệt
+            if (modifyEntity.getLocationId() != null) {
+                Location locationEntity = locationRepository.findById(modifyEntity.getLocationId())
+                        .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
+                processWhenApproveIsModify(locationEntity, modifyEntity);
+            } else {
+                processWhenApproveIsCreate(modifyEntity);
+            }
+            // update modify
+            modifyEntity.setModifyStatus(LocationModifyStatus.DA_DUYET_CHO_AP_DUNG.getValue());
+        } else {
+            // xử lý khi từ chối duyệt
+            if (modifyEntity.getLocationId() != null) {
+                Location locationEntity = locationRepository.findById(modifyEntity.getLocationId())
+                        .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
+                locationEntity.setModifyStatus(LocationModifyStatus.TU_CHOI_PHE_DUYET.getValue());
+            }
+            // update chung
+            modifyEntity.setModifyStatus(LocationModifyStatus.TU_CHOI_PHE_DUYET.getValue());
+            modifyEntity.setReason(request.getReason());
+        }
+        DataUtils.setDataAction(modifyEntity, ParkingServiceApplication.testAdminUUID, false);
+        locationModifyRepository.save(modifyEntity);
+        return ApiResponse.builder().build();
+    }
+
+    void processWhenApproveIsCreate(LocationModify modify) {
+        // convert
+        Location location = locationMapper.toLocationFromModify(modify);
+        // thêm mới bản ghi
+        location.setApproveBy(ParkingServiceApplication.testAdminUUID);
+        location.setStatus(LocationStatus.DA_DUYET_DANG_HOAT_DONG.getValue());
+        location.setModifyStatus(LocationModifyStatus.DA_DUYET_CHO_AP_DUNG.getValue());
+        DataUtils.setDataAction(location, ParkingServiceApplication.testAdminUUID, true);
+        // lưu
+        locationRepository.save(location);
+    }
+
+    void processWhenApproveIsModify(Location location, LocationModify modify) {
+        // convert
+        locationMapper.toLocationFromModify(location, modify);
+        // sửa bản ghi
+        location.setApproveBy(ParkingServiceApplication.testAdminUUID);
+        location.setModifyStatus(LocationModifyStatus.DA_DUYET_CHO_AP_DUNG.getValue());
+        DataUtils.setDataAction(location, ParkingServiceApplication.testAdminUUID, false);
+        locationRepository.save(location);
+    }
 
     @Override
     public ApiResponse<Object> modifyLocation(ModifyLocationRequest request, String actionBy) throws JsonProcessingException {

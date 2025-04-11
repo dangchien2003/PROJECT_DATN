@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface LocationModifyRepository extends JpaRepository<LocationModify, Long> {
     //    @Query("SELECT lm " +
@@ -114,4 +115,6 @@ public interface LocationModifyRepository extends JpaRepository<LocationModify, 
             @Param("modifyStatus") Integer modifyStatus,
             @Param("isDel") Integer isDel
     );
+
+    Optional<LocationModify> findByModifyIdAndIsDel(Long locationId, Integer isDel);
 }

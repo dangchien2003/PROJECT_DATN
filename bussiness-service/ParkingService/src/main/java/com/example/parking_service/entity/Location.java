@@ -58,6 +58,8 @@ public class Location extends BaseEntity {
 
     Long capacity;
 
+    String approveBy;
+
     @Lob
     String description;
 
