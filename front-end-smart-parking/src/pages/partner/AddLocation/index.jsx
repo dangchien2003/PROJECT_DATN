@@ -44,7 +44,8 @@ const AddLocation = ({isModify = false}) => {
   const {reset} = useMessageError()
   const {setRequireField} = useRequireField();
   
-   useEffect(() => {
+  // load dữ liệu khi vào form chỉnh sửa
+  useEffect(() => {
     let timeOutId;
     if(id) {
       showLoad()
