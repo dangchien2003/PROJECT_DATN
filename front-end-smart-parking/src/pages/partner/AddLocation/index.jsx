@@ -8,7 +8,6 @@ import DateTimePickerWithSortLabelDash from "@/components/DateTimePickerWithSort
 import Action from "./Action";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import dayj from "dayjs";
 import { useLoading } from "@/hook/loading";
 import { updateObjectValue } from "@/utils/object";
 import { extractGoogleMapCoords } from "@/utils/extract";
@@ -16,17 +15,22 @@ import { useMessageError } from "@/hook/validate";
 import { useRequireField } from "@/hook/useRequireField";
 import { changeInput } from "@/utils/handleChange";
 import QuillEditorInput from "@/components/QuillEditorInput";
-import { dataEdit } from "./fakeData";
+import { locationDetail } from "@/service/locationService";
+import { getDataApi } from "@/utils/api";
+import { toastError } from "@/utils/toast";
 
 const requireKeys = ["name", "address", "openTime", "closeTime", "timeAppliedEdit", "description"]
 const indexKeys = ["name", "address", "openTime", "closeTime", "timeAppliedEdit", "description"]
-const AddLocation = ({isModify = false}) => {
+const AddLocation = ({ isModify = false }) => {
   const [dataModify, setDataModify] = useState({
     locationId: null,
     name: null,
     address: null,
     linkGoogleMap: null,
-    coordinates: null,
+    coordinates: {
+      x: null,
+      y: null,
+    },
     openTime: null,
     closeTime: null,
     timeAppliedEdit: null,
@@ -39,32 +43,37 @@ const AddLocation = ({isModify = false}) => {
   })
   const [disableCoordinates, setDisableCoordinates] = useState(false)
   const [openEveryTime, setOpenEveryTime] = useState(false)
-  const {hideLoad, showLoad} = useLoading()
-  const {id} = useParams()
-  const {reset} = useMessageError()
-  const {setRequireField} = useRequireField();
-  
+  const { hideLoad, showLoad } = useLoading()
+  const { id } = useParams()
+  const { reset } = useMessageError()
+  const { setRequireField } = useRequireField();
   // load dữ liệu khi vào form chỉnh sửa
   useEffect(() => {
-    let timeOutId;
-    if(id) {
+    if (id) {
       showLoad()
-      timeOutId = setTimeout(() => {
-        setDataModify(dataEdit)
-        hideLoad()
-      }, 1000)
+      // gọi api lấy dữ liệu
+      locationDetail(id).then((response) => {
+        const result = getDataApi(response);
+        if (result.openTime = "00:00:00" && result.openTime === result.closeTime) {
+          setOpenEveryTime(true)
+        }
+        setDataModify(result)
+      })
+        .catch((error) => {
+          const dataError = getDataApi(error);
+          toastError(dataError?.message)
+        })
+        .finally(() => {
+          hideLoad()
+        })
     }
-    
-    return () => {
-      clearTimeout(timeOutId)
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id])
 
-  useEffect(()=> {
+  useEffect(() => {
     reset()
     setRequireField(requireKeys)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const handleChange = (key, value) => {
@@ -82,7 +91,7 @@ const AddLocation = ({isModify = false}) => {
 
   const handleChangeLinkGoogleMap = (key, value) => {
     const coordinates = extractGoogleMapCoords(value);
-    if(coordinates) {
+    if (coordinates) {
       setDisableCoordinates(true)
       updateObjectValue(dataModify, "coordinates", coordinates);
     } else {
@@ -100,7 +109,7 @@ const AddLocation = ({isModify = false}) => {
       // Nếu mở mọi lúc thì set giờ về 00:00:00
       updateObjectValue(dataModify, "openTime", "00:00:00");
       updateObjectValue(dataModify, "closeTime", "00:00:00");
-    }else {
+    } else {
       updateObjectValue(dataModify, "openTime", null);
       updateObjectValue(dataModify, "closeTime", null);
     }
@@ -108,13 +117,13 @@ const AddLocation = ({isModify = false}) => {
 
   return (
     <div>
-      <h3 style={{ paddingBottom: 8 }} onClick={()=> {
+      <h3 style={{ paddingBottom: 8 }} onClick={() => {
         console.log(dataModify)
       }}>{isModify ? "Chỉnh sửa địa điểm" : "Thêm mới địa điểm"}</h3>
       <div>
-        <AvatarAndVideo data={dataModify}/>
+        <AvatarAndVideo data={dataModify} />
       </div>
-      <div style={{ display: "flex", flexWrap: "wrap"}}>
+      <div style={{ display: "flex", flexWrap: "wrap" }}>
         <TextFieldLabelDash
           label={"Tên địa điểm"}
           placeholder={"Nhập tên địa điểm"}
@@ -128,7 +137,7 @@ const AddLocation = ({isModify = false}) => {
           placeholder={"Nhập địa chỉ"}
           key={"dia_chi"}
           itemKey={"address"}
-          defaultValue={dataModify?.name}
+          defaultValue={dataModify?.address}
           callbackChangeValue={handleChange}
         />
         <TextFieldLabelDash
@@ -151,10 +160,10 @@ const AddLocation = ({isModify = false}) => {
         {isModify && <DatePickerLabelDash
           label={"Ngày mở cửa"}
           placeholder={"Chọn ngày mở cửa"}
-          key={"ngay mo cua"} 
+          key={"ngay mo cua"}
           disable={true}
           format={"DD/MM/YYYY"}
-          defaultValue={dataModify?.openDate && dayj(dataModify?.openDate, "DD/MM/YYYY")}
+          defaultValue={dataModify.openDate}
         />}
         <TimeInput
           label={"Thời gian mở cửa"}
@@ -176,9 +185,9 @@ const AddLocation = ({isModify = false}) => {
           defaultValue={openEveryTime ? "00:00:00" : dataModify?.closeTime}
           disable={openEveryTime}
         />
-        <CheckboxWithDash 
-          label={"Mở cửa mọi lúc"} 
-          value={false} 
+        <CheckboxWithDash
+          label={"Mở cửa mọi lúc"}
+          value={openEveryTime}
           key={"openEveryTime"}
           itemKey={"openEveryTime"}
           callbackChangeValue={handleClickEveryTime}
@@ -192,27 +201,27 @@ const AddLocation = ({isModify = false}) => {
           itemKey={"capacity"}
           callbackChangeValue={handleChange}
         /> */}
-        <DateTimePickerWithSortLabelDash 
-          label="Thời điểm áp dụng" 
+        <DateTimePickerWithSortLabelDash
+          label="Thời điểm áp dụng"
           sort={false}
-          format={"DD/MM/YYYY HH:mm"} 
-          formatShowTime={"HH:mm"} 
+          format={"DD/MM/YYYY HH:mm"}
+          formatShowTime={"HH:mm"}
           placeholder={"Chọn thời điểm áp dụng"}
-          defaultValue={dataModify?.timeAppliedEdit && dayj(dataModify?.timeAppliedEdit, "DD/MM/YYYY HH:mm")}
-          key={"tgad"} 
+          defaultValue={dataModify?.timeAppliedEdit}
+          key={"tgad"}
           itemKey={"timeAppliedEdit"}
           callbackChangeValue={handleChangeValueInputOrder}
         />
-        <CheckboxWithDash 
-          label={"Mở cửa ngày lễ"} 
-          value={dataModify?.openHoliday} 
+        <CheckboxWithDash
+          label={"Mở cửa ngày lễ"}
+          value={dataModify?.openHoliday}
           key={"mcnl"}
           itemKey={"openHoliday"}
           callbackChangeValue={handleChange}
         />
-        <CheckboxWithDash 
-          label={"Yêu cầu duyệt khẩn cấp"} 
-          value={dataModify?.urgentApprovalRequest} 
+        <CheckboxWithDash
+          label={"Yêu cầu duyệt khẩn cấp"}
+          value={dataModify?.urgentApprovalRequest}
           key={"dkc"}
           itemKey={"urgentApprovalRequest"}
           callbackChangeValue={handleChange}
@@ -228,14 +237,14 @@ const AddLocation = ({isModify = false}) => {
           callbackChangeValue={handleChange}
         />
       </div>}
-      <QuillEditorInput 
+      <QuillEditorInput
         label={"Mô tả về địa điểm"}
         itemKey={"description"}
         key={"description"}
         defaultValue={dataModify?.description}
         callbackChangeValue={handleChange}
       />
-      <Action isModify={isModify} data={dataModify} requireKeys={requireKeys} indexKey={indexKeys}/>
+      <Action isModify={isModify} data={dataModify} requireKeys={requireKeys} indexKey={indexKeys} />
     </div>
   );
 };

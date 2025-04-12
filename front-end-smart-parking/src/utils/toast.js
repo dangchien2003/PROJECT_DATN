@@ -18,7 +18,7 @@ export const toastSuccess = (message) => {
 }
 
 export const toastError = (message) => {
-  toast.error(message , configToast);
+  toast.error(message ? message : "Có lỗi xảy ra. Vui lòng thử lại" , configToast);
 }
 
 export const toastInfo = (message) => {

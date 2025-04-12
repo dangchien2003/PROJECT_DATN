@@ -19,7 +19,7 @@ const ListLocation = () => {
     openTime: null,
     closeTime: null,
     openHoliday: null,
-    tab: 1,
+    tab: 5,
     timeAppliedEdit: {
       value: null,
       trend: null
