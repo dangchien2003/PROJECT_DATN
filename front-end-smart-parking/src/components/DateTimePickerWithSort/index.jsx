@@ -4,14 +4,8 @@ import { FaAngleUp, FaAngleDown } from "react-icons/fa";
 import dayjs from "dayjs";
 import { useSelector } from "react-redux";
 import { useMessageError } from "@/hook/validate";
-const getValueDate = (valueInput) => {
-  if(valueInput && valueInput.value !== undefined) {
-    return valueInput.value ? dayjs(valueInput.value) : null;
-  }else if(valueInput) {
-    return(valueInput);
-  }
-  return null;
-}
+import { getValueDate } from "@/utils/time";
+
 const DateTimePickerWithSort = ({
   min = null,
   max = null,
@@ -47,7 +41,7 @@ const DateTimePickerWithSort = ({
   }, [keyFocus, itemKey])
 
   useEffect(()=> {
-    if(defaultValue?.trend != undefined) {
+    if(defaultValue?.trend !== undefined) {
     // khi có trend
       setSortOrder(defaultValue.trend);
       setValue(getValueDate(defaultValue.value));

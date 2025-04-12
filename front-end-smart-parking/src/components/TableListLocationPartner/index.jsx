@@ -10,6 +10,7 @@ import { convertDataSort, getDataApi } from "@/utils/api";
 import { setSearching } from "@/store/startSearchSlice";
 import { toastError } from "@/utils/toast";
 import { showTotal } from "@/utils/table";
+import dayjs from "dayjs";
 
 const baseColumns = [
   {
@@ -21,7 +22,7 @@ const baseColumns = [
   },
   {
     title: "Tên địa điểm",
-    dataIndex: "name",
+    dataIndex: "namePrint",
     key: "1",
     sorter: true,
     width: 150,
@@ -55,11 +56,18 @@ const baseColumns = [
     sorter: true,
     width: 120,
     align: "center"
-  },    
+  },
   {
     title: "Phân loại",
     dataIndex: "categoryPrint",
     key: "6",
+    sorter: false,
+    width: 150,
+  },
+  {
+    title: "Thời điểm áp dụng",
+    dataIndex: "applyTime",
+    key: "7",
     sorter: false,
     width: 150,
   },
@@ -69,9 +77,9 @@ const mapFieldSort = {
   openDatePrint: "openDate",
 }
 
-const TableListLocationPartner = ({dataSearch }) => {
+const TableListLocationPartner = ({ dataSearch }) => {
   const navigate = useNavigate()
-  const {isSearching} = useSelector(state => state.startSearch)
+  const { isSearching } = useSelector(state => state.startSearch)
   const dispatch = useDispatch();
   const [columns, setColumns] = useState(baseColumns);
   const [data, setData] = useState([]);
@@ -86,30 +94,43 @@ const TableListLocationPartner = ({dataSearch }) => {
     field: null,
     order: null,
   });
-  
+
   useEffect(() => {
     let newColumns;
-    if(![3, 4, 5].includes(dataSearch.tab) ) {
-     newColumns = [...baseColumns].filter((item) => item.key !== "6");
-    }else {
-      newColumns = [...baseColumns];
+    if (dataSearch.tab === 5) {
+      // chờ áp dụng
+      newColumns = [...baseColumns].filter((item) => item.key !== "6");;
+    } else if (![3, 4].includes(dataSearch.tab)) {
+      // đang hd và dừng hđ
+      newColumns = [...baseColumns].filter((item) => item.key !== "6" && item.key !== "7");
+    } else {
+      // chờ duyệt và từ chối
+      newColumns = [...baseColumns].filter((item) => item.key !== "7");
     }
     setColumns(newColumns);
   }, [dataSearch.tab])
 
   const convertResponseToDataTable = (data, currentPage, pageSize) => {
     return data.map((item, index) => {
+      var idShow = item.locationId;
+      if(dataSearch.tab === 3 || dataSearch.tab === 4) {
+        idShow = item.modifyId;
+      } else if(dataSearch.tab === 5) {
+        idShow = item.id;
+      }
+      item.namePrint = `${idShow} - ${item.name}`;
       item.coordinatesPrint = <a href={item.linkGoogleMap}
-      target="_blank" rel="noreferrer" onClick={(event)=> {event.stopPropagation()}}>{item.coordinates && `[${item.coordinates?.x}x${item.coordinates?.y}]`}</a>;
+        target="_blank" rel="noreferrer" onClick={(event) => { event.stopPropagation() }}>{item.coordinates && `[${item.coordinates?.x}x${item.coordinates?.y}]`}</a>;
       item.openDatePrint = formatTimestamp(item.openDate, "DD/MM/YYYY")
-      item.openDatePrint = formatTimestamp(item.openDate, "DD/MM/YYYY")
+      const now = dayjs()
+      const openDate = dayjs(item.openDate)
       item.statusPrint = (
         <div>
           <div style={{ margin: 2 }}>
             <span>PH </span>
             <span>
               <ButtonStatus
-                label={LOCATION_STATUS[item.status]?.label}
+                label={item.status !== 1 ? LOCATION_STATUS[item.status].label : (openDate.isBefore(now) ? LOCATION_STATUS[item.status].label : "Đã duyệt")}
                 color={LOCATION_STATUS[item.status]?.color}
               />
             </span>
@@ -125,8 +146,11 @@ const TableListLocationPartner = ({dataSearch }) => {
           </div>
         </div>
       );
-      if(dataSearch.tab === 3 || dataSearch.tab === 4) {
-        item.categoryPrint = item.locationId ? "Chỉnh sửa": "Thêm mới";
+      if (dataSearch.tab === 3 || dataSearch.tab === 4 || dataSearch.tab === 5) {
+        item.categoryPrint = item.locationId ? "Chỉnh sửa" : "Thêm mới";
+      }
+      if(dataSearch.tab === 5) {
+        item.applyTime = item.timeAppliedEdit ? formatTimestamp(item.timeAppliedEdit, "DD/MM/YYYY HH:mm") : null;
       }
       item.stt = (currentPage - 1) * pageSize + index + 1;
       return item;
@@ -168,9 +192,9 @@ const TableListLocationPartner = ({dataSearch }) => {
   };
 
   useEffect(() => {
-    if(isSearching || !firstSearch) {
+    if (isSearching || !firstSearch) {
       loadData(pagination, sorter);
-      if(!firstSearch) {
+      if (!firstSearch) {
         setFirstSearch(true)
       }
     }
@@ -178,7 +202,13 @@ const TableListLocationPartner = ({dataSearch }) => {
   }, [isSearching]);
 
   const handleClickRow = (data) => {
-    navigate(`/partner/location/detail/${dataSearch.tab}/${data.id}`)
+    let id = data.locationId;
+    if(dataSearch.tab === 3 || dataSearch.tab === 4) {
+      id = data.modifyId;
+    } else if(dataSearch.tab === 5) {
+      id = data.id;
+    }
+    navigate(`/partner/location/detail/${dataSearch.tab}/${id}`)
   };
   return (
     <Table

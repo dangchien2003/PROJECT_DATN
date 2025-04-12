@@ -23,7 +23,7 @@ const MessageReject = ({data}) => {
     <div>
       <div>Yêu cầu sẽ chuyển sang trạng thái bị từ chối</div>
       <div style={{ fontStyle: "italic", color: "black" }}>Lý do từ chối</div>
-      <textarea style={{ width: 300, height: 100, fontSize: 16, padding: 4 }} onChange={handleChange} value={value}></textarea>
+      <textarea style={{ width: 300, height: 100, fontSize: 14, padding: 4 }} onChange={handleChange} value={value}></textarea>
       <InputError itemKey={itemKey} key={itemKey}/>
     </div>
   )

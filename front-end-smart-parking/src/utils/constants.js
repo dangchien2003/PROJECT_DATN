@@ -177,7 +177,7 @@ export const LOCATION_STATUS = {
     color: "warning",
   },
   1: {
-    label: "Đã duyệt", //Đã duyệt/Đang hoạt động
+    label: "Đang hoạt động", //Đã duyệt/Đang hoạt động
     color: "cyan",
   },
   3: {

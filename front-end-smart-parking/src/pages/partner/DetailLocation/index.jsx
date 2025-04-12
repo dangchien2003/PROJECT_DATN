@@ -1,9 +1,13 @@
 import { useParams } from "react-router-dom"
 import "./style.css"
-import {infoTicket, modifyInfoTicket} from "./fakedata"
 import BoxInfo from "./BoxInfo";
 import { Typography } from "antd";
 import { useEffect, useState } from "react";
+import { locationDetail, modifyDetail, waitReleaseDetail } from "@/service/locationService";
+import { useLoading } from "@/hook/loading";
+import { getDataApi } from "@/utils/api";
+import { toastError } from "@/utils/toast";
+import { formatTimestamp } from "@/utils/time";
 const { Title } = Typography;
 
 const DetailLocation = () => {
@@ -12,20 +16,76 @@ const DetailLocation = () => {
   const [widthPage, setWidthPage] = useState(window.innerWidth)
   const [dataModify, setDataModify] = useState(null)
   const [dataRoot, setDataRoot] = useState(null)
+  const {showLoad, hideLoad} = useLoading();
   const tabNumber = Number(tab);
-  console.log(id)
   useEffect(()=> {
-    // 1: đang hoạt động, 2: tạm dừng hoạt động, 3: Chờ duyệt, 4: từ chối
+
+    // hàm lấy dữ liệu 
+    const getDataRoot = (id) => {
+      locationDetail(id).then((response) => {
+        const result = getDataApi(response);
+        result.openDate = result.openDate ? formatTimestamp(result.openDate, "DD/MM/YYYY") : null;
+        setDataRoot(result)
+      })
+      .catch((error) => {
+        const dataError = getDataApi(error);
+        toastError(dataError?.message)
+      })
+      .finally(() => {
+        hideLoad()
+      })
+    }
+
+    const getDataModify = (id) => {
+      modifyDetail(id).then((response) => {
+        const result = getDataApi(response);
+        setDataModify(result);
+        return result.locationId;
+      })
+      .catch((error) => {
+        const dataError = getDataApi(error);
+        toastError(dataError?.message)
+      })
+      .finally(() => {
+        hideLoad()
+      })
+    }
+
+    const getDataWaitRelease = (id) => {
+      waitReleaseDetail(id).then((response) => {
+        const result = getDataApi(response);
+        setDataModify(result);
+        return result.locationId;
+      })
+      .catch((error) => {
+        const dataError = getDataApi(error);
+        toastError(dataError?.message)
+      })
+      .finally(() => {
+        hideLoad()
+      })
+    }
+    // xử lý
+    showLoad("Đang tải dữ liệu");
+    // 1: đang hoạt động, 2: tạm dừng hoạt động, 3: Chờ duyệt, 4: từ chối 5: chờ áp dụng
     if([1, 2].includes(tabNumber)) {
-      setDataRoot(infoTicket);
+      getDataRoot(id);
     }
 
     if([3, 4].includes(tabNumber)){
-      setDataModify(modifyInfoTicket);
-      if(modifyInfoTicket.ticketid && id === "2") {
-        setDataRoot(infoTicket);
+      getDataModify(id);
+      if(dataModify?.locationId) {
+        getDataRoot(dataModify.locationId);
       }
     }
+
+    if(tabNumber === 5) {
+      getDataWaitRelease(id);
+      if(dataModify?.locationId) {
+        getDataRoot(dataModify.locationId);
+      }
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tabNumber, id])
 
   // responsive

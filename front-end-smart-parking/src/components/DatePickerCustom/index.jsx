@@ -1,3 +1,4 @@
+import { getValueDate } from "@/utils/time";
 import { DatePicker } from "antd";
 import { useEffect, useState } from "react";
 
@@ -13,7 +14,7 @@ const DatePickerCustom = ({
 }) => {
   const [value, setValue] = useState(defaultValue)
   useEffect(() => {
-    setValue(defaultValue)
+    setValue(getValueDate(defaultValue));
   }, [defaultValue])
   // kiểm tra min max
   const validMinMax = (value) => {
