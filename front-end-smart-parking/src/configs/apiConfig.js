@@ -13,5 +13,8 @@ export const PARKING_SERVICE = {
     partnerSearch: "location/partner/search",
     adminSearchWaitApprove: "location/admin/search/wait-approve",
     approve: "location/approve",
+    modifyDetail: "location/detail/modify",
+    locationDetail: "location/detail",
+    waitReleaseDetail: "location/detail/wait-release",
   }
 }

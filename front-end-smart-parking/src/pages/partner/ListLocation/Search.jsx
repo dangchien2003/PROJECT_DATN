@@ -86,7 +86,7 @@ const Search = ({ dataSearch }) => {
           data={convertObjectToDataSelectBox(DATA_OPEN_HOLIDAY)}
           callbackChangeValue={handleChange}
         />
-        {[3, 4, 5].includes(dataSearch.tab) && <>
+        {[3, 4].includes(dataSearch.tab) && <>
           <DateTimePickerWithSortLabelDash 
             itemKey={"timeAppliedEdit"} 
             key={"timeAppliedEdit"} 

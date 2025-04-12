@@ -1,6 +1,6 @@
 import { PARKING_SERVICE } from "@/configs/apiConfig";
 import httpClient from "@/configs/axiosConfig";
-import { getParamsSorting } from "@/utils/api";
+import { getParamsSorting, getRequestParams } from "@/utils/api";
 
 export async function modifyLocation(data) {
   return await httpClient.post(PARKING_SERVICE.location.modify, data, {
@@ -34,3 +34,27 @@ export async function approve(action) {
   })
 }
 
+
+export async function modifyDetail(id) {
+  return await httpClient.get(PARKING_SERVICE.location.modifyDetail + "?" + getRequestParams({id}), {
+    headers: {
+      Authorization: undefined
+    }
+  })
+}
+
+export async function locationDetail(id) {
+  return await httpClient.get(PARKING_SERVICE.location.locationDetail + "?" + getRequestParams({id}), {
+    headers: {
+      Authorization: undefined
+    }
+  })
+}
+
+export async function waitReleaseDetail(id) {
+  return await httpClient.get(PARKING_SERVICE.location.waitReleaseDetail + "?" + getRequestParams({id}), {
+    headers: {
+      Authorization: undefined
+    }
+  })
+}

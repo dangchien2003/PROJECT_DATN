@@ -11,11 +11,12 @@ import PopConfirmCustom from "../PopConfirmCustom";
 import { useDispatch, useSelector } from "react-redux";
 import { adminSearchWaitApprove, approve } from "@/service/locationService";
 import { convertDataSort, getDataApi } from "@/utils/api";
-import { toastError } from "@/utils/toast";
+import { toastError, toastSuccess } from "@/utils/toast";
 import { setSearching } from "@/store/startSearchSlice";
 import { showTotal } from "@/utils/table";
 import MessageReject from "../MessageReject";
 import { useMessageError } from "@/hook/validate";
+import dayjs from "dayjs";
 
 const baseColumns = [
   {
@@ -79,9 +80,9 @@ const mapFieldSort = {
 const resonReject = {
   value: null
 };
-const TableListLocationWaitApprove = ({dataSearch }) => {
+const TableListLocationWaitApprove = ({ dataSearch }) => {
   const navigate = useNavigate()
-  const {isSearching} = useSelector(state => state.startSearch)
+  const { isSearching } = useSelector(state => state.startSearch)
   const dispatch = useDispatch();
   const [columns, setColumns] = useState(baseColumns);
   const [data, setData] = useState([]);
@@ -90,7 +91,7 @@ const TableListLocationWaitApprove = ({dataSearch }) => {
   const [action, setAction] = useState(null);
   const [dataAction, setDataAction] = useState(null);
   const { showLoad, hideLoad } = useLoading();
-  const {pushMessage, deleteKey} = useMessageError();
+  const { pushMessage, deleteKey } = useMessageError();
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 10,
@@ -103,9 +104,9 @@ const TableListLocationWaitApprove = ({dataSearch }) => {
 
   useEffect(() => {
     let newColumns;
-    if(dataSearch.tab === 5) {
-     newColumns = [...baseColumns].filter((item) => item.key !== "6");
-    }else {
+    if (dataSearch.tab === 5) {
+      newColumns = [...baseColumns].filter((item) => item.key !== "6");
+    } else {
       newColumns = [...baseColumns];
     }
     setColumns(newColumns);
@@ -146,9 +147,9 @@ const TableListLocationWaitApprove = ({dataSearch }) => {
   };
 
   useEffect(() => {
-    if(isSearching || !firstSearch) {
+    if (isSearching || !firstSearch) {
       loadData(pagination, sorter);
-      if(!firstSearch) {
+      if (!firstSearch) {
         setFirstSearch(true)
       }
     }
@@ -158,14 +159,14 @@ const TableListLocationWaitApprove = ({dataSearch }) => {
   const handleClickRow = (data) => {
     navigate(`/location/detail/${dataSearch.tab}/${data.id}`)
   };
-  
+
   const resetAction = () => {
     setAction(null);
     setDataAction(null);
   }
 
   const handleAllowApprove = () => {
-    const payload  = {
+    const payload = {
       id: dataAction.modifyId,
       approve: true,
     }
@@ -178,13 +179,13 @@ const TableListLocationWaitApprove = ({dataSearch }) => {
   }
 
   const handleAllowReject = () => {
-    const payload  = {
+    const payload = {
       id: dataAction.modifyId,
       approve: false,
       reason: resonReject.value,
     };
     // không thực thi khi không có lý do
-    if(!resonReject.value || resonReject.value === "") {
+    if (!resonReject.value || resonReject.value === "") {
       pushMessage("reasonReject", "Vui lòng nhập lý do từ chối")
       return
     }
@@ -192,29 +193,30 @@ const TableListLocationWaitApprove = ({dataSearch }) => {
     processAction(payload);
   }
 
-  const processAction = (payload)=> {
+  const processAction = (payload) => {
     approve(payload)
-    .then((response) => {
-      const dataResponse = getDataApi(response);
-      if(dataResponse.code === 1000) {
-        const newData = [...data].filter(item => item.modifyId !== dataAction.modifyId);
-        console.log(newData)
-        setData(newData);
-        setPagination({
-          ...pagination,
-          total: pagination.total - 1,
-        });
-      }
-    })
-    .catch((error) => {
-      const dataError = getDataApi(error);
-      toastError(dataError.message)
-    })
-    .finally(() => {
-      hideLoad();
-      resetAction();
-      resonReject.value = null;
-    })
+      .then((response) => {
+        const dataResponse = getDataApi(response);
+        if (dataResponse.code === 1000) {
+          const newData = [...data].filter(item => item.modifyId !== dataAction.modifyId);
+          console.log(newData)
+          setData(newData);
+          setPagination({
+            ...pagination,
+            total: pagination.total - 1,
+          });
+        }
+        toastSuccess(payload.approve ? "Phê duyệt" : "Từ chối" + " thành công")
+      })
+      .catch((error) => {
+        const dataError = getDataApi(error);
+        toastError(dataError.message)
+      })
+      .finally(() => {
+        hideLoad();
+        resetAction();
+        resonReject.value = null;
+      })
   }
 
   const handleCancelReject = () => {
@@ -234,13 +236,15 @@ const TableListLocationWaitApprove = ({dataSearch }) => {
       item.createdDate = formatTimestamp(item.createdAt, "DD/MM/YYYY")
       item.namePrint = item.modifyId + " - " + item.name;
       item.timeAppliedEditPrint = formatTimestamp(item.timeAppliedEdit, "DD/MM/YYYY HH:mm")
+      const now = dayjs()
+      const openDate = dayjs(item.openDate)
       item.statusPrint = (
         <div>
           <div style={{ margin: 2 }}>
             <span>PH </span>
             <span>
               <ButtonStatus
-                label={LOCATION_STATUS[item.status].label}
+                label={item.status !== 1 ? LOCATION_STATUS[item.status].label : (openDate.isBefore(now) ? LOCATION_STATUS[item.status].label : "Đã duyệt")}
                 color={LOCATION_STATUS[item.status].color}
               />
             </span>
@@ -259,12 +263,12 @@ const TableListLocationWaitApprove = ({dataSearch }) => {
       item.action = (
         <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
           <Tooltip title="Duyệt">
-            <div onClick={(event)=> {handleConfirm(event, 1, item)}}>
+            <div onClick={(event) => { handleConfirm(event, 1, item) }}>
               <FaRegCheckCircle style={{ color: "#00c49f", fontSize: 21, cursor: 'pointer' }} />
             </div>
           </Tooltip>
           <Tooltip title="Từ chối">
-            <div onClick={(event)=> {handleConfirm(event, 2, item)}}>
+            <div onClick={(event) => { handleConfirm(event, 2, item) }}>
               <MdOutlineCancel style={{ color: "#ff4d4f", fontSize: 24, cursor: 'pointer' }} />
             </div>
           </Tooltip>
@@ -276,28 +280,28 @@ const TableListLocationWaitApprove = ({dataSearch }) => {
   };
 
   const getMessagePopup = (action) => {
-    if(dataSearch.tab === 3) {
-      if(action === 1) {
+    if (dataSearch.tab === 3) {
+      if (action === 1) {
         return {
           title: `Bạn có chắc chắn đồng ý việc thêm địa điểm "${dataAction.name}" của đối tác "${dataAction.partnerFullName}" không?`,
           message: "Địa điểm sẽ đi vào hoạt động vào " + formatTimestamp(dataAction.timeAppliedEdit, "DD/MM/YYYY HH:mm")
         }
-      }else if(action === 2) {
+      } else if (action === 2) {
         return {
           title: `Bạn có chắc chắn từ chối việc thêm địa điểm "${dataAction.name}" của đối tác "${dataAction.partnerFullName}" không?`,
-          message: <MessageReject key={"MessageReject"} data={resonReject}/>
+          message: <MessageReject key={"MessageReject"} data={resonReject} />
         }
       }
-    }else if (dataSearch.tab === 4){
-      if(action === 1) {
+    } else if (dataSearch.tab === 4) {
+      if (action === 1) {
         return {
-          title: `Bạn có chắc chắn đồng ý việc sửa thông tin địa điểm "${dataAction.name}" của đối tác "${dataAction.partnerName}" không?`,
-          message: "Thông tin chỉnh sửa sẽ được áp dụng vào "+ formatTimestamp(dataAction.timeAppliedEdit, "DD/MM/YYYY HH:mm")
+          title: `Bạn có chắc chắn đồng ý việc sửa thông tin địa điểm "${dataAction.name}" của đối tác "${dataAction.partnerFullName}" không?`,
+          message: "Thông tin chỉnh sửa sẽ được áp dụng vào " + formatTimestamp(dataAction.timeAppliedEdit, "DD/MM/YYYY HH:mm")
         }
-      }else if(action === 2) {
+      } else if (action === 2) {
         return {
           title: `Bạn có chắc chắn từ chối việc sửa thông tin địa điểm "${dataAction.name}" của đối tác "${dataAction.partnerFullName}" không?`,
-          message: "Yêu cầu sẽ chuyển sang trạng thái bị từ chối"
+          message: <MessageReject key={"MessageReject"} data={resonReject} />
         }
       }
     }
@@ -327,8 +331,8 @@ const TableListLocationWaitApprove = ({dataSearch }) => {
           };
         }}
       />
-      {action === 1 && <PopConfirmCustom type="warning" {...getMessagePopup(1)} handleOk={handleAllowApprove} handleCancel={handleCancelApprove} key={"approve"}/>}
-      {action === 2 && <PopConfirmCustom type="warning" {...getMessagePopup(2)} handleOk={handleAllowReject} handleCancel={handleCancelReject} key={"reject"}/>}
+      {action === 1 && <PopConfirmCustom type="warning" {...getMessagePopup(1)} handleOk={handleAllowApprove} handleCancel={handleCancelApprove} key={"approve"} />}
+      {action === 2 && <PopConfirmCustom type="warning" {...getMessagePopup(2)} handleOk={handleAllowReject} handleCancel={handleCancelReject} key={"reject"} />}
     </>
   );
 };

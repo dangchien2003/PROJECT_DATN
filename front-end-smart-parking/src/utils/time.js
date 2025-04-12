@@ -1,18 +1,13 @@
-export function formatTimestamp(timestamp, format = "YYYY-MM-DD HH:mm:ss") {
-  const date = new Date(timestamp);
+import dayjs from "dayjs";
 
-  const pad = (num) => num.toString().padStart(2, "0");
-
-  const replacements = {
-    YYYY: date.getFullYear(),
-    MM: pad(date.getMonth() + 1),
-    DD: pad(date.getDate()),
-    HH: pad(date.getHours()),
-    mm: pad(date.getMinutes()),
-    ss: pad(date.getSeconds()),
-  };
-
-  return format.replace(/YYYY|MM|DD|HH|mm|ss/g, (match) => replacements[match]);
+export function formatTimestamp(timestamp, format = "DD/MM/YYYY HH:mm:ss", isTime = false) {
+  if(!timestamp) {
+    return null;
+  }
+  if(isTime) {
+    return dayjs(`2025-01-01T${timestamp}`).format(format);
+  }
+  return dayjs(timestamp).format(format);
 }
 
 export function convertToTime(millis) {
@@ -50,4 +45,27 @@ export function convertToTime(millis) {
   } else {
     return `${seconds} giây`;
   }
+}
+
+
+export const getValueDate = (valueInput) => {
+  // nếu ở dạng dayjs
+  if(valueInput?.$L) {
+    if(valueInput.$Y) {
+      return valueInput;
+    } else {
+      return null;
+    }
+  }
+  // kiểm tra dữ liệu dạng object
+  if(valueInput) {
+    // có sort
+    if(valueInput.value !== undefined) {
+      return valueInput.value ? dayjs(valueInput.value) : null;
+    }else {
+      // không sort
+      return valueInput ? dayjs(valueInput) : null;
+    }
+  }
+  return null;
 }
