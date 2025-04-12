@@ -7,7 +7,6 @@ import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Date;
 
 @Data
 @NoArgsConstructor
@@ -16,11 +15,13 @@ import java.util.Date;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class LocationResponse {
 
-    Long id;
+    Long locationId;
 
     String partnerId;
 
     String name;
+
+    String address;
 
     Integer modifyCount;
 
@@ -42,7 +43,7 @@ public class LocationResponse {
 
     LocalTime closeTime;
 
-    Date openDate;
+    LocalDateTime openDate;
 
     Boolean openHoliday;
 

@@ -2,6 +2,7 @@ package com.example.parking_service.service.impl;
 
 import com.example.common.dto.response.ApiResponse;
 import com.example.common.enums.IsDel;
+import com.example.common.enums.Release;
 import com.example.common.exception.AppException;
 import com.example.common.exception.ErrorCode;
 import com.example.common.utils.DataUtils;
@@ -10,12 +11,15 @@ import com.example.parking_service.dto.request.ApproveRequest;
 import com.example.parking_service.dto.request.ModifyLocationRequest;
 import com.example.parking_service.entity.Location;
 import com.example.parking_service.entity.LocationModify;
+import com.example.parking_service.entity.LocationWaitRelease;
 import com.example.parking_service.enums.LocationModifyStatus;
 import com.example.parking_service.enums.LocationStatus;
 import com.example.parking_service.mapper.LocationMapper;
 import com.example.parking_service.mapper.LocationModifyMapper;
+import com.example.parking_service.mapper.LocationWaitReleaseMapper;
 import com.example.parking_service.repository.LocationModifyRepository;
 import com.example.parking_service.repository.LocationRepository;
+import com.example.parking_service.repository.LocationWaitReleaseRepository;
 import com.example.parking_service.service.LocationModifyService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -37,9 +42,25 @@ import java.time.LocalDateTime;
 public class LocationModifyServiceImpl implements LocationModifyService {
     LocationModifyRepository locationModifyRepository;
     LocationRepository locationRepository;
+    LocationWaitReleaseRepository locationWaitReleaseRepository;
     LocationModifyMapper locationModifyMapper;
     LocationMapper locationMapper;
+    LocationWaitReleaseMapper locationWaitReleaseMapper;
     ObjectMapper objectMapper;
+
+    @Override
+    public ApiResponse<Object> detailModify(Long id) {
+        boolean roleAdmin = false;
+        String accountId = ParkingServiceApplication.testPartnerActionBy;
+        LocationModify locationModify = locationModifyRepository.findByModifyIdAndIsDel(id, IsDel.DELETE_NOT_YET.getValue())
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
+        if (!roleAdmin && !locationModify.getPartnerId().equals(accountId)) {
+            throw new AppException(ErrorCode.NO_ACCESS);
+        }
+        return ApiResponse.builder()
+                .result(locationModifyMapper.toLocationModifyResponse(locationModify))
+                .build();
+    }
 
     @Override
     public ApiResponse<Object> approve(ApproveRequest request) {
@@ -48,20 +69,37 @@ public class LocationModifyServiceImpl implements LocationModifyService {
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
         // kiểm tra thời hạn
         Duration duration = Duration.between(LocalDateTime.now(), modifyEntity.getTimeAppliedEdit());
-        if (duration.toSeconds() < 0) {
+        if (duration.toSeconds() < 0 && request.getApprove()) {
             throw new AppException(ErrorCode.INVALID_DATA.withMessage("Yêu cầu đã vượt quá thời được duyệt"));
         }
         if (Boolean.TRUE.equals(request.getApprove())) {
             // xử lý khi duyệt
-            if (modifyEntity.getLocationId() != null) {
-                Location locationEntity = locationRepository.findById(modifyEntity.getLocationId())
-                        .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
-                processWhenApproveIsModify(locationEntity, modifyEntity);
-            } else {
-                processWhenApproveIsCreate(modifyEntity);
-            }
             // update modify
             modifyEntity.setModifyStatus(LocationModifyStatus.DA_DUYET_CHO_AP_DUNG.getValue());
+            // cập nhật và thêm bản ghi chờ áp dụng
+            List<LocationWaitRelease> locationWaitReleases = locationWaitReleaseRepository.findRecord(
+                    modifyEntity.getLocationId(),
+                    modifyEntity.getModifyId(),
+                    IsDel.DELETE_NOT_YET.getValue(),
+                    Release.RELEASE_NOT_YET.getValue()
+            );
+            if (!locationWaitReleases.isEmpty()) {
+                // xoá các bản ghi tồn tại
+                locationWaitReleases.forEach(item -> {
+                    item.setIsDel(IsDel.DELETED.getValue());
+                    DataUtils.setDataAction(item, ParkingServiceApplication.testAdminUUID, false);
+                });
+            }
+            // tạo bản ghi
+            LocationWaitRelease entity = locationWaitReleaseMapper.toLocationWaitRelease(modifyEntity);
+            entity.setApproveBy(ParkingServiceApplication.testAdminUUID);
+            entity.setStatus(LocationStatus.DA_DUYET_DANG_HOAT_DONG.getValue());
+            entity.setModifyStatus(LocationModifyStatus.DA_DUYET_CHO_AP_DUNG.getValue());
+            entity.setReleased(Release.RELEASE_NOT_YET.getValue());
+            DataUtils.setDataAction(entity, ParkingServiceApplication.testAdminUUID, true);
+            locationWaitReleases.add(entity);
+            // lưu
+            locationWaitReleaseRepository.saveAll(locationWaitReleases);
         } else {
             // xử lý khi từ chối duyệt
             if (modifyEntity.getLocationId() != null) {
@@ -69,7 +107,7 @@ public class LocationModifyServiceImpl implements LocationModifyService {
                         .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
                 locationEntity.setModifyStatus(LocationModifyStatus.TU_CHOI_PHE_DUYET.getValue());
             }
-            // update chung
+            // update chung khi từ chối
             modifyEntity.setModifyStatus(LocationModifyStatus.TU_CHOI_PHE_DUYET.getValue());
             modifyEntity.setReason(request.getReason());
         }
@@ -78,34 +116,37 @@ public class LocationModifyServiceImpl implements LocationModifyService {
         return ApiResponse.builder().build();
     }
 
-    void processWhenApproveIsCreate(LocationModify modify) {
-        // convert
-        Location location = locationMapper.toLocationFromModify(modify);
-        // thêm mới bản ghi
-        location.setApproveBy(ParkingServiceApplication.testAdminUUID);
-        location.setStatus(LocationStatus.DA_DUYET_DANG_HOAT_DONG.getValue());
-        location.setModifyStatus(LocationModifyStatus.DA_DUYET_CHO_AP_DUNG.getValue());
-        DataUtils.setDataAction(location, ParkingServiceApplication.testAdminUUID, true);
-        // lưu
-        locationRepository.save(location);
-    }
-
-    void processWhenApproveIsModify(Location location, LocationModify modify) {
-        // convert
-        locationMapper.toLocationFromModify(location, modify);
-        // sửa bản ghi
-        location.setApproveBy(ParkingServiceApplication.testAdminUUID);
-        location.setModifyStatus(LocationModifyStatus.DA_DUYET_CHO_AP_DUNG.getValue());
-        DataUtils.setDataAction(location, ParkingServiceApplication.testAdminUUID, false);
-        locationRepository.save(location);
-    }
+//    void processWhenApproveIsCreate(LocationModify modify) {
+//        // convert
+//        LocationWaitRelease locationWaitRelease = locationWaitReleaseMapper.toLocationWaitReleaseFromModify(modify);
+//        // thêm mới bản ghi
+//        locationWaitRelease.setApproveBy(ParkingServiceApplication.testAdminUUID);
+//        locationWaitRelease.setStatus(LocationStatus.DA_DUYET_DANG_HOAT_DONG.getValue());
+//        locationWaitRelease.setModifyStatus(LocationModifyStatus.DA_DUYET_CHO_AP_DUNG.getValue());
+//        locationWaitRelease.setRelease(Release.RELEASE_NOT_YET.getValue());
+//        DataUtils.setDataAction(locationWaitRelease, ParkingServiceApplication.testAdminUUID, true);
+//        // lưu
+//        locationWaitReleaseRepository.save(locationWaitRelease);
+//    }
+//
+//    void processWhenApproveIsModify(LocationWaitRelease locationWaitRelease, LocationModify modify) {
+//        // convert
+//        locationMapper.toLocationWaitReleaseFromModify(locationWaitRelease, modify);
+//        // tạo bản ghi chờ duyệt
+//        locationWaitRelease.setApproveBy(ParkingServiceApplication.testAdminUUID);
+//        locationWaitRelease.setModifyStatus(LocationModifyStatus.DA_DUYET_CHO_AP_DUNG.getValue());
+//        DataUtils.setDataAction(locationWaitRelease, ParkingServiceApplication.testAdminUUID, false);
+//        locationWaitRelease.setRelease(Release.RELEASE_NOT_YET.getValue());
+//        //
+//        locationWaitReleaseRepository.save(locationWaitRelease);
+//    }
 
     @Override
     public ApiResponse<Object> modifyLocation(ModifyLocationRequest request, String actionBy) throws JsonProcessingException {
         // kiểm tra sự tôn tại bản ghi chính khi chỉnh sửa
         Location location = null;
         if (!DataUtils.isNullOrEmpty(request.getLocationId())) {
-            location = locationRepository.findById(request.getLocationId())
+            location = locationRepository.findByLocationIdAndPartnerId(request.getLocationId(), actionBy)
                     .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
         }
         // check trùng tên làm sau
@@ -123,17 +164,21 @@ public class LocationModifyServiceImpl implements LocationModifyService {
         entityModify.setCoordinates(objectMapper.writeValueAsString(request.getCoordinates()));
         entityModify.setIsDel(IsDel.DELETE_NOT_YET.getValue());
         // action
-        if (DataUtils.isNullOrEmpty(location)) {
+        if (DataUtils.isNullOrEmpty(location) && !DataUtils.isNullOrEmpty(request.getLocationId())) {
+            // lỗi nếu chỉnh sửa bản ghi không tồn tại
+            throw new AppException(ErrorCode.NOT_FOUND);
+        } else if (DataUtils.isNullOrEmpty(location)) {
             // khi tạo mới
             entityModify.setLocationId(null);
-            entityModify.setOpenDate(DataUtils.convertToDate(entityModify.getTimeAppliedEdit()));
+            entityModify.setOpenDate(entityModify.getTimeAppliedEdit());
             entityModify.setStatus(LocationStatus.CHO_DUYET.getValue());
             entityModify.setModifyCount(0);
+            entityModify.setCapacity(11L);
             DataUtils.setDataAction(entityModify, actionBy, true);
         } else {
             validateActionRecordByOwner(location.getPartnerId(), actionBy);
             // lỗi khi địa điểm đang chờ duyệt
-            if (!location.getModifyStatus().equals(LocationModifyStatus.CHO_DUYET.getValue())) {
+            if (location.getModifyStatus().equals(LocationModifyStatus.CHO_DUYET.getValue())) {
                 throw new AppException(ErrorCode.DATA_EXISTED.withMessage("Địa điểm đang tồn tại bản ghi chờ duyệt"));
             }
             // thay đổi data khi chỉnh sửa
@@ -141,7 +186,13 @@ public class LocationModifyServiceImpl implements LocationModifyService {
             location.setModifyStatus(LocationModifyStatus.CHO_DUYET.getValue());
             DataUtils.setDataAction(location, actionBy, false);
             // modify
-            Integer modifyCount = locationModifyRepository.getMaxModifyCountByLocationId(location.getLocationId()) + 1;
+            Integer modifyCount = locationModifyRepository.getMaxModifyCountByLocationId(location.getLocationId());
+            if (modifyCount == null) {
+                modifyCount = 1;
+            } else {
+                modifyCount += 1;
+            }
+            entityModify.setCapacity(11L);
             entityModify.setModifyCount(modifyCount);
             DataUtils.setDataAction(entityModify, actionBy, true);
         }

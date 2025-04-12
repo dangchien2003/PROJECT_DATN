@@ -14,17 +14,27 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Entity
-@Table(name = "location")
+@Table(name = "location_wait_release")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Location extends BaseEntity {
+public class LocationWaitRelease extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Long id;
+
+    Integer released;
+
+    LocalDateTime releaseAt;
+
+    LocalDateTime timeAppliedEdit;
+
     Long locationId;
+
+    Long modifyId;
 
     @Column(nullable = false)
     String partnerId;
@@ -37,7 +47,7 @@ public class Location extends BaseEntity {
     Integer modifyCount;
 
     String coordinates;
-
+    
     @Lob
     String linkGoogleMap;
 
@@ -68,4 +78,6 @@ public class Location extends BaseEntity {
 
     @Lob
     String infoLocation;
+
+    Integer isDel;
 }

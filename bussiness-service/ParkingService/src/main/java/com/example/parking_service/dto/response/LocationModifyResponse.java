@@ -7,7 +7,6 @@ import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Date;
 
 @Data
 @NoArgsConstructor
@@ -46,7 +45,7 @@ public class LocationModifyResponse {
 
     LocalTime closeTime;
 
-    Date openDate;
+    LocalDateTime openDate;
 
     Boolean openHoliday;
 

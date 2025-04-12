@@ -11,4 +11,6 @@ public interface LocationModifyService {
     ApiResponse<Object> deleteModify(Long modifyId);
 
     ApiResponse<Object> approve(ApproveRequest request);
+
+    ApiResponse<Object> detailModify(Long id);
 }

@@ -25,7 +25,7 @@ public interface LocationModifyRepository extends JpaRepository<LocationModify, 
 //            @Param("ignoreModifyStatus") Integer ignoreModifyStatus,
 //            @Param("locationId") Integer locationId
 //    );
-    @Query("SELECT MAX(lm.modifyStatus) FROM LocationModify lm WHERE lm.locationId = :locationId")
+    @Query("SELECT MAX(lm.modifyCount) FROM LocationModify lm WHERE lm.locationId = :locationId")
     Integer getMaxModifyCountByLocationId(@Param("locationId") Long locationId);
 
     @Query("SELECT lm FROM LocationModify lm " +

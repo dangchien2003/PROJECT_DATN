@@ -53,4 +53,19 @@ public class LocationController {
     ApiResponse<Object> approve(@Valid @RequestBody ApproveRequest request) {
         return locationModifyService.approve(request);
     }
+
+    @GetMapping("detail/modify")
+    ApiResponse<Object> detailModify(@RequestParam("id") Long id) {
+        return locationModifyService.detailModify(id);
+    }
+
+    @GetMapping("detail")
+    ApiResponse<Object> detail(@RequestParam("id") Long id) {
+        return locationService.detail(id);
+    }
+
+    @GetMapping("detail/wait-release")
+    ApiResponse<Object> detailWaitRelease(@RequestParam("id") Long id) {
+        return locationService.detailWaitRelease(id);
+    }
 }

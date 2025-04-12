@@ -36,4 +36,6 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
             "AND l.modifyStatus = :modifyStatus " +
             "AND l.modifyCount = MAX(l.modifyCount)")
     Optional<Location> findByLocationId(String locationId, Long modifyStatus);
+
+    Optional<Location> findByLocationIdAndPartnerId(Long locationId, String partnerId);
 }

@@ -9,4 +9,9 @@ public interface LocationService {
     ApiResponse<Object> searchLocationByPartner(PartnerSearchLocation request, Pageable pageable);
 
     ApiResponse<Object> searchLocationWaitApproveByAdmin(AdminSearchLocation request, Pageable pageable);
+
+    ApiResponse<Object> detail(Long id);
+
+    ApiResponse<Object> detailWaitRelease(Long id);
+
 }

@@ -12,14 +12,18 @@ import com.example.parking_service.dto.request.PartnerSearchLocation;
 import com.example.parking_service.dto.response.AdminSearchLocationWaitApproveResponse;
 import com.example.parking_service.dto.response.LocationModifyResponse;
 import com.example.parking_service.dto.response.LocationResponse;
+import com.example.parking_service.dto.response.LocationWaitReleaseResponse;
 import com.example.parking_service.entity.Location;
 import com.example.parking_service.entity.LocationModify;
+import com.example.parking_service.entity.LocationWaitRelease;
 import com.example.parking_service.enums.LocationModifyStatus;
 import com.example.parking_service.enums.LocationStatus;
 import com.example.parking_service.mapper.LocationMapper;
 import com.example.parking_service.mapper.LocationModifyMapper;
+import com.example.parking_service.mapper.LocationWaitReleaseMapper;
 import com.example.parking_service.repository.LocationModifyRepository;
 import com.example.parking_service.repository.LocationRepository;
+import com.example.parking_service.repository.LocationWaitReleaseRepository;
 import com.example.parking_service.service.LocationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
@@ -46,9 +50,39 @@ import java.util.Locale;
 public class LocationServiceImpl implements LocationService {
     LocationRepository locationRepository;
     LocationModifyRepository locationModifyRepository;
+    LocationWaitReleaseRepository locationWaitReleaseRepository;
     LocationModifyMapper locationModifyMapper;
     LocationMapper locationMapper;
+    LocationWaitReleaseMapper locationWaitReleaseMapper;
     ObjectMapper objectMapper;
+
+    @Override
+    public ApiResponse<Object> detailWaitRelease(Long id) {
+        boolean roleAdmin = false;
+        String accountId = ParkingServiceApplication.testPartnerActionBy;
+        LocationWaitRelease entity = locationWaitReleaseRepository.findByIdAndIsDel(id, IsDel.DELETE_NOT_YET.getValue())
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
+        if (!roleAdmin && !entity.getPartnerId().equals(accountId)) {
+            throw new AppException(ErrorCode.NO_ACCESS);
+        }
+        return ApiResponse.builder()
+                .result(locationWaitReleaseMapper.toResponse(entity))
+                .build();
+    }
+
+    @Override
+    public ApiResponse<Object> detail(Long id) {
+        boolean roleAdmin = false;
+        String accountId = ParkingServiceApplication.testPartnerActionBy;
+        Location location = locationRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
+        if (!roleAdmin && !location.getPartnerId().equals(accountId)) {
+            throw new AppException(ErrorCode.NO_ACCESS);
+        }
+        return ApiResponse.builder()
+                .result(locationMapper.toLocationResponse(location))
+                .build();
+    }
 
     @Override
     public ApiResponse<Object> searchLocationByPartner(PartnerSearchLocation request, Pageable pageable) {
@@ -69,7 +103,7 @@ public class LocationServiceImpl implements LocationService {
         } else if (request.getTab().equals(4)) {
             status = LocationModifyStatus.TU_CHOI_PHE_DUYET.getValue();
         } else if (request.getTab().equals(5)) {
-            status = LocationModifyStatus.DA_DUYET_CHO_AP_DUNG.getValue();
+            status = LocationStatus.DA_DUYET_DANG_HOAT_DONG.getValue();
         }
 
         if (List.of(1, 2).contains(request.getTab())) {
@@ -85,6 +119,24 @@ public class LocationServiceImpl implements LocationService {
             );
             List<LocationResponse> dataResponse = dataPage.stream()
                     .map(locationMapper::toLocationResponse).toList();
+
+            return ApiResponse.builder()
+                    .result(new PageResponse<>(dataResponse, dataPage.getTotalPages(), dataPage.getTotalElements()))
+                    .build();
+        } else if (request.getTab().equals(5)) {
+            // truy vấn
+            Page<LocationWaitRelease> dataPage = locationWaitReleaseRepository.partnerSearch(
+                    name,
+                    request.getOpenTime(),
+                    request.getCloseTime(),
+                    request.getOpenHoliday(),
+                    status,
+                    ParkingServiceApplication.testPartnerActionBy,
+                    IsDel.DELETE_NOT_YET.getValue(),
+                    pageable
+            );
+            List<LocationWaitReleaseResponse> dataResponse = dataPage.stream()
+                    .map(locationWaitReleaseMapper::toResponse).toList();
 
             return ApiResponse.builder()
                     .result(new PageResponse<>(dataResponse, dataPage.getTotalPages(), dataPage.getTotalElements()))
