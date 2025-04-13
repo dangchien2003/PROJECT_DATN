@@ -33,7 +33,7 @@ const ListLocationWaitApprove = () => {
   const propTabStatus = {
     onChange: (tab) => {
       updateObjectValue(dataSearch, "tab", tab);
-        if(!isSearching) {
+      if(!isSearching) {
         dispatch(setSearching(true))
       }
     },

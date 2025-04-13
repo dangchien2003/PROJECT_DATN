@@ -1,12 +1,15 @@
 import { useState, useEffect } from "react";
 import { Table } from "antd";
-import { fakeDataTable } from "./dataTest";
 import ButtonStatus from "../ButtonStatus";
-import { MODIFY_STATUS, TICKET_STATUS } from "@/utils/constants";
+import { LOCATION_STATUS, MODIFY_STATUS, TICKET_STATUS } from "@/utils/constants";
 import { formatTimestamp } from "@/utils/time";
-import { useLoading } from "@/hook/loading";
 import { useNavigate } from "react-router-dom";
 import { showTotal } from "@/utils/table";
+import { useDispatch, useSelector } from "react-redux";
+import { setSearching } from "@/store/startSearchSlice";
+import { convertDataSort, getDataApi } from "@/utils/api";
+import { toastError } from "@/utils/toast";
+import { adminSearch } from "@/service/locationService";
 
 const columns = [
   {
@@ -18,9 +21,9 @@ const columns = [
   },
   {
     title: "Tên địa điểm",
-    dataIndex: "ticketNamePrint",
+    dataIndex: "locationNamePrint",
     key: "1",
-    sorter: false,
+    sorter: true,
     width: 150,
   },
   {
@@ -55,44 +58,36 @@ const columns = [
   }
 ];
 
-const convertResponseToDataTable = (response, currentPage, pageSize) => {
-    return response.data.map((item, index) => {
-      item.ticketNamePrint = `${item.id} - ${item.name}`;
+const mapFieldSort = {
+  locationNamePrint: "name",
+  openDatePrint: "openDate",
+}
+
+const convertResponseToDataTable = (data, currentPage, pageSize) => {
+    return data.map((item, index) => {
+      item.locationNamePrint = `${item.locationId} - ${item.name}`;
+      const coordinates = JSON.parse(item?.coordinates)
       item.coordinatesPrint = <a href={item.linkGoogleMap}
-      target="_blank" rel="noreferrer" onClick={(event)=> {event.stopPropagation()}}>[{item.coordinates}]</a>;
+      target="_blank" rel="noreferrer" onClick={(event)=> {event.stopPropagation()}}>{`[${coordinates?.x} x ${coordinates?.y}]`}</a>;
       item.openDatePrint = formatTimestamp(item.openDate, "DD/MM/YYYY")
       item.statusPrint = (
         <div>
           <div style={{ margin: 2 }}>
             <span>PH </span>
             <span>
-              {item.modifyStatus !== null ? (
-                <ButtonStatus
-                  label={MODIFY_STATUS[item.status].label}
-                  color={MODIFY_STATUS[item.modifyStatus].color}
-                />
-              ) : (
-                <ButtonStatus
-                  label={TICKET_STATUS[item.status].label}
-                  color={TICKET_STATUS[item.status].color}
-                />
-              )}
+              <ButtonStatus
+                label={LOCATION_STATUS[item.status].label}
+                color={LOCATION_STATUS[item.status].color}
+              />
             </span>
           </div>
           <div style={{ margin: 2 }}>
             <span>TĐ </span>
             <span>
-              {item.modifyStatus !== null ? (
-                <ButtonStatus
-                  label={MODIFY_STATUS[item.modifyStatus].label}
-                  color={MODIFY_STATUS[item.modifyStatus].color}
-                />
-              ) : (
-                <ButtonStatus
-                  label={TICKET_STATUS[item.status].label}
-                  color={TICKET_STATUS[item.status].color}
-                />
-              )}
+              <ButtonStatus
+                label={MODIFY_STATUS[item.modifyStatus].label}
+                color={MODIFY_STATUS[item.modifyStatus].color}
+              />
             </span>
           </div>
         </div>
@@ -102,69 +97,70 @@ const convertResponseToDataTable = (response, currentPage, pageSize) => {
     });
   };
 
-const TableListLocation = ({searchTimes, dataSearch }) => {
+const TableListLocation = ({dataSearch }) => {
   const navigate = useNavigate()
-  const { showLoad, hideLoad } = useLoading();
+  const { isSearching } = useSelector(state => state.startSearch)
+  const dispatch = useDispatch();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [firstSearch, setFirstSearch] = useState(false);
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 10,
     total: 0,
   });
-  const [sorter, setSorter] = useState({
-    field: "id",
-    order: "ascend",
+  const [sorter] = useState({
+    field: null,
+    order: null,
   });
 
   const loadData = (newPagination, sorter) => {
-    if (!sorter.field || !sorter.order) {
-      sorter = {
-        field: "name",
-        order: "ascend",
-      };
-      setSorter(sorter);
-    }
     setLoading(true);
-    if (searchTimes > 0) {
-      showLoad();
-    }
-    setTimeout(() => {
-      setLoading(false);
-      hideLoad();
-      const dataResponse = {
-        data: fakeDataTable,
-        totalElement: 60,
-        totalPage: 10,
-      };
-      setData(
-        convertResponseToDataTable(
-          dataResponse,
-          newPagination.current,
-          newPagination.pageSize
-        )
-      );
-      setPagination({
-        ...newPagination,
-        total: dataResponse.totalElement,
+    setData([])
+    adminSearch(dataSearch, newPagination.current - 1, newPagination.pageSize, sorter.field, sorter.order)
+      .then((response) => {
+        const data = response.data?.result?.data;
+        const total = response.data?.result?.totalElements;
+        setData(
+          convertResponseToDataTable(
+            data,
+            newPagination.current,
+            newPagination.pageSize
+          )
+        );
+        setPagination({
+          ...newPagination,
+          total: total,
+        });
+      })
+      .catch((error) => {
+        error = getDataApi(error);
+        toastError(error.message)
+      })
+      .finally(() => {
+        setLoading(false);
+        dispatch(setSearching(false))
       });
-    }, 1000);
   };
 
   const handleTableChange = (newPagination, _, sorter) => {
-    setPagination(newPagination);
+    convertDataSort(sorter, mapFieldSort)
     loadData(newPagination, sorter);
   };
 
   const handleClickRow = (data) => {
-    navigate(`/partner/location/detail/${dataSearch.tab}/${data.id}`)
+    navigate(`/location/detail/${dataSearch.tab}/${data.locationId}`)
   };
 
   useEffect(() => {
-    loadData(pagination, sorter);
-    console.log(dataSearch);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchTimes]);
+    if (isSearching || !firstSearch) {
+      loadData(pagination, sorter);
+      if (!firstSearch) {
+        setFirstSearch(true)
+      }
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSearching]);
   return (
     <Table
       columns={columns}

@@ -7,7 +7,6 @@ import { locationDetail, modifyDetail, waitReleaseDetail } from "@/service/locat
 import { useLoading } from "@/hook/loading";
 import { getDataApi } from "@/utils/api";
 import { toastError } from "@/utils/toast";
-import { formatTimestamp } from "@/utils/time";
 const { Title } = Typography;
 
 const DetailLocation = () => {
@@ -19,12 +18,10 @@ const DetailLocation = () => {
   const {showLoad, hideLoad} = useLoading();
   const tabNumber = Number(tab);
   useEffect(()=> {
-
     // hàm lấy dữ liệu 
     const getDataRoot = (id) => {
       locationDetail(id).then((response) => {
         const result = getDataApi(response);
-        result.openDate = result.openDate ? formatTimestamp(result.openDate, "DD/MM/YYYY") : null;
         setDataRoot(result)
       })
       .catch((error) => {

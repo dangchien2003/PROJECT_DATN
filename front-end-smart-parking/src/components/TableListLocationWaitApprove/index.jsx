@@ -157,7 +157,16 @@ const TableListLocationWaitApprove = ({ dataSearch }) => {
   }, [isSearching]);
 
   const handleClickRow = (data) => {
-    navigate(`/location/detail/${dataSearch.tab}/${data.id}`)
+    let id = null;
+    if(data.id) {
+      id = data.id;
+    }
+    else if(data.modifyId) {
+      id = data.modifyId;
+    } else {
+      id = data.locationId;
+    }
+    navigate(`/location/detail/${dataSearch.tab}/${id}`)
   };
 
   const resetAction = () => {
@@ -199,14 +208,13 @@ const TableListLocationWaitApprove = ({ dataSearch }) => {
         const dataResponse = getDataApi(response);
         if (dataResponse.code === 1000) {
           const newData = [...data].filter(item => item.modifyId !== dataAction.modifyId);
-          console.log(newData)
           setData(newData);
           setPagination({
             ...pagination,
             total: pagination.total - 1,
           });
         }
-        toastSuccess(payload.approve ? "Phê duyệt" : "Từ chối" + " thành công")
+        toastSuccess((payload.approve ? "Phê duyệt" : "Từ chối") + " thành công")
       })
       .catch((error) => {
         const dataError = getDataApi(error);
