@@ -1,39 +1,46 @@
 import Search from "./Search";
 import TabStatus from "./TabStatus";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./style.css";
 import DividerCustom from "@/components/DividerCustom";
 import { updateObjectValue } from "@/utils/object";
 import TableListLocation from "@/components/TableListLocation";
+import { useRequireField } from "@/hook/useRequireField";
+import { useDispatch, useSelector } from "react-redux";
+import { setSearching } from "@/store/startSearchSlice";
 
 const ListLocation = () => {
-  const [searchTimes, setSearchTimes] = useState(0);
+  const {resetRequireField} = useRequireField()
+  const {isSearching} = useSelector(state => state.startSearch)
+  const dispatch = useDispatch();
   const [dataSearch] = useState({
     partnerName: null,
     name: null,
     tab: 1,
-    modifyStatus: null,
     openTime: null,
     closeTime: null,
-    capacity: null
+    capacity: null,
+    openHoliday: null
   });
+
+  useEffect(()=> {
+    resetRequireField()
+  }, [resetRequireField])
+
   const propTabStatus = {
     onChange: (tab) => {
       updateObjectValue(dataSearch, "tab", tab);
-      onClickSearch();
+      if(!isSearching) {
+        dispatch(setSearching(true))
+      }
     },
-  };
-
-  const onClickSearch = () => {
-    console.log(dataSearch)
-    setSearchTimes((pre) => ++pre);
   };
   return (
     <div>
       <TabStatus {...propTabStatus} />
-      <Search onSearch={onClickSearch} dataSearch={dataSearch} />
+      <Search dataSearch={dataSearch} />
       <DividerCustom style={{ width: "80%" }} />
-      <TableListLocation searchTimes={searchTimes} dataSearch={dataSearch} />
+      <TableListLocation dataSearch={dataSearch} />
     </div>
   );
 };

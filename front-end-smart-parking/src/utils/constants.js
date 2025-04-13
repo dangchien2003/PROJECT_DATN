@@ -181,11 +181,11 @@ export const LOCATION_STATUS = {
     color: "cyan",
   },
   3: {
-    label: "tạm dừng hoạt động",
+    label: "Tạm dừng hoạt động",
     color: "default",
   },
   4: {
-    label: "không hoạt động",
+    label: "Ngừng hoạt động",
     color: "default",
   },
   5: {

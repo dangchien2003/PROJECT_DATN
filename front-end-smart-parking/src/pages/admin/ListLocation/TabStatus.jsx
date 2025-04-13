@@ -9,6 +9,10 @@ const items = [
     key: 2,
     label: "Tạm dừng hoạt động",
   },
+  {
+    key: 6,
+    label: "Ngưng hoạt động",
+  },
 ];
 const TabStatus = ({ ...prop }) => {
   return (
