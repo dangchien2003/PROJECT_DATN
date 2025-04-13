@@ -43,6 +43,12 @@ public class LocationController {
         return locationService.searchLocationByPartner(data, pageable);
     }
 
+    @PostMapping("admin/search")
+        // role partner
+    ApiResponse<Object> adminSearch(@RequestBody AdminSearchLocation data, Pageable pageable) {
+        return locationService.searchLocationByAdmin(data, pageable);
+    }
+
     @PostMapping("admin/search/wait-approve")
         // role admin
     ApiResponse<Object> adminSearchWaitApprove(@RequestBody AdminSearchLocation data, Pageable pageable) {

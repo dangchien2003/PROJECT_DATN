@@ -92,7 +92,7 @@ public interface LocationModifyRepository extends JpaRepository<LocationModify, 
                     "LIMIT :limit OFFSET :offset ",
             nativeQuery = true
     )
-    List<AdminSearchLocationWaitApproveResponse> adminSearch(
+    List<AdminSearchLocationWaitApproveResponse> adminSearchModify(
             @Param("category") Integer category,
             @Param("partnerName") String partnerName,
             @Param("modifyStatus") Integer modifyStatus,
@@ -110,10 +110,17 @@ public interface LocationModifyRepository extends JpaRepository<LocationModify, 
             "WHERE lm.isDel = :isDel AND lm.modifyStatus = :modifyStatus " +
             "AND (:category IS NULL OR (:category = 1 AND lm.locationId IS NULL) OR (:category = 2 AND lm.locationId IS NOT NULL))"
     )
-    Long countAllRecord(
+    Long countAllRecordWaitApprove(
             @Param("category") Integer category,
             @Param("modifyStatus") Integer modifyStatus,
             @Param("isDel") Integer isDel
+    );
+
+    @Query("SELECT count(*) FROM Location l " +
+            "WHERE l.status = :status"
+    )
+    Long countAllRecord(
+            @Param("status") Integer status
     );
 
     Optional<LocationModify> findByModifyIdAndIsDel(Long locationId, Integer isDel);

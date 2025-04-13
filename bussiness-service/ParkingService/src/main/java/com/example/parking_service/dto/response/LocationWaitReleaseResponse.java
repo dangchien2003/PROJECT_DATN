@@ -48,7 +48,7 @@ public class LocationWaitReleaseResponse {
 
     Integer modifyStatus;
 
-    String reason;
+    String reasonChangeStatus;
 
     LocalTime openTime;
 

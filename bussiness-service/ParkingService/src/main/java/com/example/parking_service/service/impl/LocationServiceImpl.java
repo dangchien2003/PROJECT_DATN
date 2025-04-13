@@ -9,10 +9,7 @@ import com.example.common.utils.DataUtils;
 import com.example.parking_service.ParkingServiceApplication;
 import com.example.parking_service.dto.request.AdminSearchLocation;
 import com.example.parking_service.dto.request.PartnerSearchLocation;
-import com.example.parking_service.dto.response.AdminSearchLocationWaitApproveResponse;
-import com.example.parking_service.dto.response.LocationModifyResponse;
-import com.example.parking_service.dto.response.LocationResponse;
-import com.example.parking_service.dto.response.LocationWaitReleaseResponse;
+import com.example.parking_service.dto.response.*;
 import com.example.parking_service.entity.Location;
 import com.example.parking_service.entity.LocationModify;
 import com.example.parking_service.entity.LocationWaitRelease;
@@ -248,7 +245,7 @@ public class LocationServiceImpl implements LocationService {
         }
         int limit = pageable.getPageSize();
         int offset = pageable.getPageNumber() * pageable.getPageSize();
-        List<AdminSearchLocationWaitApproveResponse> data = locationModifyRepository.adminSearch(
+        List<AdminSearchLocationWaitApproveResponse> data = locationModifyRepository.adminSearchModify(
                 category,
                 partnerName,
                 modifyStatus,
@@ -266,7 +263,7 @@ public class LocationServiceImpl implements LocationService {
         Sort sort = pageable.getSort();
         if (sort.isSorted()) {
             for (Sort.Order order : sort) {
-                Comparator<AdminSearchLocationWaitApproveResponse> comparator = getComparator(order.getProperty());
+                Comparator<AdminSearchLocationWaitApproveResponse> comparator = getComparatorWaitApprove(order.getProperty());
 
                 if (comparator != null) {
                     if (order.getDirection() == Sort.Direction.DESC) {
@@ -277,7 +274,7 @@ public class LocationServiceImpl implements LocationService {
             }
         }
 
-        Long countAllRecord = locationModifyRepository.countAllRecord(
+        Long countAllRecord = locationModifyRepository.countAllRecordWaitApprove(
                 category,
                 modifyStatus,
                 IsDel.DELETE_NOT_YET.getValue()
@@ -288,7 +285,60 @@ public class LocationServiceImpl implements LocationService {
                 .build();
     }
 
-    Comparator<AdminSearchLocationWaitApproveResponse> getComparator(String property) {
+    @Override
+    public ApiResponse<Object> searchLocationByAdmin(AdminSearchLocation request, Pageable pageable) {
+        String partnerFullName = DataUtils.convertStringSearchLike(request.getPartnerName());
+        String locationName = DataUtils.convertStringSearchLike(request.getName());
+        Integer status = null;
+        if (request.getTab() == 1) {
+            status = LocationStatus.DA_DUYET_DANG_HOAT_DONG.getValue();
+        } else if (request.getTab() == 2) {
+            status = LocationStatus.TAM_DUNG_HOAT_DONG.getValue();
+        } else if (request.getTab() == 6) {
+            // ngưng hoạt động
+            status = LocationStatus.NGUNG_HOAT_DONG.getValue();
+        } else {
+            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Dữ liệu không hợp lệ"));
+        }
+
+        int limit = pageable.getPageSize();
+        int offset = pageable.getPageNumber() * pageable.getPageSize();
+        List<AdminSearchLocationResponse> data = locationRepository.adminSearch(
+                status,
+                partnerFullName,
+                locationName,
+                request.getOpenTime(),
+                request.getCloseTime(),
+                request.getCapacity(),
+                request.getOpenHoliday(),
+                limit,
+                offset
+        );
+
+        // sắp xếp dữ liệu
+        Sort sort = pageable.getSort();
+        if (sort.isSorted()) {
+            for (Sort.Order order : sort) {
+                Comparator<AdminSearchLocationResponse> comparator = getComparator(order.getProperty());
+                if (comparator != null) {
+                    if (order.getDirection() == Sort.Direction.DESC) {
+                        comparator = comparator.reversed();
+                    }
+                    data.sort(comparator);
+                }
+            }
+        }
+
+        Long countAllRecord = locationModifyRepository.countAllRecord(
+                status
+        );
+        long totalPage = (long) Math.ceil((double) data.size() / limit);
+        return ApiResponse.builder()
+                .result(new PageResponse<>(data, totalPage, countAllRecord))
+                .build();
+    }
+
+    Comparator<AdminSearchLocationWaitApproveResponse> getComparatorWaitApprove(String property) {
         return switch (property) {
             case "name" ->
                     Comparator.comparing(AdminSearchLocationWaitApproveResponse::getName, Comparator.nullsLast(String::compareToIgnoreCase));
@@ -301,4 +351,17 @@ public class LocationServiceImpl implements LocationService {
             default -> null;
         };
     }
+
+    Comparator<AdminSearchLocationResponse> getComparator(String property) {
+        return switch (property) {
+            case "name" ->
+                    Comparator.comparing(AdminSearchLocationResponse::getName, Comparator.nullsLast(String::compareToIgnoreCase));
+            case "openDate" ->
+                    Comparator.comparing(AdminSearchLocationResponse::getOpenDate, Comparator.nullsLast(LocalDateTime::compareTo));
+            case "capacity" ->
+                    Comparator.comparing(AdminSearchLocationResponse::getCapacity, Comparator.nullsLast(Long::compareTo));
+            default -> null;
+        };
+    }
+
 }

@@ -49,7 +49,7 @@ public class Location extends BaseEntity {
 
     Integer modifyStatus;
 
-    String reason;
+    String reasonChangeStatus;
 
     LocalTime openTime;
 

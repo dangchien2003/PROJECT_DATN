@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalTime;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,4 +19,11 @@ public class AdminSearchLocation {
     DataTrend timeAppliedEdit;
     Integer urgentApprovalRequest;
     Integer tab;
+
+    // trường hợp search địa điểm hoạt động
+    String name;
+    LocalTime openTime;
+    LocalTime closeTime;
+    Integer openHoliday;
+    Long capacity;
 }

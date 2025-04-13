@@ -39,7 +39,9 @@ public class LocationModifyResponse {
 
     Integer modifyStatus;
 
-    String reason;
+    String reasonChangeStatus;
+
+    String reasonReject;
 
     LocalTime openTime;
 

@@ -12,7 +12,7 @@ public enum LocationStatus {
     CHO_DUYET(0),
     DA_DUYET_DANG_HOAT_DONG(1),
     TAM_DUNG_HOAT_DONG(3),
-    KHONG_HOAT_DONG(4),
+    NGUNG_HOAT_DONG(4),
     TU_CHOI_PHE_DUYET(5),
     ;
     Integer value;

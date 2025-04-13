@@ -47,7 +47,7 @@ public class LocationWaitRelease extends BaseEntity {
     Integer modifyCount;
 
     String coordinates;
-    
+
     @Lob
     String linkGoogleMap;
 
@@ -59,7 +59,7 @@ public class LocationWaitRelease extends BaseEntity {
 
     Integer modifyStatus;
 
-    String reason;
+    String reasonChangeStatus;
 
     LocalTime openTime;
 

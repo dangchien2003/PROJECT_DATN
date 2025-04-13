@@ -10,6 +10,8 @@ public interface LocationService {
 
     ApiResponse<Object> searchLocationWaitApproveByAdmin(AdminSearchLocation request, Pageable pageable);
 
+    ApiResponse<Object> searchLocationByAdmin(AdminSearchLocation request, Pageable pageable);
+
     ApiResponse<Object> detail(Long id);
 
     ApiResponse<Object> detailWaitRelease(Long id);
