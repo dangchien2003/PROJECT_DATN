@@ -15,8 +15,7 @@ export const updateObjectValue = (obj, path, value) => {
 };
 
 
-export const convertObjectToDataSelectBox = (data) => {
-  
+export const convertObjectToDataSelectBox = (data) => { 
   return Object.keys(data).map((key) => {
     const item = data[key];
     return {
