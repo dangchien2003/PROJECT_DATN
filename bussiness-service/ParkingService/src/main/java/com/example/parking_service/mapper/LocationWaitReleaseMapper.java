@@ -8,6 +8,7 @@ import com.example.parking_service.utils.ConvertUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
 
 @Mapper(componentModel = "spring")
@@ -23,6 +24,12 @@ public interface LocationWaitReleaseMapper {
     @Mapping(target = "isDel", source = "isDel", qualifiedByName = "convertToBoolean")
     @Mapping(target = "released", source = "released", qualifiedByName = "convertToBoolean")
     LocationWaitReleaseResponse toResponse(LocationWaitRelease entity);
+
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "createdBy", ignore = true)
+    @Mapping(target = "modifiedAt", ignore = true)
+    @Mapping(target = "modifiedBy", ignore = true)
+    void toLocationWaitReleaseFromModify(@MappingTarget LocationWaitRelease locationWaitRelease, LocationModify locationModify);
 
     @Named("convertCoordinates")
     default Coordinates convertCoordinates(String coordinatesString) {

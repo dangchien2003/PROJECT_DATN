@@ -3,6 +3,7 @@ package com.example.parking_service.service.impl;
 import com.example.common.dto.response.ApiResponse;
 import com.example.common.dto.response.PageResponse;
 import com.example.common.enums.IsDel;
+import com.example.common.enums.Release;
 import com.example.common.exception.AppException;
 import com.example.common.exception.ErrorCode;
 import com.example.common.utils.DataUtils;
@@ -130,6 +131,7 @@ public class LocationServiceImpl implements LocationService {
                     status,
                     ParkingServiceApplication.testPartnerActionBy,
                     IsDel.DELETE_NOT_YET.getValue(),
+                    Release.RELEASE_NOT_YET.getValue(),
                     pageable
             );
             List<LocationWaitReleaseResponse> dataResponse = dataPage.stream()

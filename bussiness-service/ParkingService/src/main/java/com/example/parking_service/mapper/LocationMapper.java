@@ -3,7 +3,6 @@ package com.example.parking_service.mapper;
 import com.example.common.dto.Coordinates;
 import com.example.parking_service.dto.response.LocationResponse;
 import com.example.parking_service.entity.Location;
-import com.example.parking_service.entity.LocationModify;
 import com.example.parking_service.entity.LocationWaitRelease;
 import com.example.parking_service.utils.ConvertUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -22,13 +21,7 @@ public interface LocationMapper {
     @Mapping(target = "createdBy", ignore = true)
     @Mapping(target = "modifiedAt", ignore = true)
     @Mapping(target = "modifiedBy", ignore = true)
-    Location toLocationFromModify(LocationModify locationModify);
-
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "createdBy", ignore = true)
-    @Mapping(target = "modifiedAt", ignore = true)
-    @Mapping(target = "modifiedBy", ignore = true)
-    void toLocationWaitReleaseFromModify(@MappingTarget LocationWaitRelease locationWaitRelease, LocationModify locationModify);
+    void toLocationFromReleaseEntity(@MappingTarget Location location, LocationWaitRelease releaseEntity);
 
     @Named("convertCoordinates")
     default Coordinates convertCoordinates(String coordinatesString) {

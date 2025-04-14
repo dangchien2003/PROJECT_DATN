@@ -6,7 +6,10 @@ import com.example.common.enums.Release;
 import com.example.common.exception.AppException;
 import com.example.common.exception.ErrorCode;
 import com.example.common.utils.DataUtils;
+import com.example.common.utils.TimeUtil;
 import com.example.parking_service.ParkingServiceApplication;
+import com.example.parking_service.dto.other.ScheduledJob;
+import com.example.parking_service.dto.other.ScheduledJobId;
 import com.example.parking_service.dto.request.ApproveRequest;
 import com.example.parking_service.dto.request.ModifyLocationRequest;
 import com.example.parking_service.entity.Location;
@@ -14,6 +17,7 @@ import com.example.parking_service.entity.LocationModify;
 import com.example.parking_service.entity.LocationWaitRelease;
 import com.example.parking_service.enums.LocationModifyStatus;
 import com.example.parking_service.enums.LocationStatus;
+import com.example.parking_service.enums.ModuleName;
 import com.example.parking_service.mapper.LocationMapper;
 import com.example.parking_service.mapper.LocationModifyMapper;
 import com.example.parking_service.mapper.LocationWaitReleaseMapper;
@@ -21,6 +25,7 @@ import com.example.parking_service.repository.LocationModifyRepository;
 import com.example.parking_service.repository.LocationRepository;
 import com.example.parking_service.repository.LocationWaitReleaseRepository;
 import com.example.parking_service.service.LocationModifyService;
+import com.example.parking_service.service.SchedulerService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
@@ -43,6 +48,7 @@ public class LocationModifyServiceImpl implements LocationModifyService {
     LocationModifyRepository locationModifyRepository;
     LocationRepository locationRepository;
     LocationWaitReleaseRepository locationWaitReleaseRepository;
+    SchedulerService schedulerService;
     LocationModifyMapper locationModifyMapper;
     LocationMapper locationMapper;
     LocationWaitReleaseMapper locationWaitReleaseMapper;
@@ -68,7 +74,7 @@ public class LocationModifyServiceImpl implements LocationModifyService {
         LocationModify modifyEntity = locationModifyRepository.findByModifyIdAndIsDel(modifyId, IsDel.DELETE_NOT_YET.getValue())
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
         // kiểm tra trạng thái
-        if (modifyEntity.getModifyStatus().equals(LocationModifyStatus.CHO_DUYET.getValue())) {
+        if (!modifyEntity.getModifyStatus().equals(LocationModifyStatus.CHO_DUYET.getValue())) {
             throw new AppException(ErrorCode.CONFLICT_DATA.withMessage("Không thể thực thi hành động"));
         }
         // kiểm tra thời hạn
@@ -104,6 +110,7 @@ public class LocationModifyServiceImpl implements LocationModifyService {
             locationWaitReleases.add(entity);
             // lưu
             locationWaitReleaseRepository.saveAll(locationWaitReleases);
+            insertScheduler(entity);
         } else {
             // xử lý khi từ chối duyệt
             if (modifyEntity.getLocationId() != null) {
@@ -206,6 +213,76 @@ public class LocationModifyServiceImpl implements LocationModifyService {
         // lỗi khi sửa địa điểm đối tác không sở hữu
         if (!owner.equals(actionBy)) {
             throw new AppException(ErrorCode.NO_ACCESS);
+        }
+    }
+
+    private void insertScheduler(LocationWaitRelease locationWaitRelease) {
+        String actionBy = "scheduler";
+        if (locationWaitRelease.getTimeAppliedEdit().isAfter(TimeUtil.getStartOfNextHour())) {
+            return;
+        }
+        // lệnh sẽ chạy khi tới thời điểm
+        Runnable runnable = () -> {
+            try {
+                executeApplyLocation(locationWaitRelease, actionBy);
+            } catch (Exception e) {
+                log.error("Error: ", e);
+            }
+        };
+        ScheduledJob scheduledJob = ScheduledJob.builder()
+                .scheduledJobId(new ScheduledJobId(ModuleName.LOCATION, locationWaitRelease.getId().toString()))
+                .task(runnable)
+                .runAt(locationWaitRelease.getTimeAppliedEdit())
+                .build();
+        schedulerService.addTask(scheduledJob);
+    }
+
+    public void executeApplyLocation(LocationWaitRelease locationWaitRelease, String actionBy) throws JsonProcessingException {
+        String beforeUpdate = objectMapper.writeValueAsString(locationWaitRelease);
+        // thay đổi entity release
+        locationWaitRelease.setReleased(Release.RELEASE.getValue());
+        locationWaitRelease.setReleaseAt(LocalDateTime.now());
+        DataUtils.setDataAction(locationWaitRelease, actionBy, false);
+        // lưu
+        locationWaitReleaseRepository.save(locationWaitRelease);
+
+        try {
+            // thay thế bản ghi phát hành
+            Location location;
+            if (!DataUtils.isNullOrEmpty(locationWaitRelease.getLocationId())) {
+                location = locationRepository.findById(locationWaitRelease.getLocationId())
+                        .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND.withMessage("Không tìm thấy địa điểm có id: " + locationWaitRelease.getLocationId())));
+            } else {
+                location = new Location();
+            }
+            // map dữ liệu
+            locationMapper.toLocationFromReleaseEntity(location, locationWaitRelease);
+            location.setModifyStatus(LocationModifyStatus.DA_AP_DUNG.getValue());
+            // thay đổi thời gian tác động
+            DataUtils.setDataAction(location, actionBy, DataUtils.isNullOrEmpty(locationWaitRelease.getLocationId()));
+            // lưu dữ liệu
+            locationRepository.save(location);
+        } catch (Exception e) {
+            log.error("error: ", e);
+            // rollback nếu lỗi
+            try {
+                LocationWaitRelease locationWaitReleaseRollback = objectMapper.readValue(beforeUpdate, LocationWaitRelease.class);
+                locationWaitReleaseRepository.save(locationWaitReleaseRollback);
+            } catch (JsonProcessingException ex) {
+                log.error("error: ", ex);
+                log.error("lỗi rollback dữ liệu(LocationWaitRelease): " + beforeUpdate);
+            }
+        }
+    }
+
+    @Override
+    public void loadScheduler() {
+        LocalDateTime from = TimeUtil.getStartOfCurrentHour();
+        LocalDateTime to = TimeUtil.getStartOfNextHour();
+        List<LocationWaitRelease> entityList = locationWaitReleaseRepository
+                .findAllRecordWaitReleaseThisHour(from, to, IsDel.DELETE_NOT_YET.getValue(), Release.RELEASE_NOT_YET.getValue());
+        for (LocationWaitRelease locationWaitRelease : entityList) {
+            insertScheduler(locationWaitRelease);
         }
     }
 }

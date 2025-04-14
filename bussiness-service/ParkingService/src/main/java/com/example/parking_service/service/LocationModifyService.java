@@ -13,4 +13,6 @@ public interface LocationModifyService {
     ApiResponse<Object> approve(ApproveRequest request);
 
     ApiResponse<Object> detailModify(Long id);
+
+    void loadScheduler();
 }
