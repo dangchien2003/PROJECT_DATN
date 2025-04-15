@@ -2,6 +2,7 @@ package com.example.parking_service.mapper;
 
 import com.example.common.dto.Coordinates;
 import com.example.parking_service.dto.response.LocationResponse;
+import com.example.parking_service.dto.response.MapLocationResponse;
 import com.example.parking_service.entity.Location;
 import com.example.parking_service.entity.LocationWaitRelease;
 import com.example.parking_service.utils.ConvertUtil;
@@ -23,6 +24,9 @@ public interface LocationMapper {
     @Mapping(target = "modifiedBy", ignore = true)
     void toLocationFromReleaseEntity(@MappingTarget Location location, LocationWaitRelease releaseEntity);
 
+    @Mapping(target = "coordinates", source = "coordinates", qualifiedByName = "convertCoordinates")
+    MapLocationResponse toMapLocationResponse(Location location);
+
     @Named("convertCoordinates")
     default Coordinates convertCoordinates(String coordinatesString) {
         try {
@@ -32,6 +36,7 @@ public interface LocationMapper {
                 return null;
             }
         } catch (JsonProcessingException e) {
+            System.out.println(e);
             return null;
         }
     }

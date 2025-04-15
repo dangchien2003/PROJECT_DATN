@@ -16,4 +16,6 @@ public interface LocationService {
 
     ApiResponse<Object> detailWaitRelease(Long id);
 
+    ApiResponse<Object> getListCoordinates(int page);
+
 }

@@ -27,7 +27,6 @@ public class SchedulerConfig {
 
     @Scheduled(cron = "0 */5 * * * *") // giây, phút, giờ, ngày, tháng, thứ
     public void runEveryFiveMinutes() {
-        System.out.println("runEveryFiveMinutes");
         schedulerService.refresh();
     }
 

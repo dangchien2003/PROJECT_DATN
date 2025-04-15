@@ -74,4 +74,9 @@ public class LocationController {
     ApiResponse<Object> detailWaitRelease(@RequestParam("id") Long id) {
         return locationService.detailWaitRelease(id);
     }
+
+    @GetMapping("list/coordinates")
+    ApiResponse<Object> getListCoordinates(@RequestParam(value = "page", defaultValue = "0") int page) {
+        return locationService.getListCoordinates(page);
+    }
 }

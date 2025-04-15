@@ -73,4 +73,6 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
             @Param("limit") int limit,
             @Param("offset") int offset
     );
+
+    Page<Location> findAllByStatusAndCoordinatesNotNull(Integer status, Pageable pageable);
 }

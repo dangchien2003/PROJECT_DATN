@@ -11,6 +11,7 @@ import com.example.parking_service.ParkingServiceApplication;
 import com.example.parking_service.dto.request.AdminSearchLocation;
 import com.example.parking_service.dto.request.PartnerSearchLocation;
 import com.example.parking_service.dto.response.*;
+import com.example.parking_service.entity.Account;
 import com.example.parking_service.entity.Location;
 import com.example.parking_service.entity.LocationModify;
 import com.example.parking_service.entity.LocationWaitRelease;
@@ -19,6 +20,7 @@ import com.example.parking_service.enums.LocationStatus;
 import com.example.parking_service.mapper.LocationMapper;
 import com.example.parking_service.mapper.LocationModifyMapper;
 import com.example.parking_service.mapper.LocationWaitReleaseMapper;
+import com.example.parking_service.repository.AccountRepository;
 import com.example.parking_service.repository.LocationModifyRepository;
 import com.example.parking_service.repository.LocationRepository;
 import com.example.parking_service.repository.LocationWaitReleaseRepository;
@@ -29,6 +31,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -36,9 +39,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -48,11 +50,30 @@ import java.util.Locale;
 public class LocationServiceImpl implements LocationService {
     LocationRepository locationRepository;
     LocationModifyRepository locationModifyRepository;
+    AccountRepository accountRepository;
     LocationWaitReleaseRepository locationWaitReleaseRepository;
     LocationModifyMapper locationModifyMapper;
     LocationMapper locationMapper;
     LocationWaitReleaseMapper locationWaitReleaseMapper;
     ObjectMapper objectMapper;
+
+    @Override
+    public ApiResponse<Object> getListCoordinates(int page) {
+        Pageable fixedPageable = PageRequest.of(page, 20, Sort.by(Sort.Direction.DESC, "coordinates"));
+        Page<Location> pageLocations = locationRepository.findAllByStatusAndCoordinatesNotNull(LocationStatus.DA_DUYET_DANG_HOAT_DONG.getValue(), fixedPageable);
+        List<Location> locations = pageLocations.getContent();
+        Set<String> partnerId = locations.stream().map(Location::getPartnerId).collect(Collectors.toSet());
+        List<Account> accounts = accountRepository.findAllById(partnerId);
+        Map<String, Account> accountMap = accounts.stream().collect(Collectors.toMap(Account::getId, item -> item));
+        List<MapLocationResponse> mapLocationResponses = locations.stream().map(item -> {
+            MapLocationResponse mapLocationResponse = locationMapper.toMapLocationResponse(item);
+            mapLocationResponse.setPartnerFullName(accountMap.get(mapLocationResponse.getPartnerId()).getPartnerFullName());
+            return mapLocationResponse;
+        }).toList();
+        return ApiResponse.builder()
+                .result(new PageResponse<>(mapLocationResponses, pageLocations.getTotalPages(), pageLocations.getTotalElements()))
+                .build();
+    }
 
     @Override
     public ApiResponse<Object> detailWaitRelease(Long id) {
