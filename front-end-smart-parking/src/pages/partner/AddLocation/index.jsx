@@ -19,8 +19,8 @@ import { locationDetail } from "@/service/locationService";
 import { getDataApi } from "@/utils/api";
 import { toastError } from "@/utils/toast";
 
-const requireKeys = ["name", "address", "openTime", "closeTime", "timeAppliedEdit", "description"]
-const indexKeys = ["name", "address", "openTime", "closeTime", "timeAppliedEdit", "description"]
+const requireKeys = ["name", "address", "coordinates", "coordinates.x", "coordinates.y", "openTime", "closeTime", "timeAppliedEdit", "description"]
+const indexKeys = ["name", "address", "coordinates.x", "coordinates.y", "openTime", "closeTime", "timeAppliedEdit", "description"]
 const AddLocation = ({ isModify = false }) => {
   const [dataModify, setDataModify] = useState({
     locationId: null,
@@ -54,7 +54,7 @@ const AddLocation = ({ isModify = false }) => {
       // gọi api lấy dữ liệu
       locationDetail(id).then((response) => {
         const result = getDataApi(response);
-        if (result.openTime = "00:00:00" && result.openTime === result.closeTime) {
+        if (result.openTime === "00:00:00" && result.openTime === result.closeTime) {
           setOpenEveryTime(true)
         }
         setDataModify(result)
@@ -96,7 +96,7 @@ const AddLocation = ({ isModify = false }) => {
       updateObjectValue(dataModify, "coordinates", coordinates);
     } else {
       setDisableCoordinates(false)
-      updateObjectValue(dataModify, "coordinates", null);
+      updateObjectValue(dataModify, "coordinates", { x: null, y: null });
     }
     if (dataModify) {
       updateObjectValue(dataModify, key, value);
@@ -117,9 +117,7 @@ const AddLocation = ({ isModify = false }) => {
 
   return (
     <div>
-      <h3 style={{ paddingBottom: 8 }} onClick={() => {
-        console.log(dataModify)
-      }}>{isModify ? "Chỉnh sửa địa điểm" : "Thêm mới địa điểm"}</h3>
+      <h3 style={{ paddingBottom: 8 }}>{isModify ? "Chỉnh sửa địa điểm" : "Thêm mới địa điểm"}</h3>
       <div>
         <AvatarAndVideo data={dataModify} />
       </div>
@@ -154,6 +152,8 @@ const AddLocation = ({ isModify = false }) => {
           key={"td"}
           itemKey={"coordinates"}
           value={dataModify?.coordinates}
+          x={dataModify?.coordinates?.x}
+          y={dataModify?.coordinates?.y}
           disable={disableCoordinates}
           callbackChangeValue={handleChange}
         />

@@ -123,7 +123,6 @@ const TableListCard = ({searchTimes, dataSearch }) => {
 
   useEffect(() => {
     loadData(pagination, sorter);
-    console.log(dataSearch);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchTimes]);
   return (

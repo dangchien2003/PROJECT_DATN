@@ -89,7 +89,7 @@ const DetailLocation = () => {
   useEffect(() => {
     const handleResize = () => {
       let style = {};
-      if(window.innerWidth <= 1288) {
+      if (window.innerWidth <= 1288 || !dataModify) {
         style = {
           width: "100%"
         }
@@ -98,7 +98,7 @@ const DetailLocation = () => {
           width: "50%"
         }
       }
-      
+
       setStyleParent(style)
       setWidthPage(window.innerWidth)
     }
@@ -106,7 +106,7 @@ const DetailLocation = () => {
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-  }, []);
+  }, [dataModify, dataRoot]);
 
   return (
     <div>

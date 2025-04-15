@@ -17,5 +17,6 @@ export const PARKING_SERVICE = {
     modifyDetail: "location/detail/modify",
     locationDetail: "location/detail",
     waitReleaseDetail: "location/detail/wait-release",
+    getMapLocation: "location/list/coordinates",
   }
 }
