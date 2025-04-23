@@ -19,7 +19,8 @@ const DateTimePickerWithSort = ({
   },
   sort = true,
   defaultValue,
-  label
+  label,
+  disable
 }) => {
   const [value, setValue] = useState(getValueDate(defaultValue));
   const requireKeys = useSelector(state => state.requireField);
@@ -62,13 +63,15 @@ const DateTimePickerWithSort = ({
   };
   // kiểm tra min max
   const validMinMax = (value) => {
-    if (min !== null && min !== undefined) {
-      if (value.isBefore(min)) return min;
+    if(value) {
+      if (min !== null && min !== undefined) {
+        if (value.isBefore(min)) return min;
+      }
+      if (max !== null && max !== undefined) {
+        if (value.isAfter(max)) return max;
+      }
+      return value;
     }
-    if (max !== null && max !== undefined) {
-      if (value.isAfter(max)) return max;
-    }
-    return value;
   };
   // xử lý khi thay đổi dữ liệu
   const handleChangeValue = (newValue) => {
@@ -103,6 +106,7 @@ const DateTimePickerWithSort = ({
         placeholder={placeholder}
         minDate={min}
         maxDate={max}
+        disabled={disable}
       />
       {sort && <div
         style={{

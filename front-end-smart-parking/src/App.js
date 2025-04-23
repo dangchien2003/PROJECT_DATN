@@ -24,6 +24,7 @@ import DashboardPartner from "./pages/partner/DashBoardPartner";
 import AddLocation from "./pages/partner/AddLocation";
 import ListLocationPartner from "./pages/partner/ListLocation";
 import DetailLocationPartner from "./pages/partner/DetailLocation";
+import AddTicket from "./pages/partner/AddTicket";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -63,6 +64,7 @@ const router = createBrowserRouter([
       { path: "location/detail/:tab/:id", element: <DetailLocationPartner /> },
       { path: "account/partner/:id", element: <PartnerInfo /> },
       { path: "account/customer/:id", element: <AccountCustomerInfo /> },
+      { path: "ticket/add", element: <AddTicket /> },
       
     ]
   }, 

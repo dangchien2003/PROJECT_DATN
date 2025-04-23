@@ -1,5 +1,7 @@
 import React from "react";
 import NumberInputWithSort from "../NumberInputWithSort";
+import InputError from "../InputError";
+import InputLabel from "../InputLabel";
 
 const NumberInputWithSortLabelDash = ({
   label,
@@ -10,6 +12,7 @@ const NumberInputWithSortLabelDash = ({
   callbackChangeValue,
   placeholder,
   require,
+  trend = true,
 }) => {
   return (
     <div
@@ -22,23 +25,7 @@ const NumberInputWithSortLabelDash = ({
         margin: 16,
       }}
     >
-      <span
-        className="truncated-text"
-        style={{
-          position: "absolute",
-          display: "inline-block",
-          padding: "3px 5px",
-          top: -14,
-          left: 8,
-          maxWidth: 240,
-          fontSize: 14,
-          background: "white",
-          zIndex: 100,
-        }}
-      >
-        {label}
-        {require && <span style={{ color: "red" }}> *</span>}
-      </span>
+      <InputLabel label={label} require={require} itemKey={itemKey}/>
       <NumberInputWithSort
         min={min}
         max={max}
@@ -46,7 +33,11 @@ const NumberInputWithSortLabelDash = ({
         itemKey={itemKey}
         addonAfter={addonAfter}
         callbackChangeValue={callbackChangeValue}
+        trend={trend}
+        label={label}
+        key={itemKey + "sub"}
       />
+      <InputError itemKey={itemKey} key={itemKey} />
     </div>
   );
 };
