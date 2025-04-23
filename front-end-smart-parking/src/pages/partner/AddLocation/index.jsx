@@ -244,7 +244,7 @@ const AddLocation = ({ isModify = false }) => {
         defaultValue={dataModify?.description}
         callbackChangeValue={handleChange}
       />
-      <Action isModify={isModify} data={dataModify} requireKeys={requireKeys} indexKey={indexKeys} />
+      <Action isModify={isModify} data={dataModify} requireKeys={requireKeys} indexKey={indexKeys}/>
     </div>
   );
 };

@@ -74,3 +74,11 @@ export async function getMapLocation(page) {
     }
   })
 }
+
+export async function getAllRecordIsActive(page) {
+  return await httpClient.get(PARKING_SERVICE.location.getAllRecordIsActive + "?" + getRequestParams({ page }), {
+    headers: {
+      Authorization: undefined
+    }
+  })
+}

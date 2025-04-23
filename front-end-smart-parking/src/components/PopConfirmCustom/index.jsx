@@ -15,9 +15,11 @@ const PopConfirmCustom = ({ type, title, message, handleOk, handleCancel }) => {
         height: "100vh",
         overflow: "hidden",
       }}
-      bodyStyle={{
-        padding: "20px",
-        textAlign: "center",
+      styles={{
+        body: {
+          padding: "20px",
+          textAlign: "center",
+        }
       }}
       className="popup"
     >

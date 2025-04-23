@@ -112,10 +112,14 @@ export const VEHICLE = {
   0: {
     name: "Ô tô",
     icon: <FaCarAlt />,
+    value: 0,
+    label: <div><FaCarAlt /> <span>Ô tô</span></div>,
   },
   1: {
     name: "Xe máy",
     icon: <FaMotorcycle />,
+    value: 1,
+    label: <div><FaMotorcycle /> <span>Xe máy</span></div>,
   },
   2: {
     name: "Hỗn hợp",
@@ -125,25 +129,32 @@ export const VEHICLE = {
         <FaMotorcycle style={{ marginLeft: 4 }} />
       </>
     ),
+    value: 2,
+    label: (
+      <div>
+        <FaCarAlt />
+        <FaMotorcycle style={{ marginLeft: 4 }} /> <span>Hỗn hợp</span>
+      </div>
+    ),
   },
 };
 
 export const VEHICLE_SELECTBOX = [
   {
     value: 0,
-    label: <FaCarAlt />,
+    label: <div><FaCarAlt /> <span>Ô tô</span></div>,
   },
   {
     value: 1,
-    label: <FaMotorcycle />,
+    label: <div><FaMotorcycle /> <span>Xe máy</span></div>,
   },
   {
     value: 2,
     label: (
-      <>
+      <div>
         <FaCarAlt />
-        <FaMotorcycle style={{ marginLeft: 4 }} />
-      </>
+        <FaMotorcycle style={{ marginLeft: 4 }} /> Hỗn hợp
+      </div>
     ),
   },
 ];
