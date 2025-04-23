@@ -39,7 +39,7 @@ export const extractYouTubeVideoId = (input) => {
 
     // // Có thể thêm các trường hợp khác nếu cần
   } catch (e) {
-    console.log(e)
+    console.error(e)
   }
   return null;
 };

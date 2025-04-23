@@ -23,7 +23,6 @@ const Search = ({dataSearch}) => {
   };
 
   const handleRunSearch = () => {
-    console.log(dataSearch)
     if(!isSearching) {
       dispatch(setSearching(true))
     }

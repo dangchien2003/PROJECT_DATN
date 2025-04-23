@@ -1,9 +1,10 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
+
 // forcus thẳng tới địa điểm
 // const SetViewOnLocation = ({ position }) => {
 //   const map = useMap();
@@ -14,13 +15,17 @@ import markerShadow from "leaflet/dist/images/marker-shadow.png";
 // };
 
 // forcus từ từ tới địa điểm
-const FlyToLocation = ({ position }) => {
+const FlyToLocation = ({ position, loadFist }) => {
   const map = useMap();
   useEffect(() => {
-    map.flyTo(position, 15, {
+    if (loadFist) {
+      return;
+    }
+    map.flyTo(position, 10, {
       duration: 1.0, // Thời gian chuyển đổi (giây)
     });
-  }, [position, map]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return null;
 };
 
@@ -30,47 +35,19 @@ const customIcon = new L.Icon({
   iconSize: [25, 41],
   iconAnchor: [12, 41],
 });
-// const data = [
-//   {
-//     position: [10.762622, 106.660172],
-//     popupContent: <div>abc</div>,
-//   },
-// ];
+const focusDefault = [10.762622, 106.660172];
 const Map = ({ data = [], ...prop }) => {
-  const position1 = [10.762622, 106.660172]; // AEON MALL Hà Đông
-  const position2 = [21.02842, 105.7909]; // Điểm thứ 2
-  data = [
-    {
-      position: position1,
-      popupContent: (
-        <a
-          href="https://maps.app.goo.gl/yKEiZzg7DLmJzvHu8"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ color: "black", textDecoration: "none" }}
-        >
-          AEON MALL Hà Đông
-        </a>
-      ),
-    },
-    {
-      position: position2,
-      popupContent: (
-        <a
-          href="https://maps.app.goo.gl/yKEiZzg7DLmJzvHu8"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ color: "black", textDecoration: "none" }}
-        >
-          AEON MALL Hà Đông
-        </a>
-      ),
-    },
-  ];
+  const [loadFist, setLoadFirst] = useState(false);
+
+  useEffect(() => {
+    if(data.length > 0) {
+      setLoadFirst(true);
+    }
+  }, [data])
   return (
-    <MapContainer center={position1} zoom={13} {...prop}>
+    <MapContainer center={focusDefault} zoom={13} {...prop}>
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-      <FlyToLocation position={position2} />
+      <FlyToLocation position={focusDefault} loadFist={loadFist} />
       {data.map((location, index) => {
         return (
           <Marker position={location.position} icon={customIcon} key={index}>

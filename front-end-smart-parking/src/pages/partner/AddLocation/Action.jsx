@@ -45,7 +45,6 @@ const Action = ({isModify, data, requireKeys, indexKey}) => {
   }, [clickCreate])
 
   const handleClickAction = () => {
-    console.log(data)
     // valid data
     checkRequireInput(data, fieldError, pushMessage, requireKeys);
     setClickCreate(true)

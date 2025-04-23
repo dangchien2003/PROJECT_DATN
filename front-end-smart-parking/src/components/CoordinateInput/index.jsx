@@ -17,30 +17,63 @@ const CoordinateInput = ({
 }) => {
   const keyFocus = useSelector((state) => state.focus);
   const requireKeys = useSelector(state => state.requireField);
-  const inputRef = useRef();
+  const inputRefX = useRef();
+  const inputRefY = useRef();
   const [require, setRequire] = useState(false)
-  const {pushMessage, deleteKey} = useMessageError();
+  const { pushMessage, deleteKey } = useMessageError();
+  const [x, setX] = useState(value.x);
+  const [y, setY] = useState(value.y);
+  const [key] = useState({
+    x: itemKey + ".x",
+    y: itemKey + ".y",
+  });
 
   useEffect(() => {
-    if(Array.isArray(requireKeys) && itemKey) {
+    setX(value?.x);
+    setY(value?.y);
+  }, [value])
+
+  useEffect(() => {
+    if (Array.isArray(requireKeys) && itemKey) {
       setRequire(requireKeys.includes(itemKey))
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [requireKeys, value]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [requireKeys, itemKey]);
 
-  useEffect(()=> {
-    if(keyFocus === itemKey) {
-      inputRef.current?.focus();
+  useEffect(() => {
+    if (keyFocus === itemKey + ".x") {
+      inputRefX.current?.focus();
+    } else if (keyFocus === itemKey + ".y") {
+      inputRefY.current?.focus();
     }
   }, [keyFocus, itemKey])
-  
+
   const handleChange = (coord, val) => {
-    const newValue = { ...value, [coord]: val };
-    if(require) {
-      if(newValue.length === 0) {
-        pushMessage(itemKey, "Không được để trống trường " + label?.toLowerCase());
-      } else {
-        deleteKey(itemKey);
+    let x1 = x;
+    let y1 = y;
+    if (coord === "x") {
+      setX(val);
+      x1 = val;
+    } else if (coord === "y") {
+      setY(val);
+      y1 = val;
+    }
+
+    const newValue = { x: x1, y: y1 };
+    if (require) {
+      if (coord === "x") {
+        if (newValue.x === null) {
+          pushMessage(key.x, "Không được để trống trường X");
+        } else {
+          deleteKey(key.x);
+        }
+      }
+      if (coord === "y") {
+        if (newValue.y === null) {
+          pushMessage(key.y, "Không được để trống trường Y");
+        } else {
+          deleteKey(key.y);
+        }
       }
     }
 
@@ -60,35 +93,37 @@ const CoordinateInput = ({
         margin: 16,
       }}
     >
-      <InputLabel label={label} require={require}/>
+      <InputLabel label={label} require={require} />
       <Row gutter={8}>
         <Col span={12}>
           <InputNumber
-            ref={inputRef}
+            ref={inputRefX}
             min={min}
             max={max}
             step={step}
-            value={value?.x}
+            value={x}
             onChange={(val) => handleChange("x", val)}
             placeholder="X"
             disabled={disable}
             style={{ width: "100%" }}
           />
+          <InputError itemKey={key.x} />
         </Col>
         <Col span={12}>
           <InputNumber
+            ref={inputRefY}
             min={min}
             max={max}
             step={step}
-            value={value?.y}
+            value={y}
             onChange={(val) => handleChange("y", val)}
             placeholder="Y"
             disabled={disable}
             style={{ width: "100%" }}
           />
+          <InputError itemKey={key.y} />
         </Col>
       </Row>
-      <InputError itemKey={itemKey}/>
     </div>
   );
 };

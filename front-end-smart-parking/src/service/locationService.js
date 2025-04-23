@@ -44,7 +44,7 @@ export async function approve(action) {
 
 
 export async function modifyDetail(id) {
-  return await httpClient.get(PARKING_SERVICE.location.modifyDetail + "?" + getRequestParams({id}), {
+  return await httpClient.get(PARKING_SERVICE.location.modifyDetail + "?" + getRequestParams({ id }), {
     headers: {
       Authorization: undefined
     }
@@ -52,7 +52,7 @@ export async function modifyDetail(id) {
 }
 
 export async function locationDetail(id) {
-  return await httpClient.get(PARKING_SERVICE.location.locationDetail + "?" + getRequestParams({id}), {
+  return await httpClient.get(PARKING_SERVICE.location.locationDetail + "?" + getRequestParams({ id }), {
     headers: {
       Authorization: undefined
     }
@@ -60,7 +60,15 @@ export async function locationDetail(id) {
 }
 
 export async function waitReleaseDetail(id) {
-  return await httpClient.get(PARKING_SERVICE.location.waitReleaseDetail + "?" + getRequestParams({id}), {
+  return await httpClient.get(PARKING_SERVICE.location.waitReleaseDetail + "?" + getRequestParams({ id }), {
+    headers: {
+      Authorization: undefined
+    }
+  })
+}
+
+export async function getMapLocation(page) {
+  return await httpClient.get(PARKING_SERVICE.location.getMapLocation + "?" + getRequestParams({ page }), {
     headers: {
       Authorization: undefined
     }
