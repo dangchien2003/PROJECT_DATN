@@ -1,8 +1,10 @@
 import { Input } from "antd";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { formatCurrency, parseFormattedCurrency } from "@/utils/number";
 import TrendInput from "../TrendInput";
+import { useSelector } from "react-redux";
+import { useMessageError } from "@/hook/validate";
 
 const NumberInputWithSort = ({
   min,
@@ -11,9 +13,20 @@ const NumberInputWithSort = ({
   placeholder,
   itemKey,
   callbackChangeValue,
+  trend,
+  label
 }) => {
   const [value, setValue] = useState(null);
+  const keyFocus = useSelector((state) => state.focus);
+  const inputRef = useRef();
+  const {pushMessage, deleteKey} = useMessageError();
 
+  useEffect(()=> {
+    if(keyFocus === itemKey) {
+      inputRef.current?.focus();
+    }
+  }, [keyFocus, itemKey])
+  
   // kiểm tra min max
   const validMinMax = (value) => {
     if (min !== null && min !== undefined) {
@@ -26,6 +39,15 @@ const NumberInputWithSort = ({
   };
   // xử lý khi thay đổi dữ liệu
   const handleChangeValue = (e) => {
+    const newValue = e.target.value;
+    // validate require
+    if(require) {
+      if(newValue.length === 0) {
+        pushMessage(itemKey, "Không được để trống trường " + label?.toLowerCase());
+      } else {
+        deleteKey(itemKey);
+      }
+    }
     // chuyển về dạng số
     var valueNumber = parseFormattedCurrency(e.target.value);
     valueNumber = validMinMax(valueNumber);
@@ -48,6 +70,7 @@ const NumberInputWithSort = ({
   return (
     <div style={{ display: "flex" }}>
       <Input
+        ref={inputRef}
         style={{ width: "100%" }}
         addonAfter={addonAfter}
         placeholder={placeholder}
@@ -56,7 +79,7 @@ const NumberInputWithSort = ({
         onChange={handleChangeValue}
         controls={false}
       />
-      <TrendInput key={"trend"} itemKey={itemKey} callbackChangeValue={callbackChangeValue}/>
+      {trend && <TrendInput key={"trend"} itemKey={itemKey} callbackChangeValue={callbackChangeValue}/>}
     </div>
   );
 };

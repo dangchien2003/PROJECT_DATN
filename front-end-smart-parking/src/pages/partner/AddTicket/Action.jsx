@@ -1,8 +1,9 @@
 import PopConfirmCustom from "@/components/PopConfirmCustom";
 import { useLoading } from "@/hook/loading";
 import { useMessageError } from "@/hook/validate";
-import { modifyLocation } from "@/service/locationService";
+import { modifyTicket } from "@/service/ticketService";
 import { getDataApi } from "@/utils/api";
+import { formatTimestamp } from "@/utils/time";
 import { toastError, toastSuccess } from "@/utils/toast";
 import { checkRequireInput, validateInput } from "@/utils/validateAction";
 import { Button } from "antd";
@@ -23,12 +24,12 @@ const Action = ({isModify, data, requireKeys, indexKey}) => {
   const handleConfirmAction = () => {
     if(isModify) {
       setTypePopup("warning");
-      setTitlePopup(`Bạn có chắc chắn tiếp tục gửi yêu cầu chỉnh sửa địa điểm ${data?.name} không?`);
-      setMessagePopup("Yêu cầu sẽ được gửi tới quản trị viên kiểm duyệt");
+      setTitlePopup(`Bạn có chắc chắn tiếp tục lưu thông tin chỉnh sửa của vé ${data?.name} không?`);
+      setMessagePopup(`Thông tin sẽ được tự động áp dụng vào lúc ${formatTimestamp(data?.timeAppliedEdit, "DD/MM/YYYY HH:mm")}`);
     } else {
       setTypePopup("warning");
-      setTitlePopup(`Bạn có chắc chắn tiếp tục gửi yêu cầu thêm mới địa điểm ${data?.name} không?`);
-      setMessagePopup("Yêu cầu sẽ được gửi tới quản trị viên kiểm duyệt");
+      setTitlePopup(`Bạn có chắc chắn tiếp tục gửi yêu cầu tạo vé ${data?.name} không?`);
+      setMessagePopup(`Thông tin sẽ được tự động áp dụng vào lúc ${formatTimestamp(data?.timeAppliedEdit, "DD/MM/YYYY HH:mm")}`);
     }
     setOpenPopupConfirm(true)
   }
@@ -56,13 +57,10 @@ const Action = ({isModify, data, requireKeys, indexKey}) => {
   const handleOk= ()=> {
     setOpenPopupConfirm(false)
     showLoad("Đang xử lý");
-    // convert data boolean
-    data.urgentApprovalRequest = data.urgentApprovalRequest ? 1 : 0;
-    data.openHoliday = data.openHoliday ? 1 : 0;
     // call
-    modifyLocation(data)
+    modifyTicket(data)
       .then((response) => {
-        toastSuccess("Đã gửi yêu cầu " + (data.locationId ? "chỉnh sửa": "thêm") + " địa điểm thành công")
+        toastSuccess("Đã gửi yêu cầu " + (data.ticketId ? "chỉnh sửa": "thêm") + " vé thành công")
       })
       .catch((error) => {
         const result = getDataApi(error);

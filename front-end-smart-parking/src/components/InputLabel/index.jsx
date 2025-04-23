@@ -1,4 +1,15 @@
-const InputLabel = ({label, require}) => {
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+
+const InputLabel = ({itemKey, label, require}) => {
+  const requireKeys = useSelector(state => state.requireField);
+  const [requireField, setRequireField] = useState(false)
+
+  useEffect(()=> {
+    if(Array.isArray(requireKeys) && itemKey) {
+      setRequireField(requireKeys.includes(itemKey))
+    }
+  }, [requireKeys, itemKey])
   return (
     <span
         className="truncated-text"
@@ -14,7 +25,7 @@ const InputLabel = ({label, require}) => {
           zIndex: 100,
         }}
       >
-        {label} {require && <span style={{color: "red"}}>*</span>}
+        {label} {(require || requireField) && <span style={{color: "red"}}>*</span>}
     </span>
   )
 }

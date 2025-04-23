@@ -126,7 +126,7 @@ export const PARTNER_MENU = [
     children: [
       {
         key: "3.1",
-        label: "Tạo vé mới",
+        label: <Link to={"/partner/ticket/add"}>Tạo vé mới</Link>,
       },
       {
         key: "3.2",
