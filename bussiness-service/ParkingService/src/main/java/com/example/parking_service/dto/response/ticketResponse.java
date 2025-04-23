@@ -1,13 +1,11 @@
 package com.example.parking_service.dto.response;
 
-
-import com.example.common.dto.Coordinates;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -15,47 +13,21 @@ import java.time.LocalTime;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class LocationResponse {
-
-    Long locationId;
-
+public class ticketResponse {
+    Long ticketId;
     String partnerId;
-
-    String name;
-
-    String address;
-
     Integer modifyCount;
-
-    Coordinates coordinates;
-
-    String linkGoogleMap;
-
-    String avatar;
-
-    String videoTutorial;
-
+    String name;
     Integer status;
-
     Integer modifyStatus;
-
-    String reasonChangeStatus;
-
-    LocalTime openTime;
-
-    LocalTime closeTime;
-
-    LocalDateTime openDate;
-
-    Boolean openHoliday;
-
-    Long capacity;
-
-    String approveBy;
-
+    String reason;
+    LocalDateTime releasedTime;
+    Integer vehicle;
+    Integer timeSlot;
+    Integer daySlot;
+    Integer weekSlot;
+    Integer monthSlot;
     String description;
-
-    String infoLocation;
-
+    List<Long> locationUse;
     LocalDateTime createdAt;
 }

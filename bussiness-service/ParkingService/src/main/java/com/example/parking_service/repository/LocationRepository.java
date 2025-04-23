@@ -75,4 +75,8 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
     );
 
     Page<Location> findAllByStatusAndCoordinatesNotNull(Integer status, Pageable pageable);
+
+    Page<Location> findAllByStatusAndPartnerId(Integer status, String partnerId, Pageable pageable);
+
+    Long countByPartnerIdAndStatusAndLocationIdIn(String partnerId, Integer status, List<Long> locationIds);
 }

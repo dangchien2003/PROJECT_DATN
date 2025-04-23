@@ -58,6 +58,23 @@ public class LocationServiceImpl implements LocationService {
     ObjectMapper objectMapper;
 
     @Override
+    public ApiResponse<Object> getAllIsActive(int page) {
+        String partner = ParkingServiceApplication.testPartnerActionBy;
+        Pageable fixedPageable = PageRequest.of(page, 20, Sort.by(Sort.Direction.DESC, "name"));
+        Page<Location> pageLocations = locationRepository.findAllByStatusAndPartnerId(LocationStatus.DA_DUYET_DANG_HOAT_DONG.getValue(), partner, fixedPageable);
+        List<Location> locations = pageLocations.getContent();
+        List<LocationResponse> mapLocationResponses = locations.stream()
+                .map(item -> LocationResponse.builder()
+                        .locationId(item.getLocationId())
+                        .name(item.getName())
+                        .build()
+                ).toList();
+        return ApiResponse.builder()
+                .result(new PageResponse<>(mapLocationResponses, pageLocations.getTotalPages(), pageLocations.getTotalElements()))
+                .build();
+    }
+
+    @Override
     public ApiResponse<Object> getListCoordinates(int page) {
         Pageable fixedPageable = PageRequest.of(page, 20, Sort.by(Sort.Direction.DESC, "coordinates"));
         Page<Location> pageLocations = locationRepository.findAllByStatusAndCoordinatesNotNull(LocationStatus.DA_DUYET_DANG_HOAT_DONG.getValue(), fixedPageable);

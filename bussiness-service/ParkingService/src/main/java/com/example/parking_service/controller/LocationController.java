@@ -79,4 +79,9 @@ public class LocationController {
     ApiResponse<Object> getListCoordinates(@RequestParam(value = "page", defaultValue = "0") int page) {
         return locationService.getListCoordinates(page);
     }
+
+    @GetMapping("all/is-active")
+    ApiResponse<Object> getAllIsActive(@RequestParam(value = "page", defaultValue = "0") int page) {
+        return locationService.getAllIsActive(page);
+    }
 }

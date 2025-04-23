@@ -18,4 +18,6 @@ public interface LocationService {
 
     ApiResponse<Object> getListCoordinates(int page);
 
+    ApiResponse<Object> getAllIsActive(int page);
+
 }

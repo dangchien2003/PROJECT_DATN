@@ -8,10 +8,9 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @AllArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-public enum AccountStatus {
-    KHOA_TAI_KHOAN(0),
-    KHOA_TAM_THOI(1),
-    DANG_HOAT_DONG(2),
+public enum TypeTicket {
+    CHO_AP_DUNG(1),
+    PHAT_HANH(2),
     ;
     Integer value;
 }

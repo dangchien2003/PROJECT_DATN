@@ -7,7 +7,7 @@ import lombok.experimental.FieldDefaults;
 
 @Getter
 @AllArgsConstructor
-@FieldDefaults(makeFinal = true, level = AccessLevel.PACKAGE)
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public enum LocationStatus {
     CHO_DUYET(0),
     DA_DUYET_DANG_HOAT_DONG(1),

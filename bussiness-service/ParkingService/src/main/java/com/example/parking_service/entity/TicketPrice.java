@@ -32,5 +32,5 @@ public class TicketPrice extends BaseEntity {
 
     Long price;
 
-    Integer isActive;
+    Integer isDel;
 }
