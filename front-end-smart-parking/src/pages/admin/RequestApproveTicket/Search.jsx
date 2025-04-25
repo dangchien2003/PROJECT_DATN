@@ -19,7 +19,7 @@ const Search = ({ onSearch, dataSearch }) => {
       updateObjectValue(dataSearch, key, value);
     }
   };
-  const handleChangeValueInputOrder = (value, order, key) => {
+  const handleChangeValueInputOrder = (key, value, order) => {
     if (typeof key === "object" && key.length === 2) {
       updateObjectValue(dataSearch, key[0], value);
       updateObjectValue(dataSearch, key[1], order);

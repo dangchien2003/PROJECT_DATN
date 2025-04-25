@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Table } from "antd";
 import ButtonStatus from "../ButtonStatus";
-import { LOCATION_STATUS, MODIFY_STATUS, TICKET_STATUS } from "@/utils/constants";
+import { LOCATION_STATUS, LOCALTION_MODIFY_STATUS } from "@/utils/constants";
 import { formatTimestamp } from "@/utils/time";
 import { useNavigate } from "react-router-dom";
 import { showTotal } from "@/utils/table";
@@ -10,6 +10,7 @@ import { setSearching } from "@/store/startSearchSlice";
 import { convertDataSort, getDataApi } from "@/utils/api";
 import { toastError } from "@/utils/toast";
 import { adminSearch } from "@/service/locationService";
+import { convertDataSelectboxToObject } from "@/utils/object";
 
 const columns = [
   {
@@ -63,6 +64,7 @@ const mapFieldSort = {
   openDatePrint: "openDate",
 }
 
+const locaitonModifyStatus = convertDataSelectboxToObject(LOCALTION_MODIFY_STATUS);
 const convertResponseToDataTable = (data, currentPage, pageSize) => {
     return data.map((item, index) => {
       item.locationNamePrint = `${item.locationId} - ${item.name}`;
@@ -85,8 +87,8 @@ const convertResponseToDataTable = (data, currentPage, pageSize) => {
             <span>TĐ </span>
             <span>
               <ButtonStatus
-                label={MODIFY_STATUS[item.modifyStatus].label}
-                color={MODIFY_STATUS[item.modifyStatus].color}
+                label={locaitonModifyStatus[item.modifyStatus].label}
+                color={locaitonModifyStatus[item.modifyStatus].color}
               />
             </span>
           </div>
@@ -119,7 +121,7 @@ const TableListLocation = ({dataSearch }) => {
     setData([])
     adminSearch(dataSearch, newPagination.current - 1, newPagination.pageSize, sorter.field, sorter.order)
       .then((response) => {
-        const data = response.data?.result?.data;
+        const data = getDataApi(response);
         const total = response.data?.result?.totalElements;
         setData(
           convertResponseToDataTable(

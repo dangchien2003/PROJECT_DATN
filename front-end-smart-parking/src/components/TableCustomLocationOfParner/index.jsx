@@ -3,8 +3,9 @@ import { Table } from "antd";
 import { fakeDataTable } from "./dataTest";
 import { formatTimestamp } from "@/utils/time";
 import ButtonStatus from "../ButtonStatus";
-import { LOCATION_STATUS, MODIFY_STATUS } from "@/utils/constants";
+import { LOCATION_STATUS, LOCALTION_MODIFY_STATUS } from "@/utils/constants";
 import { showTotal } from "@/utils/table";
+import { convertDataSelectboxToObject } from "@/utils/object";
 
 const columns = [
   {
@@ -39,6 +40,7 @@ const columns = [
   },
 ];
 
+const locaitonModifyStatus = convertDataSelectboxToObject(LOCALTION_MODIFY_STATUS);
 const convertResponseToDataTable = (response, currentPage, pageSize) => {
   return response.data.map((item, index) => {
     item.namePrint = (
@@ -53,8 +55,8 @@ const convertResponseToDataTable = (response, currentPage, pageSize) => {
           <>
             {item.modifyStatus !== null ? (
               <ButtonStatus
-                label={MODIFY_STATUS[item.modifyStatus].label}
-                color={MODIFY_STATUS[item.modifyStatus].color}
+                label={locaitonModifyStatus[item.modifyStatus].label}
+                color={locaitonModifyStatus[item.modifyStatus].color}
               />
             ) : (
               <ButtonStatus

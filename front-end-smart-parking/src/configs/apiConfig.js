@@ -21,6 +21,7 @@ export const PARKING_SERVICE = {
     getAllRecordIsActive: "location/all/is-active",
   },
   ticket: {
-    modify: "ticket/modify"
+    modify: "ticket/modify",
+    partnerSearch: "ticket/partner/search",
   }
 }

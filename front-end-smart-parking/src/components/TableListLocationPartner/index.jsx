@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Table } from "antd";
 import ButtonStatus from "../ButtonStatus";
-import { LOCATION_STATUS, MODIFY_STATUS } from "@/utils/constants";
+import { LOCATION_STATUS, LOCALTION_MODIFY_STATUS } from "@/utils/constants";
 import { formatTimestamp } from "@/utils/time";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -11,6 +11,7 @@ import { setSearching } from "@/store/startSearchSlice";
 import { toastError } from "@/utils/toast";
 import { showTotal } from "@/utils/table";
 import dayjs from "dayjs";
+import { convertDataSelectboxToObject } from "@/utils/object";
 
 const baseColumns = [
   {
@@ -77,6 +78,7 @@ const mapFieldSort = {
   openDatePrint: "openDate",
 }
 
+const locaitonModifyStatus = convertDataSelectboxToObject(LOCALTION_MODIFY_STATUS);
 const TableListLocationPartner = ({ dataSearch }) => {
   const navigate = useNavigate()
   const { isSearching } = useSelector(state => state.startSearch)
@@ -139,8 +141,8 @@ const TableListLocationPartner = ({ dataSearch }) => {
             <span>TĐ </span>
             <span>
               <ButtonStatus
-                label={MODIFY_STATUS[item.modifyStatus]?.label}
-                color={MODIFY_STATUS[item.modifyStatus]?.color}
+                label={locaitonModifyStatus[item.modifyStatus]?.label}
+                color={locaitonModifyStatus[item.modifyStatus]?.color}
               />
             </span>
           </div>

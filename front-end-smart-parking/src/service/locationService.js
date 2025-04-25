@@ -1,6 +1,6 @@
 import { PARKING_SERVICE } from "@/configs/apiConfig";
 import httpClient from "@/configs/axiosConfig";
-import { getParamsSorting, getRequestParams } from "@/utils/api";
+import { getParamsPage, getRequestParams } from "@/utils/api";
 
 export async function modifyLocation(data) {
   return await httpClient.post(PARKING_SERVICE.location.modify, data, {
@@ -11,7 +11,7 @@ export async function modifyLocation(data) {
 }
 
 export async function partnerSearch(data, page, size, field, sort) {
-  return await httpClient.post(PARKING_SERVICE.location.partnerSearch + "?" + getParamsSorting(page, size, field, sort), data, {
+  return await httpClient.post(PARKING_SERVICE.location.partnerSearch + "?" + getParamsPage(page, size, field, sort), data, {
     headers: {
       Authorization: undefined
     }
@@ -19,7 +19,7 @@ export async function partnerSearch(data, page, size, field, sort) {
 }
 
 export async function adminSearchWaitApprove(data, page, size, field, sort) {
-  return await httpClient.post(PARKING_SERVICE.location.adminSearchWaitApprove + "?" + getParamsSorting(page, size, field, sort), data, {
+  return await httpClient.post(PARKING_SERVICE.location.adminSearchWaitApprove + "?" + getParamsPage(page, size, field, sort), data, {
     headers: {
       Authorization: undefined
     }
@@ -27,7 +27,7 @@ export async function adminSearchWaitApprove(data, page, size, field, sort) {
 }
 
 export async function adminSearch(data, page, size, field, sort) {
-  return await httpClient.post(PARKING_SERVICE.location.adminSearch + "?" + getParamsSorting(page, size, field, sort), data, {
+  return await httpClient.post(PARKING_SERVICE.location.adminSearch + "?" + getParamsPage(page, size, field, sort), data, {
     headers: {
       Authorization: undefined
     }

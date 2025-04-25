@@ -12,24 +12,24 @@ export const GENDER = [
   },
 ];
 
-export const PRICE_CATEGORY = [
-  {
-    value: 1,
+export const PRICE_CATEGORY = {
+  TIME: {
+    value: 0,
     label: "1 giờ",
   },
-  {
-    value: 2,
+  DAY: {
+    value: 1,
     label: "1 ngày",
   },
-  {
-    value: 3,
+  WEEK: {
+    value: 2,
     label: "1 tuần",
   },
-  {
-    value: 4,
+  MONTH: {
+    value: 3,
     label: "1 tháng",
   },
-];
+}
 
 export const ACCOUNT_STATUS = [
   {
@@ -160,23 +160,28 @@ export const VEHICLE_SELECTBOX = [
 ];
 
 export const TICKET_STATUS = {
-  0: {
+  CHO_DUYET: {
+    value: 0,
     label: "Chờ duyệt",
     color: "warning",
   },
-  1: {
+  DANG_PHAT_HANH: {
+    value: 1,
     label: "Đang phát hành",
     color: "cyan",
   },
-  2: {
+  TAM_DUNG_PHAT_HANH: {
+    value: 2,
     label: "Tạm dừng phát hành",
     color: "default",
   },
-  3: {
+  DA_HUY: {
+    value: 3,
     label: "Đã huỷ",
     color: "danger",
   },
-  4: {
+  TU_CHOI: {
+    value: 4,
     label: "Từ chối",
     color: "danger",
   },
@@ -205,25 +210,54 @@ export const LOCATION_STATUS = {
   },
 };
 
-export const MODIFY_STATUS = {
-  0: {
+export const LOCALTION_MODIFY_STATUS = {
+  CHO_DUYET: {
+    value: 0,
     label: "Chờ duyệt",
     color: "warning",
   },
-  1: {
+  BI_TU_CHOI: {
+    value: 1,
     label: "Bị từ chối",
     color: "danger",
   },
-  2: {
+  CHO_AP_DUNG: {
+    value: 2,
     label: "Chờ áp dụng",
     color: "default",
   },
-  3: {
+  DA_AP_DUNG: {
+    value: 3,
     label: "Đã áp dụng",
     color: "cyan",
   },
 };
-export const MODIFY_STATUS_SELECTBOX = [
+
+export const TICKET_MODIFY_STATUS = {
+  CHO_AP_DUNG: {
+    value: 0,
+    label: "Chờ áp dụng",
+    color: "default",
+  },
+  HUY_AP_DUNG: {
+    value: 1,
+    label: "Huỷ áp dụng",
+    color: "danger",
+  },
+  BI_TU_CHOI: {
+    value: 2,
+    label: "Bị từ chối áp dụng",
+    color: "danger",
+  },
+  DA_AP_DUNG: {
+    value: 3,
+    label: "Đã áp dụng",
+    color: "cyan",
+  },
+};
+
+
+export const LOCATION_MODIFY_STATUS_SELECTBOX = [
   {
     label: "Chờ duyệt",
     value: 0,
@@ -242,6 +276,24 @@ export const MODIFY_STATUS_SELECTBOX = [
   },
 ];
 
+export const TICKET_MODIFY_STATUS_SELECTBOX = [
+  {
+    label: "Chờ duyệt",
+    value: 0,
+  },
+  {
+    label: "Bị từ chối",
+    value: 1,
+  },
+  {
+    label: "Chờ áp dụng",
+    value: 2,
+  },
+  {
+    label: "Đã áp dụng",
+    value: 3,
+  },
+];
 
 export const CARD_STATUS = {
   0: {

@@ -24,3 +24,12 @@ export const convertObjectToDataSelectBox = (data) => {
     };
   });
 }
+
+export const convertDataSelectboxToObject = (data) => {
+  const result = {}
+  Object.keys(data).forEach((key) => {
+    const item = data[key];
+    result[item.value] = item;
+  });
+  return result;
+}
