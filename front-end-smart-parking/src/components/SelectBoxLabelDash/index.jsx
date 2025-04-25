@@ -15,6 +15,7 @@ const SelectBoxLabelDash = ({
   regex,
   itemKey,
   prefix,
+  require
 }) => {
   const [value, setValue] = useState(
     selectIndex ? data[selectIndex] : defaultValue
@@ -22,14 +23,14 @@ const SelectBoxLabelDash = ({
   const keyFocus = useSelector((state) => state.focus);
   const requireKeys = useSelector((state) => state.requireField);
   const inputRef = useRef();
-  const [require, setRequire] = useState(false)
+  const [require1, setRequire1] = useState(false)
   const {pushMessage, deleteKey} = useMessageError()
   
   useEffect(()=> {
     if(Array.isArray(requireKeys) && itemKey) {
-      setRequire(requireKeys.includes(itemKey))
+      setRequire1(requireKeys.includes(itemKey) || require)
     }
-  }, [requireKeys, itemKey])
+  }, [requireKeys, itemKey, require])
 
   useEffect(()=> {
     if(keyFocus === itemKey) {
@@ -79,7 +80,7 @@ const SelectBoxLabelDash = ({
         margin: 16,
       }}
     >
-      <InputLabel label={label} require={require}/>
+      <InputLabel label={label} require={require1}/>
       <Select
         ref={inputRef}
         style={{

@@ -25,6 +25,7 @@ import AddLocation from "./pages/partner/AddLocation";
 import ListLocationPartner from "./pages/partner/ListLocation";
 import DetailLocationPartner from "./pages/partner/DetailLocation";
 import AddTicket from "./pages/partner/AddTicket";
+import ListTicketPartner from "./pages/partner/ListTicket";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -65,7 +66,7 @@ const router = createBrowserRouter([
       { path: "account/partner/:id", element: <PartnerInfo /> },
       { path: "account/customer/:id", element: <AccountCustomerInfo /> },
       { path: "ticket/add", element: <AddTicket /> },
-      
+      { path: "ticket/list", element: <ListTicketPartner /> },
     ]
   }, 
   {

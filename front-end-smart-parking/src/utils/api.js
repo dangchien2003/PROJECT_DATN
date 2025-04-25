@@ -1,4 +1,4 @@
-export const getParamsSorting = (page, size, field, sort) => {
+export const getParamsPage = (page, size, field, sort) => {
   let params = `page=${page}&size=${size}`;
   if(field && sort) {
       params += `&sort=${field},${sort}`;

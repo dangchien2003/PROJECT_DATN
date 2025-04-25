@@ -5,7 +5,7 @@ import SelectBoxLabelDash from "@/components/SelectBoxLabelDash";
 import TextFieldLabelDash from "@/components/TextFieldLabelDash";
 import {
   GENDER,
-  MODIFY_STATUS_SELECTBOX,
+  LOCATION_MODIFY_STATUS_SELECTBOX,
   PRICE_CATEGORY,
   VEHICLE_SELECTBOX,
 } from "@/utils/constants";
@@ -19,7 +19,7 @@ const Search = ({ onSearch, dataSearch }) => {
       updateObjectValue(dataSearch, key, value);
     }
   };
-  const handleChangeValueInputOrder = (value, order, key) => {
+  const handleChangeValueInputOrder = (key, value, order) => {
     if (typeof key === "object" && key.length === 2) {
       updateObjectValue(dataSearch, key[0], value);
       updateObjectValue(dataSearch, key[1], order);
@@ -55,7 +55,7 @@ const Search = ({ onSearch, dataSearch }) => {
         />
         <SelectBoxLabelDash
           label={"Trạng thái chỉnh sửa"}
-          data={MODIFY_STATUS_SELECTBOX}
+          data={LOCATION_MODIFY_STATUS_SELECTBOX}
           key={"modify status"}
           itemKey="modifyStatus"
           placeholder={"Chọn trạng thái chỉnh sửa"}

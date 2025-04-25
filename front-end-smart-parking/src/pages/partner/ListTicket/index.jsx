@@ -1,37 +1,33 @@
 import Search from "./Search";
 import TabStatus from "./TabStatus";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import "./style.css";
 import DividerCustom from "@/components/DividerCustom";
 import { updateObjectValue } from "@/utils/object";
-import TableListLocationPartner from "@/components/TableListLocationPartner";
-import { useRequireField } from "@/hook/useRequireField";
+import TableListTicketPartner from "@/components/TableListTicketPartner";
 import { useDispatch, useSelector } from "react-redux";
 import { setSearching } from "@/store/startSearchSlice";
 
-const ListLocation = () => {
-  const {resetRequireField} = useRequireField()
+const ListTicket = () => {
   const {isSearching} = useSelector(state => state.startSearch)
   const dispatch = useDispatch();
 
   const [dataSearch] = useState({
-    name: null,
-    openTime: null,
-    closeTime: null,
-    openHoliday: null,
-    tab: 5,
-    timeAppliedEdit: {
+    ticketName: null,
+    tab: 1,
+    modifyStatus: null,
+    releasedTime: {
       value: null,
-      trend: null
+      trend: null,
     },
-    createdDate: [],
-    category: null,
-    urgentApprovalRequest: null
+    priceSearch: {
+      value: null,
+      trend: null,
+    },
+    priceCategory: null,
+    locationName: null,
+    vehicle: null,
   });
-
-  useEffect(()=> {
-    resetRequireField()
-  }, [resetRequireField])
 
   const propTabStatus = {
     onChange: (tab) => {
@@ -41,14 +37,17 @@ const ListLocation = () => {
       }
     },
   };
+
+  const onClickSearch = () => {
+  };
   return (
     <div>
       <TabStatus {...propTabStatus} />
-      <Search dataSearch={dataSearch} />
+      <Search onSearch={onClickSearch} dataSearch={dataSearch} />
       <DividerCustom style={{ width: "80%" }} />
-      <TableListLocationPartner dataSearch={dataSearch} />
+      <TableListTicketPartner dataSearch={dataSearch} />
     </div>
   );
 };
 
-export default ListLocation;
+export default ListTicket;
