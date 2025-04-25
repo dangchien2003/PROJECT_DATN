@@ -130,7 +130,7 @@ export const PARTNER_MENU = [
       },
       {
         key: "3.2",
-        label: "Vé đã tạo",
+        label: <Link to={"/partner/ticket/list"}>Vé đã tạo</Link>,
       },
     ],
   },

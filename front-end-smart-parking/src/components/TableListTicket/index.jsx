@@ -2,11 +2,12 @@ import { useState, useEffect } from "react";
 import { Table } from "antd";
 import { fakeDataTable } from "./dataTest";
 import ButtonStatus from "../ButtonStatus";
-import { MODIFY_STATUS, TICKET_STATUS, VEHICLE } from "@/utils/constants";
+import { TICKET_MODIFY_STATUS, TICKET_STATUS, VEHICLE } from "@/utils/constants";
 import { formatTimestamp } from "@/utils/time";
 import { useLoading } from "@/hook/loading";
 import { useNavigate } from "react-router-dom";
 import { showTotal } from "@/utils/table";
+import { convertDataSelectboxToObject } from "@/utils/object";
 
 const columns = [
   {
@@ -59,6 +60,7 @@ const columns = [
   },
 ];
 
+const ticketModifyStatus = convertDataSelectboxToObject(TICKET_MODIFY_STATUS);
 const convertResponseToDataTable = (response, currentPage, pageSize) => {
   return response.data.map((item, index) => {
     item.vehiclePrint = (
@@ -96,8 +98,8 @@ const convertResponseToDataTable = (response, currentPage, pageSize) => {
           <span>
             {item.modifyStatus !== null ? (
               <ButtonStatus
-                label={MODIFY_STATUS[item.status].label}
-                color={MODIFY_STATUS[item.modifyStatus].color}
+                label={ticketModifyStatus[item.status].label}
+                color={ticketModifyStatus[item.modifyStatus].color}
               />
             ) : (
               <ButtonStatus
@@ -112,8 +114,8 @@ const convertResponseToDataTable = (response, currentPage, pageSize) => {
           <span>
             {item.modifyStatus !== null ? (
               <ButtonStatus
-                label={MODIFY_STATUS[item.modifyStatus].label}
-                color={MODIFY_STATUS[item.modifyStatus].color}
+                label={ticketModifyStatus[item.modifyStatus].label}
+                color={ticketModifyStatus[item.modifyStatus].color}
               />
             ) : (
               <ButtonStatus
@@ -191,7 +193,6 @@ const TableListTicket = ({searchTimes, dataSearch }) => {
 
   useEffect(() => {
     loadData(pagination, sorter);
-    console.log(dataSearch);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchTimes]);
   return (

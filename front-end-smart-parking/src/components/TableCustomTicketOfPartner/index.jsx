@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import { Table } from "antd";
 import { fakeDataTable } from "./dataTest";
 import ButtonStatus from "../ButtonStatus";
-import { MODIFY_STATUS, TICKET_STATUS, VEHICLE } from "@/utils/constants";
+import { TICKET_MODIFY_STATUS, TICKET_STATUS, VEHICLE } from "@/utils/constants";
 import { showTotal } from "@/utils/table";
+import { convertDataSelectboxToObject } from "@/utils/object";
 
 const columns = [
   {
@@ -44,6 +45,7 @@ const columns = [
   },
 ];
 
+const ticketModifyStatus = convertDataSelectboxToObject(TICKET_MODIFY_STATUS);
 const convertResponseToDataTable = (response, currentPage, pageSize) => {
   return response.data.map((item, index) => {
     item.vehiclePrint = (
@@ -56,8 +58,8 @@ const convertResponseToDataTable = (response, currentPage, pageSize) => {
       <>
         {item.modifyStatus !== 0 ? (
           <ButtonStatus
-            label={MODIFY_STATUS[item.modifyStatus].label}
-            color={MODIFY_STATUS[item.modifyStatus].color}
+            label={ticketModifyStatus[item.modifyStatus].label}
+            color={ticketModifyStatus[item.modifyStatus].color}
           />
         ) : (
           <ButtonStatus
