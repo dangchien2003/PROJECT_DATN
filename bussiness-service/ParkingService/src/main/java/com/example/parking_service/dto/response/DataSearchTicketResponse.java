@@ -1,8 +1,7 @@
-package com.example.parking_service.entity;
+package com.example.parking_service.dto.response;
 
 
-import com.example.common.entity.BaseEntity;
-import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,27 +11,22 @@ import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "ticket_wait_release")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class TicketWaitRelease extends BaseEntity {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class DataSearchTicketResponse {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @Column(nullable = false)
     Integer released;
 
     LocalDateTime releaseAt;
 
     Long ticketId;
 
-    @Column(nullable = false)
     String partnerId;
 
     Integer modifyCount;
@@ -41,28 +35,29 @@ public class TicketWaitRelease extends BaseEntity {
 
     Integer status;
 
+    Integer modifyStatus;
+
     String reason;
+
+    LocalDateTime releasedTime;
 
     String rejectBy;
 
     String reasonReject;
-    
+
     Integer vehicle;
 
-    Integer timeSlot;
+    boolean timeSlot;
 
-    Integer daySlot;
+    boolean daySlot;
 
-    Integer weekSlot;
+    boolean weekSlot;
 
-    Integer monthSlot;
+    boolean monthSlot;
 
-    @Lob
     String description;
 
-    @Column(nullable = false)
     LocalDateTime timeAppliedEdit;
 
-    @Column(nullable = false)
-    Integer isDel;
+    PriceResponse price;
 }

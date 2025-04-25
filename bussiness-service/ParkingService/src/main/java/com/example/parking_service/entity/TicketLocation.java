@@ -31,5 +31,7 @@ public class TicketLocation extends BaseEntity {
     @Column(nullable = false)
     Long locationId;
 
+    String partnerId;
+
     Integer isDel;
 }

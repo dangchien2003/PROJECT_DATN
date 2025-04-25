@@ -1,8 +1,7 @@
-package com.example.parking_service.entity;
+package com.example.parking_service.dto.response;
 
 
-import com.example.common.entity.BaseEntity;
-import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,20 +9,14 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 
-@Entity
-@Table(name = "ticket_price")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class TicketPrice extends BaseEntity {
+public class TicketPriceResponse {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
-
-    @Column(nullable = false)
     Long objectId;
 
     Integer type;
@@ -31,8 +24,4 @@ public class TicketPrice extends BaseEntity {
     Integer priceCategory;
 
     Long price;
-
-    String partnerId;
-
-    Integer isDel;
 }

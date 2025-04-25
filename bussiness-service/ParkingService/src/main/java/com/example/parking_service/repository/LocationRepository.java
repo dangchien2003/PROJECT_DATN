@@ -79,4 +79,10 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
     Page<Location> findAllByStatusAndPartnerId(Integer status, String partnerId, Pageable pageable);
 
     Long countByPartnerIdAndStatusAndLocationIdIn(String partnerId, Integer status, List<Long> locationIds);
+
+    @Query("""
+            SELECT l.locationId FROM Location l
+            WHERE l.name LIKE CONCAT('%', :name, '%') ESCAPE '!' and l.partnerId = :partnerId
+            """)
+    List<Long> findAllByNameAndPartnerId(String name, String partnerId);
 }

@@ -1,12 +1,42 @@
 package com.example.parking_service.mapper;
 
+import com.example.parking_service.dto.response.DataSearchTicketResponse;
+import com.example.parking_service.dto.response.TicketLocationResponse;
+import com.example.parking_service.dto.response.TicketPriceResponse;
 import com.example.parking_service.entity.Ticket;
+import com.example.parking_service.entity.TicketLocation;
+import com.example.parking_service.entity.TicketPrice;
+import com.example.parking_service.entity.TicketWaitRelease;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 
 @Mapper(componentModel = "spring")
 public interface TicketMapper {
 //    void mapTicket(@MappingTarget Ticket ticket, ModifyTicketRequest request);
 
     //    Ticket toTicket(ModifyTicketRequest modifyTicketRequest);
-    Ticket cloneTicket(Ticket ticket);
+
+    @Mapping(target = "timeSlot", source = "timeSlot", qualifiedByName = "convertToBoolean")
+    @Mapping(target = "daySlot", source = "daySlot", qualifiedByName = "convertToBoolean")
+    @Mapping(target = "weekSlot", source = "weekSlot", qualifiedByName = "convertToBoolean")
+    @Mapping(target = "monthSlot", source = "monthSlot", qualifiedByName = "convertToBoolean")
+    DataSearchTicketResponse toDataSearchTicketResponse(Ticket ticket);
+
+    @Mapping(target = "timeSlot", source = "timeSlot", qualifiedByName = "convertToBoolean")
+    @Mapping(target = "daySlot", source = "daySlot", qualifiedByName = "convertToBoolean")
+    @Mapping(target = "weekSlot", source = "weekSlot", qualifiedByName = "convertToBoolean")
+    @Mapping(target = "monthSlot", source = "monthSlot", qualifiedByName = "convertToBoolean")
+    DataSearchTicketResponse toDataSearchTicketResponse(TicketWaitRelease ticketWaitRelease);
+
+
+    TicketPriceResponse toTicketPriceResponse(TicketPrice entity);
+
+    TicketLocationResponse toTicketLocationResponse(TicketLocation entity);
+
+    @Named("convertToBoolean")
+    default Boolean convertToBoolean(Integer data) {
+        return data.equals(1);
+    }
+
 }
