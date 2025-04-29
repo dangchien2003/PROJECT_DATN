@@ -29,9 +29,10 @@ const MapAllLocation = () => {
   const callApi = () => {
     let result = null;
     getMapLocation(page).then((response) => {
+      console.log(response)
       result = getDataApi(response);
       // convert data thành dữ liệu bản đồ
-      const newData = convertDataMap(result.data);
+      const newData = convertDataMap(result);
       // nối thêm data
       setData(pre => pre.concat(newData));
     })

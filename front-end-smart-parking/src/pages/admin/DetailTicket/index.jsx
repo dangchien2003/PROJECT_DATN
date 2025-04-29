@@ -13,7 +13,6 @@ const DetailTicket = () => {
   let dataRoot = null;
   // 1: tạo mới, 2: chỉnh sửa, 3: đang phát hành, 4: tạm dừng phát hành, 5: từ chối
   if([1, 2, 5].includes(tabStatusNumber)) {
-    console.log("object")
     dataModify = modifyInfoTicket;
     if(dataModify.ticketid && tabStatusNumber === 2) {
       dataRoot = infoTicket;

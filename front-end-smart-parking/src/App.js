@@ -65,7 +65,8 @@ const router = createBrowserRouter([
       { path: "location/detail/:tab/:id", element: <DetailLocationPartner /> },
       { path: "account/partner/:id", element: <PartnerInfo /> },
       { path: "account/customer/:id", element: <AccountCustomerInfo /> },
-      { path: "ticket/add", element: <AddTicket /> },
+      { path: "ticket/add", element: <AddTicket waitRelease={false}/> },
+      { path: "ticket/edit/:id", element: <AddTicket waitRelease={false}/> },
       { path: "ticket/list", element: <ListTicketPartner /> },
     ]
   }, 

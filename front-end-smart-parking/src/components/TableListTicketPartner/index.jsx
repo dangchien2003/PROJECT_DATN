@@ -13,8 +13,10 @@ import { toastError } from "@/utils/toast";
 import { convertDataSort, getDataApi } from "@/utils/api";
 import { isNullOrUndefined } from "@/utils/data";
 import { formatCurrency } from "@/utils/number";
+import "./style.css"
+import Action from "./Action";
 
-const columns = [
+const baseColumns = [
   {
     title: "STT",
     dataIndex: "stt",
@@ -56,6 +58,14 @@ const columns = [
     key: "5",
     width: 120,
   },
+  {
+    title: "Hành động",
+    dataIndex: "action",
+    align: "center",
+    key: "6",
+    width: 200,
+    fixed: "right",
+  },
 ];
 
 const mapFieldSort = {
@@ -66,72 +76,6 @@ const mapFieldSort = {
 // dữ liệu trạng thái
 const ticketModifyStatus = convertDataSelectboxToObject(TICKET_MODIFY_STATUS);
 const ticketStatus = convertDataSelectboxToObject(TICKET_STATUS);
-
-const convertResponseToDataTable = (data, currentPage, pageSize) => {
-  return data.map((item, index) => {
-    item.vehiclePrint = (
-      <div>
-        <span style={{ margin: "0 4px" }}>{VEHICLE[item.vehicle].icon}</span>
-        {VEHICLE[item.vehicle].name}
-      </div>
-    );
-    let timeRelease = item.releasedTime;
-    if(item.id) {
-      timeRelease = item.timeAppliedEdit;
-    }
-    item.releasedTimePrint = (
-      <div style={{ textAlign: "center" }}>
-        {formatTimestamp(timeRelease, "DD/MM/YYYY")}
-        <br />
-        {formatTimestamp(timeRelease, "HH:mm")}
-      </div>
-    );
-    item.pricePrint = (
-      <div>
-        {item.timeSlot && <div>1 giờ: {formatCurrency(item.price.time?.price)} đ</div>}
-        {item.daySlot && <div>1 ngày: {formatCurrency(item.price.day?.price)} đ</div>}
-        {item.weekSlot && <div>1 tuần: {formatCurrency(item.price.week?.price)} đ</div>}
-        {item.monthSlot && <div>1 tháng: {formatCurrency(item.price.month?.price)} đ</div>}
-      </div>
-    );
-    item.statusPrint = (
-      <div>
-        <div style={{ margin: 2 }}>
-          <span>PH </span>
-          <span>
-            {
-              <ButtonStatus
-                label={ticketStatus[item.status].label}
-                color={ticketStatus[item.status]?.color}
-              />
-            }
-          </span>
-        </div>
-        <div style={{ margin: 2 }}>
-          {!isNullOrUndefined(item.modifyStatus) && <>
-            <span>TĐ </span>
-            <span>
-              {
-                <ButtonStatus
-                  label={ticketModifyStatus[item.modifyStatus]?.label}
-                  color={ticketModifyStatus[item.modifyStatus]?.color}
-                />
-              }
-            </span>
-          </>}
-        </div>
-      </div>
-    );
-    let id = item.ticketId;
-    if(item.id) {
-      id = item.id
-    }
-    item.ticketNamePrint = `${id} - ${item.name}`;
-    item.stt = (currentPage - 1) * pageSize + index + 1;
-    return item;
-  });
-};
-
 const TableListTicketPartner = ({ dataSearch }) => {
   const navigate = useNavigate()
   const { isSearching } = useSelector(state => state.startSearch)
@@ -139,6 +83,7 @@ const TableListTicketPartner = ({ dataSearch }) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [firstSearch, setFirstSearch] = useState(false);
+  const [columns, setColumns] = useState(baseColumns);
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 10,
@@ -148,6 +93,75 @@ const TableListTicketPartner = ({ dataSearch }) => {
     field: null,
     order: null,
   });
+
+
+  const convertResponseToDataTable = (result, currentPage, pageSize) => {
+    return result.map((item, index) => {
+      item.vehiclePrint = (
+        <div>
+          <span style={{ margin: "0 4px" }}>{VEHICLE[item.vehicle].icon}</span>
+          {VEHICLE[item.vehicle].name}
+        </div>
+      );
+      let timeRelease = item.releasedTime;
+      if (item.id) {
+        timeRelease = item.timeAppliedEdit;
+      }
+      item.releasedTimePrint = (
+        <div style={{ textAlign: "center" }}>
+          {formatTimestamp(timeRelease, "DD/MM/YYYY")}
+          <br />
+          {formatTimestamp(timeRelease, "HH:mm")}
+        </div>
+      );
+      item.pricePrint = (
+        <div>
+          {item.timeSlot && <div>1 giờ: {formatCurrency(item.price.time?.price)} đ</div>}
+          {item.daySlot && <div>1 ngày: {formatCurrency(item.price.day?.price)} đ</div>}
+          {item.weekSlot && <div>1 tuần: {formatCurrency(item.price.week?.price)} đ</div>}
+          {item.monthSlot && <div>1 tháng: {formatCurrency(item.price.month?.price)} đ</div>}
+        </div>
+      );
+      item.statusPrint = (
+        <div>
+          <div style={{ margin: 2 }}>
+            <span>PH </span>
+            <span>
+              {
+                <ButtonStatus
+                  label={ticketStatus[item.status].label}
+                  color={ticketStatus[item.status]?.color}
+                />
+              }
+            </span>
+          </div>
+          <div style={{ margin: 2 }}>
+            {!isNullOrUndefined(item.modifyStatus) && <>
+              <span>TĐ </span>
+              <span>
+                {
+                  <ButtonStatus
+                    label={ticketModifyStatus[item.modifyStatus]?.label}
+                    color={ticketModifyStatus[item.modifyStatus]?.color}
+                  />
+                }
+              </span>
+            </>}
+          </div>
+        </div>
+      );
+      let id = item.ticketId;
+      if (item.id) {
+        id = item.id
+      }
+      item.ticketNamePrint = `${id} - ${item.name}`;
+      if (dataSearch.tab === 3) {
+        item.action = <Action data={item} dataList={data} handleConvert={convertResponseToDataTable}/>
+      }
+      item.stt = (currentPage - 1) * pageSize + index + 1;
+      return item;
+    });
+  };
 
   const loadData = (newPagination, sorter) => {
     setLoading(true);
@@ -187,7 +201,16 @@ const TableListTicketPartner = ({ dataSearch }) => {
     navigate(`/ticket/detail/${dataSearch.tab === 5 ? 1 : 0}/${dataSearch.tab}/${data.id}`)
   };
 
+  const showColumn = () => {
+    if (dataSearch.tab !== 3) {
+      setColumns(baseColumns.filter(item => item.dataIndex !== "action"))
+    } else {
+      setColumns(baseColumns)
+    }
+  }
+
   useEffect(() => {
+    showColumn();
     if (isSearching || !firstSearch) {
       loadData(pagination, sorter);
       if (!firstSearch) {

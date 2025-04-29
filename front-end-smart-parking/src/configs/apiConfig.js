@@ -23,5 +23,8 @@ export const PARKING_SERVICE = {
   ticket: {
     modify: "ticket/modify",
     partnerSearch: "ticket/partner/search",
+    detail: "ticket/detail",
+    detailWaitRelease: "ticket/detail/wait-release",
+    partnerCancelRelease: "ticket/partner/cancel/wait-release"
   }
 }

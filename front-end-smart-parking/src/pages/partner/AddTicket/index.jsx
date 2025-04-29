@@ -13,18 +13,27 @@ import NumberInputWithSortLabelDash from "@/components/NumberInputWithSortLabelD
 import TextFieldLabelDash from "@/components/TextFieldLabelDash";
 import Action from "./Action";
 import SelectLocation from "./SelectLocation";
+import { useParams } from "react-router-dom";
+import { isNullOrUndefined } from "@/utils/data";
+import { detail } from "@/service/ticketService";
+import { getDataApi } from "@/utils/api";
+import { toastError } from "@/utils/toast";
+import { useLoading } from "@/hook/loading";
 
 let requireKeys = ["name", "description", "vehicle", "timeAppliedEdit", "price.time", "price.day", "price.week", "price.month"]
 const indexKeys = ["name", "description", "vehicle", "timeAppliedEdit", "price.time", "price.day", "price.week", "price.month"]
-const AddTicket = ({ isModify = false }) => {
+const AddTicket = () => {
   const { setRequireField } = useRequireField();
   const { reset, pushMessage, deleteKey, deleteManyKey } = useMessageError()
   const [timeSlotChecked, setTimeSlotChecked] = useState(true);
   const [daySlotChecked, setDaySlotChecked] = useState(true);
   const [weekSlotChecked, setWeekSlotChecked] = useState(true);
   const [monthSlotChecked, setMonthSlotChecked] = useState(true);
-  const [dataModify] = useState({
-    ticketId: null,
+  const [isModify, setIsmodify] = useState(false);
+  const {showLoad, hideLoad} = useLoading();
+  const {id} = useParams();
+  const [dataModify, setDataModify] = useState({
+    ticketId: id,
     name: null,
     description: null,
     timeAppliedEdit: null,
@@ -43,10 +52,49 @@ const AddTicket = ({ isModify = false }) => {
   })
 
   useEffect(() => {
+    // reset form
     reset()
     setRequireField(requireKeys)
+    // xác định hành động
+    setIsmodify(!isNullOrUndefined(id))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  useEffect(()=> {
+    if(!isModify) return;
+    // lấy dữ liệu bản ghi
+    showLoad("Đang tải dữ liệu")
+    detail(id).then((response) => {
+      const result = getDataApi(response);
+      // setData
+      dataModify.ticketId = result.ticketId;
+      dataModify.name = result.name;
+      dataModify.description = result.description;
+      dataModify.timeAppliedEdit = result.timeAppliedEdit;
+      dataModify.vehicle = result.vehicle;
+      dataModify.timeSlot = result.timeSlot;
+      dataModify.daySlot = result.daySlot;
+      dataModify.weekSlot = result.weekSlot;
+      dataModify.monthSlot = result.monthSlot;
+      // set lại giá
+      changeCheckBox("price.time", result.price.time?.price)
+      changeCheckBox("price.day", result.price.day?.price)
+      changeCheckBox("price.week", result.price.week?.price)
+      changeCheckBox("price.month", result.price.month?.price)
+      dataModify.locationUse = result.locationUse;
+      // lưu lại dữ liệu
+      setDataModify({...dataModify});
+      
+    }).catch((error) => {
+      console.error(error)
+      const response = getDataApi(error);
+      toastError(response.message);
+      return;
+    }).finally(() => {
+      hideLoad();
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isModify])
 
   const handleChange = (key, value) => {
     changeInput(dataModify, key, value)
@@ -173,13 +221,13 @@ const AddTicket = ({ isModify = false }) => {
             callbackChangeValue={changeCheckBox}
           />
           {timeSlotChecked && <NumberInputWithSortLabelDash
-            label={"Nhập giá 1 phút"}
-            placeholder={"Nhập giá vé 1 phút"}
-            key={"Nhập giá vé 1 phút"}
+            label={"Nhập giá 1 giờ"}
+            placeholder={"Nhập giá vé 1 giờ"}
+            key={"Nhập giá vé 1 giờ"}
             itemKey={"price.time"}
-            defaultValue={dataModify?.name}
+            defaultValue={dataModify?.price?.time}
             callbackChangeValue={handleChange}
-            addonAfter="đ/phút"
+            addonAfter="đ/giờ"
             trend={false}
             min={0}
           />}
@@ -197,7 +245,7 @@ const AddTicket = ({ isModify = false }) => {
             placeholder={"Nhập giá vé ngày"}
             key={"Nhập giá vé ngày"}
             itemKey={"price.day"}
-            defaultValue={dataModify?.name}
+            defaultValue={dataModify?.price?.day}
             callbackChangeValue={handleChange}
             addonAfter="đ"
             trend={false}
@@ -217,7 +265,7 @@ const AddTicket = ({ isModify = false }) => {
             placeholder={"Nhập giá vé tuần"}
             key={"Nhập giá vé tuần"}
             itemKey={"price.week"}
-            defaultValue={dataModify?.name}
+            defaultValue={dataModify?.price?.week}
             callbackChangeValue={handleChange}
             addonAfter="đ"
             trend={false}
@@ -237,7 +285,7 @@ const AddTicket = ({ isModify = false }) => {
             placeholder={"Nhập giá vé tháng"}
             key={"Nhập giá vé tháng"}
             itemKey={"price.month"}
-            defaultValue={dataModify?.name}
+            defaultValue={dataModify?.price?.month}
             callbackChangeValue={handleChange}
             addonAfter="đ"
             trend={false}

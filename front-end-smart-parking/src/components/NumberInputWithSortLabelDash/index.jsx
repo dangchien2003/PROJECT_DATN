@@ -1,4 +1,3 @@
-import React from "react";
 import NumberInputWithSort from "../NumberInputWithSort";
 import InputError from "../InputError";
 import InputLabel from "../InputLabel";
@@ -13,6 +12,7 @@ const NumberInputWithSortLabelDash = ({
   placeholder,
   require,
   trend = true,
+  defaultValue,
 }) => {
   return (
     <div
@@ -36,6 +36,7 @@ const NumberInputWithSortLabelDash = ({
         trend={trend}
         label={label}
         key={itemKey + "sub"}
+        defaultValue={defaultValue}
       />
       <InputError itemKey={itemKey} key={itemKey} />
     </div>

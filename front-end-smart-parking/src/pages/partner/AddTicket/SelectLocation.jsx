@@ -16,7 +16,7 @@ const convertData = (data) => {
 const SelectLocation = ({ data }) => {
   const [page, setPage] = useState(0);
   const [dataKeys, setDataKeys] = useState([]);
-  const [targetKeys, setTargetKeys] = useState(data?.locationUse ? data.locationUse : []);
+  const [targetKeys, setTargetKeys] = useState([]);
   const { hideLoad, showLoad } = useLoading();
   const loadData = () => {
     let result = null;
@@ -24,7 +24,7 @@ const SelectLocation = ({ data }) => {
       .then(response => {
         result = getDataApi(response);
         // convert data thành dữ liệu bản đồ
-        const newData = convertData(result.data);
+        const newData = convertData(result);
         // nối thêm data
         setDataKeys(pre => pre.concat(newData));
       }).catch(error => {
@@ -60,6 +60,9 @@ const SelectLocation = ({ data }) => {
     setTargetKeys(keys);
     data.locationUse = keys
   };
+  useEffect(() => {
+    setTargetKeys(data?.locationUse ? data.locationUse : [])
+  }, [data])
   return (
     <div>
       <Transfer
