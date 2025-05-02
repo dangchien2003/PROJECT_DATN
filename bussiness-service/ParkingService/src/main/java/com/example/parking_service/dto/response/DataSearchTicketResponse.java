@@ -10,6 +10,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -55,9 +56,12 @@ public class DataSearchTicketResponse {
 
     boolean monthSlot;
 
+    Boolean isDel;
+
     String description;
 
     LocalDateTime timeAppliedEdit;
 
     PriceResponse price;
+    List<Long> locationUse;
 }

@@ -1,6 +1,7 @@
 package com.example.parking_service.controller;
 
 import com.example.common.dto.response.ApiResponse;
+import com.example.parking_service.dto.request.ApproveRequest;
 import com.example.parking_service.dto.request.ModifyTicketRequest;
 import com.example.parking_service.dto.request.SearchTicket;
 import com.example.parking_service.service.TicketService;
@@ -9,10 +10,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,8 +24,23 @@ public class TicketController {
         return ticketService.modifyTicket(request);
     }
 
-    @PostMapping("/partner/search")
+    @PostMapping("partner/search")
     ApiResponse<Object> partnerSearch(@RequestBody SearchTicket request, Pageable pageable) {
         return ticketService.partnerSearch(request, pageable);
+    }
+
+    @GetMapping("detail")
+    ApiResponse<Object> detail(@RequestParam("id") Long id) {
+        return ticketService.detail(id);
+    }
+
+    @GetMapping("detail/wait-release")
+    ApiResponse<Object> detailWaitRelease(@RequestParam("id") Long id) {
+        return ticketService.detailWaitRelease(id);
+    }
+
+    @PostMapping("partner/cancel/wait-release")
+    ApiResponse<Object> partnerCancelWaitRelease(@Valid @RequestBody ApproveRequest approveRequest) {
+        return ticketService.cancelWaitRelease(approveRequest, false);
     }
 }

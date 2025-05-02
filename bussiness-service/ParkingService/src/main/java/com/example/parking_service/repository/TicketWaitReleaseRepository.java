@@ -1,6 +1,7 @@
 package com.example.parking_service.repository;
 
 import com.example.parking_service.entity.TicketWaitRelease;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -11,13 +12,13 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TicketWaitReleaseRepository extends JpaRepository<TicketWaitRelease, Long> {
-    Optional<TicketWaitRelease> findByTicketIdAndIsDelAndReleased(Long ticketId, Integer isDel, Integer release);
+    Optional<TicketWaitRelease> findByIdAndIsDelAndReleased(Long ticketId, Integer isDel, Integer release);
 
     boolean existsByTicketIdAndIsDelAndReleased(Long ticketId, Integer isDel, Integer released);
 
     @Query(value = """
                SELECT t FROM TicketWaitRelease t
-               WHERE t.status = :status AND t.partnerId = :partnerId
+               WHERE t.partnerId = :partnerId
                AND (:ticketName IS NULL OR t.name LIKE CONCAT('%', :ticketName, '%') ESCAPE '!')
                AND (:modifyStatus IS NULL
                    OR (:modifyStatus = 0 AND t.released = 0 AND t.isDel = 0)
@@ -32,9 +33,8 @@ public interface TicketWaitReleaseRepository extends JpaRepository<TicketWaitRel
                AND (:vehicle IS NULL OR t.vehicle = :vehicle)
                AND (:ids IS NULL OR t.id in :ids)
             """)
-    List<TicketWaitRelease> partnerSearch(
+    Page<TicketWaitRelease> partnerSearch(
             @Param("ticketName") String ticketName,
-            @Param("status") Integer status,
             @Param("modifyStatus") Integer modifyStatus,
             @Param("releasedTime") LocalDateTime releasedTime,
             @Param("trendReleasedTime") String trendReleasedTime,

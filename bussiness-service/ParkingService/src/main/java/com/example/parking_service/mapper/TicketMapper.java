@@ -21,12 +21,14 @@ public interface TicketMapper {
     @Mapping(target = "daySlot", source = "daySlot", qualifiedByName = "convertToBoolean")
     @Mapping(target = "weekSlot", source = "weekSlot", qualifiedByName = "convertToBoolean")
     @Mapping(target = "monthSlot", source = "monthSlot", qualifiedByName = "convertToBoolean")
+    @Mapping(target = "isDel", ignore = true)
     DataSearchTicketResponse toDataSearchTicketResponse(Ticket ticket);
 
     @Mapping(target = "timeSlot", source = "timeSlot", qualifiedByName = "convertToBoolean")
     @Mapping(target = "daySlot", source = "daySlot", qualifiedByName = "convertToBoolean")
     @Mapping(target = "weekSlot", source = "weekSlot", qualifiedByName = "convertToBoolean")
     @Mapping(target = "monthSlot", source = "monthSlot", qualifiedByName = "convertToBoolean")
+    @Mapping(target = "isDel", source = "isDel", qualifiedByName = "convertToBoolean")
     DataSearchTicketResponse toDataSearchTicketResponse(TicketWaitRelease ticketWaitRelease);
 
 

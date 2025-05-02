@@ -1,6 +1,7 @@
 package com.example.parking_service.repository;
 
 import com.example.parking_service.entity.Ticket;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -23,7 +24,7 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
                AND (:vehicle IS NULL OR t.vehicle = :vehicle)
                AND (:ids IS NULL OR t.ticketId in :ids)
             """)
-    List<Ticket> partnerSearch(
+    Page<Ticket> partnerSearch(
             @Param("ticketName") String ticketName,
             @Param("status") Integer status,
             @Param("modifyStatus") Integer modifyStatus,
