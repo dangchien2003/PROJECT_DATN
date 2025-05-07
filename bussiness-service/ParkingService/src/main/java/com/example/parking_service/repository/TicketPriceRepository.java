@@ -15,7 +15,8 @@ public interface TicketPriceRepository extends JpaRepository<TicketPrice, Long> 
     @Query("""
             SELECT e.objectId FROM TicketPrice e
             WHERE e.type = :type and e.priceCategory = :priceCategory
-            AND e.isDel = 0 AND e.partnerId = :partnerId
+            AND e.isDel = 0
+            AND (:partnerIds IS NULL OR e.partnerId in :partnerIds)
             AND (:price IS NULL OR
                 (:trendPrice = 'UP' AND e.price >= :price)
                 OR (:trendPrice = 'DOWN' AND e.price <= :price)
@@ -26,6 +27,6 @@ public interface TicketPriceRepository extends JpaRepository<TicketPrice, Long> 
             @Param("priceCategory") Integer priceCategory,
             @Param("price") Long price,
             @Param("trendPrice") String trendPrice,
-            @Param("partnerId") String partnerId
+            @Param("partnerIds") List<String> partnerIds
     );
 }

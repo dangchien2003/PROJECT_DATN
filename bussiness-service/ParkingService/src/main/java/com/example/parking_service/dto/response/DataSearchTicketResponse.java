@@ -30,6 +30,8 @@ public class DataSearchTicketResponse {
 
     String partnerId;
 
+    String partnerName;
+
     Integer modifyCount;
 
     String name;

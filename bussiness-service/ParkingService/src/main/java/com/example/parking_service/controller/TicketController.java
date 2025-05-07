@@ -29,6 +29,11 @@ public class TicketController {
         return ticketService.partnerSearch(request, pageable);
     }
 
+    @PostMapping("admin/search")
+    ApiResponse<Object> adminSearch(@RequestBody SearchTicket request, Pageable pageable) {
+        return ticketService.adminSearch(request, pageable);
+    }
+
     @GetMapping("detail")
     ApiResponse<Object> detail(@RequestParam("id") Long id) {
         return ticketService.detail(id);
@@ -42,5 +47,10 @@ public class TicketController {
     @PostMapping("partner/cancel/wait-release")
     ApiResponse<Object> partnerCancelWaitRelease(@Valid @RequestBody ApproveRequest approveRequest) {
         return ticketService.cancelWaitRelease(approveRequest, false);
+    }
+
+    @PostMapping("admin/cancel/wait-release")
+    ApiResponse<Object> adminCancelWaitRelease(@Valid @RequestBody ApproveRequest approveRequest) {
+        return ticketService.cancelWaitRelease(approveRequest, true);
     }
 }

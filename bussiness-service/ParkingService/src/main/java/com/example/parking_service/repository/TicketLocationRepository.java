@@ -12,12 +12,11 @@ public interface TicketLocationRepository extends JpaRepository<TicketLocation, 
 
     @Query("""
             SELECT t.objectId FROM TicketLocation t
-            WHERE t.objectId IN :objectIds
-            AND t.isDel = 0 AND t.type = :type AND t.partnerId = :partnerId
+            WHERE t.locationId IN :locationIds
+            AND t.isDel = 0 AND t.type = :type
             """)
     List<Long> findByObjectIdAndTypeAndPartnerId(
-            @Param("objectIds") List<Long> objectIds,
-            @Param("type") Integer type,
-            @Param("partnerId") String partnerId
+            @Param("locationIds") List<Long> locationIds,
+            @Param("type") Integer type
     );
 }

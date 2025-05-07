@@ -15,10 +15,7 @@ import com.example.parking_service.dto.request.ModifyTicketRequest;
 import com.example.parking_service.dto.request.SearchTicket;
 import com.example.parking_service.dto.response.DataSearchTicketResponse;
 import com.example.parking_service.dto.response.PriceResponse;
-import com.example.parking_service.entity.Ticket;
-import com.example.parking_service.entity.TicketLocation;
-import com.example.parking_service.entity.TicketPrice;
-import com.example.parking_service.entity.TicketWaitRelease;
+import com.example.parking_service.entity.*;
 import com.example.parking_service.enums.*;
 import com.example.parking_service.mapper.TicketMapper;
 import com.example.parking_service.mapper.TicketWaitReleaseMapper;
@@ -45,6 +42,7 @@ import java.util.stream.Collectors;
 @Transactional
 @Slf4j
 public class TicketServiceImpl implements TicketService {
+    AccountRepository accountRepository;
     LocationRepository locationRepository;
     TicketRepository ticketRepository;
     TicketPriceRepository ticketPriceRepository;
@@ -136,6 +134,159 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
+    public ApiResponse<Object> adminSearch(SearchTicket request, Pageable pageable) {
+        // search like
+        String ticketName = DataUtils.convertStringSearchLike(request.getTicketName());
+        String locationName = DataUtils.convertStringSearchLike(request.getLocationName());
+        String partnerName = DataUtils.convertStringSearchLike(request.getPartnerName());
+        // convert tab
+        Integer status = null;
+        Integer modifyStatus = request.getModifyStatus();
+        switch (request.getTab()) {
+            case 1 -> status = TicketStatus.CHO_PHAT_HANH;
+            case 2 -> status = TicketStatus.DANG_PHAT_HANH;
+            case 3 -> status = TicketStatus.TAM_DUNG_PHAT_HANH;
+            case 4 -> {
+                // bỏ qua nếu tab là từ chối/dừng phát hành
+                break;
+            }
+            default -> throw new AppException(ErrorCode.INVALID_DATA);
+        }
+        // thời gian áp dụng
+        LocalDateTime releaseTime = null;
+        String trendReleaseTime = null;
+        if (!DataUtils.isNullOrEmpty(request.getReleasedTime())) {
+            // dữ liệu
+            if (!DataUtils.isNullOrEmpty(request.getReleasedTime().getValue())) {
+                String applyDateStr = (String) request.getReleasedTime().getValue();
+                releaseTime = LocalDateTime.parse(applyDateStr);
+            }
+            // cách tìm kiếm kết quả
+            if (!DataUtils.isNullOrEmpty(request.getReleasedTime().getTrend())) {
+                trendReleaseTime = request.getReleasedTime().getTrend().toUpperCase(Locale.ROOT);
+            }
+        }
+        // giá
+        Long price = null;
+        String trendPrice = null;
+        if (!DataUtils.isNullOrEmpty(request.getPriceSearch())) {
+            // dữ liệu
+            if (!DataUtils.isNullOrEmpty(request.getPriceSearch().getValue())) {
+                price = Long.parseLong(request.getPriceSearch().getValue().toString());
+            }
+            // cách tìm kiếm kết quả
+            if (!DataUtils.isNullOrEmpty(request.getPriceSearch().getTrend())) {
+                trendPrice = request.getPriceSearch().getTrend().toUpperCase(Locale.ROOT);
+            }
+        }
+        // lấy type
+        Integer typeTicket;
+        if (request.getTab().equals(1) || request.getTab().equals(4)) {
+            typeTicket = TypeTicket.CHO_AP_DUNG.getValue();
+        } else {
+            typeTicket = TypeTicket.PHAT_HANH.getValue();
+        }
+        List<String> listPartner = null;
+        if (partnerName != null) {
+            listPartner = accountRepository.findAccountIdByPartnerFullName(partnerName);
+        }
+        // lấy danh sách id nếu có giá
+        List<Long> listIds = null;
+        if (price != null) {
+            listIds = ticketPriceRepository.findAllByTypeAndPriceCategoryAndPrice(typeTicket,
+                    request.getPriceCategory(), price, trendPrice, listPartner);
+        }
+        // lấy danh sách id nếu có tên địa điểm
+        List<Long> listIdWithLocation = null;
+        if (locationName != null) {
+            listIdWithLocation = locationRepository.findAllByNameAndPartnerId(locationName, listPartner);
+            if (!listIdWithLocation.isEmpty()) {
+                listIdWithLocation = ticketLocationRepository
+                        .findByObjectIdAndTypeAndPartnerId(listIdWithLocation, typeTicket);
+            }
+        }
+        // biến đổi danh sách id
+        if (listIds != null && listIdWithLocation != null) {
+            // lấy id chung nếu cả 2 đề có bản ghi
+            listIds.retainAll(listIdWithLocation);
+        } else if (listIds == null && listIdWithLocation != null) {
+            // chuyển id lấy từ địa điểm nếu không tìm theo giá
+            listIds = listIdWithLocation;
+        }
+        // không tìm theo đối tác nếu có tìm theo id
+        if (listIds != null && !listIds.isEmpty()) {
+            listPartner = null;
+        }
+
+        List<Long> ids;
+        List<DataSearchTicketResponse> result;
+        Long totalElement = null;
+        Integer totalPage = null;
+        if (request.getTab().equals(1) || request.getTab().equals(4)) {
+            // lấy vé chờ phát hành
+            Page<TicketWaitRelease> ticketWaitReleases = ticketWaitReleaseRepository.adminSearch(
+                    ticketName,
+                    modifyStatus,
+                    releaseTime,
+                    trendReleaseTime,
+                    request.getVehicle(),
+                    listIds,
+                    listPartner,
+                    request.getTab().equals(4),
+                    pageable
+            );
+            // gán dữ liệu trang
+            totalElement = ticketWaitReleases.getTotalElements();
+            totalPage = ticketWaitReleases.getTotalPages();
+            // map giá vé với bản ghi
+            ids = ticketWaitReleases.stream().map(TicketWaitRelease::getId).toList();
+            Map<String, TicketPrice> ticketPriceMap = getMapTicketPrice(typeTicket, ids);
+            // chuyển thành kết quả trả về
+            result = ticketWaitReleases.stream().map(item -> {
+                DataSearchTicketResponse dataSearchTicketResponse = ticketMapper.toDataSearchTicketResponse(item);
+                // chèn giá vào bản ghi
+                getTicketPriceResponse(ticketPriceMap, dataSearchTicketResponse);
+                return dataSearchTicketResponse;
+            }).toList();
+        } else {
+            // lấy vé đã phát hành
+            Page<Ticket> tickets = ticketRepository.adminSearch(
+                    ticketName,
+                    status,
+                    modifyStatus,
+                    releaseTime,
+                    trendReleaseTime,
+                    request.getVehicle(),
+                    listIds,
+                    listPartner,
+                    pageable
+            );
+            // gán dữ liệu trang
+            totalElement = tickets.getTotalElements();
+            totalPage = tickets.getTotalPages();
+            // map giá vé với bản ghi
+            ids = tickets.stream().map(Ticket::getTicketId).toList();
+            Map<String, TicketPrice> ticketPriceMap = getMapTicketPrice(typeTicket, ids);
+            // chuyển thành kết quả trả về
+            result = tickets.stream().map(item -> {
+                DataSearchTicketResponse dataSearchTicketResponse = ticketMapper.toDataSearchTicketResponse(item);
+                // chèn giá vào bản ghi
+                getTicketPriceResponse(ticketPriceMap, dataSearchTicketResponse);
+                return dataSearchTicketResponse;
+            }).toList();
+        }
+        // lấy thông tin đối tác
+        List<String> partnerId = result.stream().map(DataSearchTicketResponse::getPartnerId).toList();
+        List<Account> partners = accountRepository.findAllById(partnerId);
+        Map<String, Account> parntersMap = partners.stream().collect(Collectors.toMap(Account::getId, item -> item));
+        // map thêm tên đối tác
+        result.forEach(item -> item.setPartnerName(parntersMap.get(item.getPartnerId()).getPartnerFullName()));
+        return ApiResponse.builder()
+                .result(new PageResponse<>(result, totalPage, totalElement))
+                .build();
+    }
+
+    @Override
     public ApiResponse<Object> partnerSearch(SearchTicket request, Pageable pageable) {
         String partnerId = ParkingServiceApplication.testPartnerActionBy;
         // search like
@@ -188,15 +339,15 @@ public class TicketServiceImpl implements TicketService {
         List<Long> listIds = null;
         if (price != null) {
             listIds = ticketPriceRepository.findAllByTypeAndPriceCategoryAndPrice(typeTicket,
-                    request.getPriceCategory(), price, trendPrice, partnerId);
+                    request.getPriceCategory(), price, trendPrice, List.of(partnerId));
         }
         // lấy danh sách id nếu có tên địa điểm
         List<Long> listIdWithLocation = null;
         if (locationName != null) {
-            listIdWithLocation = locationRepository.findAllByNameAndPartnerId(locationName, partnerId);
+            listIdWithLocation = locationRepository.findAllByNameAndPartnerId(locationName, List.of(partnerId));
             if (!listIdWithLocation.isEmpty()) {
                 listIdWithLocation = ticketLocationRepository
-                        .findByObjectIdAndTypeAndPartnerId(listIdWithLocation, typeTicket, partnerId);
+                        .findByObjectIdAndTypeAndPartnerId(listIdWithLocation, typeTicket);
             }
         }
         // biến đổi danh sách id

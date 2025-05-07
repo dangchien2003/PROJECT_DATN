@@ -20,4 +20,5 @@ public class SearchTicket {
     Integer priceCategory;
     String locationName;
     Integer vehicle;
+    String partnerName;
 }

@@ -82,7 +82,10 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
 
     @Query("""
             SELECT l.locationId FROM Location l
-            WHERE l.name LIKE CONCAT('%', :name, '%') ESCAPE '!' and l.partnerId = :partnerId
+            WHERE (:partnerIds IS NULL OR l.partnerId in :partnerIds)
+            AND l.name LIKE CONCAT('%', :name, '%') ESCAPE '!'
             """)
-    List<Long> findAllByNameAndPartnerId(String name, String partnerId);
+    List<Long> findAllByNameAndPartnerId(
+            @Param("name") String name,
+            @Param("partnerIds") List<String> partnerIds);
 }

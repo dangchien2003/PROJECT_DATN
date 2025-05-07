@@ -11,6 +11,8 @@ public interface TicketService {
 
     ApiResponse<Object> partnerSearch(SearchTicket request, Pageable pageable);
 
+    ApiResponse<Object> adminSearch(SearchTicket request, Pageable pageable);
+
     ApiResponse<Object> detail(Long id);
 
     ApiResponse<Object> detailWaitRelease(Long id);
