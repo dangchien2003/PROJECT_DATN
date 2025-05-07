@@ -46,9 +46,16 @@ const baseColumns = [
     width: 120,
   },
   {
-    title: "Thời phát hành",
+    title: "Thời điểm phát hành",
     dataIndex: "releasedTimePrint",
     key: "4",
+    sorter: true,
+    width: 120,
+  },
+  {
+    title: "Thời điểm phát hành",
+    dataIndex: "timeAppliedEditPrint",
+    key: "4.5",
     sorter: true,
     width: 120,
   },
@@ -103,15 +110,18 @@ const TableListTicketPartner = ({ dataSearch }) => {
           {VEHICLE[item.vehicle].name}
         </div>
       );
-      let timeRelease = item.releasedTime;
-      if (item.id) {
-        timeRelease = item.timeAppliedEdit;
-      }
       item.releasedTimePrint = (
         <div style={{ textAlign: "center" }}>
-          {formatTimestamp(timeRelease, "DD/MM/YYYY")}
+          {formatTimestamp(item.releasedTime, "DD/MM/YYYY")}
           <br />
-          {formatTimestamp(timeRelease, "HH:mm")}
+          {formatTimestamp(item.releasedTime, "HH:mm")}
+        </div>
+      );
+      item.timeAppliedEditPrint = (
+        <div style={{ textAlign: "center" }}>
+          {formatTimestamp(item.timeAppliedEdit, "DD/MM/YYYY")}
+          <br />
+          {formatTimestamp(item.timeAppliedEdit, "HH:mm")}
         </div>
       );
       item.pricePrint = (
@@ -202,10 +212,10 @@ const TableListTicketPartner = ({ dataSearch }) => {
   };
 
   const showColumn = () => {
-    if (dataSearch.tab !== 3) {
-      setColumns(baseColumns.filter(item => item.dataIndex !== "action"))
+    if (dataSearch.tab === 1) {
+      setColumns(baseColumns.filter(item => item.dataIndex !== "action" && item.dataIndex !== "timeAppliedEditPrint"))
     } else {
-      setColumns(baseColumns)
+      setColumns(baseColumns.filter(item => item.dataIndex !== "releasedTimePrint"))
     }
   }
 

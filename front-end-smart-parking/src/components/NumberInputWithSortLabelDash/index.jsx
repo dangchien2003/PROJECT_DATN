@@ -12,7 +12,7 @@ const NumberInputWithSortLabelDash = ({
   placeholder,
   require,
   trend = true,
-  defaultValue,
+  defaultValue = null,
 }) => {
   return (
     <div

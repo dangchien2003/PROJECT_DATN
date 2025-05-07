@@ -41,3 +41,11 @@ export async function partnerCancelRelease(data) {
     }
   })
 }
+
+export async function adminSearch(data, page, size, field, sort) {
+  return await httpClient.post(PARKING_SERVICE.ticket.adminSearch + "?" + getParamsPage(page, size, field, sort), data, {
+    headers: {
+      Authorization: undefined
+    }
+  })
+}

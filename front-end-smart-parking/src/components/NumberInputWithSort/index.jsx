@@ -12,7 +12,7 @@ const NumberInputWithSort = ({
   addonAfter,
   placeholder,
   itemKey,
-  callbackChangeValue,
+  callbackChangeValue = null,
   trend,
   label,
   defaultValue
