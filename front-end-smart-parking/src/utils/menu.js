@@ -37,10 +37,6 @@ export const ADMIN_MENU = [
         key: "3.1",
         label: <Link to={"/ticket"}>Danh sách vé</Link>,
       },
-      {
-        key: "3.2",
-        label: <Link to={"/ticket/request"}>Yêu cầu duyệt vé</Link>,
-      },
     ],
   },
   {

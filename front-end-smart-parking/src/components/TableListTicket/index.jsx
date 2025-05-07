@@ -3,7 +3,6 @@ import { Table } from "antd";
 import ButtonStatus from "../ButtonStatus";
 import { TICKET_MODIFY_STATUS, TICKET_STATUS, VEHICLE } from "@/utils/constants";
 import { formatTimestamp } from "@/utils/time";
-import { useNavigate } from "react-router-dom";
 import { showTotal } from "@/utils/table";
 import { convertDataSelectboxToObject } from "@/utils/object";
 import { useDispatch, useSelector } from "react-redux";
@@ -49,7 +48,7 @@ const baseColumns = [
     dataIndex: "vehiclePrint",
     key: "3",
     sorter: true,
-    width: 120,
+    width: 150,
   },
   {
     title: "Thời điểm phát hành",
@@ -69,7 +68,7 @@ const baseColumns = [
     title: "Giá",
     dataIndex: "pricePrint",
     key: "5",
-    width: 120,
+    width: 150,
   },
   {
     title: "Hành động",
@@ -91,8 +90,7 @@ const mapFieldSort = {
   timeAppliedEditPrint: "timeAppliedEdit"
 }
 
-const TableListTicket = ({ searchTimes, dataSearch }) => {
-  const navigate = useNavigate()
+const TableListTicket = ({ dataSearch }) => {
   const { isSearching } = useSelector(state => state.startSearch)
   const dispatch = useDispatch();
   const [data, setData] = useState([]);
@@ -184,9 +182,7 @@ const TableListTicket = ({ searchTimes, dataSearch }) => {
       );
       const id = !isNullOrUndefined(item.id) ? item.id : item.ticketId;
       item.ticketNamePrint = `${id} - ${item.name}`;
-      if (dataSearch.tab === 1) {
-        item.action = <Action data={item} dataList={data} handleConvert={convertResponseToDataTable} />
-      }
+      item.action = <Action data={item}/>
       item.stt = (currentPage - 1) * pageSize + index + 1;
       return item;
     });
@@ -226,15 +222,11 @@ const TableListTicket = ({ searchTimes, dataSearch }) => {
     loadData(newPagination, sorter);
   };
 
-  const handleClickRow = (data) => {
-    navigate(`/ticket/detail/${dataSearch.tab === 5 ? 1 : 0}/${dataSearch.tab}/${data.id}`)
-  };
-
   const showColumn = () => {
     if (dataSearch.tab === 2 || dataSearch.tab === 3) {
-      setColumns(baseColumns.filter(item => item.dataIndex !== "action" && item.dataIndex !== "timeAppliedEditPrint"));
+      setColumns(baseColumns.filter(item => item.dataIndex !== "timeAppliedEditPrint"));
     } else if(dataSearch.tab === 4) {
-      setColumns(baseColumns.filter(item => item.dataIndex !== "timeAppliedEditPrint"))
+      setColumns(baseColumns.filter(item => item.dataIndex !== "releaseTimePrint"))
     }else {
       setColumns(baseColumns.filter(item => item.dataIndex !== "releaseTimePrint"))
     }
@@ -265,11 +257,6 @@ const TableListTicket = ({ searchTimes, dataSearch }) => {
         showSizeChanger: true,
         pageSizeOptions: ["10", "20", "50", "100"],
         showTotal: showTotal
-      }}
-      onRow={(record) => {
-        return {
-          onClick: () => handleClickRow(record),
-        };
       }}
     />
   );
