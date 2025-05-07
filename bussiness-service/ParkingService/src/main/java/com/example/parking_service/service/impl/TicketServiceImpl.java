@@ -74,7 +74,6 @@ public class TicketServiceImpl implements TicketService {
         // thêm trường reject nê là admin
         if (isAdmin) {
             optionalTicketWaitRelease.setRejectBy(actionBy);
-            optionalTicketWaitRelease.setReleaseAt(LocalDateTime.now());
             optionalTicketWaitRelease.setReasonReject(approveRequest.getReason());
         }
         optionalTicketWaitRelease.setIsDel(IsDel.DELETED.getValue());
