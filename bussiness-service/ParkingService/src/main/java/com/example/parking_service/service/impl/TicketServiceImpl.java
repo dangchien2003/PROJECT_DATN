@@ -7,8 +7,10 @@ import com.example.common.enums.Release;
 import com.example.common.exception.AppException;
 import com.example.common.exception.ErrorCode;
 import com.example.common.utils.DataUtils;
+import com.example.common.utils.TimeUtil;
 import com.example.parking_service.ParkingServiceApplication;
 import com.example.parking_service.dto.other.PriceTicket;
+import com.example.parking_service.dto.other.ScheduledJob;
 import com.example.parking_service.dto.other.ScheduledJobId;
 import com.example.parking_service.dto.request.ApproveRequest;
 import com.example.parking_service.dto.request.ModifyTicketRequest;
@@ -22,6 +24,8 @@ import com.example.parking_service.mapper.TicketWaitReleaseMapper;
 import com.example.parking_service.repository.*;
 import com.example.parking_service.service.SchedulerService;
 import com.example.parking_service.service.TicketService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -51,6 +55,7 @@ public class TicketServiceImpl implements TicketService {
     SchedulerService schedulerService;
     TicketMapper ticketMapper;
     TicketWaitReleaseMapper ticketWaitReleaseMapper;
+    ObjectMapper objectMapper;
 
     @Override
     public ApiResponse<Object> cancelWaitRelease(ApproveRequest approveRequest, boolean isAdmin) {
@@ -614,5 +619,107 @@ public class TicketServiceImpl implements TicketService {
             }
         }
         ticketPriceRepository.saveAll(ticketPrices);
+    }
+
+    @Override
+    public void loadScheduler() {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime from = TimeUtil.getStartOfCurrentHour();
+        if (now.getMinute() >= 30) {
+            from = from.plusMinutes(30);
+        }
+        LocalDateTime to = from.plusMinutes(30);
+        List<TicketWaitRelease> entityList = ticketWaitReleaseRepository
+                .findAllRecordWaitRelease(from, to, IsDel.DELETE_NOT_YET.getValue(), Release.RELEASE_NOT_YET.getValue());
+        for (TicketWaitRelease ticketWaitRelease : entityList) {
+            insertScheduler(ticketWaitRelease);
+        }
+    }
+
+    private void insertScheduler(TicketWaitRelease ticketWaitRelease) {
+        String actionBy = "scheduler";
+        if (ticketWaitRelease.getTimeAppliedEdit().isAfter(TimeUtil.getStartOfNextHour())) {
+            return;
+        }
+        // lệnh sẽ chạy khi tới thời điểm
+        Runnable runnable = () -> {
+            try {
+                executeApplyLocation(ticketWaitRelease, actionBy);
+            } catch (Exception e) {
+                log.error("Error: ", e);
+            }
+        };
+        ScheduledJob scheduledJob = ScheduledJob.builder()
+                .scheduledJobId(new ScheduledJobId(ModuleName.TICKET, ticketWaitRelease.getId().toString()))
+                .task(runnable)
+                .runAt(ticketWaitRelease.getTimeAppliedEdit())
+                .build();
+        schedulerService.addTask(scheduledJob);
+    }
+
+    public void executeApplyLocation(TicketWaitRelease ticketWaitRelease, String actionBy) throws JsonProcessingException {
+        String beforeUpdate = objectMapper.writeValueAsString(ticketWaitRelease);
+        // thay đổi entity release
+        ticketWaitRelease.setStatus(TicketStatus.DANG_PHAT_HANH);
+        ticketWaitRelease.setReleased(Release.RELEASE.getValue());
+        ticketWaitRelease.setReleaseAt(LocalDateTime.now());
+        DataUtils.setDataAction(ticketWaitRelease, actionBy, false);
+        // lưu
+        ticketWaitReleaseRepository.save(ticketWaitRelease);
+
+        try {
+            // thay thế bản ghi phát hành
+            Ticket ticket;
+            if (!DataUtils.isNullOrEmpty(ticketWaitRelease.getTicketId())) {
+                ticket = ticketRepository.findById(ticketWaitRelease.getTicketId())
+                        .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND.withMessage("Không tìm thấy địa điểm có id: " + ticketWaitRelease.getTicketId())));
+            } else {
+                ticket = new Ticket();
+            }
+
+            // map dữ liệu
+            ticketMapper.toTicketFromReleaseEntity(ticket, ticketWaitRelease);
+            ticket.setModifyStatus(LocationModifyStatus.DA_AP_DUNG.getValue());
+            // set lai thơi gian phát hành khi tạo mới hoặc phát hành lại
+            if (ticket.getTicketId() == null
+                    || (ticket.getStatus().equals(TicketStatus.TAM_DUNG_PHAT_HANH) && ticketWaitRelease.getStatus().equals(TicketStatus.DANG_PHAT_HANH))) {
+                ticket.setReleasedTime(LocalDateTime.now());
+                ticket.setStatus(TicketStatus.DANG_PHAT_HANH);
+            }
+            // thay đổi thời gian tác động
+            DataUtils.setDataAction(ticket, actionBy, DataUtils.isNullOrEmpty(ticketWaitRelease.getTicketId()));
+            // lưu dữ liệu
+            ticket = ticketRepository.save(ticket);
+            // update giá vé
+            List<TicketPrice> ticketPrices = ticketPriceRepository
+                    .findAllByObjectIdAndTypeAndIsDel(ticketWaitRelease.getId(), TypeTicket.CHO_AP_DUNG.getValue(), IsDel.DELETE_NOT_YET.getValue());
+            for (TicketPrice ticketPrice : ticketPrices) {
+                ticketPrice.setId(null);
+                ticketPrice.setObjectId(ticket.getTicketId());
+                ticketPrice.setType(TypeTicket.PHAT_HANH.getValue());
+                DataUtils.setDataAction(ticketPrice, "schedule", true);
+            }
+            ticketPriceRepository.saveAll(ticketPrices);
+            // update đia điểm sử dụng
+            List<TicketLocation> ticketLocations = ticketLocationRepository
+                    .findAllByObjectIdAndTypeAndIsDel(ticketWaitRelease.getId(), TypeTicket.CHO_AP_DUNG.getValue(), IsDel.DELETE_NOT_YET.getValue());
+            for (TicketLocation ticketLocation : ticketLocations) {
+                ticketLocation.setId(null);
+                ticketLocation.setObjectId(ticket.getTicketId());
+                ticketLocation.setType(TypeTicket.PHAT_HANH.getValue());
+                DataUtils.setDataAction(ticketLocation, "schedule", true);
+            }
+            ticketLocationRepository.saveAll(ticketLocations);
+        } catch (Exception e) {
+            log.error("error: ", e);
+            // rollback nếu lỗi
+            try {
+                TicketWaitRelease ticketWaitReleaseRollback = objectMapper.readValue(beforeUpdate, TicketWaitRelease.class);
+                ticketWaitReleaseRepository.save(ticketWaitReleaseRollback);
+            } catch (JsonProcessingException ex) {
+                log.error("error: ", ex);
+                log.error("lỗi rollback dữ liệu(LocationWaitRelease): " + beforeUpdate);
+            }
+        }
     }
 }

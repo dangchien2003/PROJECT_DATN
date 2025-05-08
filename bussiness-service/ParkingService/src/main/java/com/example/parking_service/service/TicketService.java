@@ -19,5 +19,5 @@ public interface TicketService {
 
     ApiResponse<Object> cancelWaitRelease(ApproveRequest approveRequest, boolean isAdmin);
 
-
+    void loadScheduler();
 }

@@ -9,6 +9,7 @@ import com.example.parking_service.entity.TicketPrice;
 import com.example.parking_service.entity.TicketWaitRelease;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
 
 @Mapper(componentModel = "spring")
@@ -40,5 +41,11 @@ public interface TicketMapper {
     default Boolean convertToBoolean(Integer data) {
         return data.equals(1);
     }
+
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "createdBy", ignore = true)
+    @Mapping(target = "modifiedAt", ignore = true)
+    @Mapping(target = "modifiedBy", ignore = true)
+    void toTicketFromReleaseEntity(@MappingTarget Ticket location, TicketWaitRelease releaseEntity);
 
 }

@@ -73,4 +73,16 @@ public interface TicketWaitReleaseRepository extends JpaRepository<TicketWaitRel
             @Param("isCancel") boolean isCancel,
             Pageable pageable
     );
+
+    @Query(value = """
+                SELECT twr FROM TicketWaitRelease twr
+                WHERE twr.isDel = :isDel AND twr.released = :released
+                AND twr.timeAppliedEdit BETWEEN :from AND :to
+            """)
+    List<TicketWaitRelease> findAllRecordWaitRelease(
+            @Param("from") LocalDateTime from,
+            @Param("to") LocalDateTime to,
+            @Param("isDel") Integer isDel,
+            @Param("released") Integer released
+    );
 }

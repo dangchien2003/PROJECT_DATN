@@ -2,6 +2,7 @@ package com.example.parking_service.configuration;
 
 import com.example.parking_service.service.LocationModifyService;
 import com.example.parking_service.service.SchedulerService;
+import com.example.parking_service.service.TicketService;
 import jakarta.annotation.PostConstruct;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -18,13 +19,22 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class SchedulerConfig {
     LocationModifyService locationModifyService;
+    TicketService ticketService;
     SchedulerService schedulerService;
 
+    // quét địa điểm chờ áp dụng
     @Scheduled(cron = "0 0 * * * *") // giây, phút, giờ, ngày, tháng, thứ
-    public void runEveryHour() {
+    public void scanLocationWaitRelease() {
         locationModifyService.loadScheduler();
     }
 
+    // quét địa điểm chờ áp dụng
+    @Scheduled(cron = "0 */15 * * * *") // giây, phút, giờ, ngày, tháng, thứ
+    public void scanTicketWaitRelease() {
+        ticketService.loadScheduler();
+    }
+
+    // làm mới hàng đợi
     @Scheduled(cron = "0 */5 * * * *") // giây, phút, giờ, ngày, tháng, thứ
     public void runEveryFiveMinutes() {
         schedulerService.refresh();
@@ -33,5 +43,6 @@ public class SchedulerConfig {
     @PostConstruct
     public void loadSchedulerLocation() {
         locationModifyService.loadScheduler();
+        ticketService.loadScheduler();
     }
 }
