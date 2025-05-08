@@ -146,7 +146,19 @@ const TableListTicketPartner = ({ dataSearch }) => {
             </span>
           </div>
           <div style={{ margin: 2 }}>
-            {!isNullOrUndefined(item.modifyStatus) && <>
+            {(item.isDel) && <>
+              <span>TĐ </span>
+              <span>
+                {
+                  <ButtonStatus
+                    label={isNullOrUndefined(item.reasonReject) ? "Đã huỷ" : "Bị từ chối"}
+                    color={"danger"}
+                  />
+                }
+              </span>
+            </>}
+          </div>
+          {(!isNullOrUndefined(item.modifyStatus)) && <>
               <span>TĐ </span>
               <span>
                 {
@@ -157,7 +169,6 @@ const TableListTicketPartner = ({ dataSearch }) => {
                 }
               </span>
             </>}
-          </div>
         </div>
       );
       let id = item.ticketId;
