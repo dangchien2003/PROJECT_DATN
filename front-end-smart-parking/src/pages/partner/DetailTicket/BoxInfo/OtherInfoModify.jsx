@@ -3,6 +3,7 @@ import BoxTextField from '@/components/BoxTextField'
 import DividerCustom from '@/components/DividerCustom'
 import { isNullOrUndefined } from '@/utils/data'
 import { formatTimestamp } from '@/utils/time'
+import React from 'react'
 
 const OtherInfoModify = ({data}) => {
   return (

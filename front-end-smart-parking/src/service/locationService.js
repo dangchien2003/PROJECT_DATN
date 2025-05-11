@@ -82,3 +82,11 @@ export async function getAllRecordIsActive(page) {
     }
   })
 }
+
+export async function getListDetail(ids) {
+  return await httpClient.post(PARKING_SERVICE.location.listDetail, ids, {
+    headers: {
+      Authorization: undefined
+    }
+  })
+}

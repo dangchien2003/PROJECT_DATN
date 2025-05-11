@@ -22,17 +22,27 @@ const Action = ({ data }) => {
   const [reasonReject] = useState({
     value: null
   })
-  const {showLoad, hideLoad} = useLoading();
+  const { showLoad, hideLoad } = useLoading();
   const dispatch = useDispatch();
 
   const handleClickShowDetail = () => {
-    navigate(`/ticket/detail/${data.isDel ? 1 : 0}/${data.tab}/${data.id}`)
+    let id = null;
+    let isWaitRelease = 0;
+    if (data.id) {
+      id = data.id;
+      isWaitRelease = 1;
+    }
+    else if (data.ticketId) {
+      id = data.ticketId;
+      isWaitRelease = 0;
+    }
+    navigate(`/ticket/detail/${isWaitRelease}/${id}`)
   }
   const buttonDetail = (<span onClick={handleClickShowDetail}>
-          <Tooltip title="Xem" >
-            <FaEye style={{ fontSize: 21, cursor: 'pointer' }} />
-          </Tooltip>
-        </span>)
+    <Tooltip title="Xem" >
+      <FaEye style={{ fontSize: 21, cursor: 'pointer' }} />
+    </Tooltip>
+  </span>)
 
   const handleClickCancelRelease = () => {
     setShowPopCancel(true)
@@ -47,7 +57,7 @@ const Action = ({ data }) => {
 
   const handleAllowCancelRelease = () => {
     const dataApi = {
-      id: data.id, 
+      id: data.id,
       approve: false,
       reason: reasonReject.value,
     }
@@ -58,37 +68,41 @@ const Action = ({ data }) => {
     }
     showLoad("Đang xử lý")
     adminCancelRelease(dataApi)
-    .then((response) => {
-      toastSuccess("Huỷ phát hành thành công")
-      // load lại
-      dispatch(setSearching(true))
-    })
-    .catch((e) => {
-      const error = getDataApi(e);
-      toastError(error.message)
-    })
-    .finally(() => {
-      hideLoad();
-      setShowPopCancel(false)
-    })
+      .then((response) => {
+        toastSuccess("Huỷ phát hành thành công")
+        // load lại
+        dispatch(setSearching(true))
+      })
+      .catch((e) => {
+        const error = getDataApi(e);
+        toastError(error.message)
+      })
+      .finally(() => {
+        hideLoad();
+        setShowPopCancel(false)
+      })
   }
 
   if (dayjs().isBefore(dayjs(data.timeAppliedEdit)) && !data.isDel && data.released === 0) {
     return (
       <div>
-        {buttonDetail}
-        <span className="button-cancel" onClick={handleClickCancelRelease}>
-          <Tooltip title="Huỷ phát hành" >
-            <MdDelete style={{ fontSize: 21, cursor: 'pointer' }} />
-          </Tooltip>
-        </span>
-        <CountDown start={dayjs()} end={data.timeAppliedEdit} />
-        {showPopCancel && <PopConfirmCustom title={`Bạn có muốn tiếp tục huỷ phát hành vé ${data.name} của đối tác ${data.partnerName} không?`} message={<MessageReject key={"MessageReject"} data={reasonReject} message='Vé sẽ không được phát hành theo lịch đã đặt'/>}   handleCancel={handleCloseCancelRelease} handleOk={handleAllowCancelRelease} />}
+        <div style={{ display: "flex", gap: 16, justifyContent: 'center' }}>
+          {buttonDetail}
+          <span className="button-cancel" onClick={handleClickCancelRelease}>
+            <Tooltip title="Huỷ phát hành" >
+              <MdDelete style={{ fontSize: 21, cursor: 'pointer'}} />
+            </Tooltip>
+          </span>
+        </div>
+        <div>
+          <CountDown start={dayjs()} end={data.timeAppliedEdit} />
+          {showPopCancel && <PopConfirmCustom title={`Bạn có muốn tiếp tục huỷ phát hành vé ${data.name} của đối tác ${data.partnerName} không?`} message={<MessageReject key={"MessageReject"} data={reasonReject} message='Vé sẽ không được phát hành theo lịch đã đặt' />} handleCancel={handleCloseCancelRelease} handleOk={handleAllowCancelRelease} />}
+        </div>
       </div>
     )
   } else {
     return (
-      <div style={{display: "flex", gap: 16, justifyContent: 'center'}}>
+      <div style={{ display: "flex", gap: 16, justifyContent: 'center' }}>
         {buttonDetail}
         {(data.isDel === false) && <span onClick={handleClickCancelRelease}>
           <Tooltip title="Huỷ phát hành" >

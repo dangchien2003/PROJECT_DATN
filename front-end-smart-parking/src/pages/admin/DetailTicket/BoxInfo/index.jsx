@@ -3,14 +3,21 @@ import BoxTextField from "@/components/BoxTextField"
 import { TICKET_STATUS, VEHICLE } from "@/utils/constants"
 import { formatTimestamp } from "@/utils/time"
 import OtherInfoModify from "./OtherInfoModify"
-import { FaCheck } from "react-icons/fa6"
 import { Button } from "antd"
 import { MdOutlineCancel } from "react-icons/md"
 import { formatCurrency } from "@/utils/number"
 import { Typography } from "antd";
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useLoading } from "@/hook/loading"
 import PopConfirmCustom from "@/components/PopConfirmCustom"
+import { convertObjectToDataSelectBox } from "@/utils/object"
+import BoxTextArea from "@/components/BoxTextArea"
+import MessageReject from "@/components/MessageReject"
+import { adminCancelRelease } from "@/service/ticketService"
+import { toastError, toastSuccess } from "@/utils/toast"
+import { useMessageError } from "@/hook/validate"
+import { getDataApi } from "@/utils/api"
+import LocationUseTicket from "@/components/LocationUseTicket"
 const { Title } = Typography;
 
 const BoxPrice = ({checked, price, label})=> {
@@ -20,52 +27,70 @@ const BoxPrice = ({checked, price, label})=> {
   </div>
 }
 
-const BoxInfo = ({data, isModify, tabStatus}) => {
+const ticketStatus = convertObjectToDataSelectBox(TICKET_STATUS)
+
+const BoxInfo = ({data, isWaitApprove, widthPage}) => {
+  const [styleParent, setStyleParent] = useState({})
   const [action, setAction] = useState(null);
+  const [canceled, setCanceled] = useState(false);
   const {showLoad, hideLoad} = useLoading();
-  const getPriceByType = (priceCategory) => {
-    if(data.priceDetail !== null && data.priceDetail.length !== 0) {
-      for(var i = 0; i < data.priceDetail.length; i++) {
-        if(data.priceDetail[i].priceCategory === priceCategory) {
-          return data.priceDetail[i];
+  const { pushMessage, deleteKey } = useMessageError();
+  const [reasonReject] = useState({
+    value: null
+  })
+
+  useEffect(() => {
+    let style = {};
+    if (isWaitApprove) {
+      if (widthPage <= 1288) {
+        style = {
+          borderTop: "1px solid rgb(185, 183, 183)",
+          paddingTop: 8,
+          marginTop: 104
+        }
+      } else {
+        style = {
+          borderLeft: "1px solid rgb(185, 183, 183)"
         }
       }
     }
-    return null;
-  }
+
+    setStyleParent(style)
+  }, [isWaitApprove, widthPage]);
 
   const resetAction = () => {
     setAction(null);
-  }
-
-  const handleAllowApprove = () => {
-    console.log("đồng ý duyệt")
-    showLoad("Đang xử lý");
-    setTimeout(()=> {
-      hideLoad();
-      resetAction();
-    }, 3000)
-  }
-
-  const handleCancelApprove = () => {
-    console.log("huỷ việc duyệt")
-    resetAction();
+    deleteKey("reasonReject");
+    // reset lý do
+    reasonReject.value = null;
   }
 
   const handleAllowReject = () => {
-    console.log("đồng ý từ chối")
-    showLoad("Đang xử lý");
-    setTimeout(()=> {
-      hideLoad();
-      resetAction();
-    }, 3000)
+    const dataApi = {
+          id: data.id, 
+          approve: false,
+          reason: reasonReject.value,
+        }
+        // không thực thi khi không có lý do
+        if (!reasonReject.value || reasonReject.value === "") {
+          pushMessage("reasonReject", "Vui lòng nhập lý do từ chối")
+          return
+        }
+        showLoad("Đang xử lý")
+        adminCancelRelease(dataApi)
+        .then((response) => {
+          toastSuccess("Huỷ phát hành thành công");
+          setCanceled(true);
+        })
+        .catch((e) => {
+          const error = getDataApi(e);
+          toastError(error.message)
+        })
+        .finally(() => {
+          hideLoad();
+          resetAction();
+        })
   }
-
-  const handleCancelReject = () => {
-    console.log("huỷ việc từ chối")
-    resetAction();
-  }
-
 
   const handleConfirm = (event, action) => {
     setAction(action);
@@ -73,28 +98,11 @@ const BoxInfo = ({data, isModify, tabStatus}) => {
   }
 
   const getMessagePopup = (action) => {
-    if(tabStatus === 1) {
+    if(isWaitApprove) {
       if(action === 1) {
         return {
-          title: 'Bạn có chắc chắn đồng ý việc tạo vé "Vé ngày" của đối tác EAON MALL không?', 
-          message: "Vé sẽ được phát hành vào lúc 11:11"
-        }
-      }else if(action === 2) {
-        return {
-          title: 'Bạn có chắc chắn từ chối việc tạo vé "Vé ngày" của đối tác EAON MALL không?', 
-          message: "Yêu cầu sẽ được chuyển sang trạng thái bị từ chối"
-        }
-      }
-    }else if(tabStatus === 2) {
-      if(action === 1) {
-        return {
-          title: 'Bạn có chắc chắn duyệt việc sửa vé "Vé ngày" của đối tác EAON MALL không?', 
-          message: "Thông tin chỉnh sửa sẽ được áp dụng vào lúc 11:11"
-        }
-      }else if(action === 2) {
-        return {
-          title: 'Bạn có chắc chắn duyệt việc sửa vé "Vé ngày" của đối tác EAON MALL không?', 
-          message: "Thông tin chỉnh sửa sẽ được áp dụng vào lúc 11:11"
+          title: `Bạn có chắc chắn từ chối phát hành vé ${data.name} không?`, 
+          message: <MessageReject key={"MessageReject"} data={reasonReject} message='Vé sẽ không được phát hành theo lịch đã đặt'/>
         }
       }
     }
@@ -103,41 +111,37 @@ const BoxInfo = ({data, isModify, tabStatus}) => {
 
   return (
     <div>
-      {data !== null && <div style={isModify ? {borderLeft: "1px solid rgb(185, 183, 183)"} : {}}>
-        <Title style={{padding: "0 8px"}} level={5}>{isModify? "Thông tin chỉnh sửa" : "Thông tin gốc"}</Title>
+      {data !== null && <div style={styleParent} >
+        <Title style={{padding: "0 8px"}} level={5}>{isWaitApprove ? "Thông tin chỉnh sửa" : "Thông tin gốc"}</Title>
         {/* Thông tin chính */}
         <div className="box-ticket-detail">
-        {/* <BoxTextField label="Người tạo" value={} disabled={true} colorGray={false} key={"nt"}/> */}
-        <BoxTextField label="Tên vé" value={data.name} disabled={true} colorGray={false} key={"nt"}/>
-        <BoxTextField label="Lần chỉnh sửa" value={data.modifyCount} disabled={true} colorGray={false} key={"nt"}/>
-        <BoxTextField label="Thời gian phát hành" value={formatTimestamp(data.releasedTime, "DD/MM/YYYY HH:mm")} disabled={true} colorGray={false} key={"nt"}/>
-        <BoxTextField label="Phương tiện sử dụng" value={VEHICLE[data.vehicle].name} disabled={true} colorGray={false} key={"nt"}/>
-        <BoxTextField label="Trạng thái" value={TICKET_STATUS[data.status].label} disabled={true} colorGray={false} key={"nt"}/>
-        <BoxTextField label="Lý do thay đổi trạng thái" value={data.reason} disabled={true} colorGray={false} key={"nt"}/>
-        
+        <BoxTextField label="Tên vé" value={data?.name} disabled={true} colorGray={false} key={"tv"}/>
+        <BoxTextField label="Lần chỉnh sửa" value={data?.modifyCount} disabled={true} colorGray={false} key={"lcs"}/>
+        <BoxTextField label="Thời gian phát hành" value={formatTimestamp(data?.releasedTime, "DD/MM/YYYY HH:mm")} disabled={true} colorGray={false} key={"tgph"}/>
+        <BoxTextField label="Phương tiện sử dụng" value={VEHICLE[data?.vehicle] ? VEHICLE[data?.vehicle].name : null} disabled={true} colorGray={false} key={"ptsd"}/>
+        <BoxTextField label="Trạng thái" value={ticketStatus[data?.status].label} disabled={true} colorGray={false} key={"tt"}/>
+        <BoxTextField label="Lý do thay đổi trạng thái" value={data?.reason} disabled={true} colorGray={false} key={"ldtdtt"}/>
+        <BoxTextArea label={"Quyền lợi"} value={data.description} rows={5} disabled={true} key={"ql"}/>
       </div>
         {/* price */}
         <div>
-          <BoxPrice label="Mở bán theo giờ" checked={!!data.timeSlot} price={getPriceByType(0)?.price}/>
-          <BoxPrice label="Mở bán theo ngày" checked={!!data.daySlot} price={getPriceByType(1)?.price}/>
-          <BoxPrice label="Mở bán theo tuần" checked={!!data.weekSlot} price={getPriceByType(2)?.price}/>
-          <BoxPrice label="Mở bán theo tháng" checked={!!data.monthSlot} price={getPriceByType(3)?.price}/>
+          <BoxPrice label="Mở bán theo giờ" checked={data?.timeSlot} price={data?.price?.time?.price} />
+          <BoxPrice label="Mở bán theo ngày" checked={data?.daySlot} price={data?.price?.day?.price} />
+          <BoxPrice label="Mở bán theo tuần" checked={data?.weekSlot} price={data?.price?.week?.price} />
+          <BoxPrice label="Mở bán theo tháng" checked={data?.monthSlot} price={data?.price?.month?.price} />
           </div>
-        {isModify && 
+        {/* địa điểm áp dụng */}
+        <LocationUseTicket ids={data.locationUse}/>
+        {isWaitApprove && 
         <div>
           <OtherInfoModify data={data} />
           <div style={{ display: "flex", justifyContent: "center", padding: "0 16px" }}>
-          <Button color="primary" variant="solid" style={{margin: "0 8px"}} onClick={(event)=> {handleConfirm(event, 1)}}>
-            <FaCheck />
-            Duyệt
-          </Button>
-          <Button color="danger" variant="outlined" style={{margin: "0 8px"}} onClick={(event)=> {handleConfirm(event, 2)}}>
+          {(data?.released === 0 && !data?.isDel && !canceled) && <Button color="danger" variant="outlined" style={{margin: "0 8px"}} onClick={(event)=> {handleConfirm(event, 1)}}>
             <MdOutlineCancel />
             Từ chối
-          </Button>
+          </Button>}
           <div>
-            {action === 1 && <PopConfirmCustom type="warning" {...getMessagePopup(1)} handleOk={handleAllowApprove} handleCancel={handleCancelApprove} key={"approve"}/>}
-            {action === 2 && <PopConfirmCustom type="warning" {...getMessagePopup(2)} handleOk={handleAllowReject} handleCancel={handleCancelReject} key={"reject"}/>}
+            {action === 1 && <PopConfirmCustom type="warning" {...getMessagePopup(1)} handleOk={handleAllowReject} handleCancel={resetAction} key={"approve"}/>}
           </div>
         </div>
         </div> }

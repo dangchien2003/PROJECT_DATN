@@ -126,10 +126,10 @@ const TableListTicketPartner = ({ dataSearch }) => {
       );
       item.pricePrint = (
         <div>
-          {item.timeSlot && <div>1 giờ: {formatCurrency(item.price.time?.price)} đ</div>}
-          {item.daySlot && <div>1 ngày: {formatCurrency(item.price.day?.price)} đ</div>}
-          {item.weekSlot && <div>1 tuần: {formatCurrency(item.price.week?.price)} đ</div>}
-          {item.monthSlot && <div>1 tháng: {formatCurrency(item.price.month?.price)} đ</div>}
+          {item.timeSlot && <div key="time">1 giờ: {formatCurrency(item.price.time?.price)} đ</div>}
+          {item.daySlot && <div key="day">1 ngày: {formatCurrency(item.price.day?.price)} đ</div>}
+          {item.weekSlot && <div key="week">1 tuần: {formatCurrency(item.price.week?.price)} đ</div>}
+          {item.monthSlot && <div key="month">1 tháng: {formatCurrency(item.price.month?.price)} đ</div>}
         </div>
       );
       item.statusPrint = (
@@ -159,16 +159,16 @@ const TableListTicketPartner = ({ dataSearch }) => {
             </>}
           </div>
           {(!isNullOrUndefined(item.modifyStatus)) && <>
-              <span>TĐ </span>
-              <span>
-                {
-                  <ButtonStatus
-                    label={ticketModifyStatus[item.modifyStatus]?.label}
-                    color={ticketModifyStatus[item.modifyStatus]?.color}
-                  />
-                }
-              </span>
-            </>}
+            <span>TĐ </span>
+            <span>
+              {
+                <ButtonStatus
+                  label={ticketModifyStatus[item.modifyStatus]?.label}
+                  color={ticketModifyStatus[item.modifyStatus]?.color}
+                />
+              }
+            </span>
+          </>}
         </div>
       );
       let id = item.ticketId;
@@ -177,7 +177,7 @@ const TableListTicketPartner = ({ dataSearch }) => {
       }
       item.ticketNamePrint = `${id} - ${item.name}`;
       if (dataSearch.tab === 3) {
-        item.action = <Action data={item} dataList={data} handleConvert={convertResponseToDataTable}/>
+        item.action = <Action data={item} dataList={data} handleConvert={convertResponseToDataTable} />
       }
       item.stt = (currentPage - 1) * pageSize + index + 1;
       return item;
@@ -219,7 +219,17 @@ const TableListTicketPartner = ({ dataSearch }) => {
   };
 
   const handleClickRow = (data) => {
-    navigate(`/ticket/detail/${dataSearch.tab === 5 ? 1 : 0}/${dataSearch.tab}/${data.id}`)
+    let id = null;
+    let isWaitRelease = 0;
+    if (data.id) {
+      id = data.id;
+      isWaitRelease = 1;
+    }
+    else if (data.ticketId) {
+      id = data.ticketId;
+      isWaitRelease = 0;
+    }
+    navigate(`/partner/ticket/detail/${isWaitRelease}/${id}`)
   };
 
   const showColumn = () => {

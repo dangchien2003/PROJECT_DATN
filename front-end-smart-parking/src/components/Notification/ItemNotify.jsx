@@ -19,7 +19,7 @@ const ItemNotify = ({ data, setCountNotify }) => {
       style={{ color: "black" }}
       onClick={!viewed ? handleViewed : null}
     >
-      <div className={!viewed && "view-not-yet"}>
+      <div className={!viewed ? "view-not-yet" : ""}>
         <div className="item-notify">
           <div style={{ fontSize: 16, height: 25 }}>{data.title}</div>
           <div style={{ fontSize: 13 }}>{data.content}</div>

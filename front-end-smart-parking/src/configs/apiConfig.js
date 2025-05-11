@@ -19,6 +19,7 @@ export const PARKING_SERVICE = {
     waitReleaseDetail: "location/detail/wait-release",
     getMapLocation: "location/list/coordinates",
     getAllRecordIsActive: "location/all/is-active",
+    listDetail: "location/list/detail",
   },
   ticket: {
     modify: "ticket/modify",
@@ -28,5 +29,6 @@ export const PARKING_SERVICE = {
     detailWaitRelease: "ticket/detail/wait-release",
     partnerCancelRelease: "ticket/partner/cancel/wait-release",
     adminCancelRelease: "ticket/admin/cancel/wait-release",
+    checkExistWaitRelease: "ticket/check-exist-wait-release",
   }
 }

@@ -57,3 +57,11 @@ export async function adminSearch(data, page, size, field, sort) {
     }
   })
 }
+
+export async function checkExistWaitRelease(ticketId) {
+  return await httpClient.get(PARKING_SERVICE.ticket.checkExistWaitRelease + `?ticketId=${ticketId}`, {
+    headers: {
+      Authorization: undefined
+    }
+  })
+}

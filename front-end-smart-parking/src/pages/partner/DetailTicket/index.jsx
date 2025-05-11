@@ -11,11 +11,10 @@ import { toastError } from "@/utils/toast";
 const { Title } = Typography;
 
 const DetailTicket = () => {
-  const [styleParent, setStyleParent] = useState({})
-  const [widthPage, setWidthPage] = useState(window.innerWidth)
-  const [dataRelease, setDataRelease] = useState(null)
-  const [dataRoot, setDataRoot] = useState(null)
-  const [partnerName, setPartnerName] = useState(null)
+  const [styleParent, setStyleParent] = useState({});
+  const [widthPage, setWidthPage] = useState(window.innerWidth);
+  const [dataRelease, setDataRelease] = useState(null);
+  const [dataRoot, setDataRoot] = useState(null);
   const { showLoad, hideLoad } = useLoading();
   const {isWaitRelease, id} = useParams();
   const isWaitReleaseBool = Number(isWaitRelease) === 1;
@@ -24,7 +23,6 @@ const DetailTicket = () => {
     detail(id).then((response) => {
       const data = getDataApi(response);
       setDataRoot(data);
-      setPartnerName(data?.partnerName);
     })
     .catch((error) => {
       const dataError = getDataApi(error);
@@ -39,7 +37,6 @@ const DetailTicket = () => {
     detailWaitRelease(id).then((response) => {
       const data = getDataApi(response);
       setDataRelease(data);
-      setPartnerName(data?.partnerName);
       if(!isNullOrUndefined(data?.ticketId)) {
         getDataRoot(data.ticketId);
       }
@@ -68,7 +65,7 @@ const DetailTicket = () => {
   useEffect(() => {
     const handleResize = () => {
       let style = {};
-      if (window.innerWidth <= 1288 || !dataRelease) {
+      if (window.innerWidth <= 1288 || !isWaitReleaseBool) {
         style = {
           width: "100%"
         }
@@ -86,7 +83,8 @@ const DetailTicket = () => {
       window.removeEventListener("resize", handleResize);
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dataRelease, dataRoot]);
+  }, []);
+
   return (
     <div>
       <Title level={4} 
@@ -95,13 +93,13 @@ const DetailTicket = () => {
           borderBottom: "1px solid rgb(185, 183, 183)",
           display: "inline-block"
         }}
-        >Thông tin vé: {id} - của đối tác: {partnerName}</Title>
+        >Thông tin vé: {id}</Title>
       <div className = {dataRelease && "modify"}>
         <div style={styleParent}>
-          <BoxInfo data={dataRoot} isWaitApprove={false} widthPage={widthPage} />
+          <BoxInfo data={dataRoot} isWaitRelease={false} widthPage={widthPage} existWaitReleaseInput={!isNullOrUndefined(dataRelease)}/>
         </div>
-        {dataRelease && <div style={styleParent}>
-          <BoxInfo data={dataRelease} isWaitApprove={true} widthPage={widthPage}/>
+        {dataRelease && <div>
+          <BoxInfo data={dataRelease} isWaitRelease={true} widthPage={widthPage} existWaitReleaseInput={true}/>
         </div>}
       </div>
     </div>
