@@ -107,17 +107,31 @@ public class LocationServiceImpl implements LocationService {
     }
 
     @Override
-    public ApiResponse<Object> detail(Long id) {
+    public ApiResponse<Object> details(List<Long> ids, boolean isDetail) {
         boolean roleAdmin = false;
         String accountId = ParkingServiceApplication.testPartnerActionBy;
-        Location location = locationRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
+        List<Location> locations = locationRepository.findAllById(ids);
+        if (locations.isEmpty()) {
+            throw new AppException(ErrorCode.NOT_FOUND);
+        }
+        if (isDetail) { // nếu gọi từ màn detail
+            Location location = locations.getFirst();
+            return ApiResponse.builder()
+                    .result(this.convertDetail(location, roleAdmin, accountId))
+                    .build();
+        } else { // lấy danh sách địa điểm áp dụng cho vé
+            List<LocationResponse> result = locations.stream().map(item -> convertDetail(item, roleAdmin, accountId)).toList();
+            return ApiResponse.builder()
+                    .result(result)
+                    .build();
+        }
+    }
+
+    LocationResponse convertDetail(Location location, boolean roleAdmin, String accountId) {
         if (!roleAdmin && !location.getPartnerId().equals(accountId)) {
             throw new AppException(ErrorCode.NO_ACCESS);
         }
-        return ApiResponse.builder()
-                .result(locationMapper.toLocationResponse(location))
-                .build();
+        return locationMapper.toLocationResponse(location);
     }
 
     @Override

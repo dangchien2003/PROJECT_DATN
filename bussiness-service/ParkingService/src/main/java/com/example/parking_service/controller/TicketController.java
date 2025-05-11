@@ -53,4 +53,10 @@ public class TicketController {
     ApiResponse<Object> adminCancelWaitRelease(@Valid @RequestBody ApproveRequest approveRequest) {
         return ticketService.cancelWaitRelease(approveRequest, true);
     }
+
+    @GetMapping("check-exist-wait-release")
+    ApiResponse<Object> checkExistWaitRelease(@RequestParam(name = "ticketId", required = true) Long ticketId) {
+        ticketService.checkExistWaitRelease(ticketId);
+        return ApiResponse.builder().build();
+    }
 }

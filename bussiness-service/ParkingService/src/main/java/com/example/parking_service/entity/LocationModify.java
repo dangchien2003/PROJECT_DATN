@@ -41,6 +41,7 @@ public class LocationModify extends BaseEntity {
     String coordinates;
 
     @Lob
+    @Column(columnDefinition = "TEXT")
     String linkGoogleMap;
 
     String avatar;

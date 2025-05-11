@@ -1,5 +1,9 @@
 package com.example.common.utils;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+
 import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -57,5 +61,16 @@ public class DataUtils {
                 .replace("!", "!!")
                 .replace("_", "!_")
                 .replace("%", "!%");
+    }
+
+    public static Pageable convertPageable(Pageable pageable, String fieldSortDefault) {
+        if (pageable.getSort().isUnsorted()) {
+            return PageRequest.of(
+                    pageable.getPageNumber(),
+                    pageable.getPageSize(),
+                    Sort.by(Sort.Direction.DESC, fieldSortDefault) // hoặc ASC tùy nhu cầu
+            );
+        }
+        return pageable;
     }
 }

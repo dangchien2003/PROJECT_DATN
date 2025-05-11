@@ -9,6 +9,8 @@ import com.example.common.exception.ErrorCode;
 import com.example.common.utils.DataUtils;
 import com.example.common.utils.TimeUtil;
 import com.example.parking_service.ParkingServiceApplication;
+import com.example.parking_service.Specification.TicketSpecification;
+import com.example.parking_service.Specification.TicketWaitReleaseSpecification;
 import com.example.parking_service.dto.other.PriceTicket;
 import com.example.parking_service.dto.other.ScheduledJob;
 import com.example.parking_service.dto.other.ScheduledJobId;
@@ -32,6 +34,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,10 +55,21 @@ public class TicketServiceImpl implements TicketService {
     TicketPriceRepository ticketPriceRepository;
     TicketLocationRepository ticketLocationRepository;
     TicketWaitReleaseRepository ticketWaitReleaseRepository;
+    TicketSpecification ticketSpecification;
+    TicketWaitReleaseSpecification ticketWaitReleaseSpecification;
     SchedulerService schedulerService;
     TicketMapper ticketMapper;
     TicketWaitReleaseMapper ticketWaitReleaseMapper;
     ObjectMapper objectMapper;
+
+    @Override
+    public void checkExistWaitRelease(Long ticketId) {
+        // kiểm tra có tồn tại bản ghi chờ áp dụng hay không
+        if (ticketWaitReleaseRepository.existsByTicketIdAndIsDelAndReleased(ticketId,
+                IsDel.DELETE_NOT_YET.getValue(), Release.RELEASE_NOT_YET.getValue())) {
+            throw new AppException(ErrorCode.CONFLICT_DATA.withMessage("Đang tồn tại bản ghi chờ áp dụng, tiến hành huỷ để tiếp tục"));
+        }
+    }
 
     @Override
     public ApiResponse<Object> cancelWaitRelease(ApproveRequest approveRequest, boolean isAdmin) {
@@ -110,7 +124,7 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     public ApiResponse<Object> detail(Long id) {
-        boolean roleAdmin = false;
+        boolean roleAdmin = true;
         String accountId = ParkingServiceApplication.testPartnerActionBy;
         Ticket ticket = ticketRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
@@ -127,6 +141,11 @@ public class TicketServiceImpl implements TicketService {
                         TypeTicket.PHAT_HANH.getValue(), IsDel.DELETE_NOT_YET.getValue());
         List<Long> locationIds = ticketLocations.stream().map(TicketLocation::getLocationId).toList();
         result.setLocationUse(locationIds);
+        if (roleAdmin) {
+            Account account = accountRepository.findById(result.getPartnerId())
+                    .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
+            result.setPartnerName(account.getPartnerFullName());
+        }
         return ApiResponse.builder()
                 .result(result)
                 .build();
@@ -134,7 +153,31 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     public ApiResponse<Object> detailWaitRelease(Long id) {
-        return null;
+        boolean roleAdmin = true;
+        String accountId = ParkingServiceApplication.testPartnerActionBy;
+        TicketWaitRelease ticketWaitRelease = ticketWaitReleaseRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
+        if (!roleAdmin && !ticketWaitRelease.getPartnerId().equals(accountId)) {
+            throw new AppException(ErrorCode.NO_ACCESS);
+        }
+        DataSearchTicketResponse result = ticketMapper.toDataSearchTicketResponse(ticketWaitRelease);
+        // lấy thông tin giá vé
+        Map<String, TicketPrice> ticketPriceMap = getMapTicketPrice(TypeTicket.CHO_AP_DUNG.getValue(), List.of(ticketWaitRelease.getId()));
+        getTicketPriceResponse(ticketPriceMap, result);
+        // lấy địa điểm áp dụng
+        List<TicketLocation> ticketLocations = ticketLocationRepository
+                .findAllByObjectIdAndTypeAndIsDel(ticketWaitRelease.getId(),
+                        TypeTicket.CHO_AP_DUNG.getValue(), IsDel.DELETE_NOT_YET.getValue());
+        List<Long> locationIds = ticketLocations.stream().map(TicketLocation::getLocationId).toList();
+        result.setLocationUse(locationIds);
+        if (roleAdmin) {
+            Account account = accountRepository.findById(result.getPartnerId())
+                    .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
+            result.setPartnerName(account.getPartnerFullName());
+        }
+        return ApiResponse.builder()
+                .result(result)
+                .build();
     }
 
     @Override
@@ -227,8 +270,8 @@ public class TicketServiceImpl implements TicketService {
         Long totalElement = null;
         Integer totalPage = null;
         if (request.getTab().equals(1) || request.getTab().equals(4)) {
-            // lấy vé chờ phát hành
-            Page<TicketWaitRelease> ticketWaitReleases = ticketWaitReleaseRepository.adminSearch(
+            pageable = DataUtils.convertPageable(pageable, TicketWaitRelease_.ID);
+            Specification<TicketWaitRelease> spec = ticketWaitReleaseSpecification.adminSearch(
                     ticketName,
                     modifyStatus,
                     releaseTime,
@@ -236,9 +279,11 @@ public class TicketServiceImpl implements TicketService {
                     request.getVehicle(),
                     listIds,
                     listPartner,
-                    request.getTab().equals(4),
-                    pageable
+                    request.getTab().equals(4)
             );
+
+            // lấy vé chờ phát hành
+            Page<TicketWaitRelease> ticketWaitReleases = ticketWaitReleaseRepository.findAll(spec, pageable);
             // gán dữ liệu trang
             totalElement = ticketWaitReleases.getTotalElements();
             totalPage = ticketWaitReleases.getTotalPages();
@@ -253,8 +298,8 @@ public class TicketServiceImpl implements TicketService {
                 return dataSearchTicketResponse;
             }).toList();
         } else {
-            // lấy vé đã phát hành
-            Page<Ticket> tickets = ticketRepository.adminSearch(
+            pageable = DataUtils.convertPageable(pageable, Ticket_.TICKET_ID);
+            Specification<Ticket> spec = ticketSpecification.adminSearch(
                     ticketName,
                     status,
                     modifyStatus,
@@ -262,9 +307,11 @@ public class TicketServiceImpl implements TicketService {
                     trendReleaseTime,
                     request.getVehicle(),
                     listIds,
-                    listPartner,
-                    pageable
+                    listPartner
             );
+
+            // lấy vé đã phát hành
+            Page<Ticket> tickets = ticketRepository.findAll(spec, pageable);
             // gán dữ liệu trang
             totalElement = tickets.getTotalElements();
             totalPage = tickets.getTotalPages();
@@ -368,17 +415,17 @@ public class TicketServiceImpl implements TicketService {
         Long totalElement = null;
         Integer totalPage = null;
         if (request.getTab().equals(3)) {
-            // lấy vé chờ phát hành
-            Page<TicketWaitRelease> ticketWaitReleases = ticketWaitReleaseRepository.partnerSearch(
+            pageable = DataUtils.convertPageable(pageable, TicketWaitRelease_.ID);
+            Specification<TicketWaitRelease> spec = ticketWaitReleaseSpecification.partnerSearch(
                     ticketName,
                     modifyStatus,
                     releaseTime,
                     trendReleaseTime,
                     request.getVehicle(),
                     listIds,
-                    partnerId,
-                    pageable
+                    partnerId
             );
+            Page<TicketWaitRelease> ticketWaitReleases = ticketWaitReleaseRepository.findAll(spec, pageable);
             // gán dữ liệu trang
             totalElement = ticketWaitReleases.getTotalElements();
             totalPage = ticketWaitReleases.getTotalPages();
@@ -393,8 +440,8 @@ public class TicketServiceImpl implements TicketService {
                 return dataSearchTicketResponse;
             }).toList();
         } else {
-            // lấy vé đã phát hành
-            Page<Ticket> tickets = ticketRepository.partnerSearch(
+            pageable = DataUtils.convertPageable(pageable, Ticket_.TICKET_ID);
+            Specification<Ticket> spec = ticketSpecification.partnerSearch(
                     ticketName,
                     status,
                     modifyStatus,
@@ -402,9 +449,9 @@ public class TicketServiceImpl implements TicketService {
                     trendReleaseTime,
                     request.getVehicle(),
                     listIds,
-                    partnerId,
-                    pageable
+                    partnerId
             );
+            Page<Ticket> tickets = ticketRepository.findAll(spec, pageable);
             // gán dữ liệu trang
             totalElement = tickets.getTotalElements();
             totalPage = tickets.getTotalPages();
@@ -497,11 +544,8 @@ public class TicketServiceImpl implements TicketService {
             // lưu địa điểm
             saveLocationUse(request, ticketWaitRelease, partnerId);
         } else {
-            // kiểm tra có tồn tại bản ghi chờ áp dụng hay không
-            if (ticketWaitReleaseRepository.existsByTicketIdAndIsDelAndReleased(ticket.getTicketId(),
-                    IsDel.DELETE_NOT_YET.getValue(), Release.RELEASE_NOT_YET.getValue())) {
-                throw new AppException(ErrorCode.CONFLICT_DATA.withMessage("Đang tồn tại bản ghi chờ áp dụng, tiến hành huỷ để tiếp tục"));
-            }
+            // kiểm tra tồn tại bản ghi chờ phát hành
+            this.checkExistWaitRelease(ticket.getTicketId());
             // lưu trạng thái vé
             ticket.setModifyCount(ticket.getModifyCount() + 1);
             ticket.setModifyStatus(TicketModifyStatus.CHO_AP_DUNG);

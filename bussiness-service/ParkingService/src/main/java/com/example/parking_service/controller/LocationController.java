@@ -16,6 +16,8 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/location")
@@ -67,7 +69,7 @@ public class LocationController {
 
     @GetMapping("detail")
     ApiResponse<Object> detail(@RequestParam("id") Long id) {
-        return locationService.detail(id);
+        return locationService.details(List.of(id), true);
     }
 
     @GetMapping("detail/wait-release")
@@ -83,5 +85,10 @@ public class LocationController {
     @GetMapping("all/is-active")
     ApiResponse<Object> getAllIsActive(@RequestParam(value = "page", defaultValue = "0") int page) {
         return locationService.getAllIsActive(page);
+    }
+
+    @PostMapping("list/detail")
+    ApiResponse<Object> listDetail(@RequestBody List<Long> ids) {
+        return locationService.details(ids, false);
     }
 }

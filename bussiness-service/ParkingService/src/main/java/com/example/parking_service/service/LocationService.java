@@ -5,6 +5,8 @@ import com.example.parking_service.dto.request.AdminSearchLocation;
 import com.example.parking_service.dto.request.PartnerSearchLocation;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 public interface LocationService {
     ApiResponse<Object> searchLocationByPartner(PartnerSearchLocation request, Pageable pageable);
 
@@ -12,7 +14,7 @@ public interface LocationService {
 
     ApiResponse<Object> searchLocationByAdmin(AdminSearchLocation request, Pageable pageable);
 
-    ApiResponse<Object> detail(Long id);
+    ApiResponse<Object> details(List<Long> ids, boolean isDetail);
 
     ApiResponse<Object> detailWaitRelease(Long id);
 
