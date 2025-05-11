@@ -13,7 +13,6 @@ import { Link } from "react-router-dom"
 import { extractYouTubeVideoId } from "@/utils/extract"
 const { Title } = Typography;
 
-const linkImage = "https://i0.wp.com/plopdo.com/wp-content/uploads/2021/11/feature-pic.jpg?w=537&ssl=1"
 const BoxInfo = ({
   data, 
   isModify, 
@@ -48,7 +47,7 @@ const BoxInfo = ({
         {/* Thông tin chính */}
         <div style={{display: "flex", gap: 8, padding: "0 16px"}}>
           <div>
-            <Avatar linkImage={linkImage}/>
+            <Avatar linkImage={data?.avatar}/>
             <Title level={5} style={{textAlign: "center"}}>Ảnh đại diện</Title>
           </div>
           <div style={{flex: 1}}>
@@ -80,7 +79,7 @@ const BoxInfo = ({
           <BoxCheckBox label={"Mở cửa ngày lễ"} checked={data.openHoliday}/>
         </div>
         <div>
-          <QuillEditor style={{margin: 10}} value={data.description} readonly={false} key={"description"}/>
+          <QuillEditor style={{margin: 10}} value={data.description} readonly={true} key={"description"}/>
         </div>
         {isModify && [3, 4, 5].includes(tab) && 
         <div>

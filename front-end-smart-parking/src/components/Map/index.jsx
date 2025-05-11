@@ -14,6 +14,17 @@ import markerShadow from "leaflet/dist/images/marker-shadow.png";
 //   return null;
 // };
 
+// căn chỉnh lại map => cần sử dụng khi mở trong modal
+const AutoResizeMap = () => {
+  const map = useMap();
+
+  useEffect(() => {
+    setTimeout(() => {
+      map.invalidateSize();
+    }, 200);
+  }, [map]);
+};
+
 // forcus từ từ tới địa điểm
 const FlyToLocation = ({ position, loadFist }) => {
   const map = useMap();
@@ -37,6 +48,7 @@ const customIcon = new L.Icon({
 });
 const focusDefault = [10.762622, 106.660172];
 const Map = ({ data = [], ...prop }) => {
+  console.log(data)
   const [loadFist, setLoadFirst] = useState(false);
 
   useEffect(() => {
@@ -47,6 +59,7 @@ const Map = ({ data = [], ...prop }) => {
   return (
     <MapContainer center={focusDefault} zoom={13} {...prop}>
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+      <AutoResizeMap />
       <FlyToLocation position={focusDefault} loadFist={loadFist} />
       {data.map((location, index) => {
         return (

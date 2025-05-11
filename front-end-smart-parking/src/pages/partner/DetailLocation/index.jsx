@@ -7,6 +7,7 @@ import { locationDetail, modifyDetail, waitReleaseDetail } from "@/service/locat
 import { useLoading } from "@/hook/loading";
 import { getDataApi } from "@/utils/api";
 import { toastError } from "@/utils/toast";
+import { isNullOrUndefined } from "@/utils/data";
 const { Title } = Typography;
 
 const DetailLocation = () => {
@@ -37,7 +38,9 @@ const DetailLocation = () => {
       modifyDetail(id).then((response) => {
         const result = getDataApi(response);
         setDataModify(result);
-        return result.locationId;
+        if(!isNullOrUndefined(result?.locationId)) {
+          getDataRoot(dataModify.locationId);
+        }
       })
       .catch((error) => {
         const dataError = getDataApi(error);
@@ -52,7 +55,9 @@ const DetailLocation = () => {
       waitReleaseDetail(id).then((response) => {
         const result = getDataApi(response);
         setDataModify(result);
-        return result.locationId;
+        if(!isNullOrUndefined(result?.locationId)) {
+          getDataRoot(result.locationId);
+        }
       })
       .catch((error) => {
         const dataError = getDataApi(error);
@@ -71,16 +76,10 @@ const DetailLocation = () => {
 
     if([3, 4].includes(tabNumber)){
       getDataModify(id);
-      if(dataModify?.locationId) {
-        getDataRoot(dataModify.locationId);
-      }
     }
 
     if(tabNumber === 5) {
       getDataWaitRelease(id);
-      if(dataModify?.locationId) {
-        getDataRoot(dataModify.locationId);
-      }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tabNumber, id])
@@ -116,7 +115,7 @@ const DetailLocation = () => {
           borderBottom: "1px solid rgb(185, 183, 183)",
           display: "inline-block"
         }}
-        >Thông tin địa điểm: {dataRoot && dataRoot?.id !== null ? dataRoot?.id : dataModify?.modifyId}</Title>
+        >Thông tin địa điểm: {!isNullOrUndefined(dataModify) ?  dataModify?.name: dataRoot?.name}</Title>
       <div className = {dataModify && "modify"}>
         <div style={styleParent}>
           <BoxInfo data={dataRoot} isModify={false} widthPage={widthPage} tab={tabNumber} hasModify={dataModify !== null}/>
