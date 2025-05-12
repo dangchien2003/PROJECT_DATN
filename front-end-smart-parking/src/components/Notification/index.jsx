@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MdNotifications } from "react-icons/md";
 import { MdNotificationsActive } from "react-icons/md";
 import "./style.css";
 import CardNotify from "./CardNotify";
+import WebSocket from "@/configs/websocket";
 
 const Notifitation = () => {
   const [showNotify, setShowNotify] = useState(false);
@@ -11,6 +12,13 @@ const Notifitation = () => {
   const handleToggleNotify = () => {
     setShowNotify((pre) => !pre);
   };
+
+  useEffect(() => {
+    const callback = (data) => {
+      console.log(data)
+    }
+    WebSocket.subscribe("/user/queue/notify", callback)
+  }, []);
 
   return (
     <div style={{ paddingLeft: 60 }}>

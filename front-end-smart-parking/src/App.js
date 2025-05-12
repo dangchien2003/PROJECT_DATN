@@ -27,6 +27,8 @@ import ListLocationPartner from "./pages/partner/ListLocation";
 import DetailLocationPartner from "./pages/partner/DetailLocation";
 import AddTicket from "./pages/partner/AddTicket";
 import ListTicketPartner from "./pages/partner/ListTicket";
+import { useEffect } from "react";
+import WebSocket from "./configs/websocket";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -79,6 +81,11 @@ const router = createBrowserRouter([
   }
 ]);
 function App() {
+  // kết nối websocket
+  useEffect(() => {
+    WebSocket.connect();
+    return () => WebSocket.disconnect();
+  }, []);
   return (
     <div>
       <FullPageLoading />
