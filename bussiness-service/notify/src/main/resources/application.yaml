@@ -1,0 +1,21 @@
+server:
+  port: 8083
+spring:
+  application:
+    name: NotifyService
+  datasource:
+    url: jdbc:mysql://localhost:3306/datn_parking
+    username: root
+    password:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          time_zone: Asia/Ho_Chi_Minh
+  jackson:
+    time-zone: Asia/Ho_Chi_Minh

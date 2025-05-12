@@ -79,7 +79,7 @@ public class LocationModifyServiceImpl implements LocationModifyService {
         }
         // kiểm tra thời hạn
         Duration duration = Duration.between(LocalDateTime.now(), modifyEntity.getTimeAppliedEdit());
-        if (duration.toSeconds() < 0 && request.getApprove()) {
+        if (duration.toSeconds() < 0 && Boolean.TRUE.equals(request.getApprove())) {
             throw new AppException(ErrorCode.INVALID_DATA.withMessage("Yêu cầu đã vượt quá thời điểm được duyệt"));
         }
         if (Boolean.TRUE.equals(request.getApprove())) {

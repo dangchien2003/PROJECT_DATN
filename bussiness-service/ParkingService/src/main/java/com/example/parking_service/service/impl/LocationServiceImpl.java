@@ -120,7 +120,10 @@ public class LocationServiceImpl implements LocationService {
                     .result(this.convertDetail(location, roleAdmin, accountId))
                     .build();
         } else { // lấy danh sách địa điểm áp dụng cho vé
-            List<LocationResponse> result = locations.stream().map(item -> convertDetail(item, roleAdmin, accountId)).toList();
+            List<LocationResponse> result = locations.stream()
+//                    .filter(item -> !DataUtils.isNullOrEmpty(item.getCoordinates())) // lọc ra địa điểm không có định vị (lọc ở fe)
+                    .map(item -> convertDetail(item, roleAdmin, accountId)) // chuyển sang response
+                    .toList();
             return ApiResponse.builder()
                     .result(result)
                     .build();
