@@ -14,4 +14,5 @@ public class SendNotifyRequest {
     String content;
     String link;
     int viewed;
+    String actionBy;
 }

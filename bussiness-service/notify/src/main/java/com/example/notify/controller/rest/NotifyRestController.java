@@ -6,10 +6,7 @@ import com.example.notify.service.NotificationService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,5 +19,20 @@ public class NotifyRestController {
     @PostMapping("send")
     ApiResponse<Object> send(@RequestBody SendNotifyRequest request) {
         return notificationService.send(request);
+    }
+
+    @GetMapping("get/all")
+    ApiResponse<Object> getAllNotify(@RequestParam("page") int page) {
+        return notificationService.getAllNotify(page);
+    }
+
+    @PutMapping("view/all")
+    ApiResponse<Object> viewAll() {
+        return notificationService.viewAll();
+    }
+
+    @GetMapping("count/viewed-not-yet")
+    ApiResponse<Object> countViewedNotYet() {
+        return notificationService.countViewedNotYet();
     }
 }
