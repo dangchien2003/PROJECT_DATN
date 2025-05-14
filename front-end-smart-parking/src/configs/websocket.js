@@ -18,7 +18,7 @@ class WebSocketConfig {
       debug: () => {}, // tắt log
       reconnectDelay: 5000,
       connectHeaders: {
-        'user-id': '1'
+        'user-id': '641a00fd-9936-4a95-aa0c-d2fbc0fca9a3'
       },
       onConnect: () => {
         this.queueSubscribe.forEach(({ topic, callback }) => {
@@ -52,6 +52,9 @@ class WebSocketConfig {
       this.client.publish({
         destination,
         body: JSON.stringify(body),
+        headers: {
+          'user-id': '641a00fd-9936-4a95-aa0c-d2fbc0fca9a3',
+        },
       });
     }
   };

@@ -1,3 +1,5 @@
+import { isNullOrUndefined } from "./data";
+
 export const getParamsPage = (page, size, field, sort) => {
   let params = `page=${page}&size=${size}`;
   if (field && sort) {
@@ -38,7 +40,7 @@ export const getDataApi = (response) => {
     return response.data.result.data;
   }
   if (response.data) {
-    if (response.data.result) {
+    if (!isNullOrUndefined(response.data.result)) {
       return response.data.result;
     }
     return response.data;

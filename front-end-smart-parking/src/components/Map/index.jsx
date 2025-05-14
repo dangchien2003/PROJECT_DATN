@@ -48,7 +48,6 @@ const customIcon = new L.Icon({
 });
 const focusDefault = [10.762622, 106.660172];
 const Map = ({ data = [], ...prop }) => {
-  console.log(data)
   const [loadFist, setLoadFirst] = useState(false);
 
   useEffect(() => {
