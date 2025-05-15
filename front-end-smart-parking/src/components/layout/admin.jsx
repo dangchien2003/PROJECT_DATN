@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import { Button, Layout, Menu, theme } from "antd";
 import { ADMIN_MENU } from "../../utils/menu";
@@ -8,6 +8,7 @@ import Notifitation from "../Notification";
 import Account from "../Account";
 import "./style.css";
 import { ToastContainer } from "react-toastify";
+import LogoParking from "../Logo";
 const { Header, Sider, Content } = Layout;
 
 const AdminLayout = () => {
@@ -20,7 +21,7 @@ const AdminLayout = () => {
     <Layout style={{ minHeight: "100vh" }}>
       <ToastContainer />
       <Sider trigger={null} collapsible collapsed={collapsed}>
-        <div className="demo-logo-vertical">các</div>
+        <div className="demo-logo-vertical"><LogoParking /></div>
         <Menu
           theme="dark"
           mode="inline"

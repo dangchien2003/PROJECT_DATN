@@ -31,7 +31,7 @@ import { useEffect } from "react";
 import WebSocket from "./configs/websocket";
 const router = createBrowserRouter([
   {
-    path: "/",
+    path: "/admin",
     element: <AdminLayout />,
     children: [
       { path: "demo", element: <ComponentDemo /> },

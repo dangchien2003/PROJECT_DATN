@@ -7,7 +7,7 @@ export const ADMIN_MENU = [
   {
     key: "1",
     icon: <HomeOutlined style={{ fontSize: 20 }} />,
-    label: <Link to={"/"}>Dashboard</Link>,
+    label: <Link to={"/admin"}>Trang chủ</Link>,
   },
   {
     key: "2",
@@ -16,15 +16,15 @@ export const ADMIN_MENU = [
     children: [
       {
         key: "2.1",
-        label: <Link to={"/account/create"}>Tạo tài khoản</Link>,
+        label: <Link to={"/admin/account/create"}>Tạo tài khoản</Link>,
       },
       {
         key: "2.2",
-        label: <Link to={"/account/customer"}>Khách hàng</Link>,
+        label: <Link to={"/admin/account/customer"}>Khách hàng</Link>,
       },
       {
         key: "2.3",
-        label: <Link to={"/account/partner"}>Đối tác</Link>,
+        label: <Link to={"/admin/account/partner"}>Đối tác</Link>,
       },
     ],
   },
@@ -35,7 +35,7 @@ export const ADMIN_MENU = [
     children: [
       {
         key: "3.1",
-        label: <Link to={"/ticket"}>Danh sách vé</Link>,
+        label: <Link to={"/admin/ticket"}>Danh sách vé</Link>,
       },
     ],
   },
@@ -46,11 +46,11 @@ export const ADMIN_MENU = [
     children: [
       {
         key: "4.1",
-        label: <Link to={"/card"}>Danh sách thẻ</Link>,
+        label: <Link to={"/admin/card"}>Danh sách thẻ</Link>,
       },
       {
         key: "4.2",
-        label: <Link to={"/card/wait-approve"}>Yêu cầu thêm thẻ</Link>,
+        label: <Link to={"/admin/card/wait-approve"}>Yêu cầu thêm thẻ</Link>,
       },
     ],
   },
@@ -61,15 +61,15 @@ export const ADMIN_MENU = [
     children: [
       {
         key: "5.1",
-        label: <Link to={"/location/map/all"}>Bản đồ</Link>,
+        label: <Link to={"/admin/location/map/all"}>Bản đồ</Link>,
       },
       {
         key: "5.2",
-        label: <Link to={"/location"}>Danh sách địa điểm</Link>,
+        label: <Link to={"/admin/location"}>Danh sách địa điểm</Link>,
       },
       {
         key: "5.3",
-        label: <Link to={"/location/wait-approve"}>Chờ duyệt</Link>,
+        label: <Link to={"/admin/location/wait-approve"}>Chờ duyệt</Link>,
       }
     ],
   },
@@ -98,7 +98,7 @@ export const PARTNER_MENU = [
   {
     key: "1",
     icon: <HomeOutlined style={{ fontSize: 20 }} />,
-    label: <Link to={"/partner"}>Dashboard</Link>,
+    label: <Link to={"/partner"}>Trang chủ</Link>,
   },
   {
     key: "2",

@@ -38,8 +38,9 @@ const PieChartCustom = ({
       style={{
         display: "inline-block",
         padding: 16,
-        border: "1px solid #B9B7B7",
+        borderTop: "1px solid #B9B7B7",
         position: "relative",
+        marginRight: 8
       }}
     >
       <span

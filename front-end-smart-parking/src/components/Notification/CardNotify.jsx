@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import ItemNotify from "./ItemNotify";
 import { checkNotifyViewd } from "@/utils/notify";
 import WebSocket from "@/configs/websocket";
@@ -11,8 +11,8 @@ const CardNotify = ({ setCountNotify, onClose }) => {
   const [datas, setDatas] = useState([]);
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(true);
-  const notifyRef = useRef(null);
-  const notifyContentRef = useRef(null);
+  const notifyRef = useRef();
+  const notifyContentRef = useRef();
 
   useEffect(() => {
     // socket lấy thông báo
@@ -20,6 +20,7 @@ const CardNotify = ({ setCountNotify, onClose }) => {
       setDatas((prev) => ([newNotify, ...prev]));
       setCountNotify((prev) => prev + 1);
     })
+  // eslint-disable-next-line react-hooks/exhaustive-deps 
   }, []);
 
   useEffect(() => {
@@ -32,14 +33,21 @@ const CardNotify = ({ setCountNotify, onClose }) => {
         }
       } else {
         // Huỷ sự kiện khi lấy hết thông báo
-        notifyContentRef.current.removeEventListener("scroll", handleScroll);
+        if(notifyContentRef.current) {
+          notifyContentRef.current.removeEventListener("scroll", handleScroll);
+        }
       }
     }
+    if (notifyContentRef.current) {
+      notifyContentRef.current.addEventListener("scroll", handleScroll);
 
-    notifyContentRef.current.addEventListener("scroll", handleScroll);
+    }
     return () => {
-      notifyContentRef.current.removeEventListener("scroll", handleScroll);
+      if(notifyContentRef.current) {
+        notifyContentRef.current.removeEventListener("scroll", handleScroll);
+      }
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps 
   }, [])
 
   useEffect(() => {
