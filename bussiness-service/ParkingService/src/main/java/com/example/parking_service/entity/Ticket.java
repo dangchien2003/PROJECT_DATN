@@ -23,7 +23,7 @@ public class Ticket extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    Long ticketId;
 
     @Column(nullable = false)
     String partnerId;
@@ -34,9 +34,13 @@ public class Ticket extends BaseEntity {
 
     Integer status;
 
+    String reason;
+
     Integer modifyStatus;
 
-    String reason;
+    String rejectBy;
+
+    String reasonReject;
 
     LocalDateTime releasedTime;
 
@@ -49,4 +53,7 @@ public class Ticket extends BaseEntity {
     Integer weekSlot;
 
     Integer monthSlot;
+
+    @Lob
+    String description;
 }

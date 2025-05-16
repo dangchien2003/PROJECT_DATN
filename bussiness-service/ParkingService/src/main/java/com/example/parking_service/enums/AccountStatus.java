@@ -7,7 +7,7 @@ import lombok.experimental.FieldDefaults;
 
 @Getter
 @AllArgsConstructor
-@FieldDefaults(makeFinal = true, level = AccessLevel.PACKAGE)
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public enum AccountStatus {
     KHOA_TAI_KHOAN(0),
     KHOA_TAM_THOI(1),
