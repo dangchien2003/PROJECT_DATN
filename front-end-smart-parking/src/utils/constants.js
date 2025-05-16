@@ -162,7 +162,7 @@ export const VEHICLE_SELECTBOX = [
 export const TICKET_STATUS = {
   CHO_DUYET: {
     value: 0,
-    label: "Chờ duyệt",
+    label: "Chờ phát hành",
     color: "warning",
   },
   DANG_PHAT_HANH: {

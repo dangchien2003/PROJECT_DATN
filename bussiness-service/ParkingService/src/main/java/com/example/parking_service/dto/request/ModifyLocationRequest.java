@@ -28,6 +28,7 @@ public class ModifyLocationRequest {
     String videoTutorial;
     LocalTime openTime;
     LocalTime closeTime;
+    LocalDateTime openDate;
     @NotNull(message = "Không tìm thấy dữ liệu mở cửa ngày lễ")
     Integer openHoliday;
     @NotNull(message = "Thời gian áp dụng chỉnh sửa không được để trống")

@@ -7,6 +7,8 @@ import DateTimePickerWithSortLabelDash from "@/components/DateTimePickerWithSort
 import DividerCustom from "@/components/DividerCustom"
 import TimeInput from "@/components/TimeInput"
 import dayjs from 'dayjs';
+import CountDown from "@/components/CountDown"
+import LineLoading from "@/components/Loading/LineLoading"
 
 const ComponentDemo = () => {
   return (
@@ -56,6 +58,12 @@ const ComponentDemo = () => {
       </div>
       <div>
         <DatePickerFromToLabelDash />
+      </div>
+      <div>count down
+        <div><CountDown end={dayjs().add(1, 'day')} start={dayjs()}/></div>
+      </div>
+      <div>line Loading
+        <div><LineLoading /></div>
       </div>
     </div>
   )

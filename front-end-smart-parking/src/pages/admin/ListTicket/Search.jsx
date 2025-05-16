@@ -1,30 +1,66 @@
 import DateTimePickerWithSortLabelDash from "@/components/DateTimePickerWithSortLabelDash";
-import MultiSelectBoxLabelDash from "@/components/MultiSelectBoxLabelDash";
 import NumberInputWithSortLabelDash from "@/components/NumberInputWithSortLabelDash";
 import SelectBoxLabelDash from "@/components/SelectBoxLabelDash";
 import TextFieldLabelDash from "@/components/TextFieldLabelDash";
+import { useRequireField } from "@/hook/useRequireField";
+import { useMessageError } from "@/hook/validate";
+import { setSearching } from "@/store/startSearchSlice";
 import {
-  GENDER,
-  LOCATION_MODIFY_STATUS_SELECTBOX,
   PRICE_CATEGORY,
+  TICKET_MODIFY_STATUS,
   VEHICLE_SELECTBOX,
 } from "@/utils/constants";
-import { updateObjectValue } from "@/utils/object";
+import { isNullOrUndefined } from "@/utils/data";
+import { changeInput, changeInputTrend } from "@/utils/handleChange";
+import { convertObjectToDataSelectBox } from "@/utils/object";
 import { Button } from "antd";
+import { useState } from "react";
 import { IoSearch } from "react-icons/io5";
+import { useDispatch, useSelector } from "react-redux";
 
-const Search = ({ onSearch, dataSearch }) => {
-  const handleChange = (value, key) => {
-    if (dataSearch) {
-      updateObjectValue(dataSearch, key, value);
+const Search = ({ dataSearch }) => {
+  const { pushMessage } = useMessageError();
+    const { isSearching } = useSelector(state => state.startSearch)
+    const [requriePrice, setRequirePrice] = useState(false);
+    const dispatch = useDispatch();
+
+  const handleChange = (key, value) => {
+    changeInput(dataSearch, key, value);
+    if (key === "priceCategory") {
+      if (value !== undefined) {
+        setRequirePrice(true);
+      } else {
+        setRequirePrice(false);
+      }
     }
   };
-  const handleChangeValueInputOrder = (key, value, order) => {
-    if (typeof key === "object" && key.length === 2) {
-      updateObjectValue(dataSearch, key[0], value);
-      updateObjectValue(dataSearch, key[1], order);
-    } else {
-      updateObjectValue(dataSearch, key, value);
+
+  const handleChangeValueInputOrder = (key, value, trend, skip) => {
+    changeInputTrend(dataSearch, key, value, trend, skip)
+    if (key === "priceSearch") {
+      if (value !== null || !isNullOrUndefined(dataSearch.priceCategory)) {
+        setRequirePrice(true);
+      } else {
+        setRequirePrice(false);
+      }
+    }
+  };
+
+  const handleRunSearch = () => {
+    let pass = true;
+    if (requriePrice) {
+      if (isNullOrUndefined(dataSearch?.priceSearch?.value)) {
+        pushMessage("priceSearch", "Bắt buộc nhập");
+        pass = false;
+      }
+      if (isNullOrUndefined(dataSearch.priceCategory)) {
+        pushMessage("priceCategory", "Bắt buộc nhập");
+        pass = false;
+      }
+    }
+    
+    if (!isSearching && pass) {
+      dispatch(setSearching(true));
     }
   };
   return (
@@ -38,9 +74,9 @@ const Search = ({ onSearch, dataSearch }) => {
         }}
       >
         <TextFieldLabelDash
-          key={"name"}
+          key={"ticketName"}
           label="Tên vé"
-          defaultValue={""}
+          defaultValue={dataSearch.ticketName}
           placeholder={"Nhập tên vé"}
           itemKey="ticketName"
           callbackChangeValue={handleChange}
@@ -48,65 +84,70 @@ const Search = ({ onSearch, dataSearch }) => {
         <TextFieldLabelDash
           key={"partner"}
           label="Đối tác"
-          defaultValue={""}
+          defaultValue={dataSearch.ticketName}
           placeholder={"Nhập id đối tác"}
-          itemKey="partnerId"
+          itemKey="partnerName"
           callbackChangeValue={handleChange}
         />
         <SelectBoxLabelDash
           label={"Trạng thái chỉnh sửa"}
-          data={LOCATION_MODIFY_STATUS_SELECTBOX}
+          data={convertObjectToDataSelectBox(TICKET_MODIFY_STATUS)}
           key={"modify status"}
           itemKey="modifyStatus"
           placeholder={"Chọn trạng thái chỉnh sửa"}
           callbackChangeValue={handleChange}
+          defaultValue={dataSearch.modifyStatus}
         />
         <DateTimePickerWithSortLabelDash
           label={"Thời gian phát hành"}
-          itemKey={["releasedTime.time", "releasedTime.order"]}
+          itemKey={"releasedTime"}
           placeholder={"Chọn thời gian phát hành"}
           format="DD/MM/YYYY HH:mm"
           formatShowTime={{ format: "HH:mm" }}
           callbackChangeValue={handleChangeValueInputOrder}
+          defaultValue={dataSearch.releasedTime}
         />
         <NumberInputWithSortLabelDash
           label={"Giá vé"}
-          min={-10}
+          min={0}
           max={1000000000}
-          itemKey={["priceSearch.price", "priceSearch.order"]}
+          itemKey={"priceSearch"}
           placeholder={"Nhập giá vé"}
           callbackChangeValue={handleChangeValueInputOrder}
-          require={dataSearch.priceSearch.price || dataSearch.priceCategory}
           addonAfter="đ"
+          defaultValue={dataSearch.priceSearch}
+          trend={true}
         />
         <SelectBoxLabelDash
           label={"Phân loại giá"}
-          data={PRICE_CATEGORY}
-          key={"price category"}
+          data={convertObjectToDataSelectBox(PRICE_CATEGORY)}
+          key={"priceCategory"}
           itemKey="priceCategory"
           placeholder={"Chọn phân loại giá vé"}
           callbackChangeValue={handleChange}
           require={dataSearch.priceSearch.price || dataSearch.priceCategory}
+          defaultValue={dataSearch.priceCategory}
+        />
+        <TextFieldLabelDash
+          label={"Địa điểm"}
+          key={"locationName"}
+          itemKey="locationName"
+          placeholder={"Nhập tên địa điểm"}
+          callbackChangeValue={handleChange}
+          defaultValue={dataSearch.locationName}
         />
         <SelectBoxLabelDash
-          label={"Địa điểm"}
-          data={GENDER}
-          key={"location"}
-          itemKey="location"
-          placeholder={"Chọn địa điểm"}
-          callbackChangeValue={handleChange}
-        />
-        <MultiSelectBoxLabelDash
           label={"Phương tiện"}
-          data={VEHICLE_SELECTBOX}
+          data={convertObjectToDataSelectBox(VEHICLE_SELECTBOX)}
           key={"vehicle"}
           itemKey="vehicle"
           placeholder={"Chọn phương tiện"}
           callbackChangeValue={handleChange}
+          defaultValue={dataSearch.vehicle}
         />
       </div>
       <div style={{ display: "flex", justifyContent: "center" }}>
-        <Button color="primary" variant="outlined" onClick={onSearch}>
+        <Button color="primary" variant="outlined" onClick={handleRunSearch}>
           <IoSearch />
           Tìm kiếm
         </Button>

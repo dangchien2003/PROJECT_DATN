@@ -1,0 +1,17 @@
+.popup .ant-alert-description {
+  color: #8f8f8f;
+}
+
+.modal-custom {
+  width: auto !important;
+}
+
+.modal-custom .ant-modal-content {
+  max-height: 99vh !important;
+  padding: 45px;
+  overflow: auto !important;
+}
+
+.modal-children {
+  overflow: auto !important;
+}

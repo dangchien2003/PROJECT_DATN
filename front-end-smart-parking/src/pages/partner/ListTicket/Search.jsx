@@ -64,10 +64,8 @@ const Search = ({ dataSearch }) => {
       }
     }
     
-    if (!isSearching) {
-      if (pass) {
-        dispatch(setSearching(true))
-      }
+    if (!isSearching && pass) {
+      dispatch(setSearching(true));
     }
   };
 

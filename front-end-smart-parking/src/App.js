@@ -11,6 +11,7 @@ import ListTicket from "./pages/admin/ListTicket";
 import NotFound from "./components/layout/NotFound";
 import RequestApproveTicket from "./pages/admin/RequestApproveTicket";
 import DetailTicket from "./pages/admin/DetailTicket";
+import DetailTicketPartner from "./pages/partner/DetailTicket";
 import ListCard from "./pages/admin/ListCard";
 import ListCardWaitApprove from "./pages/admin/ListCardWaitApprove";
 import MapAllLocation from "./pages/admin/MapAllLocation";
@@ -26,9 +27,11 @@ import ListLocationPartner from "./pages/partner/ListLocation";
 import DetailLocationPartner from "./pages/partner/DetailLocation";
 import AddTicket from "./pages/partner/AddTicket";
 import ListTicketPartner from "./pages/partner/ListTicket";
+import { useEffect } from "react";
+import WebSocket from "./configs/websocket";
 const router = createBrowserRouter([
   {
-    path: "/",
+    path: "/admin",
     element: <AdminLayout />,
     children: [
       { path: "demo", element: <ComponentDemo /> },
@@ -41,7 +44,7 @@ const router = createBrowserRouter([
 
       { path: "ticket", element: <ListTicket /> },
       { path: "ticket/request", element: <RequestApproveTicket /> },
-      { path: "ticket/detail/:isIdModify/:tabStatus/:id", element: <DetailTicket /> },
+      { path: "ticket/detail/:isWaitRelease/:id", element: <DetailTicket /> },
 
       { path: "card", element: <ListCard /> },
       { path: "card/wait-approve", element: <ListCardWaitApprove /> },
@@ -65,8 +68,11 @@ const router = createBrowserRouter([
       { path: "location/detail/:tab/:id", element: <DetailLocationPartner /> },
       { path: "account/partner/:id", element: <PartnerInfo /> },
       { path: "account/customer/:id", element: <AccountCustomerInfo /> },
-      { path: "ticket/add", element: <AddTicket /> },
+
+      { path: "ticket/add", element: <AddTicket waitRelease={false}/> },
+      { path: "ticket/edit/:id", element: <AddTicket waitRelease={false}/> },
       { path: "ticket/list", element: <ListTicketPartner /> },
+      { path: "ticket/detail/:isWaitRelease/:id", element: <DetailTicketPartner /> },
     ]
   }, 
   {
@@ -75,6 +81,11 @@ const router = createBrowserRouter([
   }
 ]);
 function App() {
+  // kết nối websocket
+  useEffect(() => {
+    WebSocket.connect();
+    return () => WebSocket.disconnect();
+  }, []);
   return (
     <div>
       <FullPageLoading />

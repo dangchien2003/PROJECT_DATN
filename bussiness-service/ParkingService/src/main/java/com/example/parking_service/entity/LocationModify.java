@@ -12,7 +12,6 @@ import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Date;
 
 @Entity
 @Table(name = "location_modify")
@@ -33,6 +32,7 @@ public class LocationModify extends BaseEntity {
     String partnerId;
 
     String name;
+
     String address;
 
     @Column(nullable = false)
@@ -40,6 +40,8 @@ public class LocationModify extends BaseEntity {
 
     String coordinates;
 
+    @Lob
+    @Column(columnDefinition = "TEXT")
     String linkGoogleMap;
 
     String avatar;
@@ -50,13 +52,15 @@ public class LocationModify extends BaseEntity {
 
     Integer modifyStatus;
 
-    String reason;
+    String reasonChangeStatus;
+
+    String reasonReject;
 
     LocalTime openTime;
 
     LocalTime closeTime;
 
-    Date openDate;
+    LocalDateTime openDate;
 
     Integer openHoliday;
 

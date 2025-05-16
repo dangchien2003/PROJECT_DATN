@@ -32,5 +32,7 @@ public class TicketPrice extends BaseEntity {
 
     Long price;
 
-    Integer isActive;
+    String partnerId;
+
+    Integer isDel;
 }

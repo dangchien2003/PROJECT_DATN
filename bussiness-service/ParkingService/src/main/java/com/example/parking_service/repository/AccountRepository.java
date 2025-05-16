@@ -55,4 +55,10 @@ public interface AccountRepository extends JpaRepository<Account, String> {
     Optional<Account> findByIdAndCategory(String id, Integer category);
 
     Optional<Account> findByPartnerFullNameIgnoreCase(String partnerName);
+
+    @Query("""
+                        SELECT a.id from Account a
+                        where a.partnerFullName LIKE CONCAT('%', :partnerName, '%') ESCAPE '!'
+            """)
+    List<String> findAccountIdByPartnerFullName(@Param("partnerName") String partnerName);
 }

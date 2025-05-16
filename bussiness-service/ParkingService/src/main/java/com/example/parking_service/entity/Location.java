@@ -10,8 +10,8 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Date;
 
 @Entity
 @Table(name = "location")
@@ -24,18 +24,22 @@ public class Location extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    Long locationId;
 
     @Column(nullable = false)
     String partnerId;
 
     String name;
 
+    String address;
+
     @Column(nullable = false)
     Integer modifyCount;
 
     String coordinates;
 
+    @Lob
+    @Column(columnDefinition = "TEXT")
     String linkGoogleMap;
 
     String avatar;
@@ -46,17 +50,19 @@ public class Location extends BaseEntity {
 
     Integer modifyStatus;
 
-    String reason;
+    String reasonChangeStatus;
 
     LocalTime openTime;
 
     LocalTime closeTime;
 
-    Date openDate;
+    LocalDateTime openDate;
 
     Integer openHoliday;
 
     Long capacity;
+
+    String approveBy;
 
     @Lob
     String description;

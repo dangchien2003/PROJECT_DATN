@@ -66,11 +66,12 @@ const mapFieldSort = {
 
 const locaitonModifyStatus = convertDataSelectboxToObject(LOCALTION_MODIFY_STATUS);
 const convertResponseToDataTable = (data, currentPage, pageSize) => {
+    console.log(data)
     return data.map((item, index) => {
       item.locationNamePrint = `${item.locationId} - ${item.name}`;
       const coordinates = JSON.parse(item?.coordinates)
       item.coordinatesPrint = <a href={item.linkGoogleMap}
-      target="_blank" rel="noreferrer" onClick={(event)=> {event.stopPropagation()}}>{`[${coordinates?.x} x ${coordinates?.y}]`}</a>;
+      target="_blank" rel="noreferrer" onClick={(event)=> {event.stopPropagation()}}>{coordinates && `[${coordinates?.x} x ${coordinates?.y}]`}</a>;
       item.openDatePrint = formatTimestamp(item.openDate, "DD/MM/YYYY")
       item.statusPrint = (
         <div>
