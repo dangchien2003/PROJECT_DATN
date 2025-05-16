@@ -13,8 +13,10 @@ import { toastError } from "@/utils/toast";
 import { convertDataSort, getDataApi } from "@/utils/api";
 import { isNullOrUndefined } from "@/utils/data";
 import { formatCurrency } from "@/utils/number";
+import "./style.css"
+import Action from "./Action";
 
-const columns = [
+const baseColumns = [
   {
     title: "STT",
     dataIndex: "stt",
@@ -44,9 +46,16 @@ const columns = [
     width: 120,
   },
   {
-    title: "Thời phát hành",
+    title: "Thời điểm phát hành",
     dataIndex: "releasedTimePrint",
     key: "4",
+    sorter: true,
+    width: 120,
+  },
+  {
+    title: "Thời điểm phát hành",
+    dataIndex: "timeAppliedEditPrint",
+    key: "4.5",
     sorter: true,
     width: 120,
   },
@@ -55,6 +64,14 @@ const columns = [
     dataIndex: "pricePrint",
     key: "5",
     width: 120,
+  },
+  {
+    title: "Hành động",
+    dataIndex: "action",
+    align: "center",
+    key: "6",
+    width: 200,
+    fixed: "right",
   },
 ];
 
@@ -66,49 +83,82 @@ const mapFieldSort = {
 // dữ liệu trạng thái
 const ticketModifyStatus = convertDataSelectboxToObject(TICKET_MODIFY_STATUS);
 const ticketStatus = convertDataSelectboxToObject(TICKET_STATUS);
+const TableListTicketPartner = ({ dataSearch }) => {
+  const navigate = useNavigate()
+  const { isSearching } = useSelector(state => state.startSearch)
+  const dispatch = useDispatch();
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [firstSearch, setFirstSearch] = useState(false);
+  const [columns, setColumns] = useState(baseColumns);
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+    total: 0,
+  });
+  const [sorter] = useState({
+    field: null,
+    order: null,
+  });
 
-const convertResponseToDataTable = (data, currentPage, pageSize) => {
-  return data.map((item, index) => {
-    item.vehiclePrint = (
-      <div>
-        <span style={{ margin: "0 4px" }}>{VEHICLE[item.vehicle].icon}</span>
-        {VEHICLE[item.vehicle].name}
-      </div>
-    );
-    let timeRelease = item.releasedTime;
-    if(item.id) {
-      timeRelease = item.timeAppliedEdit;
-    }
-    item.releasedTimePrint = (
-      <div style={{ textAlign: "center" }}>
-        {formatTimestamp(timeRelease, "DD/MM/YYYY")}
-        <br />
-        {formatTimestamp(timeRelease, "HH:mm")}
-      </div>
-    );
-    item.pricePrint = (
-      <div>
-        {item.timeSlot && <div>1 giờ: {formatCurrency(item.price.time?.price)} đ</div>}
-        {item.daySlot && <div>1 ngày: {formatCurrency(item.price.day?.price)} đ</div>}
-        {item.weekSlot && <div>1 tuần: {formatCurrency(item.price.week?.price)} đ</div>}
-        {item.monthSlot && <div>1 tháng: {formatCurrency(item.price.month?.price)} đ</div>}
-      </div>
-    );
-    item.statusPrint = (
-      <div>
-        <div style={{ margin: 2 }}>
-          <span>PH </span>
-          <span>
-            {
-              <ButtonStatus
-                label={ticketStatus[item.status].label}
-                color={ticketStatus[item.status]?.color}
-              />
-            }
-          </span>
+
+  const convertResponseToDataTable = (result, currentPage, pageSize) => {
+    return result.map((item, index) => {
+      item.vehiclePrint = (
+        <div>
+          <span style={{ margin: "0 4px" }}>{VEHICLE[item.vehicle].icon}</span>
+          {VEHICLE[item.vehicle].name}
         </div>
-        <div style={{ margin: 2 }}>
-          {!isNullOrUndefined(item.modifyStatus) && <>
+      );
+      item.releasedTimePrint = (
+        <div style={{ textAlign: "center" }}>
+          {formatTimestamp(item.releasedTime, "DD/MM/YYYY")}
+          <br />
+          {formatTimestamp(item.releasedTime, "HH:mm")}
+        </div>
+      );
+      item.timeAppliedEditPrint = (
+        <div style={{ textAlign: "center" }}>
+          {formatTimestamp(item.timeAppliedEdit, "DD/MM/YYYY")}
+          <br />
+          {formatTimestamp(item.timeAppliedEdit, "HH:mm")}
+        </div>
+      );
+      item.pricePrint = (
+        <div>
+          {item.timeSlot && <div key="time">1 giờ: {formatCurrency(item.price.time?.price)} đ</div>}
+          {item.daySlot && <div key="day">1 ngày: {formatCurrency(item.price.day?.price)} đ</div>}
+          {item.weekSlot && <div key="week">1 tuần: {formatCurrency(item.price.week?.price)} đ</div>}
+          {item.monthSlot && <div key="month">1 tháng: {formatCurrency(item.price.month?.price)} đ</div>}
+        </div>
+      );
+      item.statusPrint = (
+        <div>
+          <div style={{ margin: 2 }}>
+            <span>PH </span>
+            <span>
+              {
+                <ButtonStatus
+                  label={ticketStatus[item.status].label}
+                  color={ticketStatus[item.status]?.color}
+                />
+              }
+            </span>
+          </div>
+          <div style={{ margin: 2 }}>
+            {(item.isDel) && <>
+              <span>TĐ </span>
+              <span>
+                {
+                  <ButtonStatus
+                    label={isNullOrUndefined(item.reasonReject) ? "Đã huỷ" : "Bị từ chối"}
+                    color={"danger"}
+                  />
+                }
+              </span>
+            </>}
+          </div>
+          {(!isNullOrUndefined(item.modifyStatus)) && <>
             <span>TĐ </span>
             <span>
               {
@@ -120,34 +170,19 @@ const convertResponseToDataTable = (data, currentPage, pageSize) => {
             </span>
           </>}
         </div>
-      </div>
-    );
-    let id = item.ticketId;
-    if(item.id) {
-      id = item.id
-    }
-    item.ticketNamePrint = `${id} - ${item.name}`;
-    item.stt = (currentPage - 1) * pageSize + index + 1;
-    return item;
-  });
-};
-
-const TableListTicketPartner = ({ dataSearch }) => {
-  const navigate = useNavigate()
-  const { isSearching } = useSelector(state => state.startSearch)
-  const dispatch = useDispatch();
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [firstSearch, setFirstSearch] = useState(false);
-  const [pagination, setPagination] = useState({
-    current: 1,
-    pageSize: 10,
-    total: 0,
-  });
-  const [sorter] = useState({
-    field: null,
-    order: null,
-  });
+      );
+      let id = item.ticketId;
+      if (item.id) {
+        id = item.id
+      }
+      item.ticketNamePrint = `${id} - ${item.name}`;
+      if (dataSearch.tab === 3) {
+        item.action = <Action data={item} dataList={data} handleConvert={convertResponseToDataTable} />
+      }
+      item.stt = (currentPage - 1) * pageSize + index + 1;
+      return item;
+    });
+  };
 
   const loadData = (newPagination, sorter) => {
     setLoading(true);
@@ -184,10 +219,29 @@ const TableListTicketPartner = ({ dataSearch }) => {
   };
 
   const handleClickRow = (data) => {
-    navigate(`/ticket/detail/${dataSearch.tab === 5 ? 1 : 0}/${dataSearch.tab}/${data.id}`)
+    let id = null;
+    let isWaitRelease = 0;
+    if (data.id) {
+      id = data.id;
+      isWaitRelease = 1;
+    }
+    else if (data.ticketId) {
+      id = data.ticketId;
+      isWaitRelease = 0;
+    }
+    navigate(`/partner/ticket/detail/${isWaitRelease}/${id}`)
   };
 
+  const showColumn = () => {
+    if (dataSearch.tab === 1) {
+      setColumns(baseColumns.filter(item => item.dataIndex !== "action" && item.dataIndex !== "timeAppliedEditPrint"))
+    } else {
+      setColumns(baseColumns.filter(item => item.dataIndex !== "releasedTimePrint"))
+    }
+  }
+
   useEffect(() => {
+    showColumn();
     if (isSearching || !firstSearch) {
       loadData(pagination, sorter);
       if (!firstSearch) {

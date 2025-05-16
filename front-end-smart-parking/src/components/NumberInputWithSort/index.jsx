@@ -12,14 +12,24 @@ const NumberInputWithSort = ({
   addonAfter,
   placeholder,
   itemKey,
-  callbackChangeValue,
+  callbackChangeValue = null,
   trend,
-  label
+  label,
+  defaultValue
 }) => {
   const [value, setValue] = useState(null);
   const keyFocus = useSelector((state) => state.focus);
   const inputRef = useRef();
   const {pushMessage, deleteKey} = useMessageError();
+  
+  useEffect(()=> {
+    if(trend) {
+      setValue(formatCurrency(defaultValue.value));
+    } else {
+      setValue(formatCurrency(defaultValue));
+    }
+    
+  }, [defaultValue])
 
   useEffect(()=> {
     if(keyFocus === itemKey) {

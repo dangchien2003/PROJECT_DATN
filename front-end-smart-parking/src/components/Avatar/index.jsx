@@ -1,3 +1,5 @@
+import { isNullOrUndefined } from "@/utils/data";
+
 const Avatar = ({ linkImage }) => {
   return (
     <div
@@ -10,7 +12,7 @@ const Avatar = ({ linkImage }) => {
         alignItems: "center",
       }}
     >
-      <img
+      {!isNullOrUndefined(linkImage) && <img
         src={linkImage}
         alt="avatar"
         style={{
@@ -19,7 +21,7 @@ const Avatar = ({ linkImage }) => {
           objectFit: "contain",
           padding: 3,
         }}
-      />
+      />}
     </div>
   );
 };

@@ -1,4 +1,3 @@
-import React from "react";
 import {
   AreaChart,
   Area,
@@ -15,7 +14,7 @@ const AreaChartCustom = ({ data, nameChart, width }) => {
       style={{
         display: "inline-block",
         paddingTop: 24,
-        border: "1px solid #B9B7B7",
+        borderTop: "1px solid #B9B7B7",
         position: "relative",
         width: width,
       }}

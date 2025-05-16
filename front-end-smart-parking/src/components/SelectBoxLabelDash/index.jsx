@@ -27,6 +27,10 @@ const SelectBoxLabelDash = ({
   const {pushMessage, deleteKey} = useMessageError()
   
   useEffect(()=> {
+    setValue(defaultValue);
+  }, [defaultValue])
+
+  useEffect(()=> {
     if(Array.isArray(requireKeys) && itemKey) {
       setRequire1(requireKeys.includes(itemKey) || require)
     }

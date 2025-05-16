@@ -2,17 +2,21 @@ import { Tabs } from "antd";
 import React from "react";
 const items = [
   {
-    key: 3,
+    key: 1,
+    label: "Chờ phát hành",
+  },
+  {
+    key: 2,
     label: "Đang phát hành",
   },
   {
-    key: 4,
+    key: 3,
     label: "Tạm dừng phát hành",
   },
   {
-    key: 5,
-    label: "Chờ duyệt",
-  },
+    key: 4,
+    label: "Từ chối/huỷ phát hành",
+  }
 ];
 const TabStatus = ({ ...prop }) => {
   return (

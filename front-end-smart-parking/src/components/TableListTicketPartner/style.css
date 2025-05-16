@@ -1,0 +1,7 @@
+.button-cancel :hover {
+  color: red !important;
+}
+
+.button-cancel {
+  padding-top: 4px;
+}
