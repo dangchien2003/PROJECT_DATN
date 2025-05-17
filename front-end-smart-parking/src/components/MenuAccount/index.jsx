@@ -1,7 +1,7 @@
 import React from "react";
 import { DownOutlined } from "@ant-design/icons";
 import { Dropdown, Space, Typography } from "antd";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { deleteRefeshToken } from "@/service/localStorageService";
 import { moveAccessToken } from "@/service/cookieService";
 

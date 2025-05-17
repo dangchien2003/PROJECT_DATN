@@ -9,6 +9,7 @@ const InputAuthen = ({
   callbackChangeValue,
   defaultValue = "",
   maxLength,
+  minLength,
   placeholder,
   fieldName,
   isPassword
@@ -36,6 +37,14 @@ const InputAuthen = ({
       pushMessage(itemKey, "Không được để trống trường " + fieldName?.toLowerCase());
     } else {
       deleteKey(itemKey);
+    }
+
+    if (minLength) {
+      if (newValue.length < minLength) {
+        pushMessage(itemKey, "Trường " + fieldName?.toLowerCase() + " phải lớn hơn " + minLength + " ký tự" )
+      } else {
+        deleteKey(itemKey);
+      }
     }
 
     if (maxLength) {

@@ -411,3 +411,7 @@ export const KEY = {
   accountId: "identify",
   actor: "actor"
 }
+
+export const REGEX_TEMPLATE = {
+  email: "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$"
+}

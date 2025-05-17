@@ -42,11 +42,6 @@ const Authen = () => {
       setAuthened(false);
       resetToken();
     } else {
-    // kiểm tra có token
-    // có thì call checktoken
-    // không thì xoá token cũ. cho đăng nhập
-    // check lỗi thì cho đăng nhập xoá token.
-    // token hợp lệ thì đi tới trang chủ
       setAuthened(null); //load
       // xử lý
       const accessToken = getAccessToken();

@@ -37,6 +37,10 @@
   overflow: hidden;
 }
 
+.authen .form .content a:hover {
+  text-decoration: underline;
+}
+
 .authen .form .title {
   color: #FFFF;
   font-family: 'roboto';
@@ -125,4 +129,24 @@
   line-height: 60px;
   text-align: center;
   display: block;
+}
+
+.authen .success-container {
+  margin-top: 32px;
+}
+
+.authen .success-container .parent-success-image {
+  display: flex;
+  justify-content: center;
+  padding-top: 18px;
+  padding-bottom: 24px;
+}
+
+.authen .success-container .success-image {
+  height: 200px;
+}
+
+.authen .success-container .success-notify {
+  text-align: center;
+  line-height: 24px;
 }

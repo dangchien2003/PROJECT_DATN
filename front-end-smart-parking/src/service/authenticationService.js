@@ -18,4 +18,12 @@ export async function checkAccessToken(data) {
   })
 }
 
+export async function registrationAccount(data) {
+  return await httpClient.post(PARKING_SERVICE.authen.registration, data, {
+    headers: {
+      Authorization: undefined
+    }
+  })
+}
+
 

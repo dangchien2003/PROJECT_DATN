@@ -1,6 +1,6 @@
 import { Button, Checkbox, Divider } from "antd"
 import logoGoogle from '@image/logo-google.png'
-import { Link, useNavigate } from "react-router-dom"
+import { Link, useNavigate, useSearchParams } from "react-router-dom"
 import InputAuthen from "./InputAuthen"
 import { changeInput } from "@/utils/handleChange"
 import { useMessageError } from "@/hook/validate"
@@ -26,6 +26,23 @@ const FormLogin = ({ data }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { showLoad, hideLoad } = useLoading();
+  const [params] = useSearchParams();
+
+  useEffect(() => {
+    reset();
+    const email = params.get("email");
+    if( email !== null) {
+      data.username = email;
+    } else {
+      const userRemember = getRememberUser();
+      if(!isNullOrUndefined(userRemember)) {
+        setRemember(true);
+        data.username = userRemember;
+      }
+    }
+    
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
+  }, [])
 
   const handleLogin = () => {
     const dataAuthen = {};
@@ -60,16 +77,6 @@ const FormLogin = ({ data }) => {
         setClickLogin(false);
       })
   }
-
-  useEffect(() => {
-    reset();
-    const userRemember = getRememberUser();
-    if(!isNullOrUndefined(userRemember)) {
-      setRemember(true);
-      data.username = userRemember;
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps 
-  }, [])
 
   useEffect(() => {
     if (clickLogin) {
