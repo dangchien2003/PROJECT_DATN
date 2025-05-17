@@ -1,8 +1,18 @@
 import React from "react";
 import { DownOutlined } from "@ant-design/icons";
 import { Dropdown, Space, Typography } from "antd";
+import { Link, useNavigate } from "react-router-dom";
+import { deleteRefeshToken } from "@/service/localStorageService";
+import { moveAccessToken } from "@/service/cookieService";
 
 const MenuAccount = ({ linkAvatar }) => {
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    deleteRefeshToken();
+    moveAccessToken();
+    navigate("/authen")
+  }
+
   const items = [
     {
       key: "1",
@@ -18,13 +28,9 @@ const MenuAccount = ({ linkAvatar }) => {
     {
       key: "3",
       label: (
-        <a
-          href="https://www.aliyun.com"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+        <div onClick={handleLogout}>
           Đăng xuất
-        </a>
+        </div>
       ),
     },
   ];

@@ -395,3 +395,19 @@ export const ACCOUNT_CATEGORY_NAME = [
   {code: 1, value: "Đối tác"},
   {code: 2, value: "Khách hàng"},
 ]
+
+export const TYPE_AUTHEN = {
+  USERNAME_PASSWORD: 1,
+  GOOGLE: 2
+}
+
+export const KEY = {
+  accessToken: "access",
+  refreshToken: "refresh",
+  rememberUser: "remember-username",
+  googleCodeVerifier: "google-verifier",
+  accountFullname: "account-fullname",
+  partnerFullname: "partner-fullname",
+  accountId: "identify",
+  actor: "actor"
+}

@@ -1,0 +1,128 @@
+.authen {
+  min-height: 100vh;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  color: #FFFF;
+}
+
+.authen input::placeholder {
+  color: rgb(39, 58, 110);
+  opacity: 0.8;
+  font-weight: 400;
+}
+
+.authen .parent-image {
+  flex: 1;
+  margin-top: 50px;
+}
+
+.authen .parent-image .image {
+  text-align: right;
+  margin-right: 200px;
+}
+
+.authen .parent-image .image img {
+  width: 500px;
+}
+
+.authen .form {
+  width: 600px;
+  height: 100%;
+  margin-top: 150px;
+}
+
+.authen .form .content {
+  width: 400px;
+  overflow: hidden;
+}
+
+.authen .form .title {
+  color: #FFFF;
+  font-family: 'roboto';
+  font-size: 48px;
+  margin-bottom: 32px;
+  font-weight: bold;
+  height: 48px;
+}
+
+.authen .parent-input {
+  margin-bottom: 16px;
+}
+
+.authen .input-authen {
+  font-size: 18px;
+  padding: 8px;
+  padding-left: 16px;
+  height: 50px;
+  max-width: 400px;
+}
+
+.authen .form .action-other {
+  display: flex;
+  justify-content: space-between;
+  max-width: 400px;
+}
+
+.authen .checkbox {
+  color: #FFFF;
+  font-size: 16px;
+}
+
+.authen .action-login {
+  padding-top: 24px;
+}
+
+.authen .action-login .btn {
+  width: 100%;
+  height: 48px;
+  font-size: 20px;
+}
+
+.authen .action-login .btn.login {
+  background-color: #042c54;
+}
+
+.authen .action-login .btn.login:hover {
+  background-color: #4096ff;
+}
+
+.authen .ant-divider-inner-text {
+  color: #fff !important;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.authen .ant-divider-horizontal::before,
+.authen .ant-divider-horizontal::after {
+  border-top: 2px solid #fff;
+  /* Viền đậm hơn */
+}
+
+.authen .google-login {
+  display: flex;
+  justify-content: center;
+  color: black;
+  background-color: #fff;
+}
+
+.authen .google-icon {
+  width: 24px;
+  margin-right: 16px;
+}
+
+.authen .google-login div {
+  display: flex;
+  align-items: center;
+}
+
+.authen a {
+  text-decoration: none;
+  color: #fff;
+}
+
+.authen .have-not-account {
+  line-height: 60px;
+  text-align: center;
+  display: block;
+}

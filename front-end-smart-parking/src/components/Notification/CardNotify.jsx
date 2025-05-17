@@ -24,6 +24,7 @@ const CardNotify = ({ setCountNotify, onClose }) => {
   }, []);
 
   useEffect(() => {
+    const el = notifyContentRef.current;
     // load thông báo khi scroll đến cuối trang
     const handleScroll = (event) => {
       if (maxPage === null || page < maxPage) {
@@ -33,18 +34,17 @@ const CardNotify = ({ setCountNotify, onClose }) => {
         }
       } else {
         // Huỷ sự kiện khi lấy hết thông báo
-        if(notifyContentRef.current) {
-          notifyContentRef.current.removeEventListener("scroll", handleScroll);
+        if(el) {
+          el.removeEventListener("scroll", handleScroll);
         }
       }
     }
-    if (notifyContentRef.current) {
-      notifyContentRef.current.addEventListener("scroll", handleScroll);
-
+    if (el) {
+      el.addEventListener("scroll", handleScroll);
     }
     return () => {
-      if(notifyContentRef.current) {
-        notifyContentRef.current.removeEventListener("scroll", handleScroll);
+      if(el) {
+        el.removeEventListener("scroll", handleScroll);
       }
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps 
