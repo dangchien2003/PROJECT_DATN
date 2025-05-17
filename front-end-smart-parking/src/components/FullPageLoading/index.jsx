@@ -2,11 +2,13 @@ import { useEffect, useState } from "react";
 import { Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import { useSelector } from "react-redux";
+import LineLoading from "../Loading/LineLoading";
 
 const FullPageLoading = () => {
   const [dot, setDot] = useState(".");
   const isLoading = useSelector((state) => state.loading.isLoading);
   const title = useSelector((state) => state.loading.title);
+  const type = useSelector((state) => state.loading.type);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -33,26 +35,31 @@ const FullPageLoading = () => {
         zIndex: 9999,
       }}
     >
-      <Spin
-        indicator={
-          <LoadingOutlined
-            style={{
-              fontSize: 48,
-            }}
-            spin
-          />
-        }
-      />
-      <div
-        style={{
-          marginTop: 16,
-          fontSize: 16,
-          fontWeight: "bold",
-          color: "#1890ff", // Đồng màu với icon
-        }}
-      >
-        {title ? title : "Đang tải dữ liệu"}{dot}
-      </div>
+      {type === 1 ? <>
+        <Spin
+          indicator={
+            <LoadingOutlined
+              style={{
+                fontSize: 48,
+              }}
+              spin
+            />
+          }
+        />
+        <div
+          style={{
+            marginTop: 16,
+            fontSize: 16,
+            fontWeight: "bold",
+            color: "#1890ff", // Đồng màu với icon
+          }}
+        >
+          {title ? title : "Đang tải dữ liệu"}{dot}
+        </div>
+      </> 
+      : <>
+        <LineLoading/>
+      </>}
     </div>
   );
 };

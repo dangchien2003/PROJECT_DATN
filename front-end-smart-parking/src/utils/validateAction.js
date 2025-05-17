@@ -30,7 +30,6 @@ export const checkRequireInput= (data, fieldError, usePushError, keyRequire) => 
 
       // không có dữ liệu và chưa báo lỗi
       if((current[keys[keys.length - 1]] === null || current[keys[keys.length - 1]] === undefined || current[keys[keys.length - 1]] === "") && !fieldError[item]) {
-        console.log(item)
         usePushError(item, "Bắt buộc nhập"); 
       }
     })

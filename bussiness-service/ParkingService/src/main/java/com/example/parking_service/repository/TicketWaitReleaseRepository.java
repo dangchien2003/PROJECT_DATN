@@ -20,7 +20,7 @@ public interface TicketWaitReleaseRepository extends JpaRepository<TicketWaitRel
     @Query(value = """
                SELECT t FROM TicketWaitRelease t
                WHERE (:partnerId IS NULL OR t.partnerId IN :partnerId)
-               AND ((:isCancel is true AND t.isDel = 1) OR (:isCancel is false AND t.isDel = 0))
+               AND ((:isCancel = true AND t.isDel = 1) OR (:isCancel = false AND t.isDel = 0))
                AND (:ticketName IS NULL OR t.name LIKE CONCAT('%', :ticketName, '%') ESCAPE '!')
                AND (:modifyStatus IS NULL
                    OR (:modifyStatus = 0 AND t.released = 0 AND t.isDel = 0)

@@ -32,7 +32,11 @@ export const PARKING_SERVICE = {
     adminCancelRelease: "ticket/admin/cancel/wait-release",
     checkExistWaitRelease: "ticket/check-exist-wait-release",
   },
-
+  authen: {
+    login: "auth/sign-in",
+    checkAccess: "auth/check-token", 
+    registration: "auth/registration",
+  }
 }
 
 export const NOTIFY_SERVICE = {
