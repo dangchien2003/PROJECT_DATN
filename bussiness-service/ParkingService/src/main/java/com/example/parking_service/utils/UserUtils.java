@@ -16,12 +16,13 @@ import java.util.Date;
 import java.util.UUID;
 
 public class UserUtils {
+    private static final ObjectMapper objectMapper = ConvertUtil.objectMapper;
 
     private static final String USER_AGENT_REGEX =
             ".*(Mozilla|Chrome|Safari|Firefox|Opera|Edge|Trident).*(Windows|Macintosh|Linux|Android|iPhone).*";
 
-    public static String genAccessToken(Account account, int timeLive, String secretKey, String userAgent,
-                                        ObjectMapper objectMapper) throws JOSEException, JsonProcessingException {
+    public static String genAccessToken(Account account, int timeLive,
+                                        String secretKey, String userAgent) throws JOSEException, JsonProcessingException {
 
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
 
@@ -76,12 +77,12 @@ public class UserUtils {
 
     public static AuthenticationResponse createAuthenticationResponse(
             Account account, String userAgent, String secretKey, int timeLiveAccessToken,
-            int timeLiveRefreshToken, ObjectMapper objectMapper) throws JOSEException, JsonProcessingException {
+            int timeLiveRefreshToken) throws JOSEException, JsonProcessingException {
         return AuthenticationResponse.builder()
                 .id(account.getId())
                 .fullName(account.getFullName())
                 .partnerFullName(account.getPartnerFullName())
-                .accessToken(genAccessToken(account, timeLiveAccessToken, secretKey, userAgent, objectMapper))
+                .accessToken(genAccessToken(account, timeLiveAccessToken, secretKey, userAgent))
                 .refreshToken(genRefreshToken(userAgent, timeLiveRefreshToken, secretKey))
                 .expire(timeLiveAccessToken * 60)
                 .actor(buildScope(account).toLowerCase())

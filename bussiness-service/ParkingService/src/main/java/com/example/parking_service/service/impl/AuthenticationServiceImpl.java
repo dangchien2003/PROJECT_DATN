@@ -4,11 +4,13 @@ import com.example.common.dto.response.ApiResponse;
 import com.example.common.exception.AppException;
 import com.example.common.exception.ErrorCode;
 import com.example.common.utils.DataUtils;
+import com.example.common.utils.RegexUtils;
 import com.example.parking_service.client.GoogleProfileClient;
 import com.example.parking_service.client.GoogleTokenClient;
 import com.example.parking_service.dto.request.AuthenticationRequest;
 import com.example.parking_service.dto.request.CheckTokenRequest;
 import com.example.parking_service.dto.request.GoogleAccessTokenRequest;
+import com.example.parking_service.dto.request.RegistrationAccount;
 import com.example.parking_service.dto.response.GoogleAccessTokenResponse;
 import com.example.parking_service.dto.response.GoogleUserProfileResponse;
 import com.example.parking_service.entity.Account;
@@ -18,7 +20,6 @@ import com.example.parking_service.enums.AuthenType;
 import com.example.parking_service.repository.AccountRepository;
 import com.example.parking_service.service.AuthenticationService;
 import com.example.parking_service.utils.UserUtils;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSVerifier;
 import com.nimbusds.jose.crypto.MACVerifier;
@@ -33,10 +34,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.ParseException;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -44,10 +42,11 @@ import java.util.Optional;
 @Transactional
 @Slf4j
 public class AuthenticationServiceImpl implements AuthenticationService {
+    // tạm lưu cache tại đây
+    Map<String, Account> cacheAccount = new HashMap<>();
     AccountRepository accountRepository;
     GoogleTokenClient googleTokenClient;
     GoogleProfileClient googleProfileClient;
-    ObjectMapper objectMapper;
     String redirectUriForRegister = "http://localhost:3000/register";
     String redirectUriForAuth = "http://localhost:3000/authen";
 
@@ -74,6 +73,64 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @NonFinal
     @Value("${auth.check-user-agent}")
     boolean checkUserAgent;
+
+    @Override
+    public ApiResponse<Object> registrationAccount(RegistrationAccount request, String ip) {
+        if (request.getType() == null) {
+            throw new AppException(ErrorCode.INVALID_DATA);
+        }
+        String email = null;
+        if (request.getType().equals(AuthenType.USERNAME_PASSWORD)) {
+            email = request.getEmail();
+            String password = request.getPassword();
+            validateRegisAccountForEP(email, password);
+            Account account = Account.builder()
+                    .email(email)
+                    .password(password)
+                    .category(AccountCategory.KHACH_HANG.getValue())
+                    .status(AccountStatus.DANG_HOAT_DONG.getValue())
+                    .balance(0L)
+                    .build();
+            DataUtils.setDataAction(account, ip, true);
+            // cache
+            cacheAccount.put(account.getEmail(), account);
+            // gửi mail kafka
+        } else if (request.getType().equals(AuthenType.GOOGLE)) {
+            System.out.println("tạo tk bằng google");
+        } else {
+            throw new AppException(ErrorCode.INVALID_DATA);
+        }
+        return ApiResponse.builder()
+                .result(email)
+                .build();
+    }
+
+    void validateRegisAccountForEP(String email, String password) {
+        // validate email
+        if (DataUtils.isNullOrEmpty(email)) {
+            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Không được để trống trường email"));
+        }
+        if (!RegexUtils.checkData(email, RegexUtils.REGEX_EMAIL)) {
+            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Email không đúng định dạng"));
+        }
+        // validate password
+        if (DataUtils.isNullOrEmpty(password)) {
+            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Không được để trống trường mật khẩu"));
+        }
+        if (password.length() < 8) {
+            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Mật khẩu phải lớn hơn 8 ký tự"));
+        }
+        // kiểm tra cache
+        if (cacheAccount.get(email) != null) {
+            throw new AppException(ErrorCode.CONFLICT_DATA.withMessage("Tài khoản đang chờ xác thực. Vui lòng kiểm tra hòm thư"));
+        }
+        // kiểm tra sự tồn tại db
+        Optional<Account> accountOptional = accountRepository.findByEmail(email);
+        if (accountOptional.isPresent()) {
+            throw new AppException(ErrorCode.CONFLICT_DATA.withMessage("Tài khoản đã tồn tại trên hệ thống"));
+        }
+
+    }
 
     @Override
     public ApiResponse<Object> checkToken(CheckTokenRequest request)
@@ -146,7 +203,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         try {
             return ApiResponse.builder()
                     .result(UserUtils.createAuthenticationResponse(
-                            account, userAgent, secretKey, timeLiveAccessToken, timeLiveRefreshToken, objectMapper))
+                            account, userAgent, secretKey, timeLiveAccessToken, timeLiveRefreshToken))
                     .build();
         } catch (Exception e) {
             log.error("Authentication error:", e);
@@ -162,15 +219,27 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new AppException(ErrorCode.INVALID_DATA);
         }
         // kiểm tra tài khoản
+        account = cacheAccount.get(request.getUsername());
+        if (account != null) {
+            if (!this.checkPasswordAccount(request.getPassword(), account.getPassword())) {
+                return null;
+            } else {
+                throw new AppException(ErrorCode.NO_ACCESS.withMessage("Tài khoản đang chờ xác thực. Vui lòng kiểm tra hòm thư"));
+            }
+        }
         List<Account> accounts = accountRepository.findAllByEmailOrPhoneNumber(request.getUsername(), request.getUsername());
         if (!accounts.isEmpty()) {
             account = accounts.getFirst();
             // kiểm tra mật khâu
-            if (account.getPassword().equals(request.getPassword())) {
-                account = accounts.getFirst();
+            if (!this.checkPasswordAccount(request.getPassword(), account.getPassword())) {
+                return null;
             }
         }
         return account;
+    }
+
+    boolean checkPasswordAccount(String passwordInput, String correctPassword) {
+        return correctPassword.equals(passwordInput);
     }
 
     Account authByGoogle(AuthenticationRequest request) {
