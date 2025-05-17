@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface AccountRepository extends JpaRepository<Account, String> {
+    Optional<Account> findByEmail(String email);
+
     List<Account> findAllByEmailOrPhoneNumber(String email, String phoneNumber);
 
     @Query("SELECT a FROM Account a WHERE a.category = :category " +
