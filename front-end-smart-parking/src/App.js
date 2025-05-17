@@ -29,7 +29,18 @@ import AddTicket from "./pages/partner/AddTicket";
 import ListTicketPartner from "./pages/partner/ListTicket";
 import { useEffect } from "react";
 import WebSocket from "./configs/websocket";
+import Authen from "./pages/Authen";
+
 const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Authen />,
+    children: [
+      { path: "authen", element: <Authen /> },
+      { path: "register", element: <Authen /> },
+      { path: "forget", element: <Authen /> },
+    ]
+  },
   {
     path: "/admin",
     element: <AdminLayout />,

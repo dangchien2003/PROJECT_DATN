@@ -2,7 +2,7 @@
   line-height: normal !important;
 }
 
-.layer1 {
+.notification .layer1 {
   position: absolute;
   top: 50px;
   right: -40px;
@@ -14,22 +14,23 @@
   box-shadow: 0px 0px 5px #b9b7b7;
 }
 
-.item-notify {
+.notification .item-notify {
   padding: 8px;
   border-bottom: 1px solid #b9b7b7;
 }
-.item-notify:hover {
+
+.notification .item-notify:hover {
   background-color: #f1f1f1;
   border-radius: 8px 8px 0 0;
 }
 
-.content {
+.notification .content {
   padding: 3px;
   height: 350px;
   overflow-y: scroll;
 }
 
-.category {
+.notification .category {
   padding: 8px;
   font-size: 16px;
   border-bottom: 1px solid #b9b7b7;
@@ -38,7 +39,7 @@
   justify-content: space-between;
 }
 
-.mark-viewed-notify {
+.notification .mark-viewed-notify {
   font-size: 13px;
   text-decoration: underline;
   padding-top: 3px;
@@ -47,7 +48,7 @@
   cursor: pointer;
 }
 
-.count-notity {
+.notification .count-notity {
   position: absolute;
   width: 20px;
   height: 20px;
@@ -66,7 +67,7 @@
   font-weight: bold;
 }
 
-.view-not-yet {
+.notification .view-not-yet {
   position: relative;
   width: 100%;
   /* height: 200px; Chiều cao tuỳ chỉnh */
@@ -79,6 +80,7 @@
   0% {
     background-position: 200% 0;
   }
+
   100% {
     background-position: -200% 0;
   }

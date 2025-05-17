@@ -35,7 +35,7 @@ const Notifitation = () => {
   }, []);
 
   return (
-    <div style={{ paddingLeft: 60 }}>
+    <div style={{ paddingLeft: 60 }} className="notification">
       <div style={{ position: "relative" }}>
         {notifyCount === 0 ? (
           <MdNotifications
