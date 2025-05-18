@@ -169,7 +169,7 @@ const TableListLocationWaitApprove = ({ dataSearch }) => {
     } else {
       id = data.locationId;
     }
-    navigate(`/location/detail/${dataSearch.tab}/${id}`)
+    navigate(`/admin/location/detail/${dataSearch.tab}/${id}`)
   };
 
   const resetAction = () => {

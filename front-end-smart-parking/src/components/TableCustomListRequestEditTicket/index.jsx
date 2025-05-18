@@ -134,7 +134,7 @@ const TableCustomListRequestEditTicket = ({ searchTimes, dataSearch }) => {
     loadData(newPagination, sorter);
   };
   const handleClickRow = (data) => {
-    navigate(`/ticket/detail/1/2/${data.id}`)
+    navigate(`/admin/ticket/detail/1/2/${data.id}`)
   };
 
   useEffect(() => {

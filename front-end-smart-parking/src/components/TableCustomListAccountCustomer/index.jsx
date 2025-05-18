@@ -129,7 +129,7 @@ const TableCustomListAccountCustomer = ({dataSearch}) => {
   }, [isSearching]);
 
   const handleClickRow = (data) => {
-    navigate(`/account/customer/${data.id}`);
+    navigate(`/admin/account/customer/${data.id}`);
   };
 
   return (

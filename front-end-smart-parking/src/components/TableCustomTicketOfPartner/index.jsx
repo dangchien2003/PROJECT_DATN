@@ -46,6 +46,7 @@ const columns = [
 ];
 
 const ticketModifyStatus = convertDataSelectboxToObject(TICKET_MODIFY_STATUS);
+const ticketStatus = convertDataSelectboxToObject(TICKET_STATUS);
 const convertResponseToDataTable = (response, currentPage, pageSize) => {
   return response.data.map((item, index) => {
     item.vehiclePrint = (
@@ -63,8 +64,8 @@ const convertResponseToDataTable = (response, currentPage, pageSize) => {
           />
         ) : (
           <ButtonStatus
-            label={TICKET_STATUS[item.status].label}
-            color={TICKET_STATUS[item.status].color}
+            label={ticketStatus[item.status].label}
+            color={ticketStatus[item.status].color}
           />
         )}
       </>
