@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import { Button, Layout, Menu, theme } from "antd";
 import { ADMIN_MENU } from "../../utils/menu";
@@ -9,6 +9,7 @@ import Account from "../Account";
 import "./style.css";
 import { ToastContainer } from "react-toastify";
 import LogoParking from "../Logo";
+import WebSocket from "@/configs/websocket";
 const { Header, Sider, Content } = Layout;
 
 const AdminLayout = () => {
@@ -16,7 +17,12 @@ const AdminLayout = () => {
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
-
+  
+  // kết nối websocket
+  useEffect(() => {
+    WebSocket.connect();
+    return () => WebSocket.disconnect();
+  }, []);
   return (
     <Layout style={{ minHeight: "100vh" }}>
       <ToastContainer />
