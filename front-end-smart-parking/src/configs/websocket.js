@@ -12,7 +12,7 @@ class WebSocketConfig {
   connect = (onConnectCallback) => {
     if (this.client) return;
 
-    const socket = new SockJS('https://localhost:8083/ws');
+    const socket = new SockJS('http://localhost:8083/ws');
     this.client = new Client({
       webSocketFactory: () => socket,
       debug: () => {}, // tắt log
