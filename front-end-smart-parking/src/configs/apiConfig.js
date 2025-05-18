@@ -36,6 +36,8 @@ export const PARKING_SERVICE = {
     login: "auth/sign-in",
     checkAccess: "auth/check-token", 
     registration: "auth/registration",
+    forget: "auth/forget",
+    confirmForget: "auth/forget/confirm",
   }
 }
 

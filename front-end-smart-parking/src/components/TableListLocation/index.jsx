@@ -152,7 +152,7 @@ const TableListLocation = ({dataSearch }) => {
   };
 
   const handleClickRow = (data) => {
-    navigate(`/location/detail/${dataSearch.tab}/${data.locationId}`)
+    navigate(`/admin/location/detail/${dataSearch.tab}/${data.locationId}`)
   };
 
   useEffect(() => {

@@ -16,6 +16,7 @@ import successImage from "@image/check.png";
 
 const FormRegister = ({ data }) => {
   const [requireKeys] = useState(["email", "password", "repassword"]);
+  const [emailSuccess, setEmailSuccess] = useState(null);
   const [regisSuccess, setRegisSuccess] = useState(false);
   const [clickRegis, setClickRegis] = useState(false);
   const fieldError = useSelector((state) => state.fieldError);
@@ -40,8 +41,10 @@ const FormRegister = ({ data }) => {
     }
     showLoad({ type: 2 })
     registrationAccount(dataRegis)
-      .then(() => {
+      .then((response) => {
+        const result = getDataApi(response);
         setRegisSuccess(true);
+        setEmailSuccess(result);
       })
       .catch(e => {
         const error = getDataApi(e);
@@ -52,7 +55,6 @@ const FormRegister = ({ data }) => {
         setClickRegis(false);
       });
   }
-
 
   const handleChangeInput = (key, value) => {
     changeInput(data, key, value);
@@ -133,7 +135,7 @@ const FormRegister = ({ data }) => {
               <Divider className="divider">HOẶC</Divider>
               <Button type="primary" className="btn google-login">
                 <div>
-                  <img class="google-icon" src={logoGoogle} alt="Google logo" />
+                  <img className="google-icon" src={logoGoogle} alt="Google logo" />
                   <span>Đăng ký bằng google</span>
                 </div>
               </Button>
@@ -146,19 +148,21 @@ const FormRegister = ({ data }) => {
               className="success-container"
             >
               <p className="success-notify">
-                Bạn đã đăng ký thành công tài khoản với email: 
-                <br/>
-                <b>{"chienkoi123@gmail.com"}</b>
+                Bạn đã đăng ký thành công tài khoản với email:
+                <br />
+                <b className='nhan-manh'>{emailSuccess}</b>
                 <br />
                 Vui lòng kiểm tra hòm thư để thực hiện xác thực.
               </p>
               <div className="parent-success-image">
-                <img alt="success" src={successImage} className="success-image"/>
+                <img alt="success" src={successImage} className="success-image" />
               </div>
-              
+
             </motion.div>
         }
-        <Link to={regisSuccess ? "/authen?email=" + data.email : "/authen"} className="have-not-account">Quay trở lại đăng nhập!</Link>
+        <div className="parent-link">
+          <Link to={regisSuccess ? "/authen?email=" + data.email : "/authen"} className="have-not-account">Quay trở lại đăng nhập!</Link>
+        </div>
       </div>
     </div>
   )

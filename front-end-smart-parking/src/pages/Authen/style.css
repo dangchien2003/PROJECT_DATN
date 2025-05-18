@@ -87,6 +87,10 @@
   background-color: #042c54;
 }
 
+.authen .btn.reforget {
+  background-color: #042c54;
+}
+
 .authen .action-login .btn.login:hover {
   background-color: #4096ff;
 }
@@ -127,6 +131,9 @@
 
 .authen .have-not-account {
   line-height: 60px;
+}
+
+.authen .parent-link {
   text-align: center;
   display: block;
 }
@@ -149,4 +156,17 @@
 .authen .success-container .success-notify {
   text-align: center;
   line-height: 24px;
+}
+
+.authen .otp {
+  padding-top: 18px;
+}
+
+.authen .ant-otp-input {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.authen .nhan-manh {
+  font-size: 18px;
 }

@@ -39,7 +39,10 @@ const CountDown = ({ start, end }) => {
   const seconds = d.seconds();
   return (
     <div>
-      {timeLeftMs >= 0 && `${days} ngày ${hours} giờ ${minutes} phút ${seconds} giây`}
+      {(timeLeftMs > 0 && days > 0) && `${days} ngày ${hours} giờ ${minutes} phút ${seconds} giây`}
+      {(timeLeftMs > 0 && days === 0 && hours > 0) && `${hours} giờ ${minutes} phút ${seconds} giây`}
+      {(timeLeftMs > 0 && hours === 0 && minutes > 0) && `${minutes} phút ${seconds} giây`}
+      {(minutes <= 0) && `${seconds} giây`}
     </div>
   );
 };

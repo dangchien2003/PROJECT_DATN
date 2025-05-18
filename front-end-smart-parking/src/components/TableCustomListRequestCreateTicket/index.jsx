@@ -127,7 +127,7 @@ const TableCustomListRequestCreateTicket = ({ searchTimes, dataSearch }) => {
     loadData(newPagination, sorter);
   };
   const handleClickRow = (data) => {
-    navigate(`/ticket/detail/1/1/${data.id}`)
+    navigate(`/admin/ticket/detail/1/1/${data.id}`)
   };
 
   useEffect(() => {

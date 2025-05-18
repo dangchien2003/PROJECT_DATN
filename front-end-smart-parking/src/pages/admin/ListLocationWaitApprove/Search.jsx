@@ -47,10 +47,10 @@ const Search = ({ dataSearch }) => {
         }}
       >
         <TextFieldLabelDash
-          key={"parnerName"}
+          key={"partnerName"}
           label="Tên đối tác"
           placeholder={"Nhập tên đối tác"}
-          itemKey="parnerName"
+          itemKey="partnerName"
           callbackChangeValue={handleChange}
           defaultValue={dataSearch.partnerName}
         />
