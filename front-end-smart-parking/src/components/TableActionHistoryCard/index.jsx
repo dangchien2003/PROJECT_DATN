@@ -100,7 +100,7 @@ const TableActionHistoryCard = () => {
   }, []);
 
   const handleClickRow = (data) => {
-    navigate(`/account/partner/${data.id}`);
+    navigate(`/admin/account/partner/${data.id}`);
   };
 
   return (

@@ -65,7 +65,15 @@ const FormLogin = ({ data }) => {
       } else {
         cancelRememberUser();
       }
-      navigate("/admin");
+      if(result?.actor === "partner") {
+        navigate("/partner");
+      } else if (result?.actor === "admin") {
+        navigate("/admin");
+      } else if (result?.actor === "customer") {
+        navigate("/register")
+      } else {
+        navigate("/404")
+      }
     })
       .catch((e) => {
         const error = getDataApi(e);
@@ -146,7 +154,9 @@ const FormLogin = ({ data }) => {
               <span>Đăng nhập bằng google</span>
             </div>
           </Button>
-          <Link to={"/register"} className="have-not-account">Chưa có tài khoản!</Link>
+          <div className="parent-link">
+            <Link to={"/register"} className="have-not-account">Chưa có tài khoản!</Link>
+          </div>
         </div>
       </div>
     </div>

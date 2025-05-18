@@ -11,8 +11,8 @@ import { changeInput } from "@/utils/handleChange";
 import { setSearching } from "@/store/startSearchSlice";
 
 const ListTicket = () => {
-  const {resetRequireField} = useRequireField();
-  const {reset} = useMessageError();
+  const { resetRequireField } = useRequireField();
+  const { reset } = useMessageError();
   const dispatch = useDispatch();
   const [dataSearch] = useState({
     ticketName: null,
@@ -38,9 +38,10 @@ const ListTicket = () => {
     },
   };
 
-  useEffect(()=> {
+  useEffect(() => {
     resetRequireField();
     reset();
+  // eslint-disable-next-line react-hooks/exhaustive-deps 
   }, [resetRequireField])
 
   return (

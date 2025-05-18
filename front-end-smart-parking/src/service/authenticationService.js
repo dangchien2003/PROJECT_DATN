@@ -26,4 +26,22 @@ export async function registrationAccount(data) {
   })
 }
 
+export async function forgetAccount(username) {
+  return await httpClient.post(PARKING_SERVICE.authen.forget, {username}, {
+    headers: {
+      Authorization: undefined
+    }
+  })
+}
+
+export async function confirmForget(data) {
+  return await httpClient.post(PARKING_SERVICE.authen.confirmForget, data, {
+    headers: {
+      Authorization: undefined
+    }
+  })
+}
+
+
+
 

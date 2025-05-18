@@ -36,7 +36,7 @@ const Action = ({ data }) => {
       id = data.ticketId;
       isWaitRelease = 0;
     }
-    navigate(`/ticket/detail/${isWaitRelease}/${id}`)
+    navigate(`/admin/ticket/detail/${isWaitRelease}/${id}`)
   }
   const buttonDetail = (<span onClick={handleClickShowDetail}>
     <Tooltip title="Xem" >

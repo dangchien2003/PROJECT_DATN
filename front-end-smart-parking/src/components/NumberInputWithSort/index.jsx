@@ -1,6 +1,5 @@
 import { Input } from "antd";
 import { useEffect, useRef, useState } from "react";
-
 import { formatCurrency, parseFormattedCurrency } from "@/utils/number";
 import TrendInput from "../TrendInput";
 import { useSelector } from "react-redux";
@@ -28,7 +27,7 @@ const NumberInputWithSort = ({
     } else {
       setValue(formatCurrency(defaultValue));
     }
-    
+  // eslint-disable-next-line react-hooks/exhaustive-deps 
   }, [defaultValue])
 
   useEffect(()=> {
