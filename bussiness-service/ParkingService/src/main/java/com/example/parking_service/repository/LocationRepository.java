@@ -54,7 +54,7 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
             "LEFT JOIN account a ON a.id = l.partner_id " +
             "WHERE l.status = :status " +
             "AND (:partnerName IS NULL OR a.partner_full_name LIKE CONCAT('%', :partnerName, '%') ESCAPE '!') " +
-            "AND (:locationName IS NULL OR l.name = :locationName) " +
+            "AND (:locationName IS NULL OR l.name LIKE CONCAT('%', :locationName, '%') ESCAPE '!') " +
             "AND (:openTime IS NULL OR l.open_time = :openTime) " +
             "AND (:closeTime IS NULL OR l.close_time = :closeTime) " +
             "AND (:capacity IS NULL OR l.capacity = :capacity) " +

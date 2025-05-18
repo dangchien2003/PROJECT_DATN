@@ -3,9 +3,10 @@ package com.example.parking_service.controller;
 import com.example.common.dto.response.ApiResponse;
 import com.example.parking_service.dto.request.AuthenticationRequest;
 import com.example.parking_service.dto.request.CheckTokenRequest;
+import com.example.parking_service.dto.request.ConfirmForgetRequest;
 import com.example.parking_service.dto.request.RegistrationAccount;
 import com.example.parking_service.service.AuthenticationService;
-import com.example.parking_service.utils.ParkingUtils;
+import com.example.parking_service.utils.HttpUtils;
 import com.nimbusds.jose.JOSEException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -36,7 +37,19 @@ public class AuthenticationController {
 
     @PostMapping("/registration")
     ApiResponse<Object> registrationAccount(@RequestBody RegistrationAccount request, HttpServletRequest http) {
-        String ip = ParkingUtils.getClientIp(http);
+        String ip = HttpUtils.getClientIp(http);
         return authenticationService.registrationAccount(request, ip);
+    }
+
+    @PostMapping("/forget")
+    ApiResponse<Object> forgetAccount(@RequestBody AuthenticationRequest request, HttpServletRequest http) {
+        String ip = HttpUtils.getClientIp(http);
+        return authenticationService.forgetAccount(request.getUsername(), ip);
+    }
+
+    @PostMapping("/forget/confirm")
+    ApiResponse<Object> confirmForget(@Valid @RequestBody ConfirmForgetRequest request, HttpServletRequest http) {
+        String ip = HttpUtils.getClientIp(http);
+        return authenticationService.confirmForget(request, ip);
     }
 }

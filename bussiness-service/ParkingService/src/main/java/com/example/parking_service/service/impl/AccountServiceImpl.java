@@ -14,6 +14,7 @@ import com.example.parking_service.dto.response.AccountResponse;
 import com.example.parking_service.entity.Account;
 import com.example.parking_service.enums.AccountCategory;
 import com.example.parking_service.enums.AccountStatus;
+import com.example.parking_service.enums.PermitChangePassword;
 import com.example.parking_service.mapper.AccountMapper;
 import com.example.parking_service.repository.AccountRepository;
 import com.example.parking_service.service.AccountService;
@@ -186,7 +187,7 @@ public class AccountServiceImpl implements AccountService {
         if (!isAdmin && DataUtils.isNullOrEmpty(request.getPassword())) {
             throw new AppException(ErrorCode.INVALID_DATA.withMessage("Vui lòng điền mật khẩu và thử lại"));
         } else if (isAdmin && DataUtils.isNullOrEmpty(request.getPassword())) {
-            request.setPassword(RandomUtils.generateRandomCharacter());
+            request.setPassword(RandomUtils.generatePassword(12));
         } else if (request.getPassword().length() < 8) {
             throw new AppException(ErrorCode.INVALID_DATA.withMessage("Vui lòng nhập mật khẩu lớn hơn hoặc bằng 8 ký tự và thử lại"));
         }
@@ -209,7 +210,7 @@ public class AccountServiceImpl implements AccountService {
         // thêm các trường cần thiết
         if (isAdmin) {
             // thay đổi mật khẩu
-            accountEntity.setPermitChangePassword(0);
+            accountEntity.setPermitChangePassword(PermitChangePassword.CHUA_THAY_DOI);
             // trạng thái
             if (ENumUtils.isValidEnumByField(AccountStatus.class, request.getStatus(), "value")) {
                 accountEntity.setStatus(request.getStatus());
@@ -223,7 +224,7 @@ public class AccountServiceImpl implements AccountService {
                 throw new AppException(ErrorCode.INVALID_DATA.withMessage("Tài khoản không thuộc đối tượng nào trong hệ thống"));
             }
         } else {
-            accountEntity.setPermitChangePassword(1);
+            accountEntity.setPermitChangePassword(PermitChangePassword.DA_THAY_DOI);
             accountEntity.setStatus(AccountStatus.DANG_HOAT_DONG.getValue());
             accountEntity.setCategory(AccountCategory.KHACH_HANG.getValue());
         }

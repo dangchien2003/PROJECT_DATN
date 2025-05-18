@@ -290,7 +290,7 @@ public class LocationServiceImpl implements LocationService {
         LocalDateTime createdTime = null;
         String trendCreatedTime = null;
         if (!DataUtils.isNullOrEmpty(request.getTimeAppliedEdit())) {
-            // dữ liệu số dư
+            // dữ liệu ngày yêu cầu
             if (!DataUtils.isNullOrEmpty(request.getTimeAppliedEdit().getValue())) {
                 String applyDateStr = (String) request.getTimeAppliedEdit().getValue();
                 createdTime = LocalDateTime.parse(applyDateStr);
@@ -333,7 +333,13 @@ public class LocationServiceImpl implements LocationService {
 
         Long countAllRecord = locationModifyRepository.countAllRecordWaitApprove(
                 category,
+                partnerName,
                 modifyStatus,
+                urgentApprovalRequest,
+                applyTime,
+                trendApplyTime,
+                createdTime,
+                trendCreatedTime,
                 IsDel.DELETE_NOT_YET.getValue()
         );
         long totalPage = (long) Math.ceil((double) data.size() / limit);
@@ -387,7 +393,13 @@ public class LocationServiceImpl implements LocationService {
         }
 
         Long countAllRecord = locationModifyRepository.countAllRecord(
-                status
+                status,
+                partnerFullName,
+                locationName,
+                request.getOpenTime(),
+                request.getCloseTime(),
+                request.getCapacity(),
+                request.getOpenHoliday()
         );
         long totalPage = (long) Math.ceil((double) data.size() / limit);
         return ApiResponse.builder()

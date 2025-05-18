@@ -1,22 +1,21 @@
 package com.example.parking_service.service.impl;
 
 import com.example.common.dto.response.ApiResponse;
+import com.example.common.enums.TimeUnit;
 import com.example.common.exception.AppException;
 import com.example.common.exception.ErrorCode;
 import com.example.common.utils.DataUtils;
+import com.example.common.utils.RandomUtils;
 import com.example.common.utils.RegexUtils;
 import com.example.parking_service.client.GoogleProfileClient;
 import com.example.parking_service.client.GoogleTokenClient;
-import com.example.parking_service.dto.request.AuthenticationRequest;
-import com.example.parking_service.dto.request.CheckTokenRequest;
-import com.example.parking_service.dto.request.GoogleAccessTokenRequest;
-import com.example.parking_service.dto.request.RegistrationAccount;
+import com.example.parking_service.dto.other.DataForget;
+import com.example.parking_service.dto.other.DataOtp;
+import com.example.parking_service.dto.request.*;
 import com.example.parking_service.dto.response.GoogleAccessTokenResponse;
 import com.example.parking_service.dto.response.GoogleUserProfileResponse;
 import com.example.parking_service.entity.Account;
-import com.example.parking_service.enums.AccountCategory;
-import com.example.parking_service.enums.AccountStatus;
-import com.example.parking_service.enums.AuthenType;
+import com.example.parking_service.enums.*;
 import com.example.parking_service.repository.AccountRepository;
 import com.example.parking_service.service.AuthenticationService;
 import com.example.parking_service.utils.UserUtils;
@@ -34,6 +33,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.ParseException;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -44,9 +44,11 @@ import java.util.*;
 public class AuthenticationServiceImpl implements AuthenticationService {
     // tạm lưu cache tại đây
     Map<String, Account> cacheAccount = new HashMap<>();
+    Map<String, DataOtp> cacheAccountForget = new HashMap<>();
     AccountRepository accountRepository;
     GoogleTokenClient googleTokenClient;
     GoogleProfileClient googleProfileClient;
+
     String redirectUriForRegister = "http://localhost:3000/register";
     String redirectUriForAuth = "http://localhost:3000/authen";
 
@@ -73,6 +75,88 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @NonFinal
     @Value("${auth.check-user-agent}")
     boolean checkUserAgent;
+
+    @NonFinal
+    @Value("${auth.forget.length-otp}")
+    int lengthOtpForget;
+
+    @NonFinal
+    @Value("${auth.forget.time-quality}")
+    int timeQualityForget;
+
+    @NonFinal
+    @Value("${auth.forget.time-unit}")
+    String timeUnitForget;
+
+    @Override
+    public ApiResponse<Object> confirmForget(ConfirmForgetRequest request, String ip) {
+        DataOtp dataOtp = cacheAccountForget.get(request.getId());
+        if (dataOtp == null) {
+            throw new AppException(ErrorCode.NOT_FOUND.withMessage("Yêu cầu đã hết hạn. Vui lòng thao tác lại"));
+        }
+        // check ip
+        if (!dataOtp.getIp().equals(ip)) {
+            throw new AppException(ErrorCode.NO_ACCESS);
+        }
+        // check thời hạn
+        if (dataOtp.getDataForget().getExpire().isBefore(LocalDateTime.now())) {
+            throw new AppException(ErrorCode.NOT_FOUND.withMessage("Yêu cầu đã hết hạn. Vui lòng thao tác lại"));
+        }
+        // check otp
+        if (!dataOtp.getOtp().equals(request.getOtp())) {
+            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Mã otp không hợp lệ"));
+        }
+        // thay đổi dữ liệu
+        Account account = accountRepository.findById(request.getId())
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
+        String newPassword = RandomUtils.generatePassword(10);
+        account.setPassword(newPassword);
+        account.setPermitChangePassword(PermitChangePassword.CHUA_THAY_DOI);
+        DataUtils.setDataAction(account, ip, false);
+        accountRepository.save(account);
+        cacheAccountForget.remove(request.getId());
+        return ApiResponse.builder()
+                .result(account.getEmail())
+                .build();
+    }
+
+    @Override
+    public ApiResponse<Object> forgetAccount(String username, String ip) {
+        // validate
+        if (DataUtils.isNullOrEmpty(username) || DataUtils.isNullOrEmpty(ip)) {
+            throw new AppException(ErrorCode.INVALID_DATA);
+        }
+        // lấy dữ liệu
+        List<Account> accounts = accountRepository.findAllByEmailOrPhoneNumber(username, username);
+        if (accounts.isEmpty()) {
+            throw new AppException(ErrorCode.NOT_FOUND.withMessage("Tài khoản chưa tồn tại. Vui lòng thử lại."));
+        }
+        Account account = accounts.getFirst();
+        // lấy loại username
+        int category = UsernameCategory.PHONE_NUMBER;
+        if (RegexUtils.checkData(username, RegexUtils.REGEX_EMAIL)) {
+            category = UsernameCategory.EMAIL;
+        }
+        // data response
+        DataForget dataForget = DataForget.builder()
+                .id(account.getId())
+                .expire(LocalDateTime.now().plus(timeQualityForget, TimeUnit.valueOf(timeUnitForget).getUnit()))
+                .category(category)
+                .length(lengthOtpForget)
+                .build();
+        // cata cache
+        DataOtp dataOtp = DataOtp.builder()
+                .otp(RandomUtils.randomNumber(lengthOtpForget))
+                .ip(ip)
+                .dataForget(dataForget)
+                .build();
+        // cache
+        cacheAccountForget.put(account.getId(), dataOtp);
+        System.out.println(dataOtp);
+        return ApiResponse.builder()
+                .result(dataForget)
+                .build();
+    }
 
     @Override
     public ApiResponse<Object> registrationAccount(RegistrationAccount request, String ip) {

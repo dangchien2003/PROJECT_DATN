@@ -37,3 +37,7 @@ auth:
     time-live-refresh-token: 10
     secret-key: ${SECRET_KEY}
   check-user-agent: false
+  forget:
+    length-otp: 6
+    time-quality: 1
+    time-unit: m
