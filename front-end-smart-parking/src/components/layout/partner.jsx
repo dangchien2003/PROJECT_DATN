@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import { Button, Layout, Menu, theme } from "antd";
 import { PARTNER_MENU } from "../../utils/menu";
@@ -9,6 +9,7 @@ import Account from "../Account";
 import "./style.css";
 import { ToastContainer } from "react-toastify";
 import LogoParking from "../Logo";
+import WebSocket from "@/configs/websocket";
 const { Header, Sider, Content } = Layout;
 
 const PartnerLayout = () => {
@@ -17,6 +18,11 @@ const PartnerLayout = () => {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
 
+  // kết nối websocket
+  useEffect(() => {
+    WebSocket.connect();
+    return () => WebSocket.disconnect();
+  }, []);
   return (
     <Layout style={{ minHeight: "100vh" }}>
       <ToastContainer />
