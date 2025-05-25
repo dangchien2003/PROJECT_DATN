@@ -20,6 +20,7 @@ import ListLocationWaitApprove from "./pages/admin/ListLocationWaitApprove";
 import ComponentDemo from "./pages/ComponentDemo";
 import CardDetail from "./pages/admin/CardDetail";
 import DetailLocation from "./pages/admin/DetailLocation";
+import DetailLocationPublic from "./pages/Public/DetailLocation";
 import PartnerLayout from "./components/layout/partner";
 import DashboardPartner from "./pages/partner/DashBoardPartner";
 import AddLocation from "./pages/partner/AddLocation";
@@ -27,18 +28,26 @@ import ListLocationPartner from "./pages/partner/ListLocation";
 import DetailLocationPartner from "./pages/partner/DetailLocation";
 import AddTicket from "./pages/partner/AddTicket";
 import ListTicketPartner from "./pages/partner/ListTicket";
-import Authen from "./pages/Authen";
+import Authen from "./pages/Authen"
+import CustomerLayout from "./components/layout/Customer";
+import Introduce from "./pages/Public/Introduce";
+import ChooseLocation from "./pages/Public/ChooseLocation";
+import ChooseTicket from "./pages/Public/ChooseTicket";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Authen />,
+    element: <CustomerLayout />,
     children: [
-      { path: "authen", element: <Authen /> },
-      { path: "register", element: <Authen /> },
-      { path: "forget", element: <Authen /> },
+      { path: "/", element: <Introduce /> },
+      { path: "/choose/location", element: <ChooseLocation />},
+      { path: "/choose/ticket", element: <ChooseTicket />},
+      { path: "/location/:id", element: <DetailLocationPublic />},
     ]
   },
+  { path: "authen", element: <Authen /> },
+  { path: "register", element: <Authen /> },
+  { path: "forget", element: <Authen /> },
   {
     path: "/admin",
     element: <AdminLayout />,

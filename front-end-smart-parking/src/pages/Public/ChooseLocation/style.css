@@ -1,0 +1,155 @@
+#choose-location .parent-search {
+  border-bottom: 1px solid #c4c5ce;
+}
+
+#choose-location .search {
+  display: flex;
+  justify-content: center;
+}
+
+#choose-location .search .input {
+  width: 500px;
+  padding-top: 16px;
+}
+
+#choose-location .search .input .ant-btn {
+  font-size: 16px;
+  height: 34px;
+  width: 64px;
+  background-color: #001f3fe1;
+}
+
+
+#choose-location .search .input input {
+  font-size: 16px;
+}
+
+#choose-location .category {
+  display: flex;
+  justify-content: center;
+  padding: 16px;
+}
+
+#choose-location .category .ant-radio-label {
+  color: #222222;
+  font-size: 12px;
+}
+
+#choose-location .location-list {
+  margin-top: 48px;
+  padding-bottom: 42px;
+}
+
+#choose-location .location-card {
+  display: flex;
+  margin: 0px 16px 32px 16px;
+  border: 1px solid #c4c5ce;
+  color: #222222;
+}
+
+#choose-location .info {
+  flex: 1;
+  display: flex;
+  padding: 8px;
+}
+
+#choose-location .info img {
+  height: 160px;
+  max-width: 150px;
+
+}
+
+#choose-location .info .detail {
+  padding-left: 16px;
+}
+
+#choose-location .info .detail a {
+  color: #222222;
+  text-decoration: none;
+}
+
+#choose-location .info .detail a:hover {
+  text-decoration: underline;
+}
+
+#choose-location .info .detail .name {
+  padding: 4px 0;
+}
+
+.address {
+  color: #616161;
+  font-size: 14px;
+}
+
+#choose-location .info .detail>div {
+  padding: 4px 0;
+}
+
+.info .detail .status {
+  font-size: 10px;
+  color: rgb(241, 57, 57);
+  margin-right: 8px;
+}
+
+#choose-location .info .detail a {
+  color: rgb(0, 140, 255);
+}
+
+#choose-location .btn-choose {
+  width: 100px;
+  height: 100%;
+  background-color: #001f3fe1;
+  font-weight: 500;
+  font-size: 16px;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+  border: none;
+  cursor: pointer;
+  z-index: 1;
+}
+
+#choose-location .btn-choose span {
+  position: relative;
+  z-index: 100;
+}
+
+#choose-location .btn-choose:hover {
+  background-color: orange;
+  animation: hoverBtn 0.3s linear;
+
+}
+
+/* Gradient animation lớp phủ */
+#choose-location .btn-choose:hover::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 200%;
+  height: 100%;
+  background: linear-gradient(to right, #ffffff80, rgb(253, 233, 194), #ffffff9a);
+  animation: slideGradient 1s linear infinite alternate;
+  z-index: 0;
+  opacity: 0.6;
+}
+
+@keyframes slideGradient {
+  0% {
+    left: -100%;
+  }
+
+  100% {
+    left: 0%;
+  }
+}
+
+@keyframes hoverBtn {
+  0% {
+    opacity: 30%;
+  }
+
+  100% {
+    opacity: 100%;
+  }
+}
