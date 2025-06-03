@@ -6,7 +6,7 @@ import { Outlet } from 'react-router-dom'
 const CustomerLayout = () => {
   return (<div className='customer-layout'>
     <Header />
-    <div className='content'>
+    <div className='content-page'>
       <Outlet />
     </div>
     <Footer />

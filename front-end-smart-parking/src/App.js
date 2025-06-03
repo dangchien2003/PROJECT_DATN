@@ -21,6 +21,7 @@ import ComponentDemo from "./pages/ComponentDemo";
 import CardDetail from "./pages/admin/CardDetail";
 import DetailLocation from "./pages/admin/DetailLocation";
 import DetailLocationPublic from "./pages/Public/DetailLocation";
+import DetailTicketPublic from "./pages/Public/DetailTicket";
 import PartnerLayout from "./components/layout/partner";
 import DashboardPartner from "./pages/partner/DashBoardPartner";
 import AddLocation from "./pages/partner/AddLocation";
@@ -33,6 +34,7 @@ import CustomerLayout from "./components/layout/Customer";
 import Introduce from "./pages/Public/Introduce";
 import ChooseLocation from "./pages/Public/ChooseLocation";
 import ChooseTicket from "./pages/Public/ChooseTicket";
+import OrderTicket from "./pages/Public/OrderTicket";
 
 const router = createBrowserRouter([
   {
@@ -41,8 +43,10 @@ const router = createBrowserRouter([
     children: [
       { path: "/", element: <Introduce /> },
       { path: "/choose/location", element: <ChooseLocation />},
-      { path: "/choose/ticket", element: <ChooseTicket />},
+      { path: "/choose/ticket/:locationId", element: <ChooseTicket />},
       { path: "/location/:id", element: <DetailLocationPublic />},
+      { path: "/ticket/:id", element: <DetailTicketPublic />},
+      { path: "/order/:id", element: <OrderTicket />},
     ]
   },
   { path: "authen", element: <Authen /> },

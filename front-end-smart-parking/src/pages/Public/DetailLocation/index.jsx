@@ -64,7 +64,7 @@ const DetailLocation = () => {
               <div><FaCircleDot className='status' />Đang đông đúc</div>
             </div>
             <div>
-              <Link to={"/choose/ticket"} className=''>
+              <Link to={"/choose/ticket/1"} className=''>
                 <button className='btn-choose br3'>
                   <span>Chọn vé</span>
                 </button>
@@ -94,16 +94,13 @@ const DetailLocation = () => {
         <div>Sơ đồ</div>
       </ChildContent> */}
       <ChildContent backgroundColor='#f0f0f0'>
+        <div className='title-box br3'>Gợi ý cho bạn</div>
         <div className='recomment-wrapper br3'>
           <div className='view-all'>
-            <Link className='no-style hover' to={"/choose/ticket"}>{">> "}Xem tất cả</Link>
+            
+            <Link className='no-style hover' to={"/choose/ticket/1"}>{">> "}Xem tất cả</Link>
           </div>
           <div className='recomment'>
-            <TicketCardMinimize/>
-            <TicketCardMinimize/>
-            <TicketCardMinimize/>
-            <TicketCardMinimize/>
-            <TicketCardMinimize/>
             <TicketCardMinimize/>
             <TicketCardMinimize/>
             <TicketCardMinimize/>

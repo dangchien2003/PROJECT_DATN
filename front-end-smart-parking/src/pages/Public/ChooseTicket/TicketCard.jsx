@@ -2,6 +2,7 @@ import { useRef } from 'react'
 import bgTicket from './cut2.png'
 import { Button, Flex, Radio, Tooltip } from 'antd'
 import { FaMotorcycle } from 'react-icons/fa6';
+import { Link } from 'react-router-dom';
 
 const TicketCard = () => {
   const ref = useRef();
@@ -51,11 +52,13 @@ const TicketCard = () => {
         <div>Phương tiện sử dụng: <FaMotorcycle /> Xe máy</div>
         <div>Sử dụng tại 12 địa điểm khác</div>
         <div className='action'>
-          <Button type='primary' className="animated-btn" onClick={handleClickTicket}>{view.split('').map((char, index) => (
-            <span key={index} style={{ animationDelay: `${index * 0.05}s` }}>
-              {char === ' ' ? '\u00A0' : char}
-            </span>
-          ))}</Button>
+          <Link to={"/ticket/1"}>
+            <Button type='primary' className="animated-btn">{view.split('').map((char, index) => (
+              <span key={index} style={{ animationDelay: `${index * 0.05}s` }}>
+                {char === ' ' ? '\u00A0' : char}
+              </span>
+            ))}</Button>
+          </Link>
           <Button color="danger" variant="solid" className="animated-btn" onClick={handleClickOrder}>{order.split('').map((char, index) => (
             <span key={index} style={{ animationDelay: `${index * 0.05}s` }}>
               {char === ' ' ? '\u00A0' : char}

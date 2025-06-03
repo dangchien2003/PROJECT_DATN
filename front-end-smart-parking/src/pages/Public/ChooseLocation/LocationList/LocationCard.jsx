@@ -20,7 +20,7 @@ const LocationCard = () => {
           <div><FaCircleDot className='status' />Đang đông đúc</div>
         </div>
       </div>
-      <Link to={"/choose/ticket"} className=''>
+      <Link to={"/choose/ticket/1"} className=''>
         <button className='btn-choose'>
           <span>Tiếp tục</span>
         </button>

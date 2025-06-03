@@ -70,6 +70,10 @@
   right: -8px;
 }
 
+.customer-layout .content-page {
+  min-height: 500px;
+}
+
 .customer-layout .child-content {
   border-style: solid;
   border-left-width: 150px;

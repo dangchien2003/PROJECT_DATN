@@ -8,7 +8,7 @@ const LocationSearch = () => {
   return (
     <div className='parent-search'>
       <div className='search'>
-        <Search className='input' placeholder="" enterButton={
+        <Search className='input' placeholder="Tìm kiếm địa điểm" enterButton={
           <Tooltip title="Tìm kiếm">
             <span>
               <FaSearch />
