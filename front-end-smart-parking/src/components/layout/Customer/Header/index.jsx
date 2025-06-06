@@ -23,7 +23,8 @@ const Header = () => {
         style={{
           position: "absolute",
           top: 90,
-          width: 200
+          width: 200,
+          zIndex: 1000
         }}>
         <div className={collapsed ? "icon-menu collapsed-true" : "icon-menu collapsed-false"}>
           <AiOutlineMenuFold onClick={() => {setCollapsed(pre => !pre)}}/>

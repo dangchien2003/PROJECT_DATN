@@ -1,0 +1,97 @@
+.confirm-order .item-col {
+  margin-bottom: 16px;
+  font-size: 15px;
+}
+
+.content-box {
+  padding: 16px;
+}
+
+.pr0 {
+  padding-right: 0;
+}
+
+.item-info {
+  padding-bottom: 8px;
+}
+
+.padding-footer {
+  padding-bottom: 32px;
+}
+
+.item-info.break {
+  padding-top: 4px;
+}
+
+.item-info .label-name .icon {
+  margin-right: 4px;
+}
+
+.item-info .label-name .icon.empty {
+  margin-right: 20px;
+}
+
+.item-info.owner ol {
+  padding-left: 48px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.item-info.owner ol li {
+  padding: 2px 0;
+}
+
+.warning {
+  color: #ec2704;
+  padding: 2px;
+}
+
+.confirm-order .bill .logo {
+  width: 160px;
+}
+
+.confirm-order .bill .build-title {
+  text-transform: uppercase;
+  text-align: center;
+  padding-bottom: 24px;
+}
+
+.confirm-order .bill .content-item {
+  font-weight: bold;
+  margin: 12px 8px;
+}
+
+.confirm-order .bill .content-item .label {
+  font-size: 16px;
+}
+
+.confirm-order .bill .content-item .value-item {
+  font-size: 16px;
+  word-wrap: break-word;
+}
+
+.confirm-order .bill .total {
+  border-top: 1px solid black;
+  margin: 24px 0;
+}
+
+.confirm-order .bill .total .content-item .label {
+  font-size: 20px;
+}
+
+.confirm-order .bill .total .content-item .value-item {
+  font-size: 20px;
+}
+
+.confirm-order .bill .content-item .value-item {
+  text-align: right;
+}
+
+.confirm-order .bill .action {
+  text-align: center;
+}
+
+.confirm-order .bill .action button {
+  font-size: 16px;
+  width: 200px;
+}

@@ -1,9 +1,9 @@
+import { data } from '@/pages/Public/DetailTicket/fakedata'
 import { List, Tooltip } from 'antd'
 import Search from 'antd/es/input/Search'
 import React from 'react'
 import { FaSearch } from 'react-icons/fa'
 import { IoCheckmarkDoneOutline } from 'react-icons/io5'
-import { data } from '../DetailTicket/fakedata'
 
 const Location = ({ onChoose, selected }) => {
   if (selected?.id) {

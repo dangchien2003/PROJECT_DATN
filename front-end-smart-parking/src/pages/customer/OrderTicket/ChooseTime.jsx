@@ -7,6 +7,7 @@ import ModalCustom from '@/components/ModalCustom';
 import FormBuyFor from './FormBuyFor';
 import InputError from '@/components/InputError';
 import { useMessageError } from '@/hook/validate';
+import { useNavigate } from 'react-router-dom';
 
 
 
@@ -17,7 +18,8 @@ const ChooseTime = ({ category, onChangeStartTime }) => {
   const [selectedTime, setSelectedTime] = React.useState(null);
   const [endDate, setEndDate] = React.useState(null);
   const { pushMessage, reset, deleteKey } = useMessageError();
-
+  const navigate = useNavigate();
+  
   const getCategoryName = () => {
     if (category === PRICE_CATEGORY.TIME.value) {
       return "giờ";
@@ -94,7 +96,6 @@ const ChooseTime = ({ category, onChangeStartTime }) => {
   const handleChangeStartTime = (value) => {
     setSelectedTime(value)
     const dayjsSelect = dayjs(value);
-    console.log(dayjsSelect.get("minute"))
     if (dayjsSelect.isBefore(dayjs())) {
       pushMessage("start-time", "Thời bắt đầu phải lớn hơn hiện tại");
       setEndDate(null);
@@ -115,6 +116,33 @@ const ChooseTime = ({ category, onChangeStartTime }) => {
         setEndDate(null);
       }
     }
+  }
+
+  const handlePayment = () => {
+    if(validate()) {
+      return;
+    }
+    navigate("/order/confirm");
+  }
+
+  const validate = () => {
+    var error = false;
+    var message = null;
+    if(!selectedTime) {
+      message = "Vui lòng điền thông tin để tiếp tục";
+      error = true;
+    }
+    const timeSelect = dayjs(selectedTime);
+    if(timeSelect.isBefore(dayjs())) {
+      message = "Vui lòng điền thông tin để tiếp tục";
+      error = true;
+    }
+
+    if(error) {
+      pushMessage("start-time", message);
+    } 
+
+    return error;
   }
 
   return (
@@ -163,7 +191,7 @@ const ChooseTime = ({ category, onChangeStartTime }) => {
           <Button color="primary" variant="solid" onClick={handleOpenBuyFor}>
             Mua hộ
           </Button>
-          <Button color="danger" variant="solid" className='payment'>Thanh toán</Button>
+          <Button color="danger" variant="solid" className='payment' onClick={handlePayment}>Thanh toán</Button>
         </div>
       </div>
       {openBuyFor && <ModalCustom onClose={handleCloseBuyFor}>

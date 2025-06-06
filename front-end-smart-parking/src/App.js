@@ -34,7 +34,8 @@ import CustomerLayout from "./components/layout/Customer";
 import Introduce from "./pages/Public/Introduce";
 import ChooseLocation from "./pages/Public/ChooseLocation";
 import ChooseTicket from "./pages/Public/ChooseTicket";
-import OrderTicket from "./pages/Public/OrderTicket";
+import OrderTicket from "./pages/customer/OrderTicket";
+import ConfirmOrder from "./pages/customer/ConfirmOrder";
 
 const router = createBrowserRouter([
   {
@@ -46,6 +47,7 @@ const router = createBrowserRouter([
       { path: "/choose/ticket/:locationId", element: <ChooseTicket />},
       { path: "/location/:id", element: <DetailLocationPublic />},
       { path: "/ticket/:id", element: <DetailTicketPublic />},
+      { path: "order/confirm", element: <ConfirmOrder />},
       { path: "/order/:id", element: <OrderTicket />},
     ]
   },
