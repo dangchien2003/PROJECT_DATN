@@ -1,0 +1,98 @@
+.intro h1,
+.intro h2,
+.intro h3,
+.intro h4 {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.intro section {
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.intro .banner {
+  position: relative;
+  background-color: #002047;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+  flex-wrap: wrap;
+  height: 400px;
+  background-repeat: no-repeat;
+  background-position-x: right;
+}
+
+.intro .banner-content {
+  padding-left: 40px;
+  flex: 1;
+  min-width: 300px;
+  text-align: left;
+}
+
+.intro .banner-content h1 {
+  text-align: left;
+  font-size: 40px;
+  margin-bottom: 10px;
+}
+
+.intro .banner-content p {
+  font-size: 18px;
+  margin-bottom: 20px;
+}
+
+.intro .btn {
+  background-color: #ff7800;
+  color: white;
+  border: none;
+  padding: 16px 24px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.intro .banner-img {
+  width: 300px;
+  max-width: 100%;
+  height: auto;
+}
+
+.intro .features {
+  background-color: #f9f9f9;
+}
+
+.intro .feature-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 30px;
+}
+
+.intro .feature-item {
+  width: 300px;
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.intro .feature-item img {
+  width: 40px;
+  margin-bottom: 15px;
+}
+
+.intro .partners .partner-logos {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 30px;
+  margin-top: 30px;
+}
+
+.intro .partner-logos img {
+  width: 80px;
+  height: auto;
+}

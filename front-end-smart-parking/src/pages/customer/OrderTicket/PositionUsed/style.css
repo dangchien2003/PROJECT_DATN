@@ -1,0 +1,13 @@
+.order-ticket-step1 .position-used {
+  height: 500px;
+  margin-bottom: 16px;
+}
+
+.order-ticket-step1 .position-used .ant-tabs-nav {
+  max-width: 100%;
+}
+
+.order-ticket-step1 .position-used .custom-tab {
+  width: 100px;
+  text-align: center;
+}

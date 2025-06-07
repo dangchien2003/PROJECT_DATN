@@ -1,0 +1,137 @@
+#detail-ticket {
+  padding: 24px 0;
+  background-color: #f0f0f0;
+}
+
+#detail-ticket .info {
+  padding: 16px 64px;
+  margin-bottom: 8px;
+  background-color: #FFF;
+}
+
+#detail-ticket .info .image-wrapper {
+  max-width: 150px;
+  max-height: 150px;
+  display: flex;
+  justify-content: center;
+  align-items: start;
+  overflow: hidden;
+}
+
+#detail-ticket .info .image-wrapper img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  object-position: center;
+  display: block;
+}
+
+#detail-ticket .info .detail {
+  max-width: 300px;
+}
+
+#detail-ticket .info .detail .text>div {
+  margin: 4px 0;
+}
+
+#detail-ticket .price .price-item {
+  max-width: 160px;
+  padding: 8px 8px 8px 4px;
+  font-weight: bold;
+}
+
+#detail-ticket .price .price-item img {
+  width: 30px;
+  margin-right: 4px;
+}
+
+#detail-ticket .detail .order {
+  margin-top: 8px;
+}
+
+
+#detail-ticket .box2 {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+
+#detail-ticket .box2 .list-locaiton-wrapper {
+  flex: 1 1 50%;
+  order: 1;
+}
+
+#detail-ticket .box2 .list-locaiton {
+  height: 400px;
+  min-width: 50;
+  padding: 16px 32px;
+  background-color: #fff;
+}
+
+#detail-ticket .box2 .map-wrapper {
+  flex: 1 1;
+  order: 2;
+  min-width: 40%;
+}
+
+#detail-ticket .box2 .map {
+  width: 100%;
+  height: 400px;
+  min-width: 200px;
+}
+
+#detail-ticket .list-locaiton .search {
+  position: sticky;
+  top: 0;
+  background-color: #FFF;
+  z-index: 1000;
+  padding: 8px;
+}
+
+#detail-ticket .list-locaiton .scroll {
+  overflow-x: hidden;
+  overflow-y: scroll;
+  height: 350px;
+}
+
+#detail-ticket .order {
+  text-transform: uppercase;
+}
+
+#detail-ticket .order:hover {
+  font-size: 15px;
+}
+
+#detail-ticket .location-choosed {
+  padding: 8px 0;
+  font-size: 14px;
+  color: #ff4d4f;
+}
+
+.rainbow-text {
+  font-weight: bold;
+  animation: changeColor 3s infinite linear;
+}
+
+@keyframes changeColor {
+  0% {
+    color: red;
+  }
+
+  25% {
+    color: orange;
+  }
+
+  50% {
+    color: rgb(204, 204, 1);
+  }
+
+  75% {
+    color: green;
+  }
+
+  100% {
+    color: blue;
+  }
+}

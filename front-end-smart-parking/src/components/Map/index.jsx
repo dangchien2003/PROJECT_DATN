@@ -26,17 +26,28 @@ const AutoResizeMap = () => {
 };
 
 // forcus từ từ tới địa điểm
-const FlyToLocation = ({ position, loadFist }) => {
+const FlyToLocation = ({ position }) => {
   const map = useMap();
+
   useEffect(() => {
-    if (loadFist) {
+    const lat = Number(position?.[0]);
+    const lng = Number(position?.[1]);
+
+    const isValidLatLng = Number.isFinite(lat) && Number.isFinite(lng);
+
+    if (!map || !isValidLatLng) {
       return;
     }
-    map.flyTo(position, 10, {
-      duration: 1.0, // Thời gian chuyển đổi (giây)
-    });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+
+    // Đợi một nhịp sau render để map chắc chắn sẵn sàng
+    const timeout = setTimeout(() => {
+      const latLng = L.latLng(lat, lng);
+      map.flyTo(latLng, 13, { duration: 1.0 });
+    }, 200);
+
+    return () => clearTimeout(timeout);
+  }, [position, map]);
+
   return null;
 };
 
@@ -47,26 +58,26 @@ const customIcon = new L.Icon({
   iconAnchor: [12, 41],
 });
 const focusDefault = [10.762622, 106.660172];
-const Map = ({ data = [], ...prop }) => {
-  const [loadFist, setLoadFirst] = useState(false);
+const Map = ({ data = [], focus, ...prop }) => {
+  const [focusMap, setFocusMap] = useState(focus ? focus : focusDefault);
 
   useEffect(() => {
-    if(data.length > 0) {
-      setLoadFirst(true);
+    if(focus) {
+      setFocusMap(focus);
+    } else if(data.length > 0) {
+      setFocusMap(data[0].position);
     }
-  }, [data])
+  }, [data, focus])
   return (
-    <MapContainer center={focusDefault} zoom={13} {...prop}>
+    <MapContainer center={focusMap} zoom={13} {...prop}>
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
       <AutoResizeMap />
-      <FlyToLocation position={focusDefault} loadFist={loadFist} />
-      {data.map((location, index) => {
-        return (
-          <Marker position={location.position} icon={customIcon} key={index}>
-            <Popup>{location.popupContent}</Popup>
-          </Marker>
-        );
-      })}
+      <FlyToLocation position={focusMap} />
+      {data.map((location, index) => (
+        <Marker position={location.position} icon={customIcon} key={index}>
+          <Popup>{location.popupContent}</Popup>
+        </Marker>
+      ))}
     </MapContainer>
   );
 };
