@@ -1,0 +1,27 @@
+.payment .second-item h2 {
+  text-align: center;
+}
+
+.payment .img-wrapper {
+  height: 150px;
+  border-radius: 16px;
+  margin-top: 8px;
+  padding: 30px;
+  text-align: center;
+}
+
+.payment .payment-method img {
+  height: 100px;
+  transition: transform 0.3s ease-in-out;
+}
+
+.payment .payment-method .description-method {
+  transition: transform 0.3s ease-in-out;
+  padding: 16px;
+  font-size: 16px;
+  letter-spacing: 1px;
+}
+
+.payment .payment-method img:hover {
+  transform: scale(120%);
+}

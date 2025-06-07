@@ -1,0 +1,217 @@
+.step {
+  padding: 32px 0;
+}
+
+.order-ticket-step1 h1 {
+  padding-bottom: 8px
+}
+
+.order-ticket-step1 .price-wrapper {
+  padding-top: 8px;
+  padding-bottom: 16px;
+}
+
+.order-ticket-step1 .price-wrapper .price-item {
+  padding: 16px;
+  border-radius: 3px;
+  cursor: pointer;
+  /* margin: 0 4px; */
+}
+
+.order-ticket-step1 .price-wrapper .price-item:hover {
+  background-color: #f0f0f0;
+}
+
+
+.order-ticket-step1 .price-wrapper .price-item img {
+  width: 30px;
+}
+
+.order-ticket-step1 .price-wrapper .price-item span {
+  font-weight: bold;
+  line-height: 30px;
+  font-size: 18px;
+  padding-left: 8px;
+}
+
+.order-ticket-step1 .price-item.choose {
+  background-color: #f0f0f0;
+}
+
+.order-ticket-step1 .choose-time {
+  background-color: #f0f0f063;
+  margin-bottom: 16px;
+}
+
+.order-ticket-step1 .choose-time .form {
+  border-radius: 3px;
+  margin-top: 8px;
+  padding: 16px;
+}
+
+.order-ticket-step1 .choose-time .select-time {
+  width: 100px;
+  margin-left: 8px;
+}
+
+.order-ticket-step1 .choose-time>* {
+  padding: 8px;
+}
+
+.order-ticket-step1 .choose-time h2 {
+  padding: 0;
+}
+
+.order-ticket-step1 .choose-time .expire>div {
+  padding: 4px 0;
+}
+
+.order-ticket-step1 .choose-time .date-picker {
+  margin-left: 8px;
+  width: 200px;
+}
+
+.order-ticket-step1 .choose-time .action {
+  text-align: right;
+  padding-top: 8px;
+}
+
+.order-ticket-step1 .choose-time .action>* {
+  margin: 4px;
+}
+
+.order-ticket-step1 .list-locaiton-wrapper {
+  flex: 1;
+  order: 1;
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.order-ticket-step1 .list-locaiton {
+  height: 370px;
+  width: 100%;
+  padding: 16px;
+  background-color: #fff;
+  margin-top: 8px;
+  padding-top: 0;
+}
+
+.order-ticket-step1 .list-locaiton .search {
+  position: sticky;
+  top: 0;
+  background-color: #FFF;
+  z-index: 1000;
+  padding: 8px;
+}
+
+.order-ticket-step1 .list-locaiton .scroll {
+  overflow-x: hidden;
+  overflow-y: scroll;
+  height: 350px;
+  z-index: 1000;
+}
+
+.order-ticket-step1 .order {
+  text-transform: uppercase;
+}
+
+.order-ticket-step1 .order:hover {
+  font-size: 15px;
+}
+
+
+/* order */
+.box123 {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+/* Desktop layout */
+.left-side {
+  width: 100%;
+  display: flex;
+  order: 1;
+}
+
+.order-ticket-step1 .choose-time {
+  width: 30%;
+}
+
+.order-ticket-step1 .map {
+  order: 1;
+  width: 30%;
+  height: 400px;
+}
+
+.order-ticket-step1 .list-locaiton-wrapper {
+  width: 70%;
+  order: 1;
+}
+
+.ant-list-item {
+  cursor: pointer;
+}
+
+/* Mobile layout */
+@media (max-width: 768px) {
+
+  .left-side,
+  .list-locaiton-wrapper {
+    width: 100%;
+  }
+
+  /* Cho map nằm sau location */
+  .left-side {
+    display: contents;
+    /* bỏ layout column */
+  }
+
+  .map {
+    order: 3;
+    /* đảm bảo nó xuống dưới cùng */
+  }
+}
+
+.buy-for {
+  width: 500px;
+  height: 400px;
+}
+
+.buy-for .box-input {
+  height: 240px;
+  overflow-y: auto;
+}
+
+.buy-for .tag {
+  max-width: 100%;
+  word-break: break-word;
+  white-space: normal;
+  overflow-wrap: break-word;
+  display: inline-block;
+  padding-inline: 10px;
+  margin-top: 4px;
+}
+
+.buy-for .input {
+  min-width: 250px !important;
+}
+
+.buy-for .no-outline.ant-input {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+.buy-for .action {
+  padding: 32px 16px 16px 16px;
+}
+
+.buy-for .action>div {
+  text-align: center;
+}
+
+.buy-for .action .label {
+  font-size: 16px;
+  font-weight: bold;
+}

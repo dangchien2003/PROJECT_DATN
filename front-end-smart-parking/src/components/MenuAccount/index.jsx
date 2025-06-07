@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { deleteRefeshToken } from "@/service/localStorageService";
 import { moveAccessToken } from "@/service/cookieService";
 
-const MenuAccount = ({ linkAvatar }) => {
+const MenuAccount = ({ linkAvatar, isCustomer }) => {
   const navigate = useNavigate();
   const handleLogout = () => {
     deleteRefeshToken();
@@ -21,6 +21,10 @@ const MenuAccount = ({ linkAvatar }) => {
     {
       key: "2",
       label: <a href="/account-info">Đổi mật khẩu</a>,
+    },
+    {
+      key: "1.5",
+      label: <div>Quản giao dịch</div>,
     },
     {
       type: "divider",

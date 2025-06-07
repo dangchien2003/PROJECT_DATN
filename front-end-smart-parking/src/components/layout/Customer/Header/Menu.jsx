@@ -1,0 +1,29 @@
+import { Link } from "react-router-dom"
+
+const Menu = () => {
+  return (
+    <div className="middle-box">
+      <div className="menu">
+        <div className="menu-item ">
+          Nạp tiền
+        </div>  
+        <Link className="no-style cw" to={"/choose/location"}>
+          <div className="menu-item br3">
+            Đặt vé
+          </div>
+        </Link>
+        <div className="menu-item br3">
+          Vé sử dụng
+        </div>
+        <div className="menu-item br3">
+          Quản lý thẻ
+        </div>
+        <div className="menu-item br3">
+          Thống kê
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default Menu

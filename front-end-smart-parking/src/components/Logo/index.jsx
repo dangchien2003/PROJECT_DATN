@@ -1,4 +1,5 @@
 import logo from "@image/logo_parking.png"
+import './style.css'
 
 const LogoParking = () => {
   return (

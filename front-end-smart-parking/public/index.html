@@ -18,8 +18,10 @@
     * {
       padding: 0;
       margin: 0;
+      border: 0;
       font-family: "Roboto", serif;
       font-optical-sizing: auto;
+      box-sizing: border-box;
     }
 
     .d-inline-block {
@@ -69,6 +71,59 @@
 
     .authen-error-field {
       color: #ffeded !important;
+    }
+
+    a.no-style {
+      text-decoration: none;
+    }
+
+    a.hover:hover {
+      text-decoration: underline;
+    }
+
+    .cw {
+      color: #fff;
+    }
+
+    .bw {
+      background-color: #fff;
+    }
+
+    .cb {
+      color: #000;
+    }
+
+    .pr {
+      position: relative;
+    }
+
+    .pa {
+      position: absolute;
+    }
+
+    .mt16 {
+      margin-top: 16px;
+    }
+
+    .mb4 {
+      padding-bottom: 4px;
+    }
+
+    .dib {
+      display: inline-block;
+    }
+
+    .hide-scrollbar {
+      overflow: auto;
+      scrollbar-width: none;
+      /* Firefox */
+      -ms-overflow-style: none;
+      /* IE 10+ */
+    }
+
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none;
+      /* Chrome, Safari, Opera */
     }
   </style>
 </head>
