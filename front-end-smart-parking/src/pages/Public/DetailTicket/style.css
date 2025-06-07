@@ -26,6 +26,10 @@
   display: block;
 }
 
+#detail-ticket .info .detail {
+  max-width: 300px;
+}
+
 #detail-ticket .info .detail .text>div {
   margin: 4px 0;
 }
@@ -101,5 +105,33 @@
 
 #detail-ticket .location-choosed {
   padding: 8px 0;
-  font-size: 13px;
+  font-size: 14px;
+  color: #ff4d4f;
+}
+
+.rainbow-text {
+  font-weight: bold;
+  animation: changeColor 3s infinite linear;
+}
+
+@keyframes changeColor {
+  0% {
+    color: red;
+  }
+
+  25% {
+    color: orange;
+  }
+
+  50% {
+    color: rgb(204, 204, 1);
+  }
+
+  75% {
+    color: green;
+  }
+
+  100% {
+    color: blue;
+  }
 }

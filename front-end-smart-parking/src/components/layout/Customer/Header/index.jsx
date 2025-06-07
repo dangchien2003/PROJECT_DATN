@@ -19,7 +19,7 @@ const Header = () => {
       <div className="menu-desktop">
         <MenuCustom />
       </div>
-      <Sider className="menu-mobile" trigger={null} collapsible collapsed={collapsed}
+      {/* <Sider className="menu-mobile" trigger={null} collapsible collapsed={collapsed}
         style={{
           position: "absolute",
           top: 90,
@@ -35,7 +35,7 @@ const Header = () => {
           defaultSelectedKeys={["1"]}
           items={ADMIN_MENU}
         />
-      </Sider>
+      </Sider> */}
       <div className="end-box">
         <Notifitation />
         <div class="account">

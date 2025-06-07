@@ -6,11 +6,12 @@ import React, { useState } from 'react'
 import { FaSearch } from 'react-icons/fa'
 import { IoCheckmarkDoneOutline } from 'react-icons/io5'
 import { data } from './fakedata'
+import { GiClick } from "react-icons/gi";
 
-const Location = ({onChooseLocation}) => {
+const Location = ({ onChooseLocation }) => {
   const [selected, setSelected] = useState(null);
   const handleClickLocation = (item) => {
-    if(onChooseLocation) {
+    if (onChooseLocation) {
       onChooseLocation(item);
     }
   }
@@ -23,6 +24,7 @@ const Location = ({onChooseLocation}) => {
             <div>
               Sử dụng tại <b>30</b> địa điểm khác nhau trên khắp cả nước
             </div>
+            <div style={{padding: "4px 0"}}><GiClick className='rainbow-text'/> Nhấn chọn vào địa điểm để xem vị trí</div>
             <div className='scroll'>
               <div className='search '>
                 <Search className='input' placeholder="Tìm kiếm địa điểm" enterButton={
@@ -57,7 +59,7 @@ const Location = ({onChooseLocation}) => {
         </div>
         <div className='map-wrapper'>
           <div className='title-box br3'>Bản đồ</div>
-          <Map className="map br3" focus={selected?.position}/>
+          <Map className="map br3" focus={selected?.position} />
         </div>
       </Flex>
     </ChildContent>

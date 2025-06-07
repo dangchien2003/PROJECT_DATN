@@ -8,8 +8,15 @@ import { MdOutlineAccessTimeFilled } from 'react-icons/md';
 import { FaUserAlt } from 'react-icons/fa';
 import logo from '@image/logo_parking.png'
 import ItemBill from './ItemBill';
+import { useNavigate } from 'react-router-dom';
 
 const ConfirmOrder = () => {
+  const navigate = useNavigate();
+
+  const handleNext = () => {
+    navigate("/payment/1");
+  }
+
   return (
     <div className='confirm-order'>
       <ChildContent backgroundColor='#f0f0f0'>
@@ -94,7 +101,7 @@ const ConfirmOrder = () => {
                   <ItemBill label={"Thành tiền"} value={<span>200.000<sup>Đ</sup></span>} />
                 </div>
                 <div className='action'>
-                  <Button color="primary" variant="solid">Thực hiện thanh toán</Button>
+                  <Button onClick={handleNext} color="primary" variant="solid">Thực hiện thanh toán</Button>
                 </div>
               </div>
             </div>

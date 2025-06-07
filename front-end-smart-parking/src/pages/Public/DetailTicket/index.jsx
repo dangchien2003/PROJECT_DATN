@@ -57,7 +57,7 @@ const DetailTicket = () => {
               <Link to={`/order/${id}?locationChoosed=${!isNullOrUndefined(locationChoosed?.id) ? locationChoosed?.id : ''}`}>
                 <Button className='order' color="danger" variant="solid">ĐẶT VÉ NGAY</Button>
               </Link>
-              {locationChoosed && <div className='location-choosed'>Đã chọn địa điểm {locationChoosed.name}</div>}
+              {locationChoosed && <div className='location-choosed'>Bạn đang đặt vé cho địa điểm: <b>{locationChoosed.name}</b></div>}
             </div>
           </Flex>
         </Flex>
