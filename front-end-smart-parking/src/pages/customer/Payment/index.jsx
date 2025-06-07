@@ -1,10 +1,10 @@
 import ChildContent from '@/components/layout/Customer/ChildContent';
 import './style.css'
 import StepOrder from '@/pages/customer/OrderTicket/StepOrder';
-import { Col, Flex, Row } from 'antd';
-import vnpay from "./vnpay.png"
-import bank from "./bank.png"
-import remaining from "./remaining.png"
+import { Col, Row } from 'antd';
+import vnpay from "@image/vnpay.png"
+import bank from "@image/bank.png"
+import remaining from "@image/remaining.png"
 import PopConfirmCustom from '@/components/PopConfirmCustom';
 import { useState } from 'react';
 import { toastError } from '@/utils/toast';
