@@ -8,7 +8,7 @@ const ChooseLocation = () => {
   return (
     <div id='choose-location'>
       <ChildContent>
-        <h3 className='page-name'>Tìm kiếm địa điểm</h3>
+        <h2 className='page-name'>Tìm kiếm địa điểm</h2>
         <div>
           <LocationSearch />
         </div>

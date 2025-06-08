@@ -1,0 +1,16 @@
+.qr-ticket .ticket-name {
+  text-align: center;
+}
+
+.qr-ticket .wrapper-qr img {
+  width: 500px;
+  max-width: 100%;
+}
+
+.qr-ticket .action {
+  text-align: center;
+}
+
+.qr-ticket .action .icon {
+  font-size: 18px;
+}

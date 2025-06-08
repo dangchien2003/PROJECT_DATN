@@ -1,15 +1,11 @@
 import { useRef } from 'react'
-import bgTicket from './cut2.png'
+import bgTicket from '@image/cut2.png'
 import { Button, Flex, Radio, Tooltip } from 'antd'
 import { FaMotorcycle } from 'react-icons/fa6';
 import { Link } from 'react-router-dom';
 
 const TicketCard = () => {
   const ref = useRef();
-  const handleClickTicket = () => {
-    alert("ticket")
-  }
-
   const handleClickOrder = () => {
     alert("đặt vé")
   }

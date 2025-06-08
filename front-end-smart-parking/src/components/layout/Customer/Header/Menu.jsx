@@ -6,15 +6,17 @@ const Menu = () => {
       <div className="menu">
         <div className="menu-item ">
           Nạp tiền
-        </div>  
+        </div>
         <Link className="no-style cw" to={"/choose/location"}>
           <div className="menu-item br3">
             Đặt vé
           </div>
         </Link>
-        <div className="menu-item br3">
-          Vé sử dụng
-        </div>
+        <Link className="no-style cw" to={"/list/ticket"}>
+          <div className="menu-item br3">
+            Vé sử dụng
+          </div>
+        </Link>
         <div className="menu-item br3">
           Quản lý thẻ
         </div>
