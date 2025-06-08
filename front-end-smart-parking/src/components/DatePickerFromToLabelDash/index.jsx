@@ -1,4 +1,5 @@
 import { DatePicker } from 'antd';
+import { useEffect, useState } from 'react';
 
 const { RangePicker } = DatePicker;
 
@@ -10,8 +11,21 @@ const DatePickerFromToLabelDash = ({
   callbackChangeValue,
   placeholder = ["Từ ngày", "Đến ngày"],
   format = "DD/MM/YYYY",
-  ...prop
+  defaultValue
 }) => {
+  const [value, setValue] = useState(defaultValue)
+  useEffect(() => {
+    if (callbackChangeValue && value) {
+      callbackChangeValue(itemKey, [value[0]?.format("YYYY-MM-DDTHH:mm:ss"), value[1]?.format("YYYY-MM-DDTHH:mm:ss")]);
+    } else if(callbackChangeValue && !value) {
+      callbackChangeValue(itemKey, null);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value]);
+
+  const handleChangeValue = (date) => { 
+    setValue(date)
+  }
   return (
     <div
       style={{
@@ -40,14 +54,14 @@ const DatePickerFromToLabelDash = ({
         {label}
       </span>
       <RangePicker
+        value={value}
         minDate={minDate}
         maxDate={maxDate}
         placeholder={placeholder}
         itemKey={itemKey}
         callbackChangeValue={callbackChangeValue}
         format={format}
-        onChange={(date, dateString) => {console.log(date, dateString)}}
-        {...prop}
+        onChange={handleChangeValue}
       />
     </div>
   );

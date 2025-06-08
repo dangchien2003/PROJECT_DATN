@@ -9,8 +9,7 @@ const ChooseTicket = () => {
   return (
     <div id='choose-ticket'>
       <ChildContent>
-        <h3 className='page-name'>Chọn vé
-        </h3>
+        <h2 className='page-name'>Chọn vé</h2>
         <div className='head'>
           <div className='location-name'>EAON MALL Hà Đông
           </div>

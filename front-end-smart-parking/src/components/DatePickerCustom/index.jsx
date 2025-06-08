@@ -34,7 +34,7 @@ const DatePickerCustom = ({
 
   useEffect(() => {
     if (callbackChangeValue) {
-      callbackChangeValue(value?.format(format), itemKey);
+      callbackChangeValue(itemKey, value?.format("YYYY-MM-DDTHH:mm:ss"));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);

@@ -1,5 +1,5 @@
 import { useRef } from 'react'
-import bgTicket from './cut2.png'
+import bgTicket from '@image/cut2.png'
 import { Button } from 'antd'
 import { FaMotorcycle } from 'react-icons/fa6';
 import { Link } from 'react-router-dom';

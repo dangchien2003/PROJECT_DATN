@@ -159,6 +159,24 @@ export const VEHICLE_SELECTBOX = [
   },
 ];
 
+export const TICKET_PURCHASED_STATUS = {
+  CHO_DUYET: {
+    value: 0,
+    label: "Bình thường",
+    color: "cyan",
+  },
+  DANG_PHAT_HANH: {
+    value: 1,
+    label: "Huỷ vé",
+    color: "default",
+  },
+  DA_HUY: {
+    value: 2,
+    label: "Tạm đình chỉ",
+    color: "danger",
+  },
+};
+
 export const TICKET_STATUS = {
   CHO_DUYET: {
     value: 0,
