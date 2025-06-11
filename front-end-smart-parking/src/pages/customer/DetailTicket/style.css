@@ -1,0 +1,58 @@
+.detail-ticket .icon {
+  margin-right: 8px;
+}
+
+.detail-ticket .info {
+  box-shadow: 0px 0px 15px #dddddd;
+  margin-top: 15px;
+  padding: 16px;
+}
+
+.detail-ticket .ticket-name {
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.detail-ticket .error {
+  color: red;
+  font-size: 13px;
+}
+
+.detail-item {
+  display: flex;
+  align-items: flex-start;
+  font-size: 16px;
+  padding-bottom: 16px;
+  gap: 8px;
+  flex-wrap: nowrap;
+}
+
+.detail-item.end {
+  align-items: end;
+}
+
+
+.detail-item .label {
+  white-space: nowrap;
+  flex-shrink: 0;
+  color: #443e3e;
+}
+
+.detail-item .content {
+  padding-left: 8px;
+}
+
+.button-link {
+  cursor: pointer;
+  color: blue;
+}
+
+.detail-ticket .history {}
+
+.pointer {
+  cursor: pointer;
+}
+
+.bold {
+  font-weight: bold;
+}

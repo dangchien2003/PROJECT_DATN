@@ -33,12 +33,14 @@ const ConfirmOrder = () => {
                   <span className='value-label'><b>Vé vip</b></span>
                 </div>
                 <div className='item-info'>
-                  <span className='label-name'><FaLocationDot className="icon" />Sử dụng cho địa điểm: </span>
-                  <span className='value-label'><b>EAON MALL Hà Đông</b></span>
-                </div>
-                <div className='item-info'>
-                  <span className='label-name'><span className='icon empty'></span>Địa chỉ: </span>
-                  <span className='value-label'><b>Nguyễn Xá, Minh Khai, Bắc Từ Liêm, Hà Nội</b></span>
+                  <div className='child'>
+                    <span className='label-name'><FaLocationDot className="icon" />Sử dụng cho địa điểm: </span>
+                    <span className='value-label'><b>EAON MALL Hà Đông</b></span>
+                  </div>
+                  <div>
+                    <span className='label-name'><span className='icon empty'></span>Địa chỉ: </span>
+                    <span className='value-label'><b>Nguyễn Xá, Minh Khai, Bắc Từ Liêm, Hà Nội</b></span>
+                  </div>
                 </div>
                 <div className='item-info'>
                   <span className='label-name'><MdOutlineAccessTimeFilled className='icon' />Hạn sử dụng: </span>
@@ -46,7 +48,7 @@ const ConfirmOrder = () => {
                 </div>
                 <div className='item-info break owner'>
                   <span className='label-name'><FaUserAlt className="icon" />Chủ sở hữu: </span>
-                  <p className='warning'><IoWarning className='icon warning' /> Người dùng dưới đây sẽ được toàn quyền sử dụng mọi chức năng với vé được mua hộ</p>
+                  <p className='warning child'><IoWarning className='icon warning' /> Người dùng dưới đây sẽ được toàn quyền sử dụng mọi chức năng với vé được mua hộ</p>
                   <span className='value-label'>
                     <ol>
                       <li>chienboy03@gmial.com - <b>lê đăng chiến</b></li>

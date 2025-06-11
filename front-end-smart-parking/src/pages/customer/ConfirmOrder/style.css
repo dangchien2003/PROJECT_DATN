@@ -12,8 +12,13 @@
 }
 
 .item-info {
-  padding-bottom: 8px;
+  padding-bottom: 16px;
 }
+
+.item-info .child {
+  padding-bottom: 4px;
+}
+
 
 .padding-footer {
   padding-bottom: 32px;

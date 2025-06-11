@@ -1,19 +1,19 @@
-import { useState, useEffect } from "react";
-import { Table, Tooltip } from "antd";
-import { TICKET_PURCHASED_STATUS } from "@/utils/constants";
-import { formatTimestamp } from "@/utils/time";
-import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { convertDataSort } from "@/utils/api";
-import { setSearching } from "@/store/startSearchSlice";
-import { showTotal } from "@/utils/table";
-import { convertDataSelectboxToObject } from "@/utils/object";
-import { dataResponse } from "./fakedata";
-import { FaEye } from "react-icons/fa6";
-import { LiaQrcodeSolid } from "react-icons/lia";
 import ButtonStatus from "@/components/ButtonStatus";
 import ModalCustom from "@/components/ModalCustom";
 import QrTicket from "@/components/QrTicket";
+import { setSearching } from "@/store/startSearchSlice";
+import { convertDataSort } from "@/utils/api";
+import { TICKET_PURCHASED_STATUS } from "@/utils/constants";
+import { convertDataSelectboxToObject } from "@/utils/object";
+import { showTotal } from "@/utils/table";
+import { formatTimestamp } from "@/utils/time";
+import { Table, Tooltip } from "antd";
+import { useEffect, useState } from "react";
+import { FaEye } from "react-icons/fa6";
+import { LiaQrcodeSolid } from "react-icons/lia";
+import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import { dataResponse } from "./fakedata";
 
 const baseColumns = [
   {
@@ -72,7 +72,6 @@ const mapFieldSort = {
 
 const ticketPurchasedStatus = convertDataSelectboxToObject(TICKET_PURCHASED_STATUS);
 const TableList = ({ dataSearch }) => {
-  const navigate = useNavigate()
   const { isSearching } = useSelector(state => state.startSearch)
   const dispatch = useDispatch();
   const [columns, setColumns] = useState(baseColumns);
@@ -157,10 +156,6 @@ const TableList = ({ dataSearch }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSearching]);
 
-  const handleDetail = (data) => {
-
-  }
-
   const handleShowQr = (data) => {
     setDataTicketShowQr(data)
   }
@@ -180,9 +175,9 @@ const TableList = ({ dataSearch }) => {
       item.action = (
         <div style={{ display: "flex", gap: 16, alignItems: "center", justifyContent: "center" }}>
           <Tooltip title="Chi tiết">
-            <div onClick={() => { handleDetail(item) }}>
+            <Link className="cb" to={"/ticket/detail/" + item.id}>
               <FaEye style={{ fontSize: 21, cursor: 'pointer' }} />
-            </div>
+            </Link>
           </Tooltip>
           {(dataSearch.tab !== 4 && dataSearch.tab !== 3) && <Tooltip title="Xem mã">
             <div onClick={() => { handleShowQr(item) }}>

@@ -11,6 +11,7 @@ import ListTicket from "./pages/admin/ListTicket";
 import NotFound from "./components/layout/NotFound";
 import RequestApproveTicket from "./pages/admin/RequestApproveTicket";
 import DetailTicket from "./pages/admin/DetailTicket";
+import DetailTicketCustomer from "./pages/customer/DetailTicket";
 import DetailTicketPartner from "./pages/partner/DetailTicket";
 import ListCard from "./pages/admin/ListCard";
 import ListCardWaitApprove from "./pages/admin/ListCardWaitApprove";
@@ -53,6 +54,7 @@ const router = createBrowserRouter([
       { path: "/order/:id", element: <OrderTicket />},
       { path: "/payment/:id", element: <Payment />},
       { path: "/list/ticket", element: <TicketList />},
+      { path: "/ticket/detail/:id", element: <DetailTicketCustomer />},
     ]
   },
   { path: "authen", element: <Authen /> },
