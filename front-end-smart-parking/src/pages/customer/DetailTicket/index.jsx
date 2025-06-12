@@ -1,20 +1,20 @@
 import ChildContent from '@/components/layout/Customer/ChildContent';
 import ModalCustom from '@/components/ModalCustom';
 import QrTicket from '@/components/QrTicket';
-import { Col, Flex, Row, Tooltip } from 'antd';
+import { Col, Flex, Row, Slider, Tooltip } from 'antd';
 import { useState } from 'react';
-import { BiSolidEdit } from 'react-icons/bi';
 import { FaEye } from 'react-icons/fa6';
 import { GoDotFill } from "react-icons/go";
 import { IoTicket } from 'react-icons/io5';
 import History from './History';
+import MoreView from './MoreView';
 import './style.css';
 
 const DetailTicket = () => {
   const [dataTicketShowQr, setDataTicketShowQr] = useState(null);
 
   const handleShowQr = () => {
-    setDataTicketShowQr({name: "VÉ VIP HÀ NỘI"})
+    setDataTicketShowQr({ name: "VÉ VIP HÀ NỘI" })
   }
 
   const handleCloseQr = () => {
@@ -22,23 +22,28 @@ const DetailTicket = () => {
   }
   return (
     <div>
-      <ChildContent className='detail-ticket'>
+      <ChildContent className='detail-ticket mb16'>
         <div>
           <Row gutter={48}>
-            <Col lg={13} md={12} sm={24} xs={24} className='info br3'>
+            <Col lg={12} md={12} sm={24} xs={24} className='info br3'>
               <div>
                 <h2 className='page-name pt0'>Thông tin</h2>
                 <div className='padding-content'>
                   <div className='detail-item'>
-                    <Flex>
-                      <IoTicket className='icon' />
+                    <Flex justify='space-between' style={{ width: "100%" }}>
+                      <Flex>
+                        <IoTicket className='icon' />
+                        <div>
+                          <div className='ticket-name'>Vé vip eaon mall
+                          </div>
+                          <div className='status'>
+                            <GoDotFill style={{ color: 'red' }} /> Tạm đình chỉ
+                          </div>
+                          <div className='error'>Chúng tôi nhận thấy điều bất thường hoạt động vé này. Vui lòng đợi xác minh</div>
+                        </div>
+                      </Flex>
                       <div>
-                        <div className='ticket-name'>Vé vip eaon mall
-                        </div>
-                        <div className='status'>
-                          <GoDotFill style={{ color: 'red' }} /> Tạm đình chỉ
-                        </div>
-                        <div className='error'>Chúng tôi nhận thấy điều bất thường hoạt động vé này. Vui lòng đợi xác minh</div>
+                        <MoreView />
                       </div>
                     </Flex>
                   </div>
@@ -47,7 +52,7 @@ const DetailTicket = () => {
                       Địa điểm:
                     </div>
                     <div>
-                      <div>EAON MALL LONG BIÊN</div>
+                      <div className='bold'>EAON MALL LONG BIÊN</div>
                       <div>Nhân Kiệt, Hùng Thắng, Bình Giang, Hải Dương</div>
                     </div>
                   </div>
@@ -78,11 +83,8 @@ const DetailTicket = () => {
                         <div className='label'>
                           Biển số:
                         </div>
-                        {/* <div>
-                          34AN-01864
-                        </div> */}
-                        <div className='button-link'>
-                          <BiSolidEdit /> Thêm biển số
+                        <div>
+                          34AN - 01864
                         </div>
                       </div>
                     </Col>
@@ -109,16 +111,17 @@ const DetailTicket = () => {
                     </Tooltip>
                   </div>
                 </div>
+                <Slider max={100} value={30} />
               </div>
             </Col>
-            <Col lg={11} md={12} sm={24} xs={24} className='history'>
+            <Col lg={12} md={12} sm={24} xs={24} className='history'>
               <h2 className='page-name'>Lịch sử</h2>
               <div className='padding-content'>
                 <History />
               </div>
             </Col>
           </Row>
-        </div>
+        </div >
       </ChildContent >
       {dataTicketShowQr && <ModalCustom onClose={handleCloseQr}>
         <QrTicket data={dataTicketShowQr} />

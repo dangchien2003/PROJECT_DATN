@@ -1,3 +1,25 @@
 .pt0 {
   padding-top: 0;
 }
+
+.ant-table-cell-fix-right-first {
+  position: relative;
+  background: #fff;
+  /* quan trọng để bóng không bị trong suốt */
+  z-index: 1;
+  /* đảm bảo hiển thị trên các cell khác nếu cần */
+}
+
+.ant-table-cell-fix-right-first::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0px;
+  /* lùi ra ngoài bên trái */
+  width: 0px;
+  height: 100%;
+  box-shadow: -8px 0 15px #cecece;
+  /* bóng lệch trái */
+  pointer-events: none;
+  /* không cản click */
+}

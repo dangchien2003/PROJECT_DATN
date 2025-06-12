@@ -91,6 +91,7 @@ const TableList = ({ dataSearch }) => {
 
   useEffect(() => {
     console.log(dataSearch)
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
   }, [dataSearch.tab])
 
   const loadData = (newPagination, sorter) => {

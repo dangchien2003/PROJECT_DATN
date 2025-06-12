@@ -13,7 +13,7 @@ const columns = [
     dataIndex: "stt",
     key: "0",
     sorter: false,
-    width: 1,
+    width: 60,
   },
   {
     title: "Giờ vào",
@@ -40,7 +40,7 @@ const columns = [
     title: "Xem",
     dataIndex: "view",
     key: "3",
-    width: 50,
+    width: 70,
     align: "center",
     fixed: "right",
   }
@@ -83,12 +83,63 @@ const History = () => {
             <GoDotFill style={{ color: 'green' }} /> Hoàn thành
           </div>,
           view: <FaEye className='pointer' onClick={handleViewDetail} />
+        }, {
+          stt: 1,
+          checkinAt: "10:30 11/11/2025",
+          checkoutAt: null,
+          statusPrint: <div className='status'>
+            <GoDotFill style={{ color: 'yellow' }} /> Đang gửi
+          </div>,
+          view: <FaEye className='pointer' onClick={handleViewDetail} />
+        }, 
+        {
+          stt: 2,
+          checkinAt: "07:00 11/11/2025",
+          checkoutAt: "10:00 11/11/2025",
+          statusPrint: <div className='status'>
+            <GoDotFill style={{ color: 'green' }} /> Hoàn thành
+          </div>,
+          view: <FaEye className='pointer' onClick={handleViewDetail} />
+        }, {
+          stt: 1,
+          checkinAt: "10:30 11/11/2025",
+          checkoutAt: null,
+          statusPrint: <div className='status'>
+            <GoDotFill style={{ color: 'yellow' }} /> Đang gửi
+          </div>,
+          view: <FaEye className='pointer' onClick={handleViewDetail} />
+        }, 
+        {
+          stt: 2,
+          checkinAt: "07:00 11/11/2025",
+          checkoutAt: "10:00 11/11/2025",
+          statusPrint: <div className='status'>
+            <GoDotFill style={{ color: 'green' }} /> Hoàn thành
+          </div>,
+          view: <FaEye className='pointer' onClick={handleViewDetail} />
+        }, {
+          stt: 1,
+          checkinAt: "10:30 11/11/2025",
+          checkoutAt: null,
+          statusPrint: <div className='status'>
+            <GoDotFill style={{ color: 'yellow' }} /> Đang gửi
+          </div>,
+          view: <FaEye className='pointer' onClick={handleViewDetail} />
+        }, 
+        {
+          stt: 2,
+          checkinAt: "07:00 11/11/2025",
+          checkoutAt: "10:00 11/11/2025",
+          statusPrint: <div className='status'>
+            <GoDotFill style={{ color: 'green' }} /> Hoàn thành
+          </div>,
+          view: <FaEye className='pointer' onClick={handleViewDetail} />
         }
       ]);
     }, 1000)
   }, [])
   return (
-    <div>
+    <div className='history'>
       {!data && <LineLoading />}
       {data && <Table
         columns={columns}
@@ -96,6 +147,7 @@ const History = () => {
         rowKey="id"
         scroll={{
           x: "max-content",
+          y: 400
         }}
         // onChange={handleTableChange}
         pagination={{
@@ -104,6 +156,7 @@ const History = () => {
           pageSizeOptions: ["10", "20", "50", "100"],
           showTotal: showTotal
         }}
+        className='table'
       />}
       {viewDetailId && <ModalCustom onClose={handleCloseViewDetail}>
         <DetailHistory />
