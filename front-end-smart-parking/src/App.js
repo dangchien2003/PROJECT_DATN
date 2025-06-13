@@ -39,6 +39,7 @@ import OrderTicket from "./pages/customer/OrderTicket";
 import ConfirmOrder from "./pages/customer/ConfirmOrder";
 import Payment from "./pages/customer/Payment";
 import TicketList from "./pages/customer/TicketList";
+import CardManager from "./pages/customer/CardManager";
 
 const router = createBrowserRouter([
   {
@@ -55,6 +56,7 @@ const router = createBrowserRouter([
       { path: "/payment/:id", element: <Payment />},
       { path: "/list/ticket", element: <TicketList />},
       { path: "/ticket/detail/:id", element: <DetailTicketCustomer />},
+      { path: "/card", element: <CardManager />},
     ]
   },
   { path: "authen", element: <Authen /> },

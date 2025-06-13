@@ -39,12 +39,11 @@ const MoreView = () => {
           <div className='more-action'>
             <Tooltip title="Sẽ không thể sử dụng vé khi đang vô hiệu">
               <div>Vô hiệu:
-
                 <Switch
                   onChange={handleChangeDisable}
                   checked={disable}
                   loading={disableLoading}
-                  style={{ marginLeft: 8 }}
+                  style={{marginLeft: 16}}
                 />
               </div>
             </Tooltip>

@@ -1,8 +1,37 @@
-.body > * {
+.body .info {
   padding: 4px 0;
 }
 
 .ant-card-head-title {
   font-size: 20px;
   color: white;
+}
+
+.card .card-item {
+  background: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQSvFGCBzmWJ6kLtUB66UtRHWweI2FsSseezA&s');
+  background-size: cover;
+  color: white;
+  font-size: 16px
+}
+
+.card .card-item .card-number {
+  font-size: 20px;
+}
+
+.card .ant-card {
+  width: 500px;
+}
+
+@media (max-width: 500px) {
+  .card .ant-card {
+    width: 300px;
+  }
+
+  .card .card-item .info {
+    font-size: 14px;
+  }
+
+  .card .card-item .card-number {
+    font-size: 18px;
+  }
 }

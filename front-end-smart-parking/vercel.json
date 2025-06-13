@@ -1,5 +1,12 @@
 {
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
-  ]
+  ],
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "git": {
+    "front-end": false,
+    "back-end": false,
+    "developer": false,
+    "main": true
+  }
 }

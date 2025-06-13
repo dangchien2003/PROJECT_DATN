@@ -17,9 +17,11 @@ const Menu = () => {
             Vé sử dụng
           </div>
         </Link>
-        <div className="menu-item br3">
-          Quản lý thẻ
-        </div>
+        <Link className="no-style cw" to={"/card"}>
+          <div className="menu-item br3">
+            Quản lý thẻ
+          </div>
+        </Link>
         <div className="menu-item br3">
           Thống kê
         </div>
