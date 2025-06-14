@@ -16,6 +16,7 @@ const TextFieldLabelDash = ({
   disable,
   maxLength,
   minLength,
+  color
 }) => {
   const [value, setValue] = useState(defaultValue);
   const keyFocus = useSelector((state) => state.focus);
@@ -121,6 +122,7 @@ const TextFieldLabelDash = ({
         onClear={handleClear}
         prefix={prefix}
         disabled={disable}
+        style={color ? {color: color} : {}}
       />
       <InputError itemKey={itemKey}/>
     </div>

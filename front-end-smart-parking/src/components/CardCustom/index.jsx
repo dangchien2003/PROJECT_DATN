@@ -25,12 +25,10 @@ const CardCustom = ({ isAdmin, isWaitApprove, parentRef }) => {
             <div className='info'>Chủ sở hữu: <Link to={"/account/customer/1"} style={{ color: "white", textDecoration: "underline" }}>LÊ ĐĂNG CHIẾN</Link></div>
             <div className='info'>Loại thẻ: {CARD_TYPE[type].label}</div>
           </>}
-          <div>{isWaitApprove ? "Lần yêu cầu" : "Lần cấp"}: 1</div>
-          {!isWaitApprove && <>
-            <div className='info'>Ngày cấp: 18/01/2025</div>
-            <div className='info'>Thời hạn: Vô hạn</div>
-            <div className='info'>Số lần sử dụng: 500</div>
-          </>}
+          <div className='info'>Lần cấp: 1</div>
+          <div className='info'>Ngày cấp: 18/01/2025</div>
+          <div className='info'>Thời hạn: Vô hạn</div>
+          <div className='info'>Số lần sử dụng: 500</div>
           <div className='info'>
             <span>Trạng thái: </span>
             <DotStatus />
@@ -46,8 +44,8 @@ const CardCustom = ({ isAdmin, isWaitApprove, parentRef }) => {
             <div>Ngày yêu cầu: 20/10/2003</div>
           </>}
         </div>
-      </Card>
-    </div>
+      </Card >
+    </div >
   )
 }
 

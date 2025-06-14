@@ -1,0 +1,19 @@
+.card-wait {
+  margin-top: 16px;
+}
+
+.card-wait .ant-table {
+  font-size: 16px !important;
+}
+
+.card-wait .ant-table .success {
+  color: green;
+}
+
+.card-wait .ant-table .cancel {
+  color: red;
+}
+
+.card-wait .ant-table .cancel .reason {
+  font-size: 14px;
+}

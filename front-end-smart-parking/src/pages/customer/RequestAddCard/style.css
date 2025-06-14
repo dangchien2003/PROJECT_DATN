@@ -1,0 +1,15 @@
+.request-add-card .reason-box {
+  padding-left: 24px;
+}
+
+.request-add-card .reason {
+  width: 100%;
+}
+
+.request-add-card .action {
+  padding-top: 24px
+}
+
+.request-add-card .action .icon {
+  font-size: 18px;
+}
