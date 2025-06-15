@@ -13,7 +13,7 @@ const QrTicket = ({data}) => {
       </div>
       <Flex justify='center' wrap="wrap" gap={16} className='action'>
         <Button color="primary" variant="solid">
-          <LiaQrcodeSolid className='icon'/> Tạo mã mới
+          <LiaQrcodeSolid className='icon'/> Thay mã
         </Button>
         <Button color="cyan" variant="outlined">
           <BiSolidDownload className='icon' /> Tải xuống
