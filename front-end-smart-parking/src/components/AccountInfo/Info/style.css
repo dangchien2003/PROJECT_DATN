@@ -1,0 +1,22 @@
+.account-info .info {
+  padding-top: 24px;
+}
+
+.account-info .info .value {
+  font-weight: 500;
+  font-size: 17px;
+}
+
+.gender-female {
+  color: rgb(253, 68, 99);
+}
+
+.gender-male {
+  color: rgb(33, 66, 252);
+}
+
+.account-info .note {
+  text-align: center;
+  color: #707070;
+  padding: 0 16px;
+}

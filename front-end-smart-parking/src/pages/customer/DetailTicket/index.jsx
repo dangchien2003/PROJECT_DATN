@@ -25,7 +25,7 @@ const DetailTicket = () => {
       <ChildContent className='detail-ticket mb16'>
         <div>
           <Row gutter={48}>
-            <Col lg={12} md={12} sm={24} xs={24} className='info br3'>
+            <Col lg={12} md={12} sm={24} xs={24} className='info'>
               <div>
                 <h2 className='page-name pt0'>Thông tin</h2>
                 <div className='padding-content'>
