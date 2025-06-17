@@ -47,16 +47,11 @@ const baseColumns = [
   }
 ];
 const History = () => {
-  const [loading, setLoading] = useState(false);
-  const [data, setData] = useState([]);
+  const [data, setData] = useState(null);
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 10,
     total: 0,
-  });
-  const [sorter] = useState({
-    field: null,
-    order: null,
   });
 
   const convertResponseToDataTable = (data, currentPage, pageSize) => {
@@ -98,7 +93,9 @@ const History = () => {
   }
 
   useEffect(() => {
-    setData(convertResponseToDataTable(dataCardFake, pagination.current, pagination.pageSize));
+    setTimeout(() => {
+      setData(convertResponseToDataTable(dataCardFake, pagination.current, pagination.pageSize));
+    }, 3000)
   }, [])
 
   const handleTableChange = (newPagination, _, sorter) => {
@@ -113,7 +110,7 @@ const History = () => {
         columns={baseColumns}
         dataSource={data}
         rowKey="id"
-        // loading={loading}
+        loading={data === null}
         scroll={{
           x: "max-content",
         }}

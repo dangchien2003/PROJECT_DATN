@@ -1,9 +1,10 @@
 import React from "react";
 import { DownOutlined } from "@ant-design/icons";
 import { Dropdown, Space, Typography } from "antd";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { deleteRefeshToken } from "@/service/localStorageService";
 import { moveAccessToken } from "@/service/cookieService";
+import './style.css'
 
 const MenuAccount = ({ linkAvatar, isCustomer }) => {
   const navigate = useNavigate();
@@ -24,7 +25,7 @@ const MenuAccount = ({ linkAvatar, isCustomer }) => {
     },
     {
       key: "1.5",
-      label: <div>Quản giao dịch</div>,
+      label: <Link to={"/account/transaction"}><div>Quản lý giao dịch</div></Link>,
     },
     {
       type: "divider",
@@ -45,6 +46,7 @@ const MenuAccount = ({ linkAvatar, isCustomer }) => {
         selectable: true,
       }}
       trigger={"click"}
+      className="menu-account"
     >
       <Typography.Link>
         <Space>

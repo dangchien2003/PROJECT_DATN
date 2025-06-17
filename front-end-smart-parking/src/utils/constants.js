@@ -396,6 +396,25 @@ export const DATA_LOCATION_WAIT_APPROVE_CATEGORY = {
   },
 }
 
+export const TYPE_TRANSACTION = {
+  MUA_VE: {
+    label: "Mua vé",
+    value: 0,
+  },
+  GIA_HAN_VE: {
+    label: "Gia hạn vé",
+    value: 1,
+  },
+  NAP_TIEN: {
+    label: "Nạp tiền",
+    value: 2,
+  },
+  THU_HOI: {
+    label: "Thu hồi",
+    value: 3,
+  },
+}
+
 export const DATA_ACCOUNT_STATUS_SELECTBOX = [
   {label: "Khoá", value: 0},
   {label: "Tạm khoá", value: 1},

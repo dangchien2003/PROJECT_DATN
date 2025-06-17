@@ -8,7 +8,7 @@ const ItemRecommend = ({ coin, onClick, current }) => {
     }
   }
   return (
-    <div className='item-recommend' onClick={handleClick} style={coin === current ? {fontWeight: "bold", fontSize: 18} : {}}>
+    <div className='item-recommend pointer' onClick={handleClick} style={coin === current ? {fontWeight: "bold", fontSize: 18} : {}}>
       <div>{formatCurrency(coin)}<sup>Đ</sup></div>
     </div>
   );

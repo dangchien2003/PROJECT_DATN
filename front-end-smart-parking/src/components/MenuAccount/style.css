@@ -1,0 +1,8 @@
+.ant-dropdown-menu-item-selected {
+  color: rgba(0, 0, 0, 0.88) !important;
+  background-color: transparent !important;
+}
+
+.ant-dropdown-menu-item-selected:hover {
+  background-color: #f5f5f5 !important;
+}
