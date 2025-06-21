@@ -88,4 +88,15 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
     List<Long> findAllByNameAndPartnerId(
             @Param("name") String name,
             @Param("partnerIds") List<String> partnerIds);
+
+    @Query("""
+            SELECT l FROM Location l
+            WHERE
+            (:name is null or l.name LIKE CONCAT('%', :name, '%') ESCAPE '!')
+            and l.status = :status
+            """)
+    Page<Location> customerSearch(
+            @Param("name") String name,
+            @Param("status") Integer status,
+            Pageable pageable);
 }

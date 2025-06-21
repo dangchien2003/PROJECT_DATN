@@ -9,12 +9,10 @@ import com.example.common.exception.ErrorCode;
 import com.example.common.utils.DataUtils;
 import com.example.parking_service.ParkingServiceApplication;
 import com.example.parking_service.dto.request.AdminSearchLocation;
+import com.example.parking_service.dto.request.CustomerSearchLocation;
 import com.example.parking_service.dto.request.PartnerSearchLocation;
 import com.example.parking_service.dto.response.*;
-import com.example.parking_service.entity.Account;
-import com.example.parking_service.entity.Location;
-import com.example.parking_service.entity.LocationModify;
-import com.example.parking_service.entity.LocationWaitRelease;
+import com.example.parking_service.entity.*;
 import com.example.parking_service.enums.LocationModifyStatus;
 import com.example.parking_service.enums.LocationStatus;
 import com.example.parking_service.mapper.LocationMapper;
@@ -433,4 +431,39 @@ public class LocationServiceImpl implements LocationService {
         };
     }
 
+    @Override
+    public ApiResponse<Object> customerSearch(CustomerSearchLocation request, Pageable pageable) {
+        // sắp xếp theo tên
+        Pageable pageQuery = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                Sort.by(Sort.Direction.ASC, Location_.NAME));
+        // convert dữ liệu tìm kiếm
+        String locationName = DataUtils.convertStringSearchLike(request.getName());
+        // xử lý thêm category
+        Page<Location> locations = locationRepository.customerSearch(locationName, LocationStatus.DA_DUYET_DANG_HOAT_DONG.getValue(), pageQuery);
+        //convert response
+        List<CustomerSearchLocationResponse> result = new ArrayList<>();
+        Set<String> partnerIds = new HashSet<>();
+        locations.forEach(item -> {
+            result.add(locationMapper.toCustomerSearchLocationResponse(item));
+            partnerIds.add(item.getPartnerId());
+        });
+        // lấy thông tin đối tác
+        List<Account> partners = accountRepository.findAllById(partnerIds);
+        Map<String, Account> partnersMap = partners.stream().collect(Collectors.toMap(Account::getId, item -> item));
+        // map thêm tên đối tác
+        Random random = new Random();
+        result.forEach(item -> {
+            Account partner = partnersMap.get(item.getPartnerId());
+            if (!DataUtils.isNullOrEmpty(partner)) {
+                item.setPartnerName(partner.getPartnerFullName());
+            }
+            // random used
+            item.setUsed(random.nextLong(item.getCapacity()));
+        });
+        return ApiResponse.builder()
+                .result(new PageResponse<>(result, locations.getTotalPages(), locations.getTotalElements()))
+                .build();
+    }
 }

@@ -1,6 +1,7 @@
 package com.example.parking_service.mapper;
 
 import com.example.common.dto.Coordinates;
+import com.example.parking_service.dto.response.CustomerSearchLocationResponse;
 import com.example.parking_service.dto.response.LocationResponse;
 import com.example.parking_service.dto.response.MapLocationResponse;
 import com.example.parking_service.entity.Location;
@@ -26,6 +27,9 @@ public interface LocationMapper {
 
     @Mapping(target = "coordinates", source = "coordinates", qualifiedByName = "convertCoordinates")
     MapLocationResponse toMapLocationResponse(Location location);
+
+    @Mapping(target = "openHoliday", source = "openHoliday", qualifiedByName = "convertToBoolean")
+    CustomerSearchLocationResponse toCustomerSearchLocationResponse(Location entity);
 
     @Named("convertCoordinates")
     default Coordinates convertCoordinates(String coordinatesString) {

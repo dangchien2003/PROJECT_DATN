@@ -8,12 +8,12 @@ import java.time.temporal.ChronoUnit;
 @Getter
 @AllArgsConstructor
 public enum TimeUnit {
-    Y(ChronoUnit.MINUTES),
-    M(ChronoUnit.MINUTES),
-    D(ChronoUnit.MINUTES),
-    H(ChronoUnit.MINUTES),
+    Y(ChronoUnit.YEARS),
+    M(ChronoUnit.MONTHS),
+    D(ChronoUnit.DAYS),
+    H(ChronoUnit.HOURS),
     m(ChronoUnit.MINUTES),
-    s(ChronoUnit.MINUTES),
+    s(ChronoUnit.SECONDS),
     ;
-    ChronoUnit unit;
+    final ChronoUnit unit;
 }
