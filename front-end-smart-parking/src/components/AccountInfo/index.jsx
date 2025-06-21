@@ -27,7 +27,7 @@ const AccountInfo = () => {
         </div> */}
         <div className='detail-item end remaining'>
           <div className='label'>
-            Quyền hạn:
+            Tài khoản:
           </div>
           <div className='value'>
             Đối tác

@@ -19,6 +19,10 @@
   background-color: #001f3fe1;
 }
 
+#choose-location .search .ant-input-affix-wrapper {
+  height: 34px !important;
+}
+
 
 #choose-location .search .input input {
   font-size: 16px;
@@ -52,10 +56,14 @@
   padding: 8px;
 }
 
-#choose-location .info img {
+#choose-location .info .avatar {
+  width: 150px;
   height: 160px;
-  max-width: 150px;
+}
 
+#choose-location .info img {
+  max-width: 100%;
+  max-height: 100%;
 }
 
 #choose-location .info .detail {
@@ -76,7 +84,7 @@
 }
 
 .address {
-  color: #616161;
+  color: #616161 !important;
   font-size: 14px;
 }
 
@@ -86,8 +94,31 @@
 
 .info .detail .status {
   font-size: 10px;
-  color: rgb(241, 57, 57);
   margin-right: 8px;
+}
+
+.info .detail .status.level1 {
+  color: rgb(45, 248, 45);
+}
+
+.info .detail .status.level2 {
+  color: rgb(194, 252, 36);
+}
+
+.info .detail .status.level3 {
+  color: rgb(251, 255, 28);
+}
+
+.info .detail .status.level4 {
+  color: rgb(255, 178, 13);
+}
+
+.info .detail .status.level5 {
+  color: rgb(255, 110, 13);
+}
+
+.info .detail .status.level6 {
+  color: rgb(241, 57, 57);
 }
 
 #choose-location .info .detail a {

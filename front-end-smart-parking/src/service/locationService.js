@@ -18,6 +18,7 @@ export async function partnerSearch(data, page, size, field, sort) {
   })
 }
 
+
 export async function adminSearchWaitApprove(data, page, size, field, sort) {
   return await httpClient.post(PARKING_SERVICE.location.adminSearchWaitApprove + "?" + getParamsPage(page, size, field, sort), data, {
     headers: {
@@ -28,6 +29,14 @@ export async function adminSearchWaitApprove(data, page, size, field, sort) {
 
 export async function adminSearch(data, page, size, field, sort) {
   return await httpClient.post(PARKING_SERVICE.location.adminSearch + "?" + getParamsPage(page, size, field, sort), data, {
+    headers: {
+      Authorization: undefined
+    }
+  })
+}
+
+export async function customerSearch(data, page, size) {
+  return await httpClient.post(PARKING_SERVICE.location.customerSearch + "?" + getParamsPage(page, size, null, null), data, {
     headers: {
       Authorization: undefined
     }

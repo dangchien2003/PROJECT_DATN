@@ -28,7 +28,8 @@ const Location = ({ onChoose, selected }) => {
       <div className='list-locaiton br3 pr'>
         <div className='scroll'>
           <div className='search'>
-            <Search className='input' placeholder="Tìm kiếm địa điểm" enterButton={
+            <Search className='input' placeholder="Tìm kiếm địa điểm"
+            enterButton={
               <Tooltip title="Tìm kiếm">
                 <span>
                   <FaSearch />
