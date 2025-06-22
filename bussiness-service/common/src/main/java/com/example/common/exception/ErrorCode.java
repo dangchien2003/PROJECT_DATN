@@ -12,7 +12,7 @@ import org.springframework.http.HttpStatusCode;
 @AllArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public enum ErrorCode {
-    INVALID_DATA(1001, HttpStatus.BAD_REQUEST, "Kiểm tra dữ liệu vào thử lại"),
+    INVALID_DATA(1001, HttpStatus.BAD_REQUEST, "Kiểm tra dữ liệu và thử lại"),
     DATA_EXISTED(1002, HttpStatus.CONFLICT, "Dữ liệu đã tồn tại"),
     CONFLICT_DATA(1002, HttpStatus.CONFLICT, "Không thể thực thi"),
     NOT_FOUND(1003, HttpStatus.NOT_FOUND, "Không tìm thấy dữ liệu bản ghi"),

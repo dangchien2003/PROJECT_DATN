@@ -13,4 +13,5 @@ import lombok.experimental.FieldDefaults;
 public class CustomerSearchTicket {
     Integer ticketCategory;
     Integer vehicle;
+    Long locationId;
 }

@@ -57,6 +57,8 @@ public class TicketWaitRelease extends BaseEntity {
 
     Long priceMonthSlot;
 
+    Integer countLocation;
+
     @Lob
     String description;
 

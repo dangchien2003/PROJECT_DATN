@@ -54,6 +54,8 @@ public class Ticket extends BaseEntity {
 
     Long priceMonthSlot;
 
+    Integer countLocation;
+
     @Lob
     String description;
 }

@@ -34,4 +34,10 @@ public interface TicketSpecification {
             String trendPrice,
             Integer priceCategory
     );
+
+    Specification<Ticket> search(
+            Integer vehicle,
+            Integer priceCategory,
+            List<Long> ticketIds
+    );
 }

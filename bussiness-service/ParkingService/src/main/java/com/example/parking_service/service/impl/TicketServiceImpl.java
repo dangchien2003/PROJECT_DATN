@@ -18,6 +18,7 @@ import com.example.parking_service.dto.request.CustomerSearchTicket;
 import com.example.parking_service.dto.request.ModifyTicketRequest;
 import com.example.parking_service.dto.request.SearchTicket;
 import com.example.parking_service.dto.response.DataSearchTicketResponse;
+import com.example.parking_service.dto.response.SearchTicketResponse;
 import com.example.parking_service.entity.*;
 import com.example.parking_service.enums.*;
 import com.example.parking_service.mapper.TicketMapper;
@@ -230,7 +231,7 @@ public class TicketServiceImpl implements TicketService {
             listLocationId = locationRepository.findAllByNameAndPartnerId(locationName, listPartner);
             if (!listLocationId.isEmpty()) {
                 listIdWithLocation = ticketLocationRepository
-                        .findByObjectIdAndTypeAndPartnerId(listIdWithLocation, typeTicket);
+                        .findByLocationIdsAndType(listIdWithLocation, typeTicket);
             }
         }
 
@@ -356,7 +357,7 @@ public class TicketServiceImpl implements TicketService {
             listIdWithLocation = locationRepository.findAllByNameAndPartnerId(locationName, List.of(partnerId));
             if (!listIdWithLocation.isEmpty()) {
                 listIdWithLocation = ticketLocationRepository
-                        .findByObjectIdAndTypeAndPartnerId(listIdWithLocation, typeTicket);
+                        .findByLocationIdsAndType(listIdWithLocation, typeTicket);
             }
         }
 
@@ -440,6 +441,7 @@ public class TicketServiceImpl implements TicketService {
             ticketWaitRelease.setPartnerId(partnerId);
             ticketWaitRelease.setModifyCount(TicketModifyStatus.CHO_AP_DUNG);
             ticketWaitRelease.setStatus(TicketStatus.CHO_PHAT_HANH);
+            ticketWaitRelease.setCountLocation(request.getLocationUse().size());
             DataUtils.setDataAction(ticketWaitRelease, partnerId, true);
             ticketWaitRelease = ticketWaitReleaseRepository.save(ticketWaitRelease);
             // lưu địa điểm
@@ -459,6 +461,7 @@ public class TicketServiceImpl implements TicketService {
             // set data
             ticketWaitRelease.setIsDel(IsDel.DELETE_NOT_YET.getValue());
             ticketWaitRelease.setReleased(Release.RELEASE_NOT_YET.getValue());
+            ticketWaitRelease.setCountLocation(request.getLocationUse().size());
             DataUtils.setDataAction(ticketWaitRelease, partnerId, true);
             // lưu bản ghi
             ticketWaitRelease = ticketWaitReleaseRepository.save(ticketWaitRelease);
@@ -589,9 +592,25 @@ public class TicketServiceImpl implements TicketService {
                 pageable.getPageNumber(),
                 pageable.getPageSize(),
                 Sort.by(Sort.Direction.ASC, Ticket_.NAME));
-
-//        Page<Ticket> tickets = ticketRepository.
-
-        return null;
+        if (request.getLocationId() == null) {
+            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Không tìm thấy địa điểm"));
+        }
+        if (request.getTicketCategory() != null && !PriceCategory.ALL_CATEGORY.contains(request.getTicketCategory())) {
+            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Loại vé không phù hợp"));
+        }
+        List<Long> ticketIds = ticketLocationRepository.findByLocationIdsAndType(List.of(request.getLocationId()), TypeTicket.PHAT_HANH.getValue());
+        // khi khng tìm thấy vé nào
+        if (ticketIds.isEmpty()) {
+            return ApiResponse.builder()
+                    .result(new PageResponse<>(new ArrayList<>(), 0, 0))
+                    .build();
+        }
+        Specification<Ticket> specification = ticketSpecification.search(request.getVehicle(), request.getTicketCategory(), ticketIds);
+        // Lấy thông tin vé
+        Page<Ticket> tickets = ticketRepository.findAll(specification, pageQuery);
+        List<SearchTicketResponse> result = tickets.map(ticketMapper::toSearchTicketResponse).stream().toList();
+        return ApiResponse.builder()
+                .result(new PageResponse<>(result, tickets.getTotalPages(), tickets.getTotalElements()))
+                .build();
     }
 }
