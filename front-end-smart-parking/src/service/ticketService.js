@@ -18,6 +18,14 @@ export async function partnerSearch(data, page, size, field, sort) {
   })
 }
 
+export async function customerSearch(data, page, size) {
+  return await httpClient.post(PARKING_SERVICE.ticket.customerSearch + "?" + getParamsPage(page, size), data, {
+    headers: {
+      Authorization: undefined
+    }
+  })
+}
+
 export async function detail(id) {
   return await httpClient.get(PARKING_SERVICE.ticket.detail + "?" + getRequestParams({id}), {
     headers: {

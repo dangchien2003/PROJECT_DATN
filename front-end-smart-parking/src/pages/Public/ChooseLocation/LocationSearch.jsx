@@ -51,7 +51,7 @@ const LocationSearch = ({ dataSearch }) => {
           onClear={onClear}
           value={name}
           className='input'
-          placeholder="Tìm kiếm địa điểm"
+          placeholder="Bạn muốn đi đâu?"
           allowClear
           enterButton={
             <Tooltip title="Tìm kiếm">
