@@ -1,10 +1,10 @@
 package com.example.parking_service.dto.response;
 
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Data
@@ -12,19 +12,14 @@ import java.time.LocalTime;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class LocationModifyResponse {
-
-    Long modifyId;
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class CustomerLocationResponse {
 
     Long locationId;
-
-    String partnerId;
 
     String name;
 
     String address;
-
-    Integer modifyCount;
 
     Double coordinatesX;
 
@@ -36,35 +31,15 @@ public class LocationModifyResponse {
 
     String videoTutorial;
 
-    Integer status;
-
-    Integer modifyStatus;
-
-    String reasonChangeStatus;
-
-    String reasonReject;
-
     LocalTime openTime;
 
     LocalTime closeTime;
 
-    LocalDateTime openDate;
-
     Boolean openHoliday;
-
-    LocalDateTime timeAppliedEdit;
-
-    Boolean urgentApprovalRequest;
 
     Long capacity;
 
+    Long used;
+
     String description;
-
-    String infoLocation;
-
-    String modifyDescription;
-
-    Boolean isDel;
-
-    LocalDateTime createdAt;
 }

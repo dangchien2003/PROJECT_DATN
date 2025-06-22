@@ -69,6 +69,11 @@ public class LocationController {
         return locationService.details(List.of(id), true);
     }
 
+    @GetMapping("customer/detail")
+    ApiResponse<Object> customerDetail(@RequestParam("id") Long id) {
+        return locationService.customerDetail(id);
+    }
+
     @GetMapping("detail/wait-release")
     ApiResponse<Object> detailWaitRelease(@RequestParam("id") Long id) {
         return locationService.detailWaitRelease(id);

@@ -44,7 +44,8 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
     @Query(value = "SELECT " +
             "   l.location_id as locationId, " +
             "   l.name as name, " +
-            "   l.coordinates as coordinates, " +
+            "   l.coordinatesX as coordinatesX, " +
+            "   l.coordinatesY as coordinatesY, " +
             "   l.link_google_map as linkGoogleMap, " +
             "   l.status as status, " +
             "   l.modify_status as modifyStatus, " +
@@ -74,7 +75,7 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
             @Param("offset") int offset
     );
 
-    Page<Location> findAllByStatusAndCoordinatesNotNull(Integer status, Pageable pageable);
+    Page<Location> findAllByStatusAndCoordinatesXNotNullAndCoordinatesYNotNull(Integer status, Pageable pageable);
 
     Page<Location> findAllByStatusAndPartnerId(Integer status, String partnerId, Pageable pageable);
 

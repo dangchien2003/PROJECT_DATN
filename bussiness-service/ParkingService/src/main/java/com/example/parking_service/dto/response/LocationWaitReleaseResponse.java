@@ -1,7 +1,6 @@
 package com.example.parking_service.dto.response;
 
 
-import com.example.common.dto.Coordinates;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -36,7 +35,9 @@ public class LocationWaitReleaseResponse {
 
     Integer modifyCount;
 
-    Coordinates coordinates;
+    Double coordinatesX;
+
+    Double coordinatesY;
 
     String linkGoogleMap;
 

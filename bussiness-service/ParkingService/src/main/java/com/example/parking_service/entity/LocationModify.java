@@ -38,7 +38,9 @@ public class LocationModify extends BaseEntity {
     @Column(nullable = false)
     Integer modifyCount;
 
-    String coordinates;
+    Double coordinatesX;
+
+    Double coordinatesY;
 
     @Lob
     @Column(columnDefinition = "TEXT")

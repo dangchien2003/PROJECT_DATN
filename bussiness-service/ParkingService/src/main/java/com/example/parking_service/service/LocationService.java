@@ -17,6 +17,8 @@ public interface LocationService {
 
     ApiResponse<Object> details(List<Long> ids, boolean isDetail);
 
+    ApiResponse<Object> customerDetail(Long id);
+
     ApiResponse<Object> detailWaitRelease(Long id);
 
     ApiResponse<Object> getListCoordinates(int page);

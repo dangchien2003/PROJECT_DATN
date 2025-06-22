@@ -55,6 +55,8 @@ public class LocationServiceImpl implements LocationService {
     LocationWaitReleaseMapper locationWaitReleaseMapper;
     ObjectMapper objectMapper;
 
+    Random random = new Random();
+
     @Override
     public ApiResponse<Object> getAllIsActive(int page) {
         String partner = ParkingServiceApplication.testPartnerActionBy;
@@ -75,7 +77,7 @@ public class LocationServiceImpl implements LocationService {
     @Override
     public ApiResponse<Object> getListCoordinates(int page) {
         Pageable fixedPageable = PageRequest.of(page, 20, Sort.by(Sort.Direction.DESC, "coordinates"));
-        Page<Location> pageLocations = locationRepository.findAllByStatusAndCoordinatesNotNull(LocationStatus.DA_DUYET_DANG_HOAT_DONG.getValue(), fixedPageable);
+        Page<Location> pageLocations = locationRepository.findAllByStatusAndCoordinatesXNotNullAndCoordinatesYNotNull(LocationStatus.DA_DUYET_DANG_HOAT_DONG.getValue(), fixedPageable);
         List<Location> locations = pageLocations.getContent();
         Set<String> partnerId = locations.stream().map(Location::getPartnerId).collect(Collectors.toSet());
         List<Account> accounts = accountRepository.findAllById(partnerId);
@@ -126,6 +128,32 @@ public class LocationServiceImpl implements LocationService {
                     .result(result)
                     .build();
         }
+    }
+
+    @Override
+    public ApiResponse<Object> customerDetail(Long id) {
+        // validate
+        if (id == null) {
+            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Dữ liệu không xác định"));
+        }
+        // lấy dữ liệu
+        Optional<Location> optionalLocation = locationRepository.findById(id);
+        // kiểm tra trạng thái địa điểm
+        List<Integer> statusReturn = List.of(
+                LocationStatus.DA_DUYET_DANG_HOAT_DONG.getValue(),
+                LocationStatus.DA_DUYET_DANG_HOAT_DONG.getValue());
+        if (optionalLocation.isEmpty()
+                || !statusReturn.contains(optionalLocation.get().getStatus())) {
+            throw new AppException(ErrorCode.NOT_FOUND);
+        }
+        // kết quả
+        Location location = optionalLocation.get();
+        CustomerLocationResponse response = locationMapper.toCustomerLocationResponse(location);
+        // lượng chỗ đã sur dụng
+        response.setUsed(random.nextLong(response.getCapacity()));
+        return ApiResponse.builder()
+                .result(response)
+                .build();
     }
 
     LocationResponse convertDetail(Location location, boolean roleAdmin, String accountId) {
@@ -453,7 +481,6 @@ public class LocationServiceImpl implements LocationService {
         List<Account> partners = accountRepository.findAllById(partnerIds);
         Map<String, Account> partnersMap = partners.stream().collect(Collectors.toMap(Account::getId, item -> item));
         // map thêm tên đối tác
-        Random random = new Random();
         result.forEach(item -> {
             Account partner = partnersMap.get(item.getPartnerId());
             if (!DataUtils.isNullOrEmpty(partner)) {
