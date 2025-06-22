@@ -46,13 +46,13 @@ public class Ticket extends BaseEntity {
 
     Integer vehicle;
 
-    Integer timeSlot;
+    Long priceTimeSlot;
 
-    Integer daySlot;
+    Long priceDaySlot;
 
-    Integer weekSlot;
+    Long priceWeekSlot;
 
-    Integer monthSlot;
+    Long priceMonthSlot;
 
     @Lob
     String description;

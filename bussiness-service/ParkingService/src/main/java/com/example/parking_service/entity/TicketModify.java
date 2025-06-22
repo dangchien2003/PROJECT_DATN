@@ -49,11 +49,13 @@ public class TicketModify extends BaseEntity {
 
     Integer timeSlot;
 
-    Integer daySlot;
+    Long priceTimeSlot;
 
-    Integer weekSlot;
+    Long priceDaySlot;
 
-    Integer monthSlot;
+    Long priceWeekSlot;
+
+    Long priceMonthSlot;
 
     @Lob
     String modifyDescription;

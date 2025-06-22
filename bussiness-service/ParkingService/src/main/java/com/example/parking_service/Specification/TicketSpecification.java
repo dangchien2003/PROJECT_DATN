@@ -15,7 +15,10 @@ public interface TicketSpecification {
             String trendReleasedTime,
             Integer vehicle,
             List<Long> ids,
-            String partnerId
+            String partnerId,
+            Long price,
+            String trendPrice,
+            Integer priceCategory
     );
 
     Specification<Ticket> adminSearch(
@@ -26,6 +29,9 @@ public interface TicketSpecification {
             String trendReleasedTime,
             Integer vehicle,
             List<Long> ids,
-            List<String> partnerIds
+            List<String> partnerIds,
+            Long price,
+            String trendPrice,
+            Integer priceCategory
     );
 }

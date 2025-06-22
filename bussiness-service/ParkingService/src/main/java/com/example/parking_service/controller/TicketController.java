@@ -2,6 +2,7 @@ package com.example.parking_service.controller;
 
 import com.example.common.dto.response.ApiResponse;
 import com.example.parking_service.dto.request.ApproveRequest;
+import com.example.parking_service.dto.request.CustomerSearchTicket;
 import com.example.parking_service.dto.request.ModifyTicketRequest;
 import com.example.parking_service.dto.request.SearchTicket;
 import com.example.parking_service.service.TicketService;
@@ -32,6 +33,11 @@ public class TicketController {
     @PostMapping("admin/search")
     ApiResponse<Object> adminSearch(@RequestBody SearchTicket request, Pageable pageable) {
         return ticketService.adminSearch(request, pageable);
+    }
+
+    @PostMapping("search")
+    ApiResponse<Object> search(@RequestBody CustomerSearchTicket request, Pageable pageable) {
+        return ticketService.search(request, pageable);
     }
 
     @GetMapping("detail")

@@ -50,13 +50,13 @@ public class DataSearchTicketResponse {
 
     Integer vehicle;
 
-    boolean timeSlot;
+    Long priceTimeSlot;
 
-    boolean daySlot;
+    Long priceDaySlot;
 
-    boolean weekSlot;
+    Long priceWeekSlot;
 
-    boolean monthSlot;
+    Long priceMonthSlot;
 
     Boolean isDel;
 
@@ -64,6 +64,5 @@ public class DataSearchTicketResponse {
 
     LocalDateTime timeAppliedEdit;
 
-    PriceResponse price;
     List<Long> locationUse;
 }

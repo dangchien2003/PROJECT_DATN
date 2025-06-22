@@ -23,7 +23,10 @@ public class TicketSpecificationImpl implements TicketSpecification {
             String trendReleasedTime,
             Integer vehicle,
             List<Long> ids,
-            @NotNull String partnerId
+            @NotNull String partnerId,
+            Long price,
+            String trendPrice,
+            Integer priceCategory
     ) {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
@@ -55,6 +58,17 @@ public class TicketSpecificationImpl implements TicketSpecification {
             if (ids != null) {
                 predicates.add(root.get(Ticket_.ticketId).in(ids));
             }
+            // price
+            if (price != null) {
+                String field = TicketWaitReleaseSpecificationImpl.getFieldPriceString(priceCategory);
+                if ("UP".equalsIgnoreCase(trendPrice)) {
+                    predicates.add(cb.greaterThanOrEqualTo(root.get(field), price));
+                } else if ("DOWN".equalsIgnoreCase(trendReleasedTime)) {
+                    predicates.add(cb.lessThanOrEqualTo(root.get(field), price));
+                } else {
+                    predicates.add(cb.equal(root.get(field), price));
+                }
+            }
             return cb.and(predicates.toArray(new Predicate[0]));
         };
     }
@@ -68,7 +82,11 @@ public class TicketSpecificationImpl implements TicketSpecification {
             String trendReleasedTime,
             Integer vehicle,
             List<Long> ids,
-            List<String> partnerIds) {
+            List<String> partnerIds,
+            Long price,
+            String trendPrice,
+            Integer priceCategory
+    ) {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
             //status
@@ -102,6 +120,17 @@ public class TicketSpecificationImpl implements TicketSpecification {
             // ids IN
             if (ids != null) {
                 predicates.add(root.get(Ticket_.ticketId).in(ids));
+            }
+            // price
+            if (price != null) {
+                String field = TicketWaitReleaseSpecificationImpl.getFieldPriceString(priceCategory);
+                if ("UP".equalsIgnoreCase(trendPrice)) {
+                    predicates.add(cb.greaterThanOrEqualTo(root.get(field), price));
+                } else if ("DOWN".equalsIgnoreCase(trendReleasedTime)) {
+                    predicates.add(cb.lessThanOrEqualTo(root.get(field), price));
+                } else {
+                    predicates.add(cb.equal(root.get(field), price));
+                }
             }
             return cb.and(predicates.toArray(new Predicate[0]));
         };

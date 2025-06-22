@@ -2,9 +2,12 @@ package com.example.parking_service.Specification.impl;
 
 import com.example.common.enums.IsDel;
 import com.example.common.enums.Release;
+import com.example.common.exception.AppException;
+import com.example.common.exception.ErrorCode;
 import com.example.parking_service.Specification.TicketWaitReleaseSpecification;
 import com.example.parking_service.entity.TicketWaitRelease;
 import com.example.parking_service.entity.TicketWaitRelease_;
+import com.example.parking_service.enums.PriceCategory;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.data.jpa.domain.Specification;
@@ -16,6 +19,22 @@ import java.util.List;
 
 @Component
 public class TicketWaitReleaseSpecificationImpl implements TicketWaitReleaseSpecification {
+    public static String getFieldPriceString(Integer priceCategory) {
+        String field = null;
+        if (priceCategory.equals(PriceCategory.TIME)) {
+            field = TicketWaitRelease_.PRICE_TIME_SLOT;
+        } else if (priceCategory.equals(PriceCategory.DAY)) {
+            field = TicketWaitRelease_.PRICE_DAY_SLOT;
+        } else if (priceCategory.equals(PriceCategory.WEEK)) {
+            field = TicketWaitRelease_.PRICE_WEEK_SLOT;
+        } else if (priceCategory.equals(PriceCategory.MONTH)) {
+            field = TicketWaitRelease_.PRICE_MONTH_SLOT;
+        } else {
+            throw new AppException(ErrorCode.INVALID_DATA);
+        }
+        return field;
+    }
+
     public Specification<TicketWaitRelease> partnerSearch(
             String ticketName,
             Integer modifyStatus,
@@ -23,7 +42,10 @@ public class TicketWaitReleaseSpecificationImpl implements TicketWaitReleaseSpec
             String trendReleasedTime,
             Integer vehicle,
             List<Long> ids,
-            @NotNull String partnerId
+            @NotNull String partnerId,
+            Long price,
+            String trendPrice,
+            Integer priceCategory
     ) {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
@@ -79,6 +101,18 @@ public class TicketWaitReleaseSpecificationImpl implements TicketWaitReleaseSpec
                 predicates.add(root.get(TicketWaitRelease_.id).in(ids));
             }
 
+            // price
+            if (price != null) {
+                String field = getFieldPriceString(priceCategory);
+                if ("UP".equalsIgnoreCase(trendPrice)) {
+                    predicates.add(cb.greaterThanOrEqualTo(root.get(field), price));
+                } else if ("DOWN".equalsIgnoreCase(trendReleasedTime)) {
+                    predicates.add(cb.lessThanOrEqualTo(root.get(field), price));
+                } else {
+                    predicates.add(cb.equal(root.get(field), price));
+                }
+            }
+
             return cb.and(predicates.toArray(new Predicate[0]));
         };
     }
@@ -92,7 +126,11 @@ public class TicketWaitReleaseSpecificationImpl implements TicketWaitReleaseSpec
             Integer vehicle,
             List<Long> ids,
             List<String> partnerIds,
-            boolean isCancel) {
+            Long price,
+            String trendPrice,
+            Integer priceCategory,
+            boolean isCancel
+    ) {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
             // partnerIds IN
@@ -143,6 +181,18 @@ public class TicketWaitReleaseSpecificationImpl implements TicketWaitReleaseSpec
             if (ids != null) {
                 predicates.add(root.get(TicketWaitRelease_.ticketId).in(ids));
             }
+            // price
+            if (price != null) {
+                String field = getFieldPriceString(priceCategory);
+                if ("UP".equalsIgnoreCase(trendPrice)) {
+                    predicates.add(cb.greaterThanOrEqualTo(root.get(field), price));
+                } else if ("DOWN".equalsIgnoreCase(trendReleasedTime)) {
+                    predicates.add(cb.lessThanOrEqualTo(root.get(field), price));
+                } else {
+                    predicates.add(cb.equal(root.get(field), price));
+                }
+            }
+
             return cb.and(predicates.toArray(new Predicate[0]));
         };
     }
