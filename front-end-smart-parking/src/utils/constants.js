@@ -113,13 +113,13 @@ export const VEHICLE = {
     name: "Ô tô",
     icon: <FaCarAlt />,
     value: 0,
-    label: <div><FaCarAlt /> <span>Ô tô</span></div>,
+    label: <span><FaCarAlt /> <span>Ô tô</span></span>,
   },
   1: {
     name: "Xe máy",
     icon: <FaMotorcycle />,
     value: 1,
-    label: <div><FaMotorcycle /> <span>Xe máy</span></div>,
+    label: <span><FaMotorcycle /> <span>Xe máy</span></span>,
   },
   2: {
     name: "Hỗn hợp",
@@ -131,10 +131,10 @@ export const VEHICLE = {
     ),
     value: 2,
     label: (
-      <div>
+      <span>
         <FaCarAlt />
         <FaMotorcycle style={{ marginLeft: 4 }} /> <span>Hỗn hợp</span>
-      </div>
+      </span>
     ),
   },
 };

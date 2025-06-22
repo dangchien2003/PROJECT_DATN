@@ -61,7 +61,15 @@ export async function modifyDetail(id) {
 }
 
 export async function locationDetail(id) {
-  return await httpClient.get(PARKING_SERVICE.location.locationDetail + "?" + getRequestParams({ id }), {
+  return await httpClient.get(PARKING_SERVICE.location.customerDetail + "?" + getRequestParams({ id }), {
+    headers: {
+      Authorization: undefined
+    }
+  })
+}
+
+export async function customerDetail(id) {
+  return await httpClient.get(PARKING_SERVICE.location.customerDetail + "?" + getRequestParams({ id }), {
     headers: {
       Authorization: undefined
     }
