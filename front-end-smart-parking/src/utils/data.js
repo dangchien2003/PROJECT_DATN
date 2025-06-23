@@ -15,6 +15,7 @@ export const convertDataMap = (data) => {
   // convert
   return dataMap.map((item) => {
     return {
+      ...item, 
       position: [item.coordinatesX, item.coordinatesY],
       popupContent: (
         <a

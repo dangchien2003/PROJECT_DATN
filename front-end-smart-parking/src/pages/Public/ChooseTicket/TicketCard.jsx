@@ -55,7 +55,7 @@ const TicketCard = ({ data }) => {
         <div>Phương tiện sử dụng: {VEHICLE[data.vehicle].icon} {VEHICLE[data.vehicle].name}</div>
         <div>{data.countLocation && data.countLocation > 0 ? `Sử dụng tại ${data.countLocation - 1} địa điểm khác` : "Chưa hỗ trợ sử dụng ở địa điểm khác"}</div>
         <div className='action'>
-          <Link to={"/ticket/1"}>
+          <Link to={"/ticket/" + data.ticketId}>
             <Button type='primary' className="animated-btn">{view.split('').map((char, index) => (
               <span key={index} style={{ animationDelay: `${index * 0.05}s` }}>
                 {char === ' ' ? '\u00A0' : char}

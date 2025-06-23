@@ -30,6 +30,8 @@ export const PARKING_SERVICE = {
     adminSearch: "ticket/admin/search",
     customerSearch: "ticket/search",
     detail: "ticket/detail",
+    customerTicketDetail: "ticket/customer/detail",
+    customerLocationUseTicket: "ticket/customer/location-use-ticket",
     detailWaitRelease: "ticket/detail/wait-release",
     partnerCancelRelease: "ticket/partner/cancel/wait-release",
     adminCancelRelease: "ticket/admin/cancel/wait-release",

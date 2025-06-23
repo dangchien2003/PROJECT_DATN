@@ -34,6 +34,27 @@ export async function detail(id) {
   })
 }
 
+export async function customerTicketDetail(id) {
+  return await httpClient.get(PARKING_SERVICE.ticket.customerTicketDetail + "?" + getRequestParams({id}), {
+    headers: {
+      Authorization: undefined
+    }
+  })
+}
+
+export async function customerGetLocationUseTicket(page, size, id) {
+  const data = {
+    page, 
+    size,
+    id 
+  }
+  return await httpClient.get(PARKING_SERVICE.ticket.customerLocationUseTicket + "?" + getRequestParams(data), {
+    headers: {
+      Authorization: undefined
+    }
+  })
+}
+
 export async function detailWaitRelease(id) {
   return await httpClient.get(PARKING_SERVICE.ticket.detailWaitRelease + "?" + getRequestParams({id}), {
     headers: {
