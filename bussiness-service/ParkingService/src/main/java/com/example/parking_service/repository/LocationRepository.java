@@ -100,4 +100,9 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
             @Param("name") String name,
             @Param("status") Integer status,
             Pageable pageable);
+
+    Page<Location> findByLocationIdInAndStatusIn(
+            List<Long> ids,
+            List<Integer> statusList,
+            Pageable pageable);
 }

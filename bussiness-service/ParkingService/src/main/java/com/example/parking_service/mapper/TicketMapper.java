@@ -1,5 +1,6 @@
 package com.example.parking_service.mapper;
 
+import com.example.parking_service.dto.response.CustomerTicketResponse;
 import com.example.parking_service.dto.response.DataSearchTicketResponse;
 import com.example.parking_service.dto.response.SearchTicketResponse;
 import com.example.parking_service.dto.response.TicketLocationResponse;
@@ -30,6 +31,8 @@ public interface TicketMapper {
     TicketLocationResponse toTicketLocationResponse(TicketLocation entity);
 
     SearchTicketResponse toSearchTicketResponse(Ticket ticket);
+
+    CustomerTicketResponse toCustomerTicketResponse(Ticket ticket);
 
     @Named("convertToBoolean")
     default Boolean convertToBoolean(Integer data) {

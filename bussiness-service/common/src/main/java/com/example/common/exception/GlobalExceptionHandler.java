@@ -29,7 +29,6 @@ public class GlobalExceptionHandler {
         return setResponse(errorCode);
     }
 
-
     @ExceptionHandler(value = HttpMessageNotReadableException.class)
     ResponseEntity<ApiResponse<Object>> handlingHttpMessageNotReadableException(HttpMessageNotReadableException e) {
         log.error("error: ", e);

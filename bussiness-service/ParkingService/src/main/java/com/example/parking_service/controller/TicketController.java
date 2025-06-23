@@ -50,6 +50,16 @@ public class TicketController {
         return ticketService.detailWaitRelease(id);
     }
 
+    @GetMapping("customer/detail")
+    ApiResponse<Object> customerDetail(@RequestParam("id") Long id) {
+        return ticketService.customerDetail(id);
+    }
+
+    @GetMapping("customer/location-use-ticket")
+    ApiResponse<Object> locationUseTicket(@RequestParam("id") Long id, Pageable pageable) {
+        return ticketService.locationUseTicket(id, pageable);
+    }
+
     @PostMapping("partner/cancel/wait-release")
     ApiResponse<Object> partnerCancelWaitRelease(@Valid @RequestBody ApproveRequest approveRequest) {
         return ticketService.cancelWaitRelease(approveRequest, false);

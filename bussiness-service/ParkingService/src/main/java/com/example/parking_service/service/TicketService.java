@@ -20,6 +20,10 @@ public interface TicketService {
 
     ApiResponse<Object> detailWaitRelease(Long id);
 
+    ApiResponse<Object> customerDetail(Long id);
+
+    ApiResponse<Object> locationUseTicket(Long id, Pageable pageable);
+
     ApiResponse<Object> cancelWaitRelease(ApproveRequest approveRequest, boolean isAdmin);
 
     void checkExistWaitRelease(Long ticketId);

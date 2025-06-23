@@ -24,6 +24,10 @@ public class CustomerSearchLocationResponse {
 
     String address;
 
+    Double coordinatesX;
+
+    Double coordinatesY;
+
     String linkGoogleMap;
 
     String avatar;

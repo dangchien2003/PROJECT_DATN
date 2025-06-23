@@ -17,6 +17,8 @@ import com.example.parking_service.dto.request.ApproveRequest;
 import com.example.parking_service.dto.request.CustomerSearchTicket;
 import com.example.parking_service.dto.request.ModifyTicketRequest;
 import com.example.parking_service.dto.request.SearchTicket;
+import com.example.parking_service.dto.response.CustomerSearchLocationResponse;
+import com.example.parking_service.dto.response.CustomerTicketResponse;
 import com.example.parking_service.dto.response.DataSearchTicketResponse;
 import com.example.parking_service.dto.response.SearchTicketResponse;
 import com.example.parking_service.entity.*;
@@ -164,6 +166,70 @@ public class TicketServiceImpl implements TicketService {
         }
         return ApiResponse.builder()
                 .result(result)
+                .build();
+    }
+
+    @Override
+    public ApiResponse<Object> customerDetail(Long id) {
+        if (id == null) {
+            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Dữ liệu không xác định"));
+        }
+        // lấy dữ liệu
+        List<Integer> statusReturn = List.of(TicketStatus.DANG_PHAT_HANH, TicketStatus.CHO_PHAT_HANH);
+        Optional<Ticket> optionalTicket = ticketRepository.findById(id);
+        // kiểm tra trạng thái
+        if (optionalTicket.isEmpty()
+                || !statusReturn.contains(optionalTicket.get().getStatus())) {
+            throw new AppException(ErrorCode.NOT_FOUND);
+        }
+        Ticket ticket = optionalTicket.get();
+        // convert response
+        CustomerTicketResponse response = ticketMapper.toCustomerTicketResponse(ticket);
+        return ApiResponse.builder()
+                .result(response)
+                .build();
+    }
+
+    @Override
+    public ApiResponse<Object> locationUseTicket(Long id, Pageable pageable) {
+        if (id == null) {
+            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Dữ liệu không xác định"));
+        }
+        // kiểm tra sự tồn tại của vé
+        List<Integer> statusReturn = List.of(TicketStatus.DANG_PHAT_HANH, TicketStatus.CHO_PHAT_HANH);
+        boolean existTicket = ticketRepository.existsByTicketIdAndStatusIn(id, statusReturn);
+        if (!existTicket) {
+            throw new AppException(ErrorCode.NOT_FOUND);
+        }
+        // lấy địa điểm
+        List<TicketLocation> ticketLocations = ticketLocationRepository.findAllByObjectIdAndTypeAndIsDel(
+                id, TypeTicket.PHAT_HANH.getValue(), IsDel.DELETE_NOT_YET.getValue());
+        // tách id địa điểm
+        List<Long> locationIds = ticketLocations.stream().map(item -> item.getLocationId()).toList();
+        // lấy đầy đủ thông tin địa điểm
+        List<Integer> locationStatusReturn = List.of(
+                LocationStatus.DA_DUYET_DANG_HOAT_DONG.getValue(),
+                LocationStatus.CHO_DUYET.getValue());
+
+        Pageable pageableQuery = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                Sort.by(Sort.Direction.ASC, Location_.NAME)
+        );
+        Page<Location> locations = locationRepository.findByLocationIdInAndStatusIn(locationIds, locationStatusReturn, pageableQuery);
+        // địa điểm
+        List<CustomerSearchLocationResponse> locationResponses = locations.stream().map(
+                item -> CustomerSearchLocationResponse.builder()
+                        .locationId(item.getLocationId())
+                        .name(item.getName())
+                        .address(item.getAddress())
+                        .coordinatesX(item.getCoordinatesX())
+                        .coordinatesY(item.getCoordinatesY())
+                        .linkGoogleMap(item.getLinkGoogleMap())
+                        .build()
+        ).toList();
+        return ApiResponse.builder()
+                .result(new PageResponse<>(locationResponses, locations.getTotalPages(), locations.getTotalElements()))
                 .build();
     }
 
