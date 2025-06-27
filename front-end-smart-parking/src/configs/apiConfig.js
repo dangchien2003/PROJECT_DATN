@@ -43,6 +43,10 @@ export const PARKING_SERVICE = {
     registration: "auth/registration",
     forget: "auth/forget",
     confirmForget: "auth/forget/confirm",
+  },
+  card: {
+    customerAdditional: "card/request/additional",
+    customerCardApprove: "card/approved",
   }
 }
 

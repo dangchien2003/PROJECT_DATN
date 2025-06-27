@@ -1,13 +1,13 @@
-import { Table } from 'antd';
-import './style.css'
-import { useEffect, useState } from 'react';
 import { showTotal } from '@/utils/table';
-import { dataCardFake } from './fakeData';
-import { IoCard, IoTimer } from 'react-icons/io5';
-import { MdCreditCardOff } from 'react-icons/md';
-import { IoMdCheckmarkCircleOutline } from 'react-icons/io';
+import { Table } from 'antd';
+import dayjs from "dayjs";
+import { useEffect, useState } from 'react';
 import { ImCancelCircle } from "react-icons/im";
-import dayjs from "dayjs"
+import { IoMdCheckmarkCircleOutline } from 'react-icons/io';
+import { IoTimer } from 'react-icons/io5';
+import { MdCreditCardOff } from 'react-icons/md';
+import { dataCardFake } from './fakeData';
+import './style.css';
 
 const baseColumns = [
   {
@@ -40,7 +40,7 @@ const baseColumns = [
     scroll: true
   }
 ];
-const CardWait = () => {
+const HistoryRequestAdditionalCard = () => {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
   const [pagination, setPagination] = useState({
@@ -86,7 +86,7 @@ const CardWait = () => {
   };
 
   return (
-    <div className='card-wait'>
+    <div className='history-request-additional-card'>
       <h2 className='page-name'>Yêu cầu của bạn</h2>
       <Table
         columns={baseColumns}
@@ -99,7 +99,7 @@ const CardWait = () => {
         onChange={handleTableChange}
         pagination={{
           ...pagination,
-          showSizeChanger: true,
+          showSizeChanger: false,
           pageSizeOptions: ["10", "20", "50", "100"],
           showTotal: showTotal
         }}
@@ -108,4 +108,4 @@ const CardWait = () => {
   );
 };
 
-export default CardWait;
+export default HistoryRequestAdditionalCard;

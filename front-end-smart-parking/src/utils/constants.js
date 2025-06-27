@@ -313,6 +313,45 @@ export const TICKET_MODIFY_STATUS_SELECTBOX = [
   },
 ];
 
+export const CARD_STATUS_2 = {
+  CHO_DUYET: {
+    value: 0,
+    label: "Chờ duyệt",
+    color: "warning",
+  },
+  CHO_CAP: {
+    value: 1,
+    label: "Chờ cấp",
+    color: "warning",
+  },
+  CHO_KICH_HOAT: {
+    value: 2,
+    label: "Chờ kích hoạt",
+    color: "default",
+  },
+  DANG_HOAT_DONG: {
+    value: 3,
+    label: "Đang hoạt động",
+    color: "cyan",
+  },
+  TAM_KHOA: {
+    value: 4,
+    label: "Tạm khoá",
+    color: "danger",
+  },
+  KHOA_VINH_VIEN: {
+    value: 5,
+    label: "Khoá vĩnh viễn",
+    color: "danger",
+  },
+  TU_CHOI: {
+    value: 6,
+    label: "Từ chối",
+    color: "danger",
+  },
+}
+
+
 export const CARD_STATUS = {
   0: {
     label: "Chờ duyệt",
@@ -323,7 +362,7 @@ export const CARD_STATUS = {
     color: "warning",
   },
   2: {
-    label: "Chờ cấp",
+    label: "Chờ kích hoạt",
     color: "default",
   },
   3: {
@@ -458,3 +497,5 @@ export const USERNAME_CATEGORY = {
   phoneNumber: 1,
   email: 2, 
 }
+
+export const lineLoading = {type: 2};

@@ -5,13 +5,30 @@
   position: relative;
   margin: 0 4px;
 }
+
 .dot-status::after {
-  content: ""; /* Quan trọng: cần khai báo content */
+  content: "";
+  /* Quan trọng: cần khai báo content */
   position: absolute;
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background-color: red;
   top: 0;
   right: 0;
+}
+
+.warning .dot-status::after {
+  background-color: #FFBB28;
+}
+
+.default .dot-status::after {
+  background-color: #FF8042;
+}
+
+.cyan .dot-status::after {
+  background-color: #01fda9;
+}
+
+.danger .dot-status::after {
+  background-color: red;
 }
