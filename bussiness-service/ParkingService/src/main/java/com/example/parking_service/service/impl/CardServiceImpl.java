@@ -106,7 +106,7 @@ public class CardServiceImpl implements CardService {
     @Override
     public ApiResponse<Object> getHistoryRequestAdditional(Pageable pageable) {
         String owner = ParkingServiceApplication.testPartnerActionBy;
-        Pageable pageRequest = PageRequest.of(0, 1, Sort.by(Sort.Direction.DESC, BaseEntity_.CREATED_AT));
+        Pageable pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(Sort.Direction.DESC, BaseEntity_.CREATED_AT));
         Page<Card> cardPage = cardRepository.findByAccountId(owner, pageRequest);
         List<HistoryRequestAddCardResponse> result = cardPage.map(cardMapper::toHistoryRequestAddCardResponse).toList();
         return ApiResponse.builder()

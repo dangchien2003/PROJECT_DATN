@@ -27,7 +27,7 @@ public class CardController {
         return cardService.getListCardApproved(pageable);
     }
 
-    @GetMapping("/approved")
+    @GetMapping("/history/request")
     ApiResponse<Object> getHistoryRequestAdditional(Pageable pageable) {
         return cardService.getHistoryRequestAdditional(pageable);
     }
