@@ -8,6 +8,7 @@ export const PARKING_SERVICE = {
     searchListPartner: "account/search/partner",
     detailCustomer: "account/customer/detail",
     detailPartner: "account/partner/detail",
+    getSuggestions: "account/suggestions",
   },
   location: {
     modify: "location/modify",

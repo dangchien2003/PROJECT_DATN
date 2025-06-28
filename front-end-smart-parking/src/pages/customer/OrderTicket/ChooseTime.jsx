@@ -1,24 +1,39 @@
+import InputError from '@/components/InputError';
+import ModalCustom from '@/components/ModalCustom';
+import { useMessageError } from '@/hook/validate';
 import { PRICE_CATEGORY } from '@/utils/constants';
+import { setCookie } from '@/utils/cookie';
 import { Button, DatePicker } from 'antd';
 import { Select } from 'antd/lib';
-import React from 'react'
 import dayjs from 'dayjs';
-import ModalCustom from '@/components/ModalCustom';
-import FormBuyFor from './FormBuyFor';
-import InputError from '@/components/InputError';
-import { useMessageError } from '@/hook/validate';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import FormBuyFor from './FormBuyFor';
 
 
 
-const ChooseTime = ({ category, onChangeStartTime }) => {
+const ChooseTime = ({ category, onChangeStartTime, location, ticket }) => {
   const [quality, setQuality] = React.useState(1);
   const [openBuyFor, setOpenBuyFor] = React.useState(false);
+  const [dataQueryParam, setDataQueryParam] = React.useState({});
   const [valueSelectTime, setValueSelectTime] = React.useState([])
   const [selectedTime, setSelectedTime] = React.useState(null);
-  const [endDate, setEndDate] = React.useState(null);
+  const [owner, setOwner] = React.useState([]);
+  const [endTime, setEndTime] = React.useState(null);
   const { pushMessage, reset, deleteKey } = useMessageError();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    setDataQueryParam({
+      ticketId: ticket?.ticketId,
+      ticketName: ticket?.name,
+      locationId: location?.locationId,
+      locationName: location?.name,
+      address: location?.address,
+      startTime: selectedTime?.format("DD/MM/YYYY HH:mm"), 
+      endTime: endTime?.format("DD/MM/YYYY HH:mm")
+    });
+  }, [selectedTime, endTime, ticket, location, category])
   
   const getCategoryName = () => {
     if (category === PRICE_CATEGORY.TIME.value) {
@@ -98,10 +113,10 @@ const ChooseTime = ({ category, onChangeStartTime }) => {
     const dayjsSelect = dayjs(value);
     if (dayjsSelect.isBefore(dayjs())) {
       pushMessage("start-time", "Thời bắt đầu phải lớn hơn hiện tại");
-      setEndDate(null);
+      setEndTime(null);
     } else if(dayjsSelect.get("minute") % 15 > 0) {
       pushMessage("start-time", "Thời gian không hợp lệ");
-      setEndDate(null);
+      setEndTime(null);
     }  else {
       // cập nhật callback
       if(onChangeStartTime) {
@@ -111,9 +126,9 @@ const ChooseTime = ({ category, onChangeStartTime }) => {
       deleteKey("start-time");
       // tính thời gian hết hạn
       if(value) {
-        setEndDate(dayjsSelect.add(quality, getCharTime()))
+        setEndTime(dayjsSelect.add(quality, getCharTime()))
       } else {
-        setEndDate(null);
+        setEndTime(null);
       }
     }
   }
@@ -122,6 +137,12 @@ const ChooseTime = ({ category, onChangeStartTime }) => {
     if(validate()) {
       return;
     }
+
+    dataQueryParam.owner = owner.map(item => {
+      delete item.value;
+      return item;
+    })
+    setCookie("order", JSON.stringify(dataQueryParam), 360);
     navigate("/order/confirm");
   }
 
@@ -145,11 +166,16 @@ const ChooseTime = ({ category, onChangeStartTime }) => {
     return error;
   }
 
+  const handleChangeOwner= (data) => {
+    setOwner(data);
+    handleCloseBuyFor();
+  }
+
   return (
     <div>
       <h2>Chọn thời hạn</h2>
       <div className='form'>
-        <div>
+        <div className='mb12'>
           <span className='mb4 dib'>Số {getCategoryName()} sử dụng:</span>
           <Select
             className='select-time'
@@ -175,16 +201,17 @@ const ChooseTime = ({ category, onChangeStartTime }) => {
                 className='date-picker' />
               <InputError itemKey={"start-time"} />
             </div>
-            <div>
-              <span className='mb4 dib'>Đến:</span>
+            <div className="mb4">
+              <span className='dib'>Đến:</span>
               <DatePicker
-                value={endDate}
+                value={endTime}
                 format="DD/MM/YYYY HH:mm"
                 showTime={{ defaultValue: dayjs('00:00', 'HH:mm') }}
                 disabled={true}
                 placeholder={`Sau ${quality} ${getCategoryName()}`}
                 className='date-picker' />
             </div>
+            {owner.length > 0 && <span>Mua hộ: <b>{owner.length}</b> người</span>}
           </div>
         </div>
         <div className='action'>
@@ -195,7 +222,7 @@ const ChooseTime = ({ category, onChangeStartTime }) => {
         </div>
       </div>
       {openBuyFor && <ModalCustom onClose={handleCloseBuyFor}>
-        <FormBuyFor />
+        <FormBuyFor onOk={handleChangeOwner}/>
       </ModalCustom>}
 
     </div>

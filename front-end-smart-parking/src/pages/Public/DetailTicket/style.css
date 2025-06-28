@@ -100,7 +100,7 @@
 
 #detail-ticket .list-locaiton .scroll {
   overflow-x: hidden;
-  overflow-y: scroll;
+  overflow-y: auto;
   height: 330px;
 }
 

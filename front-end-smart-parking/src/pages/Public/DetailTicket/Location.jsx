@@ -29,7 +29,7 @@ const Location = ({ onChooseLocation, ticketId }) => {
 
     customerGetLocationUseTicket(0, 5, ticketId).then((response) => {
       const dataResponse = getDataApi(response);
-      const dataConvert = convertDataMap(dataResponse);
+      const dataConvert = convertDataMap(dataResponse.data);
       setData(pre => [...pre, ...dataConvert]);
     })
     .catch((e) => {
@@ -67,12 +67,11 @@ const Location = ({ onChooseLocation, ticketId }) => {
                     renderItem={(item, index) => (
                       <List.Item
                         onClick={() => {
-                          console.log(item)
                           handleClickLocation(item);
                           setSelected(item);
                         }}
                         actions={[
-                          selected?.id === item.locationId ? <IoCheckmarkDoneOutline fontSize={20} color="#52c41a" /> : null
+                          selected?.locationId === item.locationId ? <IoCheckmarkDoneOutline fontSize={20} color="#52c41a" /> : null
                         ]}
                       >
                         <List.Item.Meta
