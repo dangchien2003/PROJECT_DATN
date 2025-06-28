@@ -1,4 +1,8 @@
+import { getHistoryRequest } from '@/service/cardService';
+import { getDataApi } from '@/utils/api';
+import { CARD_STATUS_2 } from '@/utils/constants';
 import { showTotal } from '@/utils/table';
+import { toastError } from '@/utils/toast';
 import { Table } from 'antd';
 import dayjs from "dayjs";
 import { useEffect, useState } from 'react';
@@ -6,7 +10,6 @@ import { ImCancelCircle } from "react-icons/im";
 import { IoMdCheckmarkCircleOutline } from 'react-icons/io';
 import { IoTimer } from 'react-icons/io5';
 import { MdCreditCardOff } from 'react-icons/md';
-import { dataCardFake } from './fakeData';
 import './style.css';
 
 const baseColumns = [
@@ -33,7 +36,7 @@ const baseColumns = [
   },
   {
     title: "Lý do",
-    dataIndex: "reason",
+    dataIndex: "reasonRequest",
     key: "4",
     width: 250,
     align: "left",
@@ -45,23 +48,19 @@ const HistoryRequestAdditionalCard = () => {
   const [data, setData] = useState([]);
   const [pagination, setPagination] = useState({
     current: 1,
-    pageSize: 10,
+    pageSize: 5,
     total: 0,
   });
-  const [sorter] = useState({
-    field: null,
-    order: null,
-  });
 
-  const convertResponseToDataTable = (data, currentPage, pageSize) => {
-    return data.map((item, index) => {
-      item.timesPrint = "Lần " + item.times;
+  const convertResponseToDataTable = (data) => {
+    return data.map((item) => {
+      item.timesPrint = "Lần " + item.issuedTimes;
       item.statusPrint = "";
-      if (item.status === 0) {
+      if (item.status === CARD_STATUS_2.CHO_DUYET.value) {
         item.statusPrint = <div><IoTimer /> Chờ duyệt</div>
-      } else if (item.status === 1) {
+      } else if (item.status === CARD_STATUS_2.CHO_CAP.value) {
         item.statusPrint = <div><MdCreditCardOff /> Chờ cấp thẻ</div>
-      } else if (item.status === 6) {
+      } else if (item.status === CARD_STATUS_2.TU_CHOI.value) {
         item.statusPrint = <div className='cancel'>
           <div><ImCancelCircle /> Từ chối</div>
           <div className='reason'>{item.reasonReject}</div>
@@ -76,13 +75,33 @@ const HistoryRequestAdditionalCard = () => {
     })
   }
 
+  const loadData = (newPagination) => {
+    setLoading(true);
+    setData([])
+    getHistoryRequest(newPagination.current - 1, newPagination.pageSize)
+      .then((response) => {
+        const data = getDataApi(response);
+        setData(convertResponseToDataTable(data.data));
+        setPagination({
+          ...newPagination,
+          total: data.totalElements
+        });
+      })
+      .catch((error) => {
+        error = getDataApi(error);
+        toastError(error.message)
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+  console.log(pagination)
   useEffect(() => {
-    setData(convertResponseToDataTable(dataCardFake, pagination.current, pagination.pageSize));
+    loadData(pagination);
   }, [])
 
   const handleTableChange = (newPagination, _, sorter) => {
-    // convertDataSort(sorter, mapFieldSort)
-    // loadData(newPagination, sorter);
+    loadData(newPagination);
   };
 
   return (
@@ -92,7 +111,7 @@ const HistoryRequestAdditionalCard = () => {
         columns={baseColumns}
         dataSource={data}
         rowKey="id"
-        // loading={loading}
+        loading={loading}
         scroll={{
           x: "max-content",
         }}

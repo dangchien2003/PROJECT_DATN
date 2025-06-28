@@ -47,6 +47,7 @@ export const PARKING_SERVICE = {
   card: {
     customerAdditional: "card/request/additional",
     customerCardApprove: "card/approved",
+    customerHistoryRequest: "card/history/request",
   }
 }
 

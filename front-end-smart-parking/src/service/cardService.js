@@ -18,3 +18,11 @@ export async function getCardApproved(page, size) {
     }
   })
 }
+
+export async function getHistoryRequest(page, size) {
+  return await httpClient.get(PARKING_SERVICE.card.customerHistoryRequest + "?" + getParamsPage(page, size, null, null), {
+    headers: {
+      Authorization: undefined
+    }
+  })
+}

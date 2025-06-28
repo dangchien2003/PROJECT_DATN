@@ -36,9 +36,6 @@ export const convertDataSort = (sort, dataMapFieldName = {}) => {
 }
 
 export const getDataApi = (response) => {
-  // if (response.data?.result) {
-  //   return response.data.result;
-  // }
   if (response.data) {
     if (!isNullOrUndefined(response.data.result)) {
       return response.data.result;

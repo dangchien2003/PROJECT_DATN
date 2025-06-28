@@ -36,9 +36,9 @@ const ChooseTicket = () => {
     customerSearch(dataSearch, newPagination.current - 1, newPagination.pageSize)
       .then((response) => {
         const data = getDataApi(response);
-        const total = response.data?.result?.totalElements;
+        const total = data?.totalElements;
         setData(
-          data
+          data.data
         );
         setPagination({
           ...newPagination,
