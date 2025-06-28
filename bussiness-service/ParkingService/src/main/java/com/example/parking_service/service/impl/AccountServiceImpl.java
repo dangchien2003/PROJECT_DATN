@@ -12,9 +12,11 @@ import com.example.parking_service.dto.request.CreateAccountRequest;
 import com.example.parking_service.dto.request.SearchListAccountRequest;
 import com.example.parking_service.dto.response.AccountResponse;
 import com.example.parking_service.entity.Account;
+import com.example.parking_service.entity.Account_;
 import com.example.parking_service.enums.AccountCategory;
 import com.example.parking_service.enums.AccountStatus;
 import com.example.parking_service.enums.PermitChangePassword;
+import com.example.parking_service.enums.PublicAccount;
 import com.example.parking_service.mapper.AccountMapper;
 import com.example.parking_service.repository.AccountRepository;
 import com.example.parking_service.service.AccountService;
@@ -23,7 +25,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +35,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -235,5 +240,40 @@ public class AccountServiceImpl implements AccountService {
         // khác
         accountEntity.setCreatedAt(LocalDateTime.now());
         return accountEntity;
+    }
+
+    @Override
+    public ApiResponse<Object> suggestions(String key, Pageable pageable) {
+        // Sắp xếp theo tên
+        Pageable pageableQuery = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                Sort.by(Sort.Direction.ASC, Account_.FULL_NAME)
+        );
+
+        // Chuẩn hóa key tìm kiếm
+        String keyQuery = DataUtils.convertStringSearchLike(key);
+
+        // Truy vấn dữ liệu
+        Page<Account> accounts = accountRepository.getSuggestionsByKey(
+                keyQuery,
+                PublicAccount.PUBLIC,
+                AccountStatus.DANG_HOAT_DONG.getValue(),
+                pageableQuery
+        );
+
+        // Map sang DTO
+        List<AccountResponse> result = accounts.map(item -> AccountResponse.builder()
+                .id(item.getId())
+                .fullName(item.getFullName())
+                .email(item.getEmail())
+                .phoneNumber(item.getPhoneNumber())
+                .build()
+        ).stream().collect(Collectors.toList());
+
+        // Trả về response dạng paged (tuỳ theo ApiResponse bạn dùng)
+        return ApiResponse.builder()
+                .result(new PageResponse<>(result, accounts.getTotalPages(), accounts.getTotalElements()))
+                .build();
     }
 }

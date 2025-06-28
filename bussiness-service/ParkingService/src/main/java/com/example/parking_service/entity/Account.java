@@ -60,6 +60,8 @@ public class Account extends BaseEntity {
 
     String partnerAddress;
 
+    Byte publicAccount;
+
     //    @OneToMany
     //    List<Role> roles;
 }
