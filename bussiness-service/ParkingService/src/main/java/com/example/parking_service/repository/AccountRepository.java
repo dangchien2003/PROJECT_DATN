@@ -79,4 +79,6 @@ public interface AccountRepository extends JpaRepository<Account, String> {
             @Param("publicAccount") int publicAccount,
             @Param("status") Integer status,
             Pageable pageable);
+
+    int countByIdInAndStatusAndPublicAccount(List<String> accounts, Integer status, Integer publicAccount);
 }

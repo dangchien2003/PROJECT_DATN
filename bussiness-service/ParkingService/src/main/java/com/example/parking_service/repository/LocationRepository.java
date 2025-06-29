@@ -105,4 +105,6 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
             List<Long> ids,
             List<Integer> statusList,
             Pageable pageable);
+
+    Optional<Location> findByLocationIdAndStatus(Long locationId, Integer status);
 }

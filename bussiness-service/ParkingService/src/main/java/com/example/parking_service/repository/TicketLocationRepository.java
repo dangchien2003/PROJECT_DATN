@@ -10,6 +10,8 @@ import java.util.List;
 public interface TicketLocationRepository extends JpaRepository<TicketLocation, Long> {
     List<TicketLocation> findAllByObjectIdAndTypeAndIsDel(Long objectId, Integer type, Integer isDel);
 
+    boolean existsByObjectIdAndLocationIdAndTypeAndIsDel(Long objectId, Long locationId, Integer type, Integer isDel);
+
     @Query("""
             SELECT t.objectId FROM TicketLocation t
             WHERE t.locationId IN :locationIds
