@@ -1,0 +1,27 @@
+#detail-location .recomment-wrapper {
+  background-color: #fff;
+  min-height: 150px;
+}
+
+.view-all {
+  text-align: right;
+  padding: 8px 16px 0 0;
+}
+
+.view-all a {
+  color: #108eff;
+}
+
+#detail-location .recommend {
+  padding: 16px;
+  height: 192px;
+  display: flex;
+  flex-wrap: wrap;
+  overflow: hidden;
+  gap: 16px;
+  justify-content: center;
+}
+
+#detail-location .recomment-wrapper .empty {
+  padding-top: 8px;
+}

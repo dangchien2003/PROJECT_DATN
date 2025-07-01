@@ -1,20 +1,67 @@
 import ChildContent from '@/components/layout/Customer/ChildContent';
-import './style.css'
-import StepOrder from '../OrderTicket/StepOrder';
+import { getCookie, setCookie } from '@/utils/cookie';
+import logo from '@image/logo_parking.png';
 import { Button, Col, Flex, Row } from 'antd';
-import { IoTicket, IoWarning } from 'react-icons/io5';
-import { FaLocationDot } from 'react-icons/fa6';
-import { MdOutlineAccessTimeFilled } from 'react-icons/md';
+import { useEffect, useState } from 'react';
 import { FaUserAlt } from 'react-icons/fa';
-import logo from '@image/logo_parking.png'
-import ItemBill from './ItemBill';
+import { FaLocationDot } from 'react-icons/fa6';
+import { IoTicket, IoWarning } from 'react-icons/io5';
+import { MdOutlineAccessTimeFilled } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
+import StepOrder from '../OrderTicket/StepOrder';
+import ItemBill from './ItemBill';
+import './style.css';
+import { createOrder } from '@/service/orderService';
+import { getDataApi } from '@/utils/api';
+import dayjs from 'dayjs';
+import { toastError } from '@/utils/toast';
+import LoadingComponent from '@/components/LoadingComponent';
+import { formatCurrency } from '@/utils/number';
 
 const ConfirmOrder = () => {
   const navigate = useNavigate();
+  const [orderInfo, setOrderInfo] = useState({});
+  const [bill, setBill] = useState(null);
+  useEffect(() => {
+    const order = getCookie("order");
+    if (!order) {
+      navigate("/404")
+    }
+      // data ui
+      var data = null;
+    try {
+      // data ui
+      data = JSON.parse(order);
+    } catch (e) {
+      navigate("/404")
+    }
+    setOrderInfo(data);
+    // data order
+    var ownersId = null;
+    if (data?.owner && Array.isArray(data.owner) && data.owner.length > 0) {
+      ownersId = data?.owner.map(item => item.id)
+    }
+    const requestData = {
+      locationId: data?.locationId,
+      ticketId: data?.ticketId,
+      ticketCategory: data?.category,
+      quality: data?.quality,
+      startTime: dayjs(data.startTime).format("YYYY-MM-DDTHH:mm:00"),
+      helpBuy: ownersId
+    }
+    createOrder(requestData).then(response => {
+      const data = getDataApi(response);
+      setBill(data);
+      setCookie("confirm", JSON.stringify(data), 360)
+    })
+      .catch(e => {
+        const response = getDataApi(e);
+        toastError(response.message);
+      })
+  }, [])
 
   const handleNext = () => {
-    navigate("/payment/1");
+    navigate("/payment/" + bill.orderId);
   }
 
   return (
@@ -30,56 +77,36 @@ const ConfirmOrder = () => {
               <div className='content-box bw br3 pr0'>
                 <div className='item-info'>
                   <span className='label-name'><IoTicket className='icon' />Bạn đang mua vé: </span>
-                  <span className='value-label'><b>Vé vip</b></span>
+                  <span className='value-label'><b>{orderInfo.ticketName}</b></span>
                 </div>
                 <div className='item-info'>
                   <div className='child'>
                     <span className='label-name'><FaLocationDot className="icon" />Sử dụng cho địa điểm: </span>
-                    <span className='value-label'><b>EAON MALL Hà Đông</b></span>
+                    <span className='value-label'><b>{orderInfo.locationName}</b></span>
                   </div>
                   <div>
                     <span className='label-name'><span className='icon empty'></span>Địa chỉ: </span>
-                    <span className='value-label'><b>Nguyễn Xá, Minh Khai, Bắc Từ Liêm, Hà Nội</b></span>
+                    <span className='value-label'><b>{orderInfo.address}</b></span>
                   </div>
                 </div>
                 <div className='item-info'>
                   <span className='label-name'><MdOutlineAccessTimeFilled className='icon' />Hạn sử dụng: </span>
-                  <span className='value-label'>Từ <b>05/06/2025 11:30</b> đến <b>06/06/2025 11:30</b></span>
+                  <span className='value-label'>Từ <b>{dayjs(orderInfo.startTime).format("DD/MM/YYYY HH:mm")}</b> đến <b>{dayjs(orderInfo.endTime).format("DD/MM/YYYY HH:mm")}</b></span>
                 </div>
                 <div className='item-info break owner'>
                   <span className='label-name'><FaUserAlt className="icon" />Chủ sở hữu: </span>
-                  <p className='warning child'><IoWarning className='icon warning' /> Người dùng dưới đây sẽ được toàn quyền sử dụng mọi chức năng với vé được mua hộ</p>
-                  <span className='value-label'>
-                    <ol>
-                      <li>chienboy03@gmial.com - <b>lê đăng chiến</b></li>
-                      <li>chienboy03@gmial.com - <b>lê đăng chiến</b></li>
-                      <li>chienboy03@gmial.com - <b>lê đăng chiến</b></li>
-                      <li>chienboy03@gmial.com - <b>lê đăng chiến</b></li>
-                      <li>chienboy03@gmial.com - <b>lê đăng chiến</b></li>
-                      <li>chienboy03@gmial.com - <b>lê đăng chiến</b></li>
-                      <li>chienboy03@gmial.com - <b>lê đăng chiến</b></li>
-                      <li>chienboy03@gmial.com - <b>lê đăng chiến</b></li>
-                      <li>chienboy03@gmial.com - <b>lê đăng chiến</b></li>
-                      <li>chienboy03@gmial.com - <b>lê đăng chiến</b></li>
-                      <li>chienboy03@gmial.com - <b>lê đăng chiến</b></li>
-                      <li>chienboy03@gmial.com - <b>lê đăng chiến</b></li>
-                      <li>chienboy03@gmial.com - <b>lê đăng chiến</b></li>
-                      <li>chienboy03@gmial.com - <b>lê đăng chiến</b></li>
-                      <li>chienboy03@gmial.com - <b>lê đăng chiến</b></li>
-                      <li>chienboy03@gmial.com - <b>lê đăng chiến</b></li>
-                      <li>chienboy03@gmial.com - <b>lê đăng chiến</b></li>
-                      <li>chienboy03@gmial.com - <b>lê đăng chiến</b></li>
-                      <li>chienboy03@gmial.com - <b>lê đăng chiến</b></li>
-                      <li>chienboy03@gmial.com - <b>lê đăng chiến</b></li>
-                      <li>chienboy03@gmial.com - <b>lê đăng chiến</b></li>
-                      <li>chienboy03@gmial.com - <b>lê đăng chiến</b></li>
-                      <li>chienboy03@gmial.com - <b>lê đăng chiến</b></li>
-                      <li>chienboy03@gmial.com - <b>lê đăng chiến</b></li>
-                      <li>chienboy03@gmial.com - <b>lê đăng chiến</b></li>
-                      <li>chienboy03@gmial.com - <b>lê đăng chiến</b></li>
-                      <li>chienboy03@gmial.com - <b>lê đăng chiến</b></li>
-                    </ol>
-                  </span>
+                  {
+                    orderInfo.owner?.length > 0 ?
+                      <>
+                        <p className='warning child'><IoWarning className='icon warning' /> Người dùng dưới đây sẽ được toàn quyền sử dụng mọi chức năng với vé được mua hộ</p>
+                        <span className='value-label'>
+                          <ol>
+                            {orderInfo.owner.map((item, index) => <li key={index}>{item.email} - <b>{item.fullName}</b></li>)}
+                          </ol>
+                        </span>
+                      </>
+                      : <span><b>Tài khoản hiện tại</b></span>
+                  }
                 </div>
               </div>
             </div>
@@ -92,18 +119,22 @@ const ConfirmOrder = () => {
                   <img src={logo} alt="logo" className='logo' />
                 </Flex>
                 <h2 className='build-title'>Hoá đơn thanh toán</h2>
-                <ItemBill label={"Thời gian"} value={"11/11/2025 11:11"} />
-                <ItemBill label={"Người thanh toán"} value={"Lê Đăng Chiến"} />
-                <ItemBill label={"Email"} value={"chienboy03@gmail.com"} />
-                <ItemBill label={"Hạn từ"} value={"11/11/2025 12:00"} />
-                <ItemBill label={"Đến"} value={"12/11/2025 12:00"} />
-                <ItemBill label={"Số lượng"} value={"10"} />
-                <ItemBill label={"Đơn giá"} value={<span>20.000<sup>Đ</sup></span>} />
-                <div className='total'>
-                  <ItemBill label={"Thành tiền"} value={<span>200.000<sup>Đ</sup></span>} />
-                </div>
-                <div className='action'>
-                  <Button onClick={handleNext} color="primary" variant="solid">Thực hiện thanh toán</Button>
+                <div className='pr content-bill'>
+                  {bill !== null ? <div>
+                    <ItemBill label={"Thời gian"} value={dayjs(bill.createdAt).format("DD/MM/YYYY HH:mm")} />
+                    <ItemBill label={"Người thanh toán"} value={bill.personPaymentName} />
+                    <ItemBill label={"Email"} value={bill.email} />
+                    <ItemBill label={"Hạn từ"} value={dayjs(bill.startTime).format("DD/MM/YYYY HH:mm")} />
+                    <ItemBill label={"Đến"} value={dayjs(bill.expire).format("DD/MM/YYYY HH:mm")} />
+                    <ItemBill label={"Số lượng"} value={bill.qualityTicket} />
+                    <ItemBill label={"Đơn giá"} value={<span>{formatCurrency(bill.priceUnit)}<sup>Đ</sup></span>} />
+                    <div className='total'>
+                      <ItemBill label={"Thành tiền"} value={<span>{formatCurrency(bill.total)}<sup>Đ</sup></span>} />
+                    </div>
+                    <div className='action'>
+                      <Button onClick={handleNext} color="primary" variant="solid">Thực hiện thanh toán</Button>
+                    </div>
+                  </div> : <LoadingComponent transparent/>}
                 </div>
               </div>
             </div>

@@ -1,26 +1,32 @@
-import React from 'react'
-import { FaCircleDot } from 'react-icons/fa6'
+import { geTimeAction, getUsedStatus } from '@/utils/location'
+import noImage from '@image/noImage.png'
 import { Link } from 'react-router-dom'
 
-const LocationCard = () => {
+// Hoạt động từ 8 giờ 30 phút đến 22 giờ hằng ngày
+const LocationCard = ({ data }) => {
+  
   return (
     <div className='location-card br3'>
       <div className='info'>
-        <div>
-          <img className='br3' src="https://aeonmall-vietnam.com/wp-content/uploads/2017/01/makuhari_ground1-1.jpg" alt="image-location" />
+        <div className='avatar'>
+          <img className='br3' src={data.avatar ? data.avatar : noImage} alt="image-location" />
         </div>
         <div className='detail'>
-          <Link to={"/location/1"}><h3 className='name'>EAON MALL Hà Đông</h3></Link>
-          <div className='address'>
-            Địa chỉ: AEON MALL Long Biên, Số 27 đường Cổ Linh, Phường Long Biên, Quận Long Biên, Hà Nội
-          </div>
-          <div>Đơn vị phát hành: EAON MALL GROUP</div>
-          <div>Hoạt động từ 8 giờ 30 phút đến 22 giờ hằng ngày</div>
+          <Link to={"/location/" + data.locationId}>
+            <h3 className='name'>{data.name}</h3>
+          </Link>
+          <a className='address' target='_blank' rel="noreferrer" href={data.linkGoogleMap}>
+            Địa chỉ: {data.address}
+          </a>
+          <div>Đơn vị phát hành: {data.partnerName}</div>
+          <div>{geTimeAction(data.openTime, data.closeTime, data.openHoliday)}</div>
           <div>Bãi gửi xe dịch vụ | Khu vui chơi giải trí | Trung tâm thương mại</div>
-          <div><FaCircleDot className='status' />Đang đông đúc</div>
+          <div>
+            {getUsedStatus(data.capacity, data.used)}
+          </div>
         </div>
       </div>
-      <Link to={"/choose/ticket/1"} className=''>
+      <Link to={`/choose/ticket/${data.locationId}?name=${data.name}&partner=${data.partnerName}`} className=''>
         <button className='btn-choose'>
           <span>Tiếp tục</span>
         </button>

@@ -7,7 +7,7 @@ import { useEffect, useState } from "react"
 const convertDataMap = (data) => {
   return data.map((item) => {
     return {
-      position: [item.coordinates?.x, item.coordinates?.y],
+      position: [item.coordinatesX, item.coordinatesY],
       popupContent: (
         <a
           href={item.linkGoogleMap}
@@ -21,6 +21,7 @@ const convertDataMap = (data) => {
     }
   })
 }
+
 const MapAllLocation = () => {
   const [page, setPage] = useState(0);
   const { hideLoad, showLoad } = useLoading();

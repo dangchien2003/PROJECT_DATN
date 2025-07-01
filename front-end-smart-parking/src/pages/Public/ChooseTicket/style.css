@@ -1,5 +1,6 @@
 #choose-ticket .parent-list-ticket {
   padding-bottom: 24px;
+  min-height: 300px;
 }
 
 #choose-ticket .head {
@@ -7,10 +8,17 @@
   border-bottom: 1px solid #c4c5ce;
 }
 
+#choose-ticket .head .clear {
+  padding-left: 4px;
+  font-size: 20px;
+  cursor: pointer;
+}
+
 #choose-ticket .location-name {
   text-align: center;
   font-size: 40px;
   font-weight: bold;
+  text-transform: uppercase;
 }
 
 #choose-ticket .publisher {
@@ -18,6 +26,7 @@
   font-weight: 400;
   text-align: center;
   padding-bottom: 8px;
+  text-transform: uppercase;
 }
 
 #choose-ticket .list-card {

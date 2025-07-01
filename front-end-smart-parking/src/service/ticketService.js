@@ -18,8 +18,37 @@ export async function partnerSearch(data, page, size, field, sort) {
   })
 }
 
+export async function customerSearch(data, page, size) {
+  return await httpClient.post(PARKING_SERVICE.ticket.customerSearch + "?" + getParamsPage(page, size), data, {
+    headers: {
+      Authorization: undefined
+    }
+  })
+}
+
 export async function detail(id) {
   return await httpClient.get(PARKING_SERVICE.ticket.detail + "?" + getRequestParams({id}), {
+    headers: {
+      Authorization: undefined
+    }
+  })
+}
+
+export async function customerTicketDetail(id) {
+  return await httpClient.get(PARKING_SERVICE.ticket.customerTicketDetail + "?" + getRequestParams({id}), {
+    headers: {
+      Authorization: undefined
+    }
+  })
+}
+
+export async function customerGetLocationUseTicket(page, size, id) {
+  const data = {
+    page, 
+    size,
+    id 
+  }
+  return await httpClient.get(PARKING_SERVICE.ticket.customerLocationUseTicket + "?" + getRequestParams(data), {
     headers: {
       Authorization: undefined
     }

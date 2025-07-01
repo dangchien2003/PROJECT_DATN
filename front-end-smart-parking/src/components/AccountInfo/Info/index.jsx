@@ -1,51 +1,78 @@
-import { Button, Col, Row } from 'antd';
-import { FaEdit } from 'react-icons/fa';
-import { IoMdFemale, IoMdMale } from 'react-icons/io';
-import './style.css';
+import ModalCustom from '@/components/ModalCustom';
 import useResponsiveKey from '@/hook/useReponsive';
+import { Col, Flex, Row } from 'antd';
+import { useState } from 'react';
+import { IoMdFemale } from 'react-icons/io';
+import Edit from './Edit';
+import EditEmail from './EditEmail';
+import EditGender from './EditGender';
+import EditName from './EditName';
+import EditPhoneNumber from './EditPhoneNumber';
+import './style.css';
 
 const Info = () => {
+  const [editKey, setEditKey] = useState(null);
   const { key } = useResponsiveKey();
+
+  const handleClickEdit = (value) => {
+    setEditKey(value);
+  }
+
+  const handleCloseEdit = () => {
+    setEditKey(null);
+  }
   return (
     <div className="info">
       <Row>
         <Col lg={12} md={12} sm={24} xs={24} style={["sm", "xs"].includes(key) ? { paddingBottom: 12 } : {}}>
           <div className="personal">
             <h3 className='page-name'>Thông tin cá nhân</h3>
-            <div className='detail-item end'>
-              <div className='label'>
-                Tên người dùng:
+            <Flex gap={8}>
+              <div className='detail-item end'>
+                <div className='label'>
+                  Tên người dùng:
+                </div>
+                <div className='value'>
+                  Lê Đăng Chiến
+                </div>
               </div>
-              <div className='value'>
-                Lê Đăng Chiến
+              <Edit value={1} onClick={handleClickEdit} />
+            </Flex>
+            <Flex gap={8}>
+              <div className='detail-item end'>
+                <div className='label'>
+                  Số điện thoại:
+                </div>
+                <div className='value'>
+                  0333757429
+                </div>
               </div>
-            </div>
-            <div className='detail-item end'>
-              <div className='label'>
-                Số điện thoại:
+              <Edit value={2} onClick={handleClickEdit} />
+            </Flex>
+            <Flex gap={8}>
+              <div className='detail-item end'>
+                <div className='label'>
+                  Email:
+                </div>
+                <div className='value'>
+                  Chienboy03@gmail.com
+                  {/* -- không có thông tin*/}
+                </div>
               </div>
-              <div className='value'>
-                0333757429
+              <Edit value={3} onClick={handleClickEdit} />
+            </Flex>
+            <Flex gap={8}>
+              <div className='detail-item end'>
+                <div className='label'>
+                  Giới tính:
+                </div>
+                <div className='value'>
+                  <IoMdFemale className='gender-female' />Nữ
+                  {/*<IoMdMale className='gender-male' />Nam */}
+                </div>
               </div>
-            </div>
-            <div className='detail-item end'>
-              <div className='label'>
-                Email:
-              </div>
-              <div className='value'>
-                Chienboy03@gmail.com
-                {/* -- không có thông tin*/}
-              </div>
-            </div>
-            <div className='detail-item end'>
-              <div className='label'>
-                Giới tính:
-              </div>
-              <div className='value'>
-                 <IoMdFemale className='gender-female' />Nữ 
-                 {/*<IoMdMale className='gender-male' />Nam */}
-              </div>
-            </div>
+              <Edit value={4} onClick={handleClickEdit} />
+            </Flex>
             <div className='detail-item end'>
               <div className='label'>
                 Ngày tạo:
@@ -53,11 +80,6 @@ const Info = () => {
               <div className='value'>
                 18/06/2025
               </div>
-            </div>
-            <div className="action">
-              <Button variant='solid' type='primary'>
-                <FaEdit /> Thay đổi thông tin
-              </Button>
             </div>
           </div>
         </Col>
@@ -110,6 +132,12 @@ const Info = () => {
           </div>
         </Col>
       </Row>
+      {editKey !== null && <ModalCustom onClose={handleCloseEdit}>
+        {editKey === 1 && <EditName oldData={"chiến"} itemKey={"name"}/>}
+        {editKey === 2 && <EditPhoneNumber oldData={null} itemKey={"phoneNumber"}/>}
+        {editKey === 3 && <EditEmail oldData={null} itemKey={"email"}/>}
+        {editKey === 4 && <EditGender oldData={0} itemKey={"gender"}/>}
+      </ModalCustom>}
     </div>
   );
 };

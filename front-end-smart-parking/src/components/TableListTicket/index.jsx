@@ -194,10 +194,10 @@ const TableListTicket = ({ dataSearch }) => {
     adminSearch(dataSearch, newPagination.current - 1, newPagination.pageSize, sorter.field, sorter.order)
       .then((response) => {
         const data = getDataApi(response);
-        const total = response.data?.result?.totalElements;
+        const total = data?.totalElements;
         setData(
           convertResponseToDataTable(
-            data,
+            data.data,
             newPagination.current,
             newPagination.pageSize
           )

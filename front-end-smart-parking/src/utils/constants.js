@@ -14,19 +14,19 @@ export const GENDER = [
 
 export const PRICE_CATEGORY = {
   TIME: {
-    value: 0,
+    value: 1,
     label: "1 giờ",
   },
   DAY: {
-    value: 1,
+    value: 2,
     label: "1 ngày",
   },
   WEEK: {
-    value: 2,
+    value: 3,
     label: "1 tuần",
   },
   MONTH: {
-    value: 3,
+    value: 4,
     label: "1 tháng",
   },
 }
@@ -63,6 +63,12 @@ export const PAYMENT_METHOD = {
   0: "Số dư",
   1: "Vnpay",
   2: "Banking",
+};
+
+export const PAYMENT_METHOD_VALUE = {
+  SO_DU: 0,
+  VNPAY: 1,
+  BANKING: 2,
 };
 
 export const PAYMENT_TYPE = {
@@ -113,13 +119,13 @@ export const VEHICLE = {
     name: "Ô tô",
     icon: <FaCarAlt />,
     value: 0,
-    label: <div><FaCarAlt /> <span>Ô tô</span></div>,
+    label: <span><FaCarAlt /> <span>Ô tô</span></span>,
   },
   1: {
     name: "Xe máy",
     icon: <FaMotorcycle />,
     value: 1,
-    label: <div><FaMotorcycle /> <span>Xe máy</span></div>,
+    label: <span><FaMotorcycle /> <span>Xe máy</span></span>,
   },
   2: {
     name: "Hỗn hợp",
@@ -131,10 +137,10 @@ export const VEHICLE = {
     ),
     value: 2,
     label: (
-      <div>
+      <span>
         <FaCarAlt />
         <FaMotorcycle style={{ marginLeft: 4 }} /> <span>Hỗn hợp</span>
-      </div>
+      </span>
     ),
   },
 };
@@ -313,6 +319,45 @@ export const TICKET_MODIFY_STATUS_SELECTBOX = [
   },
 ];
 
+export const CARD_STATUS_2 = {
+  CHO_DUYET: {
+    value: 0,
+    label: "Chờ duyệt",
+    color: "warning",
+  },
+  CHO_CAP: {
+    value: 1,
+    label: "Chờ cấp",
+    color: "warning",
+  },
+  CHO_KICH_HOAT: {
+    value: 2,
+    label: "Chờ kích hoạt",
+    color: "default",
+  },
+  DANG_HOAT_DONG: {
+    value: 3,
+    label: "Đang hoạt động",
+    color: "cyan",
+  },
+  TAM_KHOA: {
+    value: 4,
+    label: "Tạm khoá",
+    color: "danger",
+  },
+  KHOA_VINH_VIEN: {
+    value: 5,
+    label: "Khoá vĩnh viễn",
+    color: "danger",
+  },
+  TU_CHOI: {
+    value: 6,
+    label: "Từ chối",
+    color: "danger",
+  },
+}
+
+
 export const CARD_STATUS = {
   0: {
     label: "Chờ duyệt",
@@ -323,7 +368,7 @@ export const CARD_STATUS = {
     color: "warning",
   },
   2: {
-    label: "Chờ cấp",
+    label: "Chờ kích hoạt",
     color: "default",
   },
   3: {
@@ -450,10 +495,13 @@ export const KEY = {
 }
 
 export const REGEX_TEMPLATE = {
-  email: "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$"
+  email: "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$",
+  phoneNumber: "^(?:\\+84|0)(3[2-9]|5[6|8|9]|7[0|6-9]|8[1-5]|9[0-9])[0-9]{7}$"
 }
 
 export const USERNAME_CATEGORY = {
   phoneNumber: 1,
   email: 2, 
 }
+
+export const lineLoading = {type: 2};

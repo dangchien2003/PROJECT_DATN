@@ -4,6 +4,7 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
+import { isNullOrUndefined } from "@/utils/data";
 
 // forcus thẳng tới địa điểm
 // const SetViewOnLocation = ({ position }) => {
@@ -57,13 +58,29 @@ const customIcon = new L.Icon({
   iconSize: [25, 41],
   iconAnchor: [12, 41],
 });
-const focusDefault = [10.762622, 106.660172];
-const Map = ({ data = [], focus, ...prop }) => {
-  const [focusMap, setFocusMap] = useState(focus ? focus : focusDefault);
 
+
+const focusDefault = [10.762622, 106.660172];
+const getFocusPosition = (data) => {
+  if(data) {
+    if(Array.isArray(data)) {
+      return data;
+    } else {
+      return data.position;
+    }
+  } else {
+    return focusDefault;
+  }
+} 
+const Map = ({ data = [], focus, ...prop }) => {
+  const [focusMap, setFocusMap] = useState(getFocusPosition(focus));
+  // data rỗng nếu truyền null
+  if(isNullOrUndefined(data)) {
+    data = [];
+  }
   useEffect(() => {
     if(focus) {
-      setFocusMap(focus);
+      setFocusMap(getFocusPosition(focus));
     } else if(data.length > 0) {
       setFocusMap(data[0].position);
     }

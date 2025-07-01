@@ -1,10 +1,10 @@
-import { useRef } from 'react'
-import bgTicket from '@image/cut2.png'
-import { Button } from 'antd'
-import { FaMotorcycle } from 'react-icons/fa6';
+import { VEHICLE } from '@/utils/constants';
+import bgTicket from '@image/cut2.png';
+import { Button } from 'antd';
+import { useRef } from 'react';
 import { Link } from 'react-router-dom';
 
-const TicketCardMinimize = () => {
+const TicketCardMinimize = ({data}) => {
   const ref = useRef();
   const order = "Đặt vé";
   const view = "Xem";
@@ -13,19 +13,19 @@ const TicketCardMinimize = () => {
       <img src={bgTicket} alt="bgbg" className='background' />
       <div className="content-card">
         <h3 className='name'>
-          Vé vip
+          {data.name}
         </h3>
-        <div>Phương tiện sử dụng: <FaMotorcycle /> Xe máy</div>
-        <div>Sử dụng tại 12 địa điểm khác</div>
+        <div>Phương tiện sử dụng: {VEHICLE[data.vehicle].label}</div>
+        <div>{data.countLocation && data.countLocation > 0 ? `Sử dụng tại ${data.countLocation - 1} địa điểm khác` : "Chưa hỗ trợ sử dụng ở địa điểm khác"}</div>
         <div className='action'>
-          <Link to={"/ticket/1"}>
+          <Link to={"/ticket/" + data.ticketId}>
             <Button type='primary' className="animated-btn">{view.split('').map((char, index) => (
               <span key={index} style={{ animationDelay: `${index * 0.05}s` }}>
                 {char === ' ' ? '\u00A0' : char}
               </span>
             ))}</Button>
           </Link>
-          <Link to={"/order/53"}>
+          <Link to={"/order/" + data.ticketId}>
             <Button color="danger" variant="solid" className="animated-btn">{order.split('').map((char, index) => (
               <span key={index} style={{ animationDelay: `${index * 0.05}s` }}>
                 {char === ' ' ? '\u00A0' : char}

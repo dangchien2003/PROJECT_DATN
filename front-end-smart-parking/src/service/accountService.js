@@ -41,3 +41,11 @@ export async function detailPartner(params) {
     }
   })
 }
+
+export async function getSuggestions(page, size, key) {
+  return await httpClient.get(PARKING_SERVICE.account.getSuggestions + "?" + getRequestParams({key, page, size}), {
+    headers: {
+      Authorization: undefined
+    }
+  })
+}

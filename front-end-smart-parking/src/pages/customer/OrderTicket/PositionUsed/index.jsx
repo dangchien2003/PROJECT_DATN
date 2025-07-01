@@ -5,7 +5,6 @@ import ContentTab from "./ContentTab";
 import dayjs from "dayjs";
 
 const PositionUsed = ({startTime}) => {
-  console.log(startTime)
   const onChange = key => {
     console.log(key);
   };
