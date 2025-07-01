@@ -63,7 +63,6 @@ const FormBuyFor = ({ onOk }) => {
   };
 
   const handleSelect = (value, option) => {
-    console.log("select")
     if (tags.some((tag) => tag.id === option.data.id)) return;
     setTags([...tags, { ...option.data }]);
     selectRef.current = true;

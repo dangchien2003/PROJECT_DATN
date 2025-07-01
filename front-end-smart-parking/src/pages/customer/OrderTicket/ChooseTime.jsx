@@ -15,7 +15,7 @@ import FormBuyFor from './FormBuyFor';
 const ChooseTime = ({ category, onChangeStartTime, location, ticket }) => {
   const [quality, setQuality] = React.useState(1);
   const [openBuyFor, setOpenBuyFor] = React.useState(false);
-  const [dataQueryParam, setDataQueryParam] = React.useState({});
+  const [orderInfo, setOrderInfo] = React.useState({});
   const [valueSelectTime, setValueSelectTime] = React.useState([])
   const [selectedTime, setSelectedTime] = React.useState(null);
   const [owner, setOwner] = React.useState([]);
@@ -24,14 +24,16 @@ const ChooseTime = ({ category, onChangeStartTime, location, ticket }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    setDataQueryParam({
+    setOrderInfo({
       ticketId: ticket?.ticketId,
       ticketName: ticket?.name,
       locationId: location?.locationId,
       locationName: location?.name,
       address: location?.address,
-      startTime: selectedTime?.format("DD/MM/YYYY HH:mm"), 
-      endTime: endTime?.format("DD/MM/YYYY HH:mm")
+      startTime: selectedTime, 
+      endTime: endTime,
+      category,
+      quality
     });
   }, [selectedTime, endTime, ticket, location, category])
   
@@ -138,11 +140,11 @@ const ChooseTime = ({ category, onChangeStartTime, location, ticket }) => {
       return;
     }
 
-    dataQueryParam.owner = owner.map(item => {
+    orderInfo.owner = owner.map(item => {
       delete item.value;
       return item;
     })
-    setCookie("order", JSON.stringify(dataQueryParam), 360);
+    setCookie("order", JSON.stringify(orderInfo), 360);
     navigate("/order/confirm");
   }
 
@@ -196,7 +198,7 @@ const ChooseTime = ({ category, onChangeStartTime, location, ticket }) => {
                 showTime={{ defaultValue: dayjs('00:00', 'HH:mm'), minuteStep: 15, }}
                 placeholder='DD/MM/YYYY HH:mm'
                 minDate={dayjs()}
-                maxDate={dayjs().add(1, 'month')}
+                maxDate={dayjs().add(1, 'week')}
                 onChange={handleChangeStartTime}
                 className='date-picker' />
               <InputError itemKey={"start-time"} />

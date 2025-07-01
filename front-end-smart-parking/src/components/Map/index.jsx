@@ -73,9 +73,6 @@ const getFocusPosition = (data) => {
   }
 } 
 const Map = ({ data = [], focus, ...prop }) => {
-  console.log(data);
-  console.log(focus)
-
   const [focusMap, setFocusMap] = useState(getFocusPosition(focus));
   // data rỗng nếu truyền null
   if(isNullOrUndefined(data)) {

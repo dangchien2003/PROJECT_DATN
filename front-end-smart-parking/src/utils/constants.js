@@ -14,19 +14,19 @@ export const GENDER = [
 
 export const PRICE_CATEGORY = {
   TIME: {
-    value: 0,
+    value: 1,
     label: "1 giờ",
   },
   DAY: {
-    value: 1,
+    value: 2,
     label: "1 ngày",
   },
   WEEK: {
-    value: 2,
+    value: 3,
     label: "1 tuần",
   },
   MONTH: {
-    value: 3,
+    value: 4,
     label: "1 tháng",
   },
 }
@@ -63,6 +63,12 @@ export const PAYMENT_METHOD = {
   0: "Số dư",
   1: "Vnpay",
   2: "Banking",
+};
+
+export const PAYMENT_METHOD_VALUE = {
+  SO_DU: 0,
+  VNPAY: 1,
+  BANKING: 2,
 };
 
 export const PAYMENT_TYPE = {
