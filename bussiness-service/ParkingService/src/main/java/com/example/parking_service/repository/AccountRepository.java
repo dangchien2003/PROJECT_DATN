@@ -56,6 +56,8 @@ public interface AccountRepository extends JpaRepository<Account, String> {
 
     Optional<Account> findByIdAndCategory(String id, Integer category);
 
+    Optional<Account> findByIdAndStatus(String id, Integer category);
+
     Optional<Account> findByPartnerFullNameIgnoreCase(String partnerName);
 
     @Query("""

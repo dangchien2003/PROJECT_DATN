@@ -14,6 +14,7 @@ import com.example.parking_service.enums.*;
 import com.example.parking_service.repository.*;
 import com.example.parking_service.service.OrderService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
 
@@ -39,6 +41,7 @@ public class OrderServiceImpl implements OrderService {
     AccountRepository accountRepository;
     OrderRepository orderRepository;
     PaymentRepository paymentRepository;
+    TicketPurchasedRepository ticketPurchasedRepository;
     ObjectMapper objectMapper;
 
     @Override
@@ -224,24 +227,95 @@ public class OrderServiceImpl implements OrderService {
         if (!order.getStatus().equals(OrderStatus.CHO_XAC_NHAN)) {
             throw new AppException(ErrorCode.INVALID_DATA.withMessage("Không thể xác nhận đơn"));
         }
+
+        Payment payment;
+        if (PaymentMethod.SO_DU.equals(request.getPaymentMethod())) {
+            payment = processPaymentByRemaining(order);
+        } else {
+            throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
+        }
+
+        return ApiResponse.builder()
+                .result(payment)
+                .build();
+    }
+
+    Payment processPaymentByRemaining(OrderParking order) {
+        String actionBy = order.getPaymentBy();
+        Account account = accountRepository.findByIdAndStatus(actionBy, AccountStatus.DANG_HOAT_DONG.getValue())
+                .orElseThrow(() -> new AppException(ErrorCode.NO_ACCESS));
+        // kiểm tra và cập nhật số dư
+        long afterRemaining = account.getBalance() - order.getTotal();
+        if (afterRemaining < 0) {
+            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Số dư không đủ"));
+        } else {
+            account.setBalance(afterRemaining);
+            DataUtils.setDataAction(account, order.getPaymentBy(), false);
+            accountRepository.save(account);
+        }
         // cập nhật trạng thái đơn hàng
-        order.setStatus(OrderStatus.DA_XAC_NHAN);
+        order.setStatus(OrderStatus.DA_THANH_TOAN);
         DataUtils.setDataAction(order, actionBy, false);
         orderRepository.save(order);
         // lưu thông tin thanh toán
         Payment payment = Payment.builder()
-                .objectId(order.getOrderId().toString())
+                .objectId(order.getOrderId())
                 .paymentBy(actionBy)
-                .status(PaymentStatus.CHO_THANH_TOAN)
+                .status(PaymentStatus.THANH_CONG)
                 .type(PaymentType.MUA_VE)
-                .paymentMethod(request.getPaymentMethod())
+                .paymentMethod(PaymentMethod.SO_DU)
                 .fluctuation(Fluctuation.GIAM)
                 .total(order.getTotal())
                 .build();
         DataUtils.setDataAction(payment, actionBy, true);
         payment = paymentRepository.save(payment);
-        return ApiResponse.builder()
-                .result(payment)
-                .build();
+        // xử lý cấp vé
+        processBuyTicketSuccess(order);
+        return payment;
+    }
+
+    void processBuyTicketSuccess(OrderParking order) {
+        // mua mới
+        List<TicketPurchased> ticketPurchasedSave = new ArrayList<>();
+        if (order.getExtendTicketId() == null) {
+            // mua cho bản thân
+            if (order.getOwners() == null) {
+                TicketPurchased ticketPurchased = TicketPurchased.builder()
+                        .accountId(order.getPaymentBy())
+                        .ticketId(order.getTicketId())
+                        .price(order.getTotal())
+                        .status(TicketPurchasedStatus.BINH_THUONG)
+                        .startsValidity(order.getStart())
+                        .expires(order.getExpire())
+                        .qrCode("")
+                        .createdQrCodeCount(1)
+                        .permitEditContentPlate(PermitEditContentPlate.CO)
+                        .build();
+                DataUtils.setDataAction(ticketPurchased, order.getPaymentBy(), true);
+                ticketPurchasedSave.add(ticketPurchased);
+            } else {
+                // mua hộ
+                List<String> owners = objectMapper.convertValue(order.getOwners(), new TypeReference<List<String>>() {
+                });
+                ticketPurchasedSave = owners.stream().map(item -> {
+                    TicketPurchased ticketPurchased = TicketPurchased.builder()
+                            .accountId(item)
+                            .ticketId(order.getTicketId())
+                            .price(order.getTotal())
+                            .status(TicketPurchasedStatus.BINH_THUONG)
+                            .startsValidity(order.getStart())
+                            .expires(order.getExpire())
+                            .qrCode("")
+                            .createdQrCodeCount(1)
+                            .permitEditContentPlate(PermitEditContentPlate.CO)
+                            .build();
+                    DataUtils.setDataAction(ticketPurchased, order.getPaymentBy(), true);
+                    return ticketPurchased;
+                }).toList();
+            }
+        } else {
+            // gia hạn
+        }
+        ticketPurchasedRepository.saveAll(ticketPurchasedSave);
     }
 }

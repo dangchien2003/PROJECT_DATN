@@ -5,6 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface OrderRepository extends JpaRepository<OrderParking, Long> {
-    Optional<OrderParking> findByOrderIdAndPaymentBy(Long orderId, String paymentBy);
+public interface OrderRepository extends JpaRepository<OrderParking, String> {
+    Optional<OrderParking> findByOrderIdAndPaymentBy(String orderId, String paymentBy);
 }

@@ -2,10 +2,7 @@ package com.example.parking_service.entity;
 
 
 import com.example.common.entity.BaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -25,6 +22,7 @@ import java.time.LocalDateTime;
 public class TicketPurchased extends BaseEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
     @Column(nullable = false)
@@ -35,8 +33,10 @@ public class TicketPurchased extends BaseEntity {
 
     Long price;
 
+    @Column(columnDefinition = "0")
     Long priceExtend;
 
+    @Column(columnDefinition = "0")
     Integer extendCount;
 
     Integer status;

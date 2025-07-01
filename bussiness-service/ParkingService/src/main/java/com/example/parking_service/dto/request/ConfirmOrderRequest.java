@@ -13,7 +13,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ConfirmOrderRequest {
     @NotNull(message = "Không tìm thấy mã đơn")
-    Long orderId;
+    String orderId;
     @NotNull(message = "Không tìm thấy phương thức thanh toán")
     Integer paymentMethod;
 }

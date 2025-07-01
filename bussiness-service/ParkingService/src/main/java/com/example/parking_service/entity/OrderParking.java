@@ -19,8 +19,8 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class OrderParking extends BaseEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long orderId;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    String orderId;
 
     String extendTicketId;
 
