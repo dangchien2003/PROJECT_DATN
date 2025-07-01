@@ -25,7 +25,6 @@ public class Card extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @Column(nullable = false, unique = true)
     String numberCard;
 
     @Column(nullable = false)
@@ -33,10 +32,8 @@ public class Card extends BaseEntity {
 
     Integer issuedTimes;
 
-    @Column(nullable = false)
     LocalDateTime issuedDate;
 
-    @Column(nullable = false)
     LocalDateTime expireDate;
 
     Integer type;
@@ -48,4 +45,9 @@ public class Card extends BaseEntity {
     String requestCreateBy;
 
     String codeActive;
+    @Lob
+    @Column(columnDefinition = "TEXT", length = 500)
+    String reasonRequest;
+
+    String reasonReject;
 }

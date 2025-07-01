@@ -1,6 +1,5 @@
 package com.example.parking_service.dto.request;
 
-import com.example.parking_service.dto.other.PriceTicket;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -26,10 +25,9 @@ public class ModifyTicketRequest {
     LocalDateTime timeAppliedEdit;
     @NotNull(message = "Phương tiện không được để trống")
     Integer vehicle;
-    boolean timeSlot;
-    boolean daySlot;
-    boolean weekSlot;
-    boolean monthSlot;
-    PriceTicket price;
+    Long priceTimeSlot;
+    Long priceDaySlot;
+    Long priceWeekSlot;
+    Long priceMonthSlot;
     List<Long> locationUse;
 }

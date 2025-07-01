@@ -106,21 +106,58 @@ public interface LocationModifyRepository extends JpaRepository<LocationModify, 
             @Param("offset") int offset
     );
 
-    @Query("SELECT count(*) FROM LocationModify lm " +
-            "WHERE lm.isDel = :isDel AND lm.modifyStatus = :modifyStatus " +
-            "AND (:category IS NULL OR (:category = 1 AND lm.locationId IS NULL) OR (:category = 2 AND lm.locationId IS NOT NULL))"
+    @Query(
+            value = "SELECT COUNT(*) " +
+                    "FROM location_modify lm " +
+                    "LEFT JOIN account a ON a.id = lm.partner_id " +
+                    "WHERE lm.is_del = :isDel AND lm.modify_status = :modifyStatus " +
+                    "AND (:category IS NULL OR (:category = 1 AND lm.location_id IS NULL) OR (:category = 2 AND lm.location_id IS NOT NULL))" +
+                    "AND (:partnerName IS NULL OR a.partner_full_name LIKE CONCAT('%', :partnerName, '%') ESCAPE '!') " +
+                    "AND (:urgentApprovalRequest IS NULL OR lm.urgent_approval_request = :urgentApprovalRequest) " +
+                    "AND ( :applyTime IS NULL OR " +
+                    "   (:trendApplyTime = 'UP' AND lm.time_applied_edit >= :applyTime) " +
+                    "   OR (:trendApplyTime = 'DOWN' AND lm.time_applied_edit <= :applyTime)" +
+                    "   OR (:trendApplyTime IS NULL AND lm.time_applied_edit = :applyTime) " +
+                    ") " +
+                    "AND ( :createdTime IS NULL OR " +
+                    "   (:trendCreatedTime = 'UP' AND lm.created_at >= :createdTime) " +
+                    "   OR (:trendCreatedTime = 'DOWN' AND lm.created_at <= :createdTime)" +
+                    "   OR (:trendCreatedTime IS NULL AND lm.created_at = :createdTime) " +
+                    ") "
+            , nativeQuery = true
     )
     Long countAllRecordWaitApprove(
             @Param("category") Integer category,
+            @Param("partnerName") String partnerName,
             @Param("modifyStatus") Integer modifyStatus,
+            @Param("urgentApprovalRequest") Integer urgentApprovalRequest,
+            @Param("applyTime") LocalDateTime applyTime,
+            @Param("trendApplyTime") String trendApplyTime,
+            @Param("createdTime") LocalDateTime createdTime,
+            @Param("trendCreatedTime") String trendCreatedTime,
             @Param("isDel") Integer isDel
     );
 
-    @Query("SELECT count(*) FROM Location l " +
-            "WHERE l.status = :status"
+    @Query(value = "SELECT COUNT(*) " +
+            "FROM location l " +
+            "LEFT JOIN account a ON a.id = l.partner_id " +
+            "WHERE l.status = :status " +
+            "AND (:partnerName IS NULL OR a.partner_full_name LIKE CONCAT('%', :partnerName, '%') ESCAPE '!') " +
+            "AND (:locationName IS NULL OR l.name LIKE CONCAT('%', :locationName, '%') ESCAPE '!') " +
+            "AND (:openTime IS NULL OR l.open_time = :openTime) " +
+            "AND (:closeTime IS NULL OR l.close_time = :closeTime) " +
+            "AND (:capacity IS NULL OR l.capacity = :capacity) " +
+            "AND (:openHoliday IS NULL OR l.open_holiday = :openHoliday) "
+            , nativeQuery = true
     )
     Long countAllRecord(
-            @Param("status") Integer status
+            @Param("status") Integer status,
+            @Param("partnerName") String partnerName,
+            @Param("locationName") String locationName,
+            @Param("openTime") LocalTime openTime,
+            @Param("closeTime") LocalTime closeTime,
+            @Param("capacity") Long capacity,
+            @Param("openHoliday") Integer openHoliday
     );
 
     Optional<LocationModify> findByModifyIdAndIsDel(Long locationId, Integer isDel);

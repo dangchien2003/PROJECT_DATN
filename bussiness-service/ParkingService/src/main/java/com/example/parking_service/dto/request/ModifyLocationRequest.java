@@ -1,6 +1,5 @@
 package com.example.parking_service.dto.request;
 
-import com.example.common.dto.Coordinates;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -22,7 +21,10 @@ public class ModifyLocationRequest {
     String name;
     @NotBlank(message = "Địa chỉ không được để trống")
     String address;
-    Coordinates coordinates;
+    @NotNull(message = "Toạ độ không được để trống")
+    Double coordinatesX;
+    @NotNull(message = "Toạ độ không được để trống")
+    Double coordinatesY;
     String linkGoogleMap;
     String avatar;
     String videoTutorial;

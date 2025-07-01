@@ -4,15 +4,18 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDateTime;
+
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@AllArgsConstructor
+@NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class PriceResponse {
-    TicketPriceResponse time;
-    TicketPriceResponse day;
-    TicketPriceResponse week;
-    TicketPriceResponse month;
+public class HistoryRequestAddCardResponse {
+    Integer issuedTimes;
+    Integer status;
+    String reasonReject;
+    LocalDateTime createdAt;
+    String reasonRequest;
 }

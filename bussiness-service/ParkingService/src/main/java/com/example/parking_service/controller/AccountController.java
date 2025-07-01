@@ -55,4 +55,9 @@ public class AccountController {
         return accountService.detail(id, AccountCategory.DOI_TAC.getValue());
     }
 
+    @GetMapping("/suggestions")
+        // role admin
+    ApiResponse<Object> suggestions(@RequestParam("key") String key, Pageable pageable) {
+        return accountService.suggestions(key, pageable);
+    }
 }

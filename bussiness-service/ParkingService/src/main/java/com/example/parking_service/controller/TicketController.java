@@ -2,6 +2,7 @@ package com.example.parking_service.controller;
 
 import com.example.common.dto.response.ApiResponse;
 import com.example.parking_service.dto.request.ApproveRequest;
+import com.example.parking_service.dto.request.CustomerSearchTicket;
 import com.example.parking_service.dto.request.ModifyTicketRequest;
 import com.example.parking_service.dto.request.SearchTicket;
 import com.example.parking_service.service.TicketService;
@@ -34,6 +35,11 @@ public class TicketController {
         return ticketService.adminSearch(request, pageable);
     }
 
+    @PostMapping("search")
+    ApiResponse<Object> search(@RequestBody CustomerSearchTicket request, Pageable pageable) {
+        return ticketService.search(request, pageable);
+    }
+
     @GetMapping("detail")
     ApiResponse<Object> detail(@RequestParam("id") Long id) {
         return ticketService.detail(id);
@@ -42,6 +48,16 @@ public class TicketController {
     @GetMapping("detail/wait-release")
     ApiResponse<Object> detailWaitRelease(@RequestParam("id") Long id) {
         return ticketService.detailWaitRelease(id);
+    }
+
+    @GetMapping("customer/detail")
+    ApiResponse<Object> customerDetail(@RequestParam("id") Long id) {
+        return ticketService.customerDetail(id);
+    }
+
+    @GetMapping("customer/location-use-ticket")
+    ApiResponse<Object> locationUseTicket(@RequestParam("id") Long id, Pageable pageable) {
+        return ticketService.locationUseTicket(id, pageable);
     }
 
     @PostMapping("partner/cancel/wait-release")

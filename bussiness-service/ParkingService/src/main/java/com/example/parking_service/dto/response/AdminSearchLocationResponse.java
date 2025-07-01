@@ -7,7 +7,9 @@ public interface AdminSearchLocationResponse {
 
     String getName();
 
-    String getCoordinates();
+    Double getCoordinatesX();
+
+    Double getCoordinatesY();
 
     String getLinkGoogleMap();
 

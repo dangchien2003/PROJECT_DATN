@@ -14,7 +14,10 @@ public interface TicketWaitReleaseSpecification {
             String trendReleasedTime,
             Integer vehicle,
             List<Long> ids,
-            String partnerIds
+            String partnerIds,
+            Long price,
+            String trendPrice,
+            Integer priceCategory
     );
 
     Specification<TicketWaitRelease> adminSearch(
@@ -25,6 +28,9 @@ public interface TicketWaitReleaseSpecification {
             Integer vehicle,
             List<Long> ids,
             List<String> partnerIds,
+            Long price,
+            String trendPrice,
+            Integer priceCategory,
             boolean isCancel
     );
 }

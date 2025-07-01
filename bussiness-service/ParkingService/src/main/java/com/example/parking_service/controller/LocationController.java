@@ -2,10 +2,7 @@ package com.example.parking_service.controller;
 
 import com.example.common.dto.response.ApiResponse;
 import com.example.parking_service.ParkingServiceApplication;
-import com.example.parking_service.dto.request.AdminSearchLocation;
-import com.example.parking_service.dto.request.ApproveRequest;
-import com.example.parking_service.dto.request.ModifyLocationRequest;
-import com.example.parking_service.dto.request.PartnerSearchLocation;
+import com.example.parking_service.dto.request.*;
 import com.example.parking_service.service.LocationModifyService;
 import com.example.parking_service.service.LocationService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -72,6 +69,11 @@ public class LocationController {
         return locationService.details(List.of(id), true);
     }
 
+    @GetMapping("customer/detail")
+    ApiResponse<Object> customerDetail(@RequestParam("id") Long id) {
+        return locationService.customerDetail(id);
+    }
+
     @GetMapping("detail/wait-release")
     ApiResponse<Object> detailWaitRelease(@RequestParam("id") Long id) {
         return locationService.detailWaitRelease(id);
@@ -90,5 +92,10 @@ public class LocationController {
     @PostMapping("list/detail")
     ApiResponse<Object> listDetail(@RequestBody List<Long> ids) {
         return locationService.details(ids, false);
+    }
+
+    @PostMapping("customer/search")
+    ApiResponse<Object> customerSearch(@RequestBody CustomerSearchLocation request, Pageable pageable) {
+        return locationService.customerSearch(request, pageable);
     }
 }

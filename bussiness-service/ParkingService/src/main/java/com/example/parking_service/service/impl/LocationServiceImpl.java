@@ -9,12 +9,10 @@ import com.example.common.exception.ErrorCode;
 import com.example.common.utils.DataUtils;
 import com.example.parking_service.ParkingServiceApplication;
 import com.example.parking_service.dto.request.AdminSearchLocation;
+import com.example.parking_service.dto.request.CustomerSearchLocation;
 import com.example.parking_service.dto.request.PartnerSearchLocation;
 import com.example.parking_service.dto.response.*;
-import com.example.parking_service.entity.Account;
-import com.example.parking_service.entity.Location;
-import com.example.parking_service.entity.LocationModify;
-import com.example.parking_service.entity.LocationWaitRelease;
+import com.example.parking_service.entity.*;
 import com.example.parking_service.enums.LocationModifyStatus;
 import com.example.parking_service.enums.LocationStatus;
 import com.example.parking_service.mapper.LocationMapper;
@@ -57,6 +55,8 @@ public class LocationServiceImpl implements LocationService {
     LocationWaitReleaseMapper locationWaitReleaseMapper;
     ObjectMapper objectMapper;
 
+    Random random = new Random();
+
     @Override
     public ApiResponse<Object> getAllIsActive(int page) {
         String partner = ParkingServiceApplication.testPartnerActionBy;
@@ -77,7 +77,7 @@ public class LocationServiceImpl implements LocationService {
     @Override
     public ApiResponse<Object> getListCoordinates(int page) {
         Pageable fixedPageable = PageRequest.of(page, 20, Sort.by(Sort.Direction.DESC, "coordinates"));
-        Page<Location> pageLocations = locationRepository.findAllByStatusAndCoordinatesNotNull(LocationStatus.DA_DUYET_DANG_HOAT_DONG.getValue(), fixedPageable);
+        Page<Location> pageLocations = locationRepository.findAllByStatusAndCoordinatesXNotNullAndCoordinatesYNotNull(LocationStatus.DA_DUYET_DANG_HOAT_DONG.getValue(), fixedPageable);
         List<Location> locations = pageLocations.getContent();
         Set<String> partnerId = locations.stream().map(Location::getPartnerId).collect(Collectors.toSet());
         List<Account> accounts = accountRepository.findAllById(partnerId);
@@ -128,6 +128,32 @@ public class LocationServiceImpl implements LocationService {
                     .result(result)
                     .build();
         }
+    }
+
+    @Override
+    public ApiResponse<Object> customerDetail(Long id) {
+        // validate
+        if (id == null) {
+            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Dữ liệu không xác định"));
+        }
+        // lấy dữ liệu
+        Optional<Location> optionalLocation = locationRepository.findById(id);
+        // kiểm tra trạng thái địa điểm
+        List<Integer> statusReturn = List.of(
+                LocationStatus.DA_DUYET_DANG_HOAT_DONG.getValue(),
+                LocationStatus.DA_DUYET_DANG_HOAT_DONG.getValue());
+        if (optionalLocation.isEmpty()
+                || !statusReturn.contains(optionalLocation.get().getStatus())) {
+            throw new AppException(ErrorCode.NOT_FOUND);
+        }
+        // kết quả
+        Location location = optionalLocation.get();
+        CustomerLocationResponse response = locationMapper.toCustomerLocationResponse(location);
+        // lượng chỗ đã sur dụng
+        response.setUsed(random.nextLong(response.getCapacity()));
+        return ApiResponse.builder()
+                .result(response)
+                .build();
     }
 
     LocationResponse convertDetail(Location location, boolean roleAdmin, String accountId) {
@@ -290,7 +316,7 @@ public class LocationServiceImpl implements LocationService {
         LocalDateTime createdTime = null;
         String trendCreatedTime = null;
         if (!DataUtils.isNullOrEmpty(request.getTimeAppliedEdit())) {
-            // dữ liệu số dư
+            // dữ liệu ngày yêu cầu
             if (!DataUtils.isNullOrEmpty(request.getTimeAppliedEdit().getValue())) {
                 String applyDateStr = (String) request.getTimeAppliedEdit().getValue();
                 createdTime = LocalDateTime.parse(applyDateStr);
@@ -333,7 +359,13 @@ public class LocationServiceImpl implements LocationService {
 
         Long countAllRecord = locationModifyRepository.countAllRecordWaitApprove(
                 category,
+                partnerName,
                 modifyStatus,
+                urgentApprovalRequest,
+                applyTime,
+                trendApplyTime,
+                createdTime,
+                trendCreatedTime,
                 IsDel.DELETE_NOT_YET.getValue()
         );
         long totalPage = (long) Math.ceil((double) data.size() / limit);
@@ -387,7 +419,13 @@ public class LocationServiceImpl implements LocationService {
         }
 
         Long countAllRecord = locationModifyRepository.countAllRecord(
-                status
+                status,
+                partnerFullName,
+                locationName,
+                request.getOpenTime(),
+                request.getCloseTime(),
+                request.getCapacity(),
+                request.getOpenHoliday()
         );
         long totalPage = (long) Math.ceil((double) data.size() / limit);
         return ApiResponse.builder()
@@ -421,4 +459,38 @@ public class LocationServiceImpl implements LocationService {
         };
     }
 
+    @Override
+    public ApiResponse<Object> customerSearch(CustomerSearchLocation request, Pageable pageable) {
+        // sắp xếp theo tên
+        Pageable pageQuery = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                Sort.by(Sort.Direction.ASC, Location_.NAME));
+        // convert dữ liệu tìm kiếm
+        String locationName = DataUtils.convertStringSearchLike(request.getName());
+        // xử lý thêm category
+        Page<Location> locations = locationRepository.customerSearch(locationName, LocationStatus.DA_DUYET_DANG_HOAT_DONG.getValue(), pageQuery);
+        //convert response
+        List<CustomerSearchLocationResponse> result = new ArrayList<>();
+        Set<String> partnerIds = new HashSet<>();
+        locations.forEach(item -> {
+            result.add(locationMapper.toCustomerSearchLocationResponse(item));
+            partnerIds.add(item.getPartnerId());
+        });
+        // lấy thông tin đối tác
+        List<Account> partners = accountRepository.findAllById(partnerIds);
+        Map<String, Account> partnersMap = partners.stream().collect(Collectors.toMap(Account::getId, item -> item));
+        // map thêm tên đối tác
+        result.forEach(item -> {
+            Account partner = partnersMap.get(item.getPartnerId());
+            if (!DataUtils.isNullOrEmpty(partner)) {
+                item.setPartnerName(partner.getPartnerFullName());
+            }
+            // random used
+            item.setUsed(random.nextLong(item.getCapacity()));
+        });
+        return ApiResponse.builder()
+                .result(new PageResponse<>(result, locations.getTotalPages(), locations.getTotalElements()))
+                .build();
+    }
 }

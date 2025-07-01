@@ -13,4 +13,6 @@ public interface AccountService {
     ApiResponse<Object> searchListPartner(SearchListAccountRequest request, Pageable pageable);
 
     ApiResponse<Object> detail(String idAccount, Integer category);
+
+    ApiResponse<Object> suggestions(String key, Pageable pageable);
 }

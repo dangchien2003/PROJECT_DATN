@@ -34,6 +34,14 @@ public class RandomUtils {
     }
 
     public static String generateRandomCharacter(int length) {
+        return generateRandomCharacter(length, false);
+    }
+
+    public static String generatePassword(int length) {
+        return generateRandomCharacter(length, true);
+    }
+
+    public static String generateRandomCharacter(int length, boolean isPassword) {
         final String UPPER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         final String LOWER = "abcdefghijklmnopqrstuvwxyz";
         final String DIGITS = "0123456789";
@@ -41,13 +49,18 @@ public class RandomUtils {
 
         List<Character> passwordChars = new ArrayList<>();
 
+        String allChars = null;
         // Bắt buộc có ít nhất 1 ký tự từ mỗi nhóm
         passwordChars.add(UPPER.charAt(RANDOM.nextInt(UPPER.length())));
         passwordChars.add(LOWER.charAt(RANDOM.nextInt(LOWER.length())));
         passwordChars.add(DIGITS.charAt(RANDOM.nextInt(DIGITS.length())));
-        passwordChars.add(SPECIAL.charAt(RANDOM.nextInt(SPECIAL.length())));
+        if (isPassword) {
+            allChars = UPPER + LOWER + DIGITS;
+        } else {
+            passwordChars.add(SPECIAL.charAt(RANDOM.nextInt(SPECIAL.length())));
+            allChars = UPPER + LOWER + DIGITS + SPECIAL;
+        }
 
-        String allChars = UPPER + LOWER + DIGITS + SPECIAL;
 
         // Random ký ký tự còn lại
         for (int i = 4; i < length; i++) {
@@ -65,4 +78,13 @@ public class RandomUtils {
 
         return password.toString();
     }
+
+    public static String randomNumber(int length) {
+        StringBuilder otp = new StringBuilder();
+        for (int i = 0; i < length; i++) {
+            otp.append(RANDOM.nextInt(10));
+        }
+        return otp.toString();
+    }
+
 }

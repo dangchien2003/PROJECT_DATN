@@ -1,6 +1,5 @@
 package com.example.parking_service.dto.response;
 
-import com.example.common.dto.Coordinates;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -20,7 +19,8 @@ public class MapLocationResponse {
     String partnerFullName;
     String name;
     String address;
-    Coordinates coordinates;
+    Double coordinatesX;
+    Double coordinatesY;
     String linkGoogleMap;
     LocalTime openTime;
     LocalTime closeTime;

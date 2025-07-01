@@ -56,6 +56,8 @@ public interface AccountRepository extends JpaRepository<Account, String> {
 
     Optional<Account> findByIdAndCategory(String id, Integer category);
 
+    Optional<Account> findByIdAndStatus(String id, Integer category);
+
     Optional<Account> findByPartnerFullNameIgnoreCase(String partnerName);
 
     @Query("""
@@ -63,4 +65,22 @@ public interface AccountRepository extends JpaRepository<Account, String> {
                         where a.partnerFullName LIKE CONCAT('%', :partnerName, '%') ESCAPE '!'
             """)
     List<String> findAccountIdByPartnerFullName(@Param("partnerName") String partnerName);
+
+    @Query("""
+                   SELECT a from Account a where
+                   (:keyQuery IS NULL OR
+                       a.fullName LIKE CONCAT('%', :keyQuery, '%') ESCAPE '!'
+                       OR a.email LIKE CONCAT('%', :keyQuery, '%') ESCAPE '!'
+                       or a.phoneNumber LIKE CONCAT('%', :keyQuery, '%') ESCAPE '!'
+                   )
+                   AND a.status = :status
+                   AND a.publicAccount = :publicAccount
+            """)
+    Page<Account> getSuggestionsByKey(
+            @Param("keyQuery") String keyQuery,
+            @Param("publicAccount") int publicAccount,
+            @Param("status") Integer status,
+            Pageable pageable);
+
+    int countByIdInAndStatusAndPublicAccount(List<String> accounts, Integer status, Integer publicAccount);
 }

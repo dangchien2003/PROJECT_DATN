@@ -44,7 +44,8 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
     @Query(value = "SELECT " +
             "   l.location_id as locationId, " +
             "   l.name as name, " +
-            "   l.coordinates as coordinates, " +
+            "   l.coordinatesX as coordinatesX, " +
+            "   l.coordinatesY as coordinatesY, " +
             "   l.link_google_map as linkGoogleMap, " +
             "   l.status as status, " +
             "   l.modify_status as modifyStatus, " +
@@ -54,7 +55,7 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
             "LEFT JOIN account a ON a.id = l.partner_id " +
             "WHERE l.status = :status " +
             "AND (:partnerName IS NULL OR a.partner_full_name LIKE CONCAT('%', :partnerName, '%') ESCAPE '!') " +
-            "AND (:locationName IS NULL OR l.name = :locationName) " +
+            "AND (:locationName IS NULL OR l.name LIKE CONCAT('%', :locationName, '%') ESCAPE '!') " +
             "AND (:openTime IS NULL OR l.open_time = :openTime) " +
             "AND (:closeTime IS NULL OR l.close_time = :closeTime) " +
             "AND (:capacity IS NULL OR l.capacity = :capacity) " +
@@ -74,7 +75,7 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
             @Param("offset") int offset
     );
 
-    Page<Location> findAllByStatusAndCoordinatesNotNull(Integer status, Pageable pageable);
+    Page<Location> findAllByStatusAndCoordinatesXNotNullAndCoordinatesYNotNull(Integer status, Pageable pageable);
 
     Page<Location> findAllByStatusAndPartnerId(Integer status, String partnerId, Pageable pageable);
 
@@ -88,4 +89,22 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
     List<Long> findAllByNameAndPartnerId(
             @Param("name") String name,
             @Param("partnerIds") List<String> partnerIds);
+
+    @Query("""
+            SELECT l FROM Location l
+            WHERE
+            (:name is null or l.name LIKE CONCAT('%', :name, '%') ESCAPE '!')
+            and l.status = :status
+            """)
+    Page<Location> customerSearch(
+            @Param("name") String name,
+            @Param("status") Integer status,
+            Pageable pageable);
+
+    Page<Location> findByLocationIdInAndStatusIn(
+            List<Long> ids,
+            List<Integer> statusList,
+            Pageable pageable);
+
+    Optional<Location> findByLocationIdAndStatus(Long locationId, Integer status);
 }

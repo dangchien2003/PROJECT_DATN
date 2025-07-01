@@ -46,16 +46,18 @@ public class TicketWaitRelease extends BaseEntity {
     String rejectBy;
 
     String reasonReject;
-    
+
     Integer vehicle;
 
-    Integer timeSlot;
+    Long priceTimeSlot;
 
-    Integer daySlot;
+    Long priceDaySlot;
 
-    Integer weekSlot;
+    Long priceWeekSlot;
 
-    Integer monthSlot;
+    Long priceMonthSlot;
+
+    Integer countLocation;
 
     @Lob
     String description;

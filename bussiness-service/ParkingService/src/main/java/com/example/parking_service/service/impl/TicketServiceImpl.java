@@ -11,14 +11,16 @@ import com.example.common.utils.TimeUtil;
 import com.example.parking_service.ParkingServiceApplication;
 import com.example.parking_service.Specification.TicketSpecification;
 import com.example.parking_service.Specification.TicketWaitReleaseSpecification;
-import com.example.parking_service.dto.other.PriceTicket;
 import com.example.parking_service.dto.other.ScheduledJob;
 import com.example.parking_service.dto.other.ScheduledJobId;
 import com.example.parking_service.dto.request.ApproveRequest;
+import com.example.parking_service.dto.request.CustomerSearchTicket;
 import com.example.parking_service.dto.request.ModifyTicketRequest;
 import com.example.parking_service.dto.request.SearchTicket;
+import com.example.parking_service.dto.response.CustomerSearchLocationResponse;
+import com.example.parking_service.dto.response.CustomerTicketResponse;
 import com.example.parking_service.dto.response.DataSearchTicketResponse;
-import com.example.parking_service.dto.response.PriceResponse;
+import com.example.parking_service.dto.response.SearchTicketResponse;
 import com.example.parking_service.entity.*;
 import com.example.parking_service.enums.*;
 import com.example.parking_service.mapper.TicketMapper;
@@ -33,7 +35,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,7 +56,6 @@ public class TicketServiceImpl implements TicketService {
     AccountRepository accountRepository;
     LocationRepository locationRepository;
     TicketRepository ticketRepository;
-    TicketPriceRepository ticketPriceRepository;
     TicketLocationRepository ticketLocationRepository;
     TicketWaitReleaseRepository ticketWaitReleaseRepository;
     TicketSpecification ticketSpecification;
@@ -100,14 +103,6 @@ public class TicketServiceImpl implements TicketService {
         optionalTicketWaitRelease = ticketWaitReleaseRepository.save(optionalTicketWaitRelease);
         // xoá task nếu có
         schedulerService.removeTask(new ScheduledJobId(ModuleName.TICKET, optionalTicketWaitRelease.getId().toString()));
-        // xoá giá vé
-        List<TicketPrice> ticketPrices = ticketPriceRepository.findAllByObjectIdAndTypeAndIsDel(
-                optionalTicketWaitRelease.getTicketId(), TypeTicket.CHO_AP_DUNG.getValue(), IsDel.DELETE_NOT_YET.getValue());
-        for (TicketPrice item : ticketPrices) {
-            item.setIsDel(IsDel.DELETED.getValue());
-            DataUtils.setDataAction(item, actionBy, false);
-        }
-        ticketPriceRepository.saveAll(ticketPrices);
         // xoá địa điểm sử dụng
         List<TicketLocation> ticketLocations = ticketLocationRepository.findAllByObjectIdAndTypeAndIsDel(
                 optionalTicketWaitRelease.getTicketId(), TypeTicket.CHO_AP_DUNG.getValue(), IsDel.DELETE_NOT_YET.getValue());
@@ -132,9 +127,6 @@ public class TicketServiceImpl implements TicketService {
             throw new AppException(ErrorCode.NO_ACCESS);
         }
         DataSearchTicketResponse result = ticketMapper.toDataSearchTicketResponse(ticket);
-        // lấy thông tin giá vé
-        Map<String, TicketPrice> ticketPriceMap = getMapTicketPrice(TypeTicket.PHAT_HANH.getValue(), List.of(ticket.getTicketId()));
-        getTicketPriceResponse(ticketPriceMap, result);
         // lấy địa điểm áp dụng
         List<TicketLocation> ticketLocations = ticketLocationRepository
                 .findAllByObjectIdAndTypeAndIsDel(ticket.getTicketId(),
@@ -161,9 +153,6 @@ public class TicketServiceImpl implements TicketService {
             throw new AppException(ErrorCode.NO_ACCESS);
         }
         DataSearchTicketResponse result = ticketMapper.toDataSearchTicketResponse(ticketWaitRelease);
-        // lấy thông tin giá vé
-        Map<String, TicketPrice> ticketPriceMap = getMapTicketPrice(TypeTicket.CHO_AP_DUNG.getValue(), List.of(ticketWaitRelease.getId()));
-        getTicketPriceResponse(ticketPriceMap, result);
         // lấy địa điểm áp dụng
         List<TicketLocation> ticketLocations = ticketLocationRepository
                 .findAllByObjectIdAndTypeAndIsDel(ticketWaitRelease.getId(),
@@ -177,6 +166,70 @@ public class TicketServiceImpl implements TicketService {
         }
         return ApiResponse.builder()
                 .result(result)
+                .build();
+    }
+
+    @Override
+    public ApiResponse<Object> customerDetail(Long id) {
+        if (id == null) {
+            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Dữ liệu không xác định"));
+        }
+        // lấy dữ liệu
+        List<Integer> statusReturn = List.of(TicketStatus.DANG_PHAT_HANH, TicketStatus.CHO_PHAT_HANH);
+        Optional<Ticket> optionalTicket = ticketRepository.findById(id);
+        // kiểm tra trạng thái
+        if (optionalTicket.isEmpty()
+                || !statusReturn.contains(optionalTicket.get().getStatus())) {
+            throw new AppException(ErrorCode.NOT_FOUND);
+        }
+        Ticket ticket = optionalTicket.get();
+        // convert response
+        CustomerTicketResponse response = ticketMapper.toCustomerTicketResponse(ticket);
+        return ApiResponse.builder()
+                .result(response)
+                .build();
+    }
+
+    @Override
+    public ApiResponse<Object> locationUseTicket(Long id, Pageable pageable) {
+        if (id == null) {
+            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Dữ liệu không xác định"));
+        }
+        // kiểm tra sự tồn tại của vé
+        List<Integer> statusReturn = List.of(TicketStatus.DANG_PHAT_HANH, TicketStatus.CHO_PHAT_HANH);
+        boolean existTicket = ticketRepository.existsByTicketIdAndStatusIn(id, statusReturn);
+        if (!existTicket) {
+            throw new AppException(ErrorCode.NOT_FOUND);
+        }
+        // lấy địa điểm
+        List<TicketLocation> ticketLocations = ticketLocationRepository.findAllByObjectIdAndTypeAndIsDel(
+                id, TypeTicket.PHAT_HANH.getValue(), IsDel.DELETE_NOT_YET.getValue());
+        // tách id địa điểm
+        List<Long> locationIds = ticketLocations.stream().map(item -> item.getLocationId()).toList();
+        // lấy đầy đủ thông tin địa điểm
+        List<Integer> locationStatusReturn = List.of(
+                LocationStatus.DA_DUYET_DANG_HOAT_DONG.getValue(),
+                LocationStatus.CHO_DUYET.getValue());
+
+        Pageable pageableQuery = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                Sort.by(Sort.Direction.ASC, Location_.NAME)
+        );
+        Page<Location> locations = locationRepository.findByLocationIdInAndStatusIn(locationIds, locationStatusReturn, pageableQuery);
+        // địa điểm
+        List<CustomerSearchLocationResponse> locationResponses = locations.stream().map(
+                item -> CustomerSearchLocationResponse.builder()
+                        .locationId(item.getLocationId())
+                        .name(item.getName())
+                        .address(item.getAddress())
+                        .coordinatesX(item.getCoordinatesX())
+                        .coordinatesY(item.getCoordinatesY())
+                        .linkGoogleMap(item.getLinkGoogleMap())
+                        .build()
+        ).toList();
+        return ApiResponse.builder()
+                .result(new PageResponse<>(locationResponses, locations.getTotalPages(), locations.getTotalElements()))
                 .build();
     }
 
@@ -234,34 +287,22 @@ public class TicketServiceImpl implements TicketService {
             typeTicket = TypeTicket.PHAT_HANH.getValue();
         }
         List<String> listPartner = null;
-        if (partnerName != null) {
+        if (!DataUtils.isNullOrEmpty(partnerName)) {
             listPartner = accountRepository.findAccountIdByPartnerFullName(partnerName);
-        }
-        // lấy danh sách id nếu có giá
-        List<Long> listIds = null;
-        if (price != null) {
-            listIds = ticketPriceRepository.findAllByTypeAndPriceCategoryAndPrice(typeTicket,
-                    request.getPriceCategory(), price, trendPrice, listPartner);
         }
         // lấy danh sách id nếu có tên địa điểm
         List<Long> listIdWithLocation = null;
-        if (locationName != null) {
-            listIdWithLocation = locationRepository.findAllByNameAndPartnerId(locationName, listPartner);
-            if (!listIdWithLocation.isEmpty()) {
+        List<Long> listLocationId = null;
+        if (!DataUtils.isNullOrEmpty(locationName)) {
+            listLocationId = locationRepository.findAllByNameAndPartnerId(locationName, listPartner);
+            if (!listLocationId.isEmpty()) {
                 listIdWithLocation = ticketLocationRepository
-                        .findByObjectIdAndTypeAndPartnerId(listIdWithLocation, typeTicket);
+                        .findByLocationIdsAndType(listIdWithLocation, typeTicket);
             }
         }
-        // biến đổi danh sách id
-        if (listIds != null && listIdWithLocation != null) {
-            // lấy id chung nếu cả 2 đề có bản ghi
-            listIds.retainAll(listIdWithLocation);
-        } else if (listIds == null && listIdWithLocation != null) {
-            // chuyển id lấy từ địa điểm nếu không tìm theo giá
-            listIds = listIdWithLocation;
-        }
-        // không tìm theo đối tác nếu có tìm theo id
-        if (listIds != null && !listIds.isEmpty()) {
+
+        // không tìm theo đối tác nếu có tìm theo tên địa điểm
+        if (listIdWithLocation != null && !listIdWithLocation.isEmpty()) {
             listPartner = null;
         }
 
@@ -277,8 +318,11 @@ public class TicketServiceImpl implements TicketService {
                     releaseTime,
                     trendReleaseTime,
                     request.getVehicle(),
-                    listIds,
+                    listIdWithLocation,
                     listPartner,
+                    price,
+                    trendPrice,
+                    request.getPriceCategory(),
                     request.getTab().equals(4)
             );
 
@@ -287,16 +331,8 @@ public class TicketServiceImpl implements TicketService {
             // gán dữ liệu trang
             totalElement = ticketWaitReleases.getTotalElements();
             totalPage = ticketWaitReleases.getTotalPages();
-            // map giá vé với bản ghi
-            ids = ticketWaitReleases.stream().map(TicketWaitRelease::getId).toList();
-            Map<String, TicketPrice> ticketPriceMap = getMapTicketPrice(typeTicket, ids);
             // chuyển thành kết quả trả về
-            result = ticketWaitReleases.stream().map(item -> {
-                DataSearchTicketResponse dataSearchTicketResponse = ticketMapper.toDataSearchTicketResponse(item);
-                // chèn giá vào bản ghi
-                getTicketPriceResponse(ticketPriceMap, dataSearchTicketResponse);
-                return dataSearchTicketResponse;
-            }).toList();
+            result = ticketWaitReleases.stream().map(ticketMapper::toDataSearchTicketResponse).toList();
         } else {
             pageable = DataUtils.convertPageable(pageable, Ticket_.TICKET_ID);
             Specification<Ticket> spec = ticketSpecification.adminSearch(
@@ -306,8 +342,11 @@ public class TicketServiceImpl implements TicketService {
                     releaseTime,
                     trendReleaseTime,
                     request.getVehicle(),
-                    listIds,
-                    listPartner
+                    listIdWithLocation,
+                    listPartner,
+                    price,
+                    trendPrice,
+                    request.getPriceCategory()
             );
 
             // lấy vé đã phát hành
@@ -315,16 +354,8 @@ public class TicketServiceImpl implements TicketService {
             // gán dữ liệu trang
             totalElement = tickets.getTotalElements();
             totalPage = tickets.getTotalPages();
-            // map giá vé với bản ghi
-            ids = tickets.stream().map(Ticket::getTicketId).toList();
-            Map<String, TicketPrice> ticketPriceMap = getMapTicketPrice(typeTicket, ids);
             // chuyển thành kết quả trả về
-            result = tickets.stream().map(item -> {
-                DataSearchTicketResponse dataSearchTicketResponse = ticketMapper.toDataSearchTicketResponse(item);
-                // chèn giá vào bản ghi
-                getTicketPriceResponse(ticketPriceMap, dataSearchTicketResponse);
-                return dataSearchTicketResponse;
-            }).toList();
+            result = tickets.stream().map(ticketMapper::toDataSearchTicketResponse).toList();
         }
         // lấy thông tin đối tác
         List<String> partnerId = result.stream().map(DataSearchTicketResponse::getPartnerId).toList();
@@ -386,28 +417,14 @@ public class TicketServiceImpl implements TicketService {
         } else {
             typeTicket = TypeTicket.PHAT_HANH.getValue();
         }
-        // lấy danh sách id nếu có giá
-        List<Long> listIds = null;
-        if (price != null) {
-            listIds = ticketPriceRepository.findAllByTypeAndPriceCategoryAndPrice(typeTicket,
-                    request.getPriceCategory(), price, trendPrice, List.of(partnerId));
-        }
         // lấy danh sách id nếu có tên địa điểm
         List<Long> listIdWithLocation = null;
         if (locationName != null) {
             listIdWithLocation = locationRepository.findAllByNameAndPartnerId(locationName, List.of(partnerId));
             if (!listIdWithLocation.isEmpty()) {
                 listIdWithLocation = ticketLocationRepository
-                        .findByObjectIdAndTypeAndPartnerId(listIdWithLocation, typeTicket);
+                        .findByLocationIdsAndType(listIdWithLocation, typeTicket);
             }
-        }
-        // biến đổi danh sách id
-        if (listIds != null && listIdWithLocation != null) {
-            // lấy id chung nếu cả 2 đề có bản ghi
-            listIds.retainAll(listIdWithLocation);
-        } else if (listIds == null && listIdWithLocation != null) {
-            // chuyển id lấy từ địa điểm nếu không tìm theo giá
-            listIds = listIdWithLocation;
         }
 
         List<Long> ids;
@@ -422,23 +439,18 @@ public class TicketServiceImpl implements TicketService {
                     releaseTime,
                     trendReleaseTime,
                     request.getVehicle(),
-                    listIds,
-                    partnerId
+                    listIdWithLocation,
+                    partnerId,
+                    price,
+                    trendPrice,
+                    request.getPriceCategory()
             );
             Page<TicketWaitRelease> ticketWaitReleases = ticketWaitReleaseRepository.findAll(spec, pageable);
             // gán dữ liệu trang
             totalElement = ticketWaitReleases.getTotalElements();
             totalPage = ticketWaitReleases.getTotalPages();
-            // map giá vé với bản ghi
-            ids = ticketWaitReleases.stream().map(TicketWaitRelease::getId).toList();
-            Map<String, TicketPrice> ticketPriceMap = getMapTicketPrice(typeTicket, ids);
             // chuyển thành kết quả trả về
-            result = ticketWaitReleases.stream().map(item -> {
-                DataSearchTicketResponse dataSearchTicketResponse = ticketMapper.toDataSearchTicketResponse(item);
-                // chèn giá vào bản ghi
-                getTicketPriceResponse(ticketPriceMap, dataSearchTicketResponse);
-                return dataSearchTicketResponse;
-            }).toList();
+            result = ticketWaitReleases.stream().map(ticketMapper::toDataSearchTicketResponse).toList();
         } else {
             pageable = DataUtils.convertPageable(pageable, Ticket_.TICKET_ID);
             Specification<Ticket> spec = ticketSpecification.partnerSearch(
@@ -448,65 +460,23 @@ public class TicketServiceImpl implements TicketService {
                     releaseTime,
                     trendReleaseTime,
                     request.getVehicle(),
-                    listIds,
-                    partnerId
+                    listIdWithLocation,
+                    partnerId,
+                    price,
+                    trendPrice,
+                    request.getPriceCategory()
             );
             Page<Ticket> tickets = ticketRepository.findAll(spec, pageable);
             // gán dữ liệu trang
             totalElement = tickets.getTotalElements();
             totalPage = tickets.getTotalPages();
-            // map giá vé với bản ghi
-            ids = tickets.stream().map(Ticket::getTicketId).toList();
-            Map<String, TicketPrice> ticketPriceMap = getMapTicketPrice(typeTicket, ids);
             // chuyển thành kết quả trả về
-            result = tickets.stream().map(item -> {
-                DataSearchTicketResponse dataSearchTicketResponse = ticketMapper.toDataSearchTicketResponse(item);
-                // chèn giá vào bản ghi
-                getTicketPriceResponse(ticketPriceMap, dataSearchTicketResponse);
-                return dataSearchTicketResponse;
-            }).toList();
+            result = tickets.stream().map(ticketMapper::toDataSearchTicketResponse).toList();
         }
 
         return ApiResponse.builder()
                 .result(new PageResponse<>(result, totalPage, totalElement))
                 .build();
-    }
-
-    private void getTicketPriceResponse(Map<String, TicketPrice> ticketPriceMap, DataSearchTicketResponse dataSearchTicketResponse) {
-        // lấy ra từ khoá đầu tiên của key
-        Long keyPrefix;
-        if (dataSearchTicketResponse.getId() != null) {
-            keyPrefix = dataSearchTicketResponse.getId();
-        } else {
-            keyPrefix = dataSearchTicketResponse.getTicketId();
-        }
-        // kiểm tra và chèn giá trị
-        PriceResponse priceResponse = new PriceResponse();
-        if (dataSearchTicketResponse.isTimeSlot()) {
-            TicketPrice ticketPrice = ticketPriceMap.get(keyPrefix + "-" + PriceCategory.TIME);
-            priceResponse.setTime(ticketMapper.toTicketPriceResponse(ticketPrice));
-        }
-        if (dataSearchTicketResponse.isDaySlot()) {
-            TicketPrice ticketPrice = ticketPriceMap.get(keyPrefix + "-" + PriceCategory.DAY);
-            priceResponse.setDay(ticketMapper.toTicketPriceResponse(ticketPrice));
-        }
-        if (dataSearchTicketResponse.isWeekSlot()) {
-            TicketPrice ticketPrice = ticketPriceMap.get(keyPrefix + "-" + PriceCategory.WEEK);
-            priceResponse.setWeek(ticketMapper.toTicketPriceResponse(ticketPrice));
-        }
-        if (dataSearchTicketResponse.isMonthSlot()) {
-            TicketPrice ticketPrice = ticketPriceMap.get(keyPrefix + "-" + PriceCategory.MONTH);
-            priceResponse.setMonth(ticketMapper.toTicketPriceResponse(ticketPrice));
-        }
-        dataSearchTicketResponse.setPrice(priceResponse);
-    }
-
-    private Map<String, TicketPrice> getMapTicketPrice(Integer type, List<Long> objectIds) {
-        // call lấy giá vé và chuyển thành dạng map
-        List<TicketPrice> ticketPrices = ticketPriceRepository
-                .findAllByObjectIdInAndTypeAndIsDel(objectIds, type, IsDel.DELETE_NOT_YET.getValue());
-        return ticketPrices.stream().collect(
-                Collectors.toMap(item -> item.getObjectId() + "-" + item.getPriceCategory(), item -> item));
     }
 
     @Override
@@ -537,10 +507,9 @@ public class TicketServiceImpl implements TicketService {
             ticketWaitRelease.setPartnerId(partnerId);
             ticketWaitRelease.setModifyCount(TicketModifyStatus.CHO_AP_DUNG);
             ticketWaitRelease.setStatus(TicketStatus.CHO_PHAT_HANH);
+            ticketWaitRelease.setCountLocation(request.getLocationUse().size());
             DataUtils.setDataAction(ticketWaitRelease, partnerId, true);
             ticketWaitRelease = ticketWaitReleaseRepository.save(ticketWaitRelease);
-            // lưu giá
-            savePrice(request, ticketWaitRelease, partnerId);
             // lưu địa điểm
             saveLocationUse(request, ticketWaitRelease, partnerId);
         } else {
@@ -558,11 +527,10 @@ public class TicketServiceImpl implements TicketService {
             // set data
             ticketWaitRelease.setIsDel(IsDel.DELETE_NOT_YET.getValue());
             ticketWaitRelease.setReleased(Release.RELEASE_NOT_YET.getValue());
+            ticketWaitRelease.setCountLocation(request.getLocationUse().size());
             DataUtils.setDataAction(ticketWaitRelease, partnerId, true);
             // lưu bản ghi
             ticketWaitRelease = ticketWaitReleaseRepository.save(ticketWaitRelease);
-            // lưu giá chờ áp dụng
-            savePrice(request, ticketWaitRelease, partnerId);
             // lưu địa điểm chờ áp dụng
             saveLocationUse(request, ticketWaitRelease, partnerId);
         }
@@ -590,79 +558,6 @@ public class TicketServiceImpl implements TicketService {
             ticketLocations.add(ticketLocation);
         }
         ticketLocationRepository.saveAll(ticketLocations);
-    }
-
-    private void savePrice(ModifyTicketRequest request, TicketWaitRelease ticketWaitRelease, String actionBy) {
-        PriceTicket priceTicket = request.getPrice();
-        List<TicketPrice> ticketPrices = new ArrayList<>();
-        if (request.isTimeSlot()) {
-            if (priceTicket.getTime() == null) {
-                throw new AppException(ErrorCode.INVALID_DATA.withMessage("Giá vé giờ không được để trống"));
-            } else {
-                TicketPrice ticketPrice = TicketPrice.builder()
-                        .objectId(ticketWaitRelease.getId())
-                        .type(TypeTicket.CHO_AP_DUNG.getValue())
-                        .price(priceTicket.getTime())
-                        .priceCategory(PriceCategory.TIME)
-                        .isDel(IsDel.DELETE_NOT_YET.getValue())
-                        .partnerId(actionBy)
-                        .build();
-                DataUtils.setDataAction(ticketPrice, actionBy, true);
-                ticketPrices.add(ticketPrice);
-            }
-        }
-
-        if (request.isDaySlot()) {
-            if (priceTicket.getDay() == null) {
-                throw new AppException(ErrorCode.INVALID_DATA.withMessage("Giá vé ngày không được để trống"));
-            } else {
-                TicketPrice ticketPrice = TicketPrice.builder()
-                        .objectId(ticketWaitRelease.getId())
-                        .type(TypeTicket.CHO_AP_DUNG.getValue())
-                        .price(priceTicket.getDay())
-                        .priceCategory(PriceCategory.DAY)
-                        .partnerId(actionBy)
-                        .isDel(IsDel.DELETE_NOT_YET.getValue())
-                        .build();
-                DataUtils.setDataAction(ticketPrice, actionBy, true);
-                ticketPrices.add(ticketPrice);
-            }
-        }
-
-        if (request.isWeekSlot()) {
-            if (priceTicket.getWeek() == null) {
-                throw new AppException(ErrorCode.INVALID_DATA.withMessage("Giá vé tuần không được để trống"));
-            } else {
-                TicketPrice ticketPrice = TicketPrice.builder()
-                        .objectId(ticketWaitRelease.getId())
-                        .type(TypeTicket.CHO_AP_DUNG.getValue())
-                        .price(priceTicket.getWeek())
-                        .partnerId(actionBy)
-                        .priceCategory(PriceCategory.WEEK)
-                        .isDel(IsDel.DELETE_NOT_YET.getValue())
-                        .build();
-                DataUtils.setDataAction(ticketPrice, actionBy, true);
-                ticketPrices.add(ticketPrice);
-            }
-        }
-
-        if (request.isMonthSlot()) {
-            if (priceTicket.getMonth() == null) {
-                throw new AppException(ErrorCode.INVALID_DATA.withMessage("Giá vé ngày không được để trống"));
-            } else {
-                TicketPrice ticketPrice = TicketPrice.builder()
-                        .objectId(ticketWaitRelease.getId())
-                        .type(TypeTicket.CHO_AP_DUNG.getValue())
-                        .price(priceTicket.getMonth())
-                        .priceCategory(PriceCategory.MONTH)
-                        .partnerId(actionBy)
-                        .isDel(IsDel.DELETE_NOT_YET.getValue())
-                        .build();
-                DataUtils.setDataAction(ticketPrice, actionBy, true);
-                ticketPrices.add(ticketPrice);
-            }
-        }
-        ticketPriceRepository.saveAll(ticketPrices);
     }
 
     @Override
@@ -734,16 +629,6 @@ public class TicketServiceImpl implements TicketService {
             DataUtils.setDataAction(ticket, actionBy, DataUtils.isNullOrEmpty(ticketWaitRelease.getTicketId()));
             // lưu dữ liệu
             ticket = ticketRepository.save(ticket);
-            // update giá vé
-            List<TicketPrice> ticketPrices = ticketPriceRepository
-                    .findAllByObjectIdAndTypeAndIsDel(ticketWaitRelease.getId(), TypeTicket.CHO_AP_DUNG.getValue(), IsDel.DELETE_NOT_YET.getValue());
-            for (TicketPrice ticketPrice : ticketPrices) {
-                ticketPrice.setId(null);
-                ticketPrice.setObjectId(ticket.getTicketId());
-                ticketPrice.setType(TypeTicket.PHAT_HANH.getValue());
-                DataUtils.setDataAction(ticketPrice, "schedule", true);
-            }
-            ticketPriceRepository.saveAll(ticketPrices);
             // update đia điểm sử dụng
             List<TicketLocation> ticketLocations = ticketLocationRepository
                     .findAllByObjectIdAndTypeAndIsDel(ticketWaitRelease.getId(), TypeTicket.CHO_AP_DUNG.getValue(), IsDel.DELETE_NOT_YET.getValue());
@@ -765,5 +650,33 @@ public class TicketServiceImpl implements TicketService {
                 log.error("lỗi rollback dữ liệu(LocationWaitRelease): " + beforeUpdate);
             }
         }
+    }
+
+    @Override
+    public ApiResponse<Object> search(CustomerSearchTicket request, Pageable pageable) {
+        Pageable pageQuery = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                Sort.by(Sort.Direction.ASC, Ticket_.NAME));
+        if (request.getLocationId() == null) {
+            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Không tìm thấy địa điểm"));
+        }
+        if (request.getTicketCategory() != null && !PriceCategory.ALL_CATEGORY.contains(request.getTicketCategory())) {
+            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Loại vé không phù hợp"));
+        }
+        List<Long> ticketIds = ticketLocationRepository.findByLocationIdsAndType(List.of(request.getLocationId()), TypeTicket.PHAT_HANH.getValue());
+        // khi khng tìm thấy vé nào
+        if (ticketIds.isEmpty()) {
+            return ApiResponse.builder()
+                    .result(new PageResponse<>(new ArrayList<>(), 0, 0))
+                    .build();
+        }
+        Specification<Ticket> specification = ticketSpecification.search(request.getVehicle(), request.getTicketCategory(), ticketIds);
+        // Lấy thông tin vé
+        Page<Ticket> tickets = ticketRepository.findAll(specification, pageQuery);
+        List<SearchTicketResponse> result = tickets.map(ticketMapper::toSearchTicketResponse).stream().toList();
+        return ApiResponse.builder()
+                .result(new PageResponse<>(result, tickets.getTotalPages(), tickets.getTotalElements()))
+                .build();
     }
 }

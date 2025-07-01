@@ -147,10 +147,6 @@ public class LocationModifyServiceImpl implements LocationModifyService {
         // gắn thêm data
         entityModify.setPartnerId(actionBy);
         entityModify.setModifyStatus(LocationModifyStatus.CHO_DUYET.getValue());
-        if (!DataUtils.isNullOrEmpty(request.getCoordinates().getX())
-                && !DataUtils.isNullOrEmpty(request.getCoordinates().getY())) {
-            entityModify.setCoordinates(objectMapper.writeValueAsString(request.getCoordinates()));
-        }
         entityModify.setIsDel(IsDel.DELETE_NOT_YET.getValue());
         // action
         if (DataUtils.isNullOrEmpty(location) && !DataUtils.isNullOrEmpty(request.getLocationId())) {

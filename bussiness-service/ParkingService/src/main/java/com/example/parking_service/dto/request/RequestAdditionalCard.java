@@ -1,5 +1,6 @@
-package com.example.parking_service.dto.other;
+package com.example.parking_service.dto.request;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,9 +11,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class PriceTicket {
-    Long time;
-    Long day;
-    Long week;
-    Long month;
+public class RequestAdditionalCard {
+    @NotBlank(message = "Không được để trống lý do yêu cầu")
+    String reason;
 }
