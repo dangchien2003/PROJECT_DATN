@@ -31,7 +31,14 @@ public class TicketPurchased extends BaseEntity {
     @Column(nullable = false)
     Long ticketId;
 
+    @Column(nullable = false)
+    Long locationId;
+
     Long price;
+
+    Integer timeExtend;
+
+    Integer timeUnitExtend;
 
     @Column(columnDefinition = "0")
     Long priceExtend;
@@ -42,6 +49,12 @@ public class TicketPurchased extends BaseEntity {
     Integer status;
 
     String reason;
+
+    @Column(nullable = false)
+    Integer useStatus;
+
+    @Column(columnDefinition = "0")
+    Long usedTimes;
 
     LocalDateTime startsValidity;
 

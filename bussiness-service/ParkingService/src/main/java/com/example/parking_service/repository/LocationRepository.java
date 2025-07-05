@@ -1,6 +1,7 @@
 package com.example.parking_service.repository;
 
 import com.example.parking_service.dto.response.AdminSearchLocationResponse;
+import com.example.parking_service.dto.response.LocationNameDTO;
 import com.example.parking_service.entity.Location;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -107,4 +108,14 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
             Pageable pageable);
 
     Optional<Location> findByLocationIdAndStatus(Long locationId, Integer status);
+
+    @Query("SELECT l.locationId from Location l where l.name LIKE CONCAT('%', :name, '%') ESCAPE '!'")
+    List<Long> getListIdByName(@Param("name") String name);
+
+    @Query(""" 
+            select new com.example.parking_service.dto.response.LocationNameDTO(l.locationId, l.name, l.address) 
+            from Location l
+            where l.locationId in(:ids)
+            """)
+    List<LocationNameDTO> getNameDto(@Param("ids") List<Long> ids);
 }

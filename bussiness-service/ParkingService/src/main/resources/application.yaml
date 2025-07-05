@@ -41,3 +41,6 @@ auth:
     length-otp: 6
     time-quality: 1
     time-unit: m
+crypto:
+  AES:
+    AES-SECRET_KEY: ${AES-SECRET_KEY:1234567890abcdef}
