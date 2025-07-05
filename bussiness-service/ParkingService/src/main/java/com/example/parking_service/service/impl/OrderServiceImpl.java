@@ -6,12 +6,14 @@ import com.example.common.exception.AppException;
 import com.example.common.exception.ErrorCode;
 import com.example.common.utils.DataUtils;
 import com.example.parking_service.ParkingServiceApplication;
+import com.example.parking_service.dto.other.TicketQr;
 import com.example.parking_service.dto.request.ConfirmOrderRequest;
 import com.example.parking_service.dto.request.CreateOrderRequest;
 import com.example.parking_service.dto.response.CreateOrderResponse;
 import com.example.parking_service.entity.*;
 import com.example.parking_service.enums.*;
 import com.example.parking_service.repository.*;
+import com.example.parking_service.service.CryptoService;
 import com.example.parking_service.service.OrderService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -28,6 +30,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -43,6 +46,7 @@ public class OrderServiceImpl implements OrderService {
     PaymentRepository paymentRepository;
     TicketPurchasedRepository ticketPurchasedRepository;
     ObjectMapper objectMapper;
+    CryptoService crypto;
 
     @Override
     public ApiResponse<Object> order(CreateOrderRequest request) throws JsonProcessingException {
@@ -280,17 +284,32 @@ public class OrderServiceImpl implements OrderService {
         if (order.getExtendTicketId() == null) {
             // mua cho bản thân
             if (order.getOwners() == null) {
-                TicketPurchased ticketPurchased = TicketPurchased.builder()
+
+                String id = UUID.randomUUID().toString();
+                TicketQr ticketQr = TicketQr.builder()
                         .accountId(order.getPaymentBy())
-                        .ticketId(order.getTicketId())
-                        .price(order.getTotal())
-                        .status(TicketPurchasedStatus.BINH_THUONG)
-                        .startsValidity(order.getStart())
-                        .expires(order.getExpire())
-                        .qrCode("")
-                        .createdQrCodeCount(1)
-                        .permitEditContentPlate(PermitEditContentPlate.CO)
+                        .ticketId(id)
+                        .createdAt(LocalDateTime.now())
                         .build();
+                TicketPurchased ticketPurchased = null;
+                try {
+                    ticketPurchased = TicketPurchased.builder()
+                            .accountId(order.getPaymentBy())
+                            .ticketId(order.getTicketId())
+                            .locationId(order.getLocationId())
+                            .price(order.getTotal())
+                            .status(TicketPurchasedStatus.BINH_THUONG)
+                            .useStatus(TicketPurchasedUseStatus.KHONG_SU_DUNG)
+                            .startsValidity(order.getStart())
+                            .expires(order.getExpire())
+                            .qrCode(crypto.encrypt(objectMapper.writeValueAsString(ticketQr)))
+                            .createdQrCodeCount(1)
+                            .permitEditContentPlate(PermitEditContentPlate.CO)
+                            .usedTimes(0L)
+                            .build();
+                } catch (JsonProcessingException e) {
+                    throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
+                }
                 DataUtils.setDataAction(ticketPurchased, order.getPaymentBy(), true);
                 ticketPurchasedSave.add(ticketPurchased);
             } else {
@@ -298,17 +317,32 @@ public class OrderServiceImpl implements OrderService {
                 List<String> owners = objectMapper.convertValue(order.getOwners(), new TypeReference<List<String>>() {
                 });
                 ticketPurchasedSave = owners.stream().map(item -> {
-                    TicketPurchased ticketPurchased = TicketPurchased.builder()
+                    String id = UUID.randomUUID().toString();
+                    TicketQr ticketQr = TicketQr.builder()
                             .accountId(item)
-                            .ticketId(order.getTicketId())
-                            .price(order.getTotal())
-                            .status(TicketPurchasedStatus.BINH_THUONG)
-                            .startsValidity(order.getStart())
-                            .expires(order.getExpire())
-                            .qrCode("")
-                            .createdQrCodeCount(1)
-                            .permitEditContentPlate(PermitEditContentPlate.CO)
+                            .ticketId(id)
+                            .createdAt(LocalDateTime.now())
                             .build();
+                    TicketPurchased ticketPurchased = null;
+                    try {
+                        ticketPurchased = TicketPurchased.builder()
+                                .id(id)
+                                .accountId(item)
+                                .ticketId(order.getTicketId())
+                                .locationId(order.getLocationId())
+                                .price(order.getTotal())
+                                .status(TicketPurchasedStatus.BINH_THUONG)
+                                .useStatus(TicketPurchasedUseStatus.KHONG_SU_DUNG)
+                                .startsValidity(order.getStart())
+                                .expires(order.getExpire())
+                                .qrCode(crypto.encrypt(objectMapper.writeValueAsString(ticketQr)))
+                                .createdQrCodeCount(1)
+                                .permitEditContentPlate(PermitEditContentPlate.CO)
+                                .usedTimes(0L)
+                                .build();
+                    } catch (JsonProcessingException e) {
+                        throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
+                    }
                     DataUtils.setDataAction(ticketPurchased, order.getPaymentBy(), true);
                     return ticketPurchased;
                 }).toList();

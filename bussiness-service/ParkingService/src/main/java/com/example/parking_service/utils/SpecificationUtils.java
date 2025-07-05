@@ -34,7 +34,7 @@ public class SpecificationUtils {
                                   List<Predicate> predicates,
                                   String fieldName,
                                   Collection<T> values) {
-        if (values == null || values.isEmpty()) return;
+        if (values == null) return;
         Path<T> path = root.get(fieldName);
         CriteriaBuilder.In<T> inClause = cb.in(path);
         for (T value : values) {
