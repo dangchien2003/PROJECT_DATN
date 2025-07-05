@@ -38,6 +38,12 @@ export const PARKING_SERVICE = {
     adminCancelRelease: "ticket/admin/cancel/wait-release",
     checkExistWaitRelease: "ticket/check-exist-wait-release",
   },
+  ticketPurchased: {
+    customerSearch: "purchased/customer/search",
+    getQrCode: "purchased/get-qr",
+    refreshQr: "purchased/new-qr",
+    detail: "purchased/detail",
+  },
   authen: {
     login: "auth/sign-in",
     checkAccess: "auth/check-token", 

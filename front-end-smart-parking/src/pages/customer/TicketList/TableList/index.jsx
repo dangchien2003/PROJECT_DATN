@@ -1,19 +1,20 @@
 import ButtonStatus from "@/components/ButtonStatus";
 import ModalCustom from "@/components/ModalCustom";
 import QrTicket from "@/components/QrTicket";
+import { getTicketPurchased } from "@/service/ticketPurchasedService";
 import { setSearching } from "@/store/startSearchSlice";
-import { convertDataSort } from "@/utils/api";
+import { getDataApi } from "@/utils/api";
 import { TICKET_PURCHASED_STATUS } from "@/utils/constants";
 import { convertDataSelectboxToObject } from "@/utils/object";
 import { showTotal } from "@/utils/table";
 import { formatTimestamp } from "@/utils/time";
+import { toastError } from "@/utils/toast";
 import { Table, Tooltip } from "antd";
 import { useEffect, useState } from "react";
 import { FaEye } from "react-icons/fa6";
 import { LiaQrcodeSolid } from "react-icons/lia";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { dataResponse } from "./fakedata";
 
 const baseColumns = [
   {
@@ -24,17 +25,24 @@ const baseColumns = [
     width: 1,
   },
   {
-    title: "Tên vé",
-    dataIndex: "name",
+    title: "Mã vé",
+    dataIndex: "id",
     key: "1",
-    sorter: true,
     width: 200,
+    align: "left"
+  },
+  {
+    title: "Tên vé",
+    dataIndex: "ticketName",
+    key: "1",
+    width: 200,
+    align: "left"
   },
   {
     title: "Ngày mua",
     dataIndex: "createdTime",
     key: "2",
-    sorter: true,
+    // sorter: true,
     width: 120,
     align: "center"
   },
@@ -43,7 +51,7 @@ const baseColumns = [
     dataIndex: "statusPrint",
     key: "3",
     width: 120,
-    sorter: true,
+    // sorter: true,
     align: "left"
   },
   {
@@ -51,7 +59,7 @@ const baseColumns = [
     dataIndex: "expireTime",
     key: "4",
     sorter: false,
-    width: 120,
+    width: 200,
     align: "left"
   },
   {
@@ -64,17 +72,11 @@ const baseColumns = [
   }
 ];
 
-const mapFieldSort = {
-  createdDate: "createdAt",
-  timeAppliedEditPrint: "timeAppliedEdit",
-  namePrint: "name",
-}
-
 const ticketPurchasedStatus = convertDataSelectboxToObject(TICKET_PURCHASED_STATUS);
 const TableList = ({ dataSearch }) => {
   const { isSearching } = useSelector(state => state.startSearch)
   const dispatch = useDispatch();
-  const [columns, setColumns] = useState(baseColumns);
+  // const [columns, setColumns] = useState(baseColumns);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [firstSearch, setFirstSearch] = useState(false);
@@ -84,72 +86,43 @@ const TableList = ({ dataSearch }) => {
     pageSize: 10,
     total: 0,
   });
-  const [sorter] = useState({
-    field: null,
-    order: null,
-  });
 
-  useEffect(() => {
-    console.log(dataSearch)
-    // eslint-disable-next-line react-hooks/exhaustive-deps 
-  }, [dataSearch.tab])
-
-  const loadData = (newPagination, sorter) => {
+  const loadData = (newPagination) => {
     setLoading(true);
-    setData([])
-
-    setTimeout(() => {
-      const data = dataResponse.data;
-      const total = dataResponse.totalElements;
-      setData(
-        convertResponseToDataTable(
-          data,
-          newPagination.current,
-          newPagination.pageSize
-        )
-      );
-      setPagination({
-        ...newPagination,
-        total: total,
+    setData([]);
+    getTicketPurchased(dataSearch, newPagination.current - 1, newPagination.pageSize)
+      .then((response) => {
+        const data = getDataApi(response);
+        const total = data.totalElements;
+        setData(
+          convertResponseToDataTable(
+            data.data,
+            newPagination.current,
+            newPagination.pageSize
+          )
+        );
+        setPagination({
+          ...newPagination,
+          total: total,
+        });
+      })
+      .catch((error) => {
+        error = getDataApi(error);
+        toastError(error.message)
+      })
+      .finally(() => {
+        setLoading(false);
+        dispatch(setSearching(false))
       });
-      setLoading();
-      dispatch(setSearching(false));
-    }, 1000)
-
-    // adminSearchWaitApprove(dataSearch, newPagination.current - 1, newPagination.pageSize, sorter.field, sorter.order)
-    //   .then((response) => {
-    //     const data = getDataApi(response);
-    //     const total = response.data?.result?.totalElements;
-    //     setData(
-    //       convertResponseToDataTable(
-    //         data,
-    //         newPagination.current,
-    //         newPagination.pageSize
-    //       )
-    //     );
-    //     setPagination({
-    //       ...newPagination,
-    //       total: total,
-    //     });
-    //   })
-    //   .catch((error) => {
-    //     error = getDataApi(error);
-    //     toastError(error.message)
-    //   })
-    //   .finally(() => {
-    //     setLoading(false);
-    //     dispatch(setSearching(false))
-    //   });
   };
 
   const handleTableChange = (newPagination, _, sorter) => {
-    convertDataSort(sorter, mapFieldSort)
     loadData(newPagination, sorter);
   };
 
   useEffect(() => {
     if (isSearching || !firstSearch) {
-      loadData(pagination, sorter);
+      loadData(pagination);
       if (!firstSearch) {
         setFirstSearch(true)
       }
@@ -172,7 +145,9 @@ const TableList = ({ dataSearch }) => {
         <div>Từ: {formatTimestamp(item.startsValidity, "DD/MM/YYYY HH:mm:ss")}</div>
         <div>Đến: {formatTimestamp(item.expires, "DD/MM/YYYY HH:mm:ss")}</div>
       </div>
-      item.statusPrint = <ButtonStatus color={ticketPurchasedStatus[item.status].color} label={ticketPurchasedStatus[item.status].label} />
+      item.statusPrint = <ButtonStatus 
+      color={ticketPurchasedStatus[item.status].color} 
+      label={ticketPurchasedStatus[item.status].label} />
       item.action = (
         <div style={{ display: "flex", gap: 16, alignItems: "center", justifyContent: "center" }}>
           <Tooltip title="Chi tiết">
@@ -180,7 +155,7 @@ const TableList = ({ dataSearch }) => {
               <FaEye style={{ fontSize: 21, cursor: 'pointer' }} />
             </Link>
           </Tooltip>
-          {(dataSearch.tab !== 4 && dataSearch.tab !== 3) && <Tooltip title="Xem mã">
+          {(dataSearch.tab !== "4" && dataSearch.tab !== "3") && <Tooltip title="Xem mã">
             <div onClick={() => { handleShowQr(item) }}>
               <LiaQrcodeSolid style={{ fontSize: 24, cursor: 'pointer' }} />
             </div>
@@ -195,7 +170,7 @@ const TableList = ({ dataSearch }) => {
   return (
     <>
       <Table
-        columns={columns}
+        columns={baseColumns}
         dataSource={data}
         rowKey="id"
         loading={loading}

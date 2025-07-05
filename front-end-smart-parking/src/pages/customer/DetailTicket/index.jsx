@@ -1,25 +1,90 @@
 import ChildContent from '@/components/layout/Customer/ChildContent';
+import LoadingComponent from '@/components/LoadingComponent';
 import ModalCustom from '@/components/ModalCustom';
 import QrTicket from '@/components/QrTicket';
+import { getDetail } from '@/service/ticketPurchasedService';
+import { getDataApi } from '@/utils/api';
+import { TICKET_PURCHASED_STATUS } from '@/utils/constants';
+import { formatCurrency } from '@/utils/number';
+import { convertDataSelectboxToObject, convertObjectToDataSelectBox } from '@/utils/object';
+import { toastError } from '@/utils/toast';
 import { Col, Flex, Row, Slider, Tooltip } from 'antd';
-import { useState } from 'react';
+import dayjs from 'dayjs';
+import { useEffect, useState } from 'react';
 import { FaEye } from 'react-icons/fa6';
 import { GoDotFill } from "react-icons/go";
 import { IoTicket } from 'react-icons/io5';
+import { useParams } from 'react-router-dom';
 import History from './History';
 import MoreView from './MoreView';
 import './style.css';
 
+const ticketPurchasedStatus = convertDataSelectboxToObject(convertObjectToDataSelectBox(TICKET_PURCHASED_STATUS));
 const DetailTicket = () => {
+  const { id } = useParams();
+  const [loading, setLoading] = useState(true);
+  const [detail, setDetail] = useState(null);
+  const [usedRatio, setUsedRatio] = useState(0);
   const [dataTicketShowQr, setDataTicketShowQr] = useState(null);
 
   const handleShowQr = () => {
-    setDataTicketShowQr({ name: "VÉ VIP HÀ NỘI" })
+    setDataTicketShowQr({
+      ticketName: detail?.ticketName,
+      id: detail?.id
+    })
   }
 
   const handleCloseQr = () => {
     setDataTicketShowQr(null);
   }
+
+  useEffect(() => {
+    setLoading(true);
+    getDetail(id).then((response) => {
+      const data = getDataApi(response);
+      setDetail(data);
+    })
+      .catch(e => {
+        const response = getDataApi(e);
+        toastError(response.message);
+      })
+      .finally(() => {
+        setLoading(false);
+      })
+  // eslint-disable-next-line react-hooks/exhaustive-deps 
+  }, [])
+
+  // cập nhật thời lượng sử dụng sau mỗi 1 phút
+  useEffect(() => {
+    var idInterval = null;
+    if (detail) {
+      getUsedTimePercentage();
+      idInterval = setInterval(getUsedTimePercentage, 60000)
+    }
+    return () => { clearInterval(idInterval) }
+  // eslint-disable-next-line react-hooks/exhaustive-deps 
+  }, [detail])
+
+  function getUsedTimePercentage() {
+    const now = dayjs()
+    const start = dayjs(detail.startsValidity)
+    const end = dayjs(detail.expires)
+
+    // Nếu now trước start hoặc sau end
+    if (now.isBefore(start)) return 0
+    if (now.isAfter(end)) return 100
+
+    const totalDuration = end.diff(start) // milliseconds
+    const usedDuration = now.diff(start)
+
+    const percentage = (usedDuration / totalDuration) * 100
+    setUsedRatio(Math.min(Math.max(percentage, 0), 100))
+  }
+
+  const handleRefreshQrSuccess = () => {
+    setDetail(pre => ({...pre, createdQrCodeCount: pre.createdQrCodeCount + 1}));
+  }
+
   return (
     <div>
       <ChildContent className='detail-ticket mb16'>
@@ -28,90 +93,104 @@ const DetailTicket = () => {
             <Col lg={12} md={12} sm={24} xs={24} className='info'>
               <div>
                 <h2 className='page-name pt0'>Thông tin</h2>
-                <div className='padding-content'>
-                  <div className='detail-item'>
-                    <Flex justify='space-between' style={{ width: "100%" }}>
-                      <Flex>
-                        <IoTicket className='icon' />
+                <div className='padding-content pr'>
+                  {loading && <LoadingComponent transparent />}
+                  {(!loading && detail !== null) && <>
+                    <div className='detail-item'>
+                      <Flex justify='space-between' style={{ width: "100%" }}>
+                        <Flex>
+                          <IoTicket className='icon' />
+                          <div>
+                            <div className='ticket-name'>{detail?.ticketName}
+                            </div>
+                            <div className='status'>
+                              <GoDotFill 
+                              className={detail?.status === TICKET_PURCHASED_STATUS.BINH_THUONG.value ? "success" 
+                              : "error" } /> {ticketPurchasedStatus[detail.status].label}
+                            </div>
+                            <div className='error'>{detail?.reason}</div>
+                          </div>
+                        </Flex>
                         <div>
-                          <div className='ticket-name'>Vé vip eaon mall
-                          </div>
-                          <div className='status'>
-                            <GoDotFill style={{ color: 'red' }} /> Tạm đình chỉ
-                          </div>
-                          <div className='error'>Chúng tôi nhận thấy điều bất thường hoạt động vé này. Vui lòng đợi xác minh</div>
+                          {detail?.status === TICKET_PURCHASED_STATUS.BINH_THUONG.value && <MoreView />}
                         </div>
                       </Flex>
+                    </div>
+                    <div className='detail-item'>
+                      <div className='label'>
+                        Địa điểm:
+                      </div>
                       <div>
-                        <MoreView />
+                        <div className='bold'>{detail?.locationName}</div>
+                        <div>{detail?.locationAddress}</div>
                       </div>
-                    </Flex>
-                  </div>
-                  <div className='detail-item'>
-                    <div className='label'>
-                      Địa điểm:
                     </div>
-                    <div>
-                      <div className='bold'>EAON MALL LONG BIÊN</div>
-                      <div>Nhân Kiệt, Hùng Thắng, Bình Giang, Hải Dương</div>
-                    </div>
-                  </div>
-                  <div className='detail-item'>
-                    <div className='label'>
-                      Hạn sử dụng:
-                    </div>
-                    <div>
-                      <b>
-                        <span>11:00 10/11/2025</span> <span> - </span>
-                        <span>11:00 11/11/2025</span>
-                      </b>
-                    </div>
-                  </div>
-                  <Row>
-                    <Col lg={12} md={12} sm={12} xs={24}>
-                      <div className='detail-item'>
-                        <div className='label'>
-                          Đã dùng:
-                        </div>
-                        <div>
-                          8 lượt
-                        </div>
+                    <div className='detail-item'>
+                      <div className='label'>
+                        Hạn sử dụng:
                       </div>
-                    </Col>
-                    <Col lg={12} md={12} sm={12} xs={24}>
-                      <div className='detail-item'>
-                        <div className='label'>
-                          Biển số:
-                        </div>
-                        <div>
-                          34AN - 01864
-                        </div>
+                      <div>
+                        <b>
+                          <span>{dayjs(detail?.startsValidity).format("HH:mm DD/MM/YYYY")}</span> <span> - </span>
+                          <span>{dayjs(detail?.expires).format("HH:mm DD/MM/YYYY")}</span>
+                        </b>
                       </div>
-                    </Col>
-                  </Row>
-                  <div className='detail-item end'>
-                    <div className='label'>
-                      Sử dụng thêm:
                     </div>
-                    <div>
-                      10 phút - 10.000<sup>Đ</sup>
-                    </div>
-                  </div>
-                  <div className='detail-item end'>
-                    <div className='label'>
-                      QR đã tạo:
-                    </div>
-                    <div>
-                      8 lượt
-                    </div>
-                    <Tooltip title="Xem">
-                      <div className='button-link' onClick={handleShowQr}>
-                        <FaEye />
+                    <Row>
+                      <Col lg={12} md={12} sm={12} xs={24}>
+                        <div className='detail-item'>
+                          <div className='label'>
+                            Đã dùng:
+                          </div>
+                          <div>
+                            {detail?.usedTimes} lượt
+                          </div>
+                        </div>
+                      </Col>
+                      <Col lg={12} md={12} sm={12} xs={24}>
+                        <div className='detail-item'>
+                          <div className='label'>
+                            Biển số:
+                          </div>
+                          <div>
+                            {detail?.contentPlate}
+                          </div>
+                        </div>
+                      </Col>
+                    </Row>
+                    <div className='detail-item end'>
+                      <div className='label'>
+                        Sử dụng thêm:
                       </div>
-                    </Tooltip>
-                  </div>
+                      <div>
+                        {detail?.priceExtend && <span>{detail?.timeExtend} phút - {formatCurrency(detail?.priceExtend)}<sup>Đ</sup></span>}
+                      </div>
+                    </div>
+                    <div className='detail-item end'>
+                      <div className='label'>
+                        QR đã tạo:
+                      </div>
+                      <div>
+                        {detail?.createdQrCodeCount} lượt
+                      </div>
+                      {detail?.status === TICKET_PURCHASED_STATUS.BINH_THUONG.value && <Tooltip title="Xem">
+                        <div className='button-link' onClick={handleShowQr}>
+                          <FaEye />
+                        </div>
+                      </Tooltip>}
+                    </div>
+                    <Slider max={100} value={usedRatio} tooltip={{
+                      placement: 'top',
+                      formatter: (value) => `${value}%`,
+                      overlayInnerStyle: {
+                        backgroundColor: '#333',
+                        color: 'white',
+                        fontWeight: 'bold',
+                      },
+                    }} />
+                  </>}
                 </div>
-                <Slider max={100} value={30} />
+
               </div>
             </Col>
             <Col lg={12} md={12} sm={24} xs={24} className='history'>
@@ -124,7 +203,7 @@ const DetailTicket = () => {
         </div >
       </ChildContent >
       {dataTicketShowQr && <ModalCustom onClose={handleCloseQr}>
-        <QrTicket data={dataTicketShowQr} />
+        <QrTicket data={dataTicketShowQr} onRefresh={handleRefreshQrSuccess}/>
       </ModalCustom>}
     </div >
   );
