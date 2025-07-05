@@ -9,6 +9,10 @@
   border-radius: 20px;
 }
 
+.detail-ticket .info .padding-content {
+  min-height: 300px;
+}
+
 .detail-ticket .ticket-name {
   font-weight: bold;
   font-size: 18px;
