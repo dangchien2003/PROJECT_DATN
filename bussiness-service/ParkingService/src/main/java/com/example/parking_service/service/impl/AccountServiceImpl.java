@@ -8,9 +8,11 @@ import com.example.common.utils.DataUtils;
 import com.example.common.utils.ENumUtils;
 import com.example.common.utils.RandomUtils;
 import com.example.common.utils.RegexUtils;
+import com.example.parking_service.ParkingServiceApplication;
 import com.example.parking_service.dto.request.CreateAccountRequest;
 import com.example.parking_service.dto.request.SearchListAccountRequest;
 import com.example.parking_service.dto.response.AccountResponse;
+import com.example.parking_service.dto.response.ClientInfoAccountResponse;
 import com.example.parking_service.entity.Account;
 import com.example.parking_service.entity.Account_;
 import com.example.parking_service.enums.AccountCategory;
@@ -274,6 +276,26 @@ public class AccountServiceImpl implements AccountService {
         // Trả về response dạng paged (tuỳ theo ApiResponse bạn dùng)
         return ApiResponse.builder()
                 .result(new PageResponse<>(result, accounts.getTotalPages(), accounts.getTotalElements()))
+                .build();
+    }
+
+    @Override
+    public ApiResponse<Object> getBalance() {
+        String accountId = ParkingServiceApplication.testPartnerActionBy;
+        long balance = accountRepository.getBalance(accountId);
+        return ApiResponse.builder()
+                .result(balance)
+                .build();
+    }
+
+    @Override
+    public ApiResponse<Object> getInfoAccount() {
+        String accountId = ParkingServiceApplication.testPartnerActionBy;
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
+        ClientInfoAccountResponse response = accountMapper.toClientInfoAccountResponse(account);
+        return ApiResponse.builder()
+                .result(response)
                 .build();
     }
 }

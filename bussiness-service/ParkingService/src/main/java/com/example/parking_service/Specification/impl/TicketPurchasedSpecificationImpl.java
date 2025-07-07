@@ -42,11 +42,9 @@ public class TicketPurchasedSpecificationImpl implements TicketPurchasedSpecific
             // tab
             if (tab.equals(1)) {
                 // đang sử dụng
-                predicates.add(cb.equal(root.get(TicketPurchased_.STATUS), TicketPurchasedStatus.BINH_THUONG));
                 predicates.add(cb.equal(root.get(TicketPurchased_.USE_STATUS), TicketPurchasedUseStatus.DANG_SU_DUNG));
             } else if (tab.equals(2)) {
                 // không sử dụng
-                predicates.add(cb.equal(root.get(TicketPurchased_.STATUS), TicketPurchasedStatus.BINH_THUONG));
                 predicates.add(cb.equal(root.get(TicketPurchased_.USE_STATUS), TicketPurchasedUseStatus.KHONG_SU_DUNG));
                 // chưa hết hạn
                 predicates.add(cb.greaterThanOrEqualTo(root.get(TicketPurchased_.EXPIRES), LocalDateTime.now()));

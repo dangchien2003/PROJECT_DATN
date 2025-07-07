@@ -83,4 +83,7 @@ public interface AccountRepository extends JpaRepository<Account, String> {
             Pageable pageable);
 
     int countByIdInAndStatusAndPublicAccount(List<String> accounts, Integer status, Integer publicAccount);
+
+    @Query("SELECT a.balance from Account a where a.id = :accountId")
+    long getBalance(String accountId);
 }

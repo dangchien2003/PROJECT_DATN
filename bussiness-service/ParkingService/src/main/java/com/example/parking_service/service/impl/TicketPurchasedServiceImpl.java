@@ -140,10 +140,16 @@ public class TicketPurchasedServiceImpl implements TicketPurchasedService {
         TicketPurchased ticketPurchased = ticketPurchaseRepository
                 .findByIdAndAccountIdAndStatus(id, accountId, TicketPurchasedStatus.BINH_THUONG)
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
+        // validate
+        LocalDateTime now = LocalDateTime.now();
+        if (!ticketPurchased.getStatus().equals(TicketPurchasedStatus.BINH_THUONG)
+                || now.isAfter(ticketPurchased.getExpires())) {
+            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Làm mới thất bại"));
+        }
         TicketQr contentQr = TicketQr.builder()
                 .ticketId(ticketPurchased.getId())
                 .accountId(ticketPurchased.getAccountId())
-                .createdAt(LocalDateTime.now())
+                .createdAt(now)
                 .build();
         // gen qr
         String qr = null;
