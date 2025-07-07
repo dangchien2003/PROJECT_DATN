@@ -4,7 +4,7 @@ import PopConfirmCustom from '@/components/PopConfirmCustom';
 import { useLoading } from '@/hook/loading';
 import StepOrder from '@/pages/customer/OrderTicket/StepOrder';
 import { confirmOrder } from '@/service/orderService';
-import { minus } from '@/store/remainingSlice';
+import { minusRemaining } from '@/store/remainingSlice';
 import { getDataApi } from '@/utils/api';
 import { lineLoading, PAYMENT_METHOD_VALUE } from '@/utils/constants';
 import { deleteCookie, getCookie } from '@/utils/cookie';
@@ -72,7 +72,7 @@ const Payment = () => {
       paymentMethod: PAYMENT_METHOD_VALUE.SO_DU
     }
     confirmOrder(dataRequest).then(response => {
-      dispatch(minus(dataConfirm.total))
+      dispatch(minusRemaining(dataConfirm.total))
       setConfirmRemaining(false);
       setPaymentSuccess(true);
       deleteCookie("order");

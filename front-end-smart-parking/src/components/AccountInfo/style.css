@@ -25,6 +25,7 @@
 
 .account-info .remaining {
   justify-content: center;
+  padding-bottom: 8px;
 }
 
 .btn-link {
@@ -32,4 +33,16 @@
   text-decoration: underline;
   text-align: left;
   color: blue;
+}
+
+.default {
+  color: #999999;
+}
+
+.cyan {
+  color: #33CC99;
+}
+
+.danger {
+  color: red;
 }

@@ -71,8 +71,12 @@ const DetailTicket = () => {
     const end = dayjs(detail.expires)
 
     // Nếu now trước start hoặc sau end
-    if (now.isBefore(start)) return 0
-    if (now.isAfter(end)) return 100
+    if (now.isBefore(start)) {
+      setUsedRatio(0);
+    }
+    if (now.isAfter(end)) {
+      setUsedRatio(100);
+    }
 
     const totalDuration = end.diff(start) // milliseconds
     const usedDuration = now.diff(start)
@@ -81,10 +85,13 @@ const DetailTicket = () => {
     setUsedRatio(Math.min(Math.max(percentage, 0), 100))
   }
 
+  const handleChangeDisableSuccess = (status) => {
+    setDetail(pre => ({...pre, status}))
+  }
+
   const handleRefreshQrSuccess = () => {
     setDetail(pre => ({...pre, createdQrCodeCount: pre.createdQrCodeCount + 1}));
   }
-
   return (
     <div>
       <ChildContent className='detail-ticket mb16'>
@@ -105,14 +112,13 @@ const DetailTicket = () => {
                             </div>
                             <div className='status'>
                               <GoDotFill 
-                              className={detail?.status === TICKET_PURCHASED_STATUS.BINH_THUONG.value ? "success" 
-                              : "error" } /> {ticketPurchasedStatus[detail.status].label}
+                              className={ticketPurchasedStatus[detail.status].color} /> {ticketPurchasedStatus[detail.status].label}
                             </div>
                             <div className='error'>{detail?.reason}</div>
                           </div>
                         </Flex>
                         <div>
-                          {detail?.status === TICKET_PURCHASED_STATUS.BINH_THUONG.value && <MoreView />}
+                          {(detail?.status === TICKET_PURCHASED_STATUS.BINH_THUONG.value || detail?.status === TICKET_PURCHASED_STATUS.TAM_DINH_CHI.value) && <MoreView ticketId={detail.id} disableInp={detail?.status === TICKET_PURCHASED_STATUS.TAM_DINH_CHI.value} onChangeSuccess={handleChangeDisableSuccess}/>}
                         </div>
                       </Flex>
                     </div>
@@ -173,7 +179,8 @@ const DetailTicket = () => {
                       <div>
                         {detail?.createdQrCodeCount} lượt
                       </div>
-                      {detail?.status === TICKET_PURCHASED_STATUS.BINH_THUONG.value && <Tooltip title="Xem">
+                      {/* không hiện icon xem nếu vé không còn hiệu lực */}
+                      {(detail?.status === TICKET_PURCHASED_STATUS.BINH_THUONG.value && dayjs(detail?.expires).isAfter(dayjs())) && <Tooltip title="Xem">
                         <div className='button-link' onClick={handleShowQr}>
                           <FaEye />
                         </div>

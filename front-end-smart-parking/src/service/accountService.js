@@ -49,3 +49,19 @@ export async function getSuggestions(page, size, key) {
     }
   })
 }
+
+export async function getBalance() {
+  return await httpClient.get(PARKING_SERVICE.account.getBalance , {
+    headers: {
+      Authorization: undefined
+    }
+  })
+}
+
+export async function getInfoAccount() {
+  return await httpClient.get(PARKING_SERVICE.account.infoAccount , {
+    headers: {
+      Authorization: undefined
+    }
+  })
+}

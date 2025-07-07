@@ -176,9 +176,14 @@ export const TICKET_PURCHASED_STATUS = {
     label: "Huỷ vé",
     color: "default",
   },
-  DINH_CHI: {
+  TAM_DINH_CHI: {
     value: 2,
     label: "Tạm đình chỉ",
+    color: "danger",
+  },
+  BI_DINH_CHI: {
+    value: 3,
+    label: "Bị đình chỉ",
     color: "danger",
   },
 };

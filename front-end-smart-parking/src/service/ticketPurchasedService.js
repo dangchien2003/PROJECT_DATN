@@ -19,7 +19,7 @@ export async function getQrCode(id) {
 }
 
 export async function refreshQr(id) {
-  return await httpClient.put(PARKING_SERVICE.ticketPurchased.refreshQr + `?id=${id}`, {
+  return await httpClient.patch(PARKING_SERVICE.ticketPurchased.refreshQr + `?id=${id}`, {
     headers: {
       Authorization: undefined
     }
@@ -28,6 +28,22 @@ export async function refreshQr(id) {
 
 export async function getDetail(id) {
   return await httpClient.get(PARKING_SERVICE.ticketPurchased.detail + `?id=${id}`, {
+    headers: {
+      Authorization: undefined
+    }
+  })
+}
+
+export async function disableTicket(id) {
+  return await httpClient.patch(PARKING_SERVICE.ticketPurchased.disableTicket + `?id=${id}`, {
+    headers: {
+      Authorization: undefined
+    }
+  })
+}
+
+export async function enableTicket(id) {
+  return await httpClient.patch(PARKING_SERVICE.ticketPurchased.enableTicket + `?id=${id}`, {
     headers: {
       Authorization: undefined
     }

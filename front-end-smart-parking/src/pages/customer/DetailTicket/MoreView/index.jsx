@@ -3,11 +3,14 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useState } from 'react';
 import { IoMdMore } from 'react-icons/io';
 import './style.css';
-import { toastSuccess } from '@/utils/toast';
+import { toastError, toastSuccess } from '@/utils/toast';
+import { disableTicket, enableTicket } from '@/service/ticketPurchasedService';
+import { getDataApi } from '@/utils/api';
+import { TICKET_PURCHASED_STATUS } from '@/utils/constants';
 
-const MoreView = () => {
+const MoreView = ({disableInp, ticketId, onChangeSuccess}) => {
   const [showAction, setShowAction] = useState(false);
-  const [disable, setDisable] = useState(false);
+  const [disable, setDisable] = useState(disableInp);
   const [disableLoading, setDisableLoading] = useState(false);
 
   const handleShowAction = () => {
@@ -15,12 +18,45 @@ const MoreView = () => {
   }
 
   const handleChangeDisable = () => {
+    if(disable) {
+      handleEnable();
+    } else {
+      handleDisable();
+    }
+  }
+
+  const handleEnable = () => {
     setDisableLoading(true);
-    setTimeout(() => {
-      setDisable(pre => !pre);
+    enableTicket(ticketId).then(() => {
+      setDisable(false);
+      toastSuccess("Đã huỷ vô hiệu thành công");
+      onChangeSuccess(TICKET_PURCHASED_STATUS.BINH_THUONG.value);
+    })
+    .catch(e => {
+      const response = getDataApi(e);
+      toastError(response.message);
+    })
+    .finally(() => {
       setDisableLoading(false);
-      toastSuccess(disable ? "Đã huỷ vô hiệu thành công" : "Đã vô hiệu thành công")
-    }, 2000)
+    })
+  }
+
+  const handleDisable = () => {
+    setDisableLoading(true);
+    disableTicket(ticketId).then(() => {
+      setDisable(true);
+      toastSuccess("Đã vô hiệu thành công");
+      if(onChangeSuccess) {
+        onChangeSuccess(TICKET_PURCHASED_STATUS.TAM_DINH_CHI.value);
+      }
+    })
+    .catch(e => {
+      const response = getDataApi(e);
+      toastError(response.message);
+    })
+    .finally(() => {
+      setDisableLoading(false);
+    })
   }
 
   return (

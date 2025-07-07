@@ -19,8 +19,7 @@ export const convertObjectToDataSelectBox = (data) => {
   return Object.keys(data).map((key) => {
     const item = data[key];
     return {
-      label: item.label,
-      value: item.value,
+      ...item
     };
   });
 }

@@ -1,6 +1,6 @@
 import { getQrCode, refreshQr } from '@/service/ticketPurchasedService';
 import { getDataApi } from '@/utils/api';
-import { toastError } from '@/utils/toast';
+import { toastError, toastSuccess } from '@/utils/toast';
 import { Button, Flex } from 'antd';
 import { QRCodeCanvas } from 'qrcode.react';
 import { useEffect, useRef, useState } from 'react';
@@ -47,6 +47,7 @@ const QrTicket = ({ data, onRefresh }) => {
     refreshQr(data.id).then(response => {
       const data = getDataApi(response);
       setQrContent(data);
+      toastSuccess("Làm mới mã thành công");
       // gọi callback sau khi thành công
       if(onRefresh) {
         onRefresh();

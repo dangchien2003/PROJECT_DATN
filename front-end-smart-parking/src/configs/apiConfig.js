@@ -9,6 +9,8 @@ export const PARKING_SERVICE = {
     detailCustomer: "account/customer/detail",
     detailPartner: "account/partner/detail",
     getSuggestions: "account/suggestions",
+    getBalance: "account/balance",
+    infoAccount: "account/info"
   },
   location: {
     modify: "location/modify",
@@ -43,6 +45,8 @@ export const PARKING_SERVICE = {
     getQrCode: "purchased/get-qr",
     refreshQr: "purchased/new-qr",
     detail: "purchased/detail",
+    enableTicket: "purchased/enable",
+    disableTicket: "purchased/disable",
   },
   authen: {
     login: "auth/sign-in",
@@ -59,6 +63,9 @@ export const PARKING_SERVICE = {
   order: {
     createOrder: "order",
     confirmOrder: "order/confirm",
+  },
+  transaction: {
+    customerSearch: "transaction/history"
   }
 }
 
