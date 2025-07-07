@@ -13,4 +13,8 @@ public interface TicketPurchasedService {
     ApiResponse<Object> refreshQr(String id);
 
     ApiResponse<Object> detail(String id);
+
+    ApiResponse<Object> disableTicket(String id);
+
+    ApiResponse<Object> enableTicket(String id);
 }

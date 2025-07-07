@@ -26,7 +26,7 @@ public class TicketPurchasedController {
         return ticketPurchasedService.getQr(id);
     }
 
-    @PutMapping("new-qr")
+    @PatchMapping("new-qr")
     ApiResponse<Object> refreshQr(@RequestParam("id") String id) {
         return ticketPurchasedService.refreshQr(id);
     }
@@ -34,5 +34,15 @@ public class TicketPurchasedController {
     @GetMapping("detail")
     ApiResponse<Object> detail(@RequestParam("id") String id) {
         return ticketPurchasedService.detail(id);
+    }
+
+    @PatchMapping("disable")
+    ApiResponse<Object> disableTicket(@RequestParam("id") String id) {
+        return ticketPurchasedService.disableTicket(id);
+    }
+
+    @PatchMapping("enable")
+    ApiResponse<Object> enableTicket(@RequestParam("id") String id) {
+        return ticketPurchasedService.enableTicket(id);
     }
 }

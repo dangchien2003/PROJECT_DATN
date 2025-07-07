@@ -15,4 +15,8 @@ public interface AccountService {
     ApiResponse<Object> detail(String idAccount, Integer category);
 
     ApiResponse<Object> suggestions(String key, Pageable pageable);
+
+    ApiResponse<Object> getBalance();
+
+    ApiResponse<Object> getInfoAccount();
 }

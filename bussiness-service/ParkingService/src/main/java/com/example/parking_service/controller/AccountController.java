@@ -60,4 +60,15 @@ public class AccountController {
     ApiResponse<Object> suggestions(@RequestParam("key") String key, Pageable pageable) {
         return accountService.suggestions(key, pageable);
     }
+
+    @GetMapping("/balance")
+        // role customer
+    ApiResponse<Object> getBalance() {
+        return accountService.getBalance();
+    }
+
+    @GetMapping("info")
+    ApiResponse<Object> getInfoAccount() {
+        return accountService.getInfoAccount();
+    }
 }

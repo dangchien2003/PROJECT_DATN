@@ -17,15 +17,12 @@ import java.time.LocalDateTime;
 @SuperBuilder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class AccountResponse {
+public class ClientInfoAccountResponse {
     String id;
     String fullName;
-    Integer gender;
-    String email;
     String phoneNumber;
-    Integer permitChangePassword;
-    Integer status;
-    String reason;
+    String email;
+    Integer gender;
     Integer category;
     String avatar;
     Long balance;

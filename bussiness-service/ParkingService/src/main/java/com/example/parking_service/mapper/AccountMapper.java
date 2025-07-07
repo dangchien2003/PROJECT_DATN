@@ -2,6 +2,7 @@ package com.example.parking_service.mapper;
 
 import com.example.parking_service.dto.request.CreateAccountRequest;
 import com.example.parking_service.dto.response.AccountResponse;
+import com.example.parking_service.dto.response.ClientInfoAccountResponse;
 import com.example.parking_service.entity.Account;
 import org.mapstruct.Mapper;
 
@@ -14,4 +15,6 @@ public interface AccountMapper {
     List<AccountResponse> toListAccountResponses(List<Account> entityList);
 
     AccountResponse toAccountResponse(Account entity);
+
+    ClientInfoAccountResponse toClientInfoAccountResponse(Account entity);
 }
