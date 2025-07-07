@@ -85,12 +85,13 @@ const DetailTicket = () => {
     setUsedRatio(Math.min(Math.max(percentage, 0), 100))
   }
 
-  console.log(usedRatio)
+  const handleChangeDisableSuccess = (status) => {
+    setDetail(pre => ({...pre, status}))
+  }
 
   const handleRefreshQrSuccess = () => {
     setDetail(pre => ({...pre, createdQrCodeCount: pre.createdQrCodeCount + 1}));
   }
-
   return (
     <div>
       <ChildContent className='detail-ticket mb16'>
@@ -111,14 +112,13 @@ const DetailTicket = () => {
                             </div>
                             <div className='status'>
                               <GoDotFill 
-                              className={detail?.status === TICKET_PURCHASED_STATUS.BINH_THUONG.value ? "success" 
-                              : "error" } /> {ticketPurchasedStatus[detail.status].label}
+                              className={ticketPurchasedStatus[detail.status].color} /> {ticketPurchasedStatus[detail.status].label}
                             </div>
                             <div className='error'>{detail?.reason}</div>
                           </div>
                         </Flex>
                         <div>
-                          {detail?.status === TICKET_PURCHASED_STATUS.BINH_THUONG.value && <MoreView />}
+                          {(detail?.status === TICKET_PURCHASED_STATUS.BINH_THUONG.value || detail?.status === TICKET_PURCHASED_STATUS.TAM_DINH_CHI.value) && <MoreView ticketId={detail.id} disableInp={detail?.status === TICKET_PURCHASED_STATUS.TAM_DINH_CHI.value} onChangeSuccess={handleChangeDisableSuccess}/>}
                         </div>
                       </Flex>
                     </div>

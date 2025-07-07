@@ -37,14 +37,6 @@ const AccountInfo = () => {
             </Tooltip>
           </div>
         </Flex>
-        {/* <div className='detail-item end remaining'>
-          <div className='label'>
-            Số dư:
-          </div>
-          <div className='value'>
-            80.000<sup>Đ</sup>
-          </div>
-        </div> */}
         <div className='detail-item end remaining'>
           <div className='label'>
             Tài khoản:
@@ -55,6 +47,14 @@ const AccountInfo = () => {
             {info.category === ACCOUNT_CATEGORY.ADMIN && "Quản trị"}
           </div>
         </div>
+        {info.category === ACCOUNT_CATEGORY.CUSTOMER && <div className='detail-item end remaining'>
+          <div className='label'>
+            Số dư:
+          </div>
+          <div className='value'>
+            80.000<sup>Đ</sup>
+          </div>
+        </div>}
       </div>
       <Info info={info}/>
     </div>

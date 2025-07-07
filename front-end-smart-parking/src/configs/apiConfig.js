@@ -45,6 +45,8 @@ export const PARKING_SERVICE = {
     getQrCode: "purchased/get-qr",
     refreshQr: "purchased/new-qr",
     detail: "purchased/detail",
+    enableTicket: "purchased/enable",
+    disableTicket: "purchased/disable",
   },
   authen: {
     login: "auth/sign-in",
