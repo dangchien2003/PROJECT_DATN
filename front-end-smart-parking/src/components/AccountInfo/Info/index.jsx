@@ -1,16 +1,18 @@
 import ModalCustom from '@/components/ModalCustom';
 import useResponsiveKey from '@/hook/useReponsive';
 import { Col, Flex, Row } from 'antd';
+import dayjs from "dayjs";
 import { useState } from 'react';
-import { IoMdFemale } from 'react-icons/io';
+import { IoMdFemale, IoMdMale } from 'react-icons/io';
 import Edit from './Edit';
 import EditEmail from './EditEmail';
 import EditGender from './EditGender';
 import EditName from './EditName';
 import EditPhoneNumber from './EditPhoneNumber';
 import './style.css';
+import { ACCOUNT_CATEGORY } from '@/utils/constants';
 
-const Info = () => {
+const Info = ({info}) => {
   const [editKey, setEditKey] = useState(null);
   const { key } = useResponsiveKey();
 
@@ -33,7 +35,7 @@ const Info = () => {
                   Tên người dùng:
                 </div>
                 <div className='value'>
-                  Lê Đăng Chiến
+                  {info.fullName}
                 </div>
               </div>
               <Edit value={1} onClick={handleClickEdit} />
@@ -44,7 +46,7 @@ const Info = () => {
                   Số điện thoại:
                 </div>
                 <div className='value'>
-                  0333757429
+                  {info.phoneNumber}
                 </div>
               </div>
               <Edit value={2} onClick={handleClickEdit} />
@@ -55,7 +57,8 @@ const Info = () => {
                   Email:
                 </div>
                 <div className='value'>
-                  Chienboy03@gmail.com
+                  {info.email}
+
                   {/* -- không có thông tin*/}
                 </div>
               </div>
@@ -67,8 +70,12 @@ const Info = () => {
                   Giới tính:
                 </div>
                 <div className='value'>
-                  <IoMdFemale className='gender-female' />Nữ
-                  {/*<IoMdMale className='gender-male' />Nam */}
+                  {(info.gender === 0 && <>
+                    <IoMdMale className='gender-male' />Nam
+                  </>)}
+                  {(info.gender === 1 && <>
+                    <IoMdFemale className='gender-female' />Nữ
+                  </>)}
                 </div>
               </div>
               <Edit value={4} onClick={handleClickEdit} />
@@ -78,12 +85,12 @@ const Info = () => {
                 Ngày tạo:
               </div>
               <div className='value'>
-                18/06/2025
+                {dayjs(info.createdAt).format("DD/MM/YYYY")}
               </div>
             </div>
           </div>
         </Col>
-        <Col lg={12} md={12} sm={24} xs={24} style={["sm", "xs"].includes(key) ? { paddingTop: 12, borderTop: "1px solid #f0f0f0" } : {}}>
+        {info.category === ACCOUNT_CATEGORY.PARTNER && <Col lg={12} md={12} sm={24} xs={24} style={["sm", "xs"].includes(key) ? { paddingTop: 12, borderTop: "1px solid #f0f0f0" } : {}}>
           <div className="partner">
             <h3 className='page-name'>Thông tin đối tác</h3>
             <div className='detail-item end'>
@@ -91,7 +98,7 @@ const Info = () => {
                 Tên tổ chức:
               </div>
               <div className='value'>
-                EAON MALL LONG BIÊN
+                {info.partnerFullName}
               </div>
             </div>
             <div className='detail-item end'>
@@ -99,7 +106,7 @@ const Info = () => {
                 Người đại diện:
               </div>
               <div className='value'>
-                Lê Đăng Chiến
+                {info.representativeFullName}
               </div>
             </div>
             <div className='detail-item end'>
@@ -107,7 +114,7 @@ const Info = () => {
                 Số điện thoại:
               </div>
               <div className='value'>
-                0333757429
+                {info.partnerPhoneNumber}
               </div>
             </div>
             <div className='detail-item end'>
@@ -115,7 +122,7 @@ const Info = () => {
                 Email:
               </div>
               <div className='value'>
-                Chienboy03@gmail.com
+                {info.partnerEmail}
               </div>
             </div>
             <div className='detail-item'>
@@ -123,20 +130,20 @@ const Info = () => {
                 Địa chỉ:
               </div>
               <div className='value'>
-                Nhân Kiệt, Hùng Thắng, Bình Giang, Hải Dương
+                {info.partnerAddress}
               </div>
             </div>
             <div className="note">
-              Nếu muốn thay đổi thông tin đối tác vui lòng liên hệ trung tâm hỗ trợ.
+              Để thay đổi thông tin đối tác vui lòng liên hệ trung tâm hỗ trợ.
             </div>
           </div>
-        </Col>
+        </Col>}
       </Row>
       {editKey !== null && <ModalCustom onClose={handleCloseEdit}>
-        {editKey === 1 && <EditName oldData={"chiến"} itemKey={"name"}/>}
-        {editKey === 2 && <EditPhoneNumber oldData={null} itemKey={"phoneNumber"}/>}
-        {editKey === 3 && <EditEmail oldData={null} itemKey={"email"}/>}
-        {editKey === 4 && <EditGender oldData={0} itemKey={"gender"}/>}
+        {editKey === 1 && <EditName oldData={info.fullName} itemKey={"name"} />}
+        {editKey === 2 && <EditPhoneNumber oldData={info.phoneNumber} itemKey={"phoneNumber"} />}
+        {editKey === 3 && <EditEmail oldData={info.email} itemKey={"email"} />}
+        {editKey === 4 && <EditGender oldData={info.gender} itemKey={"gender"} />}
       </ModalCustom>}
     </div>
   );

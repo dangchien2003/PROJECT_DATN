@@ -155,7 +155,7 @@ const TableList = ({ dataSearch }) => {
               <FaEye style={{ fontSize: 21, cursor: 'pointer' }} />
             </Link>
           </Tooltip>
-          {(dataSearch.tab !== "4" && dataSearch.tab !== "3") && <Tooltip title="Xem mã">
+          {(dataSearch.tab !== "4" && dataSearch.tab !== "3" && item.status === TICKET_PURCHASED_STATUS.BINH_THUONG.value) && <Tooltip title="Xem mã">
             <div onClick={() => { handleShowQr(item) }}>
               <LiaQrcodeSolid style={{ fontSize: 24, cursor: 'pointer' }} />
             </div>

@@ -71,8 +71,12 @@ const DetailTicket = () => {
     const end = dayjs(detail.expires)
 
     // Nếu now trước start hoặc sau end
-    if (now.isBefore(start)) return 0
-    if (now.isAfter(end)) return 100
+    if (now.isBefore(start)) {
+      setUsedRatio(0);
+    }
+    if (now.isAfter(end)) {
+      setUsedRatio(100);
+    }
 
     const totalDuration = end.diff(start) // milliseconds
     const usedDuration = now.diff(start)
@@ -80,6 +84,8 @@ const DetailTicket = () => {
     const percentage = (usedDuration / totalDuration) * 100
     setUsedRatio(Math.min(Math.max(percentage, 0), 100))
   }
+
+  console.log(usedRatio)
 
   const handleRefreshQrSuccess = () => {
     setDetail(pre => ({...pre, createdQrCodeCount: pre.createdQrCodeCount + 1}));
@@ -173,7 +179,8 @@ const DetailTicket = () => {
                       <div>
                         {detail?.createdQrCodeCount} lượt
                       </div>
-                      {detail?.status === TICKET_PURCHASED_STATUS.BINH_THUONG.value && <Tooltip title="Xem">
+                      {/* không hiện icon xem nếu vé không còn hiệu lực */}
+                      {(detail?.status === TICKET_PURCHASED_STATUS.BINH_THUONG.value && dayjs(detail?.expires).isAfter(dayjs())) && <Tooltip title="Xem">
                         <div className='button-link' onClick={handleShowQr}>
                           <FaEye />
                         </div>

@@ -3,12 +3,14 @@ import { formatCurrency } from '@/utils/number';
 import bgTicket from '@image/cut2.png';
 import { Button, Flex, Radio, Tooltip } from 'antd';
 import { useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const TicketCard = ({ data }) => {
   const ref = useRef();
+  const navigate = useNavigate();
+
   const handleClickOrder = () => {
-    alert("đặt vé")
+    navigate("/order/" + data.ticketId)
   }
 
   const order = "Đặt vé";

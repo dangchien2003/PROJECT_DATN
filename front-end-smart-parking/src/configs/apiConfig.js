@@ -9,6 +9,8 @@ export const PARKING_SERVICE = {
     detailCustomer: "account/customer/detail",
     detailPartner: "account/partner/detail",
     getSuggestions: "account/suggestions",
+    getBalance: "account/balance",
+    infoAccount: "account/info"
   },
   location: {
     modify: "location/modify",
@@ -59,6 +61,9 @@ export const PARKING_SERVICE = {
   order: {
     createOrder: "order",
     confirmOrder: "order/confirm",
+  },
+  transaction: {
+    customerSearch: "transaction/history"
   }
 }
 
