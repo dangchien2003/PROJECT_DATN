@@ -189,4 +189,42 @@ public class TicketPurchasedServiceImpl implements TicketPurchasedService {
                 .result(response)
                 .build();
     }
+
+    @Override
+    public ApiResponse<Object> disableTicket(String id) {
+        String accountId = ParkingServiceApplication.testPartnerActionBy;
+        TicketPurchased ticketPurchased = ticketPurchaseRepository.findByIdAndAccountId(id, accountId)
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND.withMessage("Không tìm thấy thông tin vé")));
+        // kiểm tra trạng thái
+        if (ticketPurchased.getStatus().equals(TicketPurchasedStatus.TAM_DINH_CHI)) {
+            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Vé đã bị vô hiệu từ trước"));
+        }
+        // validate thời gian và trạng thái
+        LocalDateTime now = LocalDateTime.now();
+        if (!ticketPurchased.getStatus().equals(TicketPurchasedStatus.BINH_THUONG)
+                || now.isAfter(ticketPurchased.getExpires())) {
+            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Không thể vô hiệu"));
+        }
+        ticketPurchased.setStatus(TicketPurchasedStatus.TAM_DINH_CHI);
+        DataUtils.setDataAction(ticketPurchased, accountId, false);
+        ticketPurchaseRepository.save(ticketPurchased);
+        return ApiResponse.builder().build();
+    }
+
+    @Override
+    public ApiResponse<Object> enableTicket(String id) {
+        String accountId = ParkingServiceApplication.testPartnerActionBy;
+        TicketPurchased ticketPurchased = ticketPurchaseRepository.findByIdAndAccountId(id, accountId)
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND.withMessage("Không tìm thấy thông tin vé")));
+        // validate thời gian và trạng thái
+        LocalDateTime now = LocalDateTime.now();
+        if (!ticketPurchased.getStatus().equals(TicketPurchasedStatus.TAM_DINH_CHI)
+                || now.isAfter(ticketPurchased.getExpires())) {
+            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Không thể huỷ vô hiệu"));
+        }
+        ticketPurchased.setStatus(TicketPurchasedStatus.BINH_THUONG);
+        DataUtils.setDataAction(ticketPurchased, accountId, false);
+        ticketPurchaseRepository.save(ticketPurchased);
+        return ApiResponse.builder().build();
+    }
 }
