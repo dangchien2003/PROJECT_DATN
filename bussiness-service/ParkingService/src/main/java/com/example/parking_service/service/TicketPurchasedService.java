@@ -17,4 +17,6 @@ public interface TicketPurchasedService {
     ApiResponse<Object> disableTicket(String id);
 
     ApiResponse<Object> enableTicket(String id);
+
+    ApiResponse<Object> history(String id, Pageable pageable);
 }
