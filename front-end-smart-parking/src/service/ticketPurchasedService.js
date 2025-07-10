@@ -1,6 +1,6 @@
 import { PARKING_SERVICE } from '@/configs/apiConfig'
 import httpClient from '@/configs/axiosConfig'
-import { getParamsPage } from '@/utils/api'
+import { getParamsPage, replaceParamsUrl } from '@/utils/api'
 
 export async function getTicketPurchased(data, page, size) {
   return await httpClient.post(PARKING_SERVICE.ticketPurchased.customerSearch + "?" + getParamsPage(page, size, null, null), data, {
@@ -44,6 +44,14 @@ export async function disableTicket(id) {
 
 export async function enableTicket(id) {
   return await httpClient.patch(PARKING_SERVICE.ticketPurchased.enableTicket + `?id=${id}`, {
+    headers: {
+      Authorization: undefined
+    }
+  })
+}
+
+export async function getHistoryInOut(id) {
+  return await httpClient.get(replaceParamsUrl(PARKING_SERVICE.ticketPurchased.historyInOut, {id}), {
     headers: {
       Authorization: undefined
     }

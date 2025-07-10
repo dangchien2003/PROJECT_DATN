@@ -47,6 +47,7 @@ export const PARKING_SERVICE = {
     detail: "purchased/detail",
     enableTicket: "purchased/enable",
     disableTicket: "purchased/disable",
+    historyInOut: "purchased/history/:id",
   },
   authen: {
     login: "auth/sign-in",
