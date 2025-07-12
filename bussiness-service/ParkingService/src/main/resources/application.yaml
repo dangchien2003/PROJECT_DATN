@@ -44,3 +44,10 @@ auth:
 crypto:
   AES:
     AES-SECRET_KEY: ${AES-SECRET_KEY:1234567890abcdef}
+
+vnPay:
+  api-url: https://sandbox.vnpayment.vn/merchant_webapi/api/transaction
+  url-payment: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+  secret-key: ${VNPAY-SECRET_KEY:DFI9X55CGVDGQFRX08ZRGSNJPEZZG4LL}
+  tmnCode: ${VNPAY-VNP_TMN_CODE:7XG1D3QU}
+DOMAIN_FE: ${DOMAIN_FE:http://localhost:3000}
