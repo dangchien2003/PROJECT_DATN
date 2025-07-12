@@ -7,7 +7,7 @@ const PaymentSuccess = () => {
   return (
     <div className='payment-success'>
       <div className='icon'>
-        <img src={iconSuccess} alt="icon-success scale-effect" />
+        <img src={iconSuccess} alt="icon-success" className='scale-effect'/>
       </div>
       <h1>Thanh toán thành công</h1>
       <Link to={"/list/ticket"}>

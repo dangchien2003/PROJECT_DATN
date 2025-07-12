@@ -5,3 +5,15 @@
 .history .cancel {
   color: red;
 }
+
+.cancel-hover {
+  cursor: pointer;
+}
+
+.cancel-hover:hover {
+  color: red;
+}
+
+.disable {
+  color: #00000040;
+}

@@ -1,15 +1,15 @@
-.payment-success {
+.deposit-complete {
   text-align: center;
 }
 
-.payment-success img {
+.deposit-complete img {
   width: 150px;
   padding: 10px 0;
 }
 
 .scale-effect {
   display: inline-block;
-  animation: scaleInOut 5s ease-out forwards;
+  animation: scaleInOut 0.5s ease-out forwards;
 }
 
 @keyframes scaleInOut {
