@@ -58,6 +58,7 @@ const ConfirmOrder = () => {
         const response = getDataApi(e);
         toastError(response.message);
       })
+  // eslint-disable-next-line react-hooks/exhaustive-deps 
   }, [])
 
   const handleNext = () => {

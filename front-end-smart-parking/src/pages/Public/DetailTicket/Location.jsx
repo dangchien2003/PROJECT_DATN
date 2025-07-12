@@ -39,6 +39,7 @@ const Location = ({ onChooseLocation, ticketId }) => {
     .finally(() => {
       setLoading(false);
     })
+  // eslint-disable-next-line react-hooks/exhaustive-deps 
   }, [])
   return (
     <ChildContent backgroundColor='#f0f0f0' >

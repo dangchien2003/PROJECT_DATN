@@ -89,6 +89,7 @@ const TitleItemCard = ({ isAdmin, parentRef, status }) => {
     else if (status === CARD_STATUS_2.CHO_KICH_HOAT.value) {
       setOptional(items.filter(item => item.key === "2"));
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps 
   }, [status])
 
   useEffect(() => {

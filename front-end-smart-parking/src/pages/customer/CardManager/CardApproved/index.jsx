@@ -11,12 +11,12 @@ import LoadingComponent from '@/components/LoadingComponent';
 
 const CardApproved = () => {
   const refListCard = useRef();
-  const [widthCard, setWidthCard] = useState(500);
-  const { width, key } = useResponsiveKey();
+  const [widthCard] = useState(500);
+  const { key } = useResponsiveKey();
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
-  const [currentPage, setCurrentPage] = useState(0)
-  const [totalPage, setTotalPage] = useState(0)
+  const [currentPage] = useState(0)
+  // const [totalPage, setTotalPage] = useState(0)
   const pageSize = 5;
 
   useEffect(() => {
@@ -26,7 +26,7 @@ const CardApproved = () => {
       console.log(response)
       setData(response.data);
       // setData([]);
-      setTotalPage(response.totalPages)
+      // setTotalPage(response.totalPages)
     })
       .catch((e) => {
         const response = getDataApi(e);

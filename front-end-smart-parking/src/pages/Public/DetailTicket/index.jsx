@@ -23,7 +23,6 @@ const DetailTicket = () => {
   const { id } = useParams();
   const [locationChoosed, setLocationChoosed] = React.useState(null);
   const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
   const { hideLoad, showLoad } = useLoading();
 
   useEffect(() => {
@@ -39,6 +38,7 @@ const DetailTicket = () => {
       .finally(() => {
         hideLoad();
       });
+  // eslint-disable-next-line react-hooks/exhaustive-deps 
   }, [])
 
   const onChooseLocation = (location) => {
