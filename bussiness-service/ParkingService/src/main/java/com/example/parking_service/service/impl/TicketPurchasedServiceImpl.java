@@ -9,15 +9,16 @@ import com.example.parking_service.ParkingServiceApplication;
 import com.example.parking_service.Specification.TicketPurchasedSpecification;
 import com.example.parking_service.dto.other.TicketQr;
 import com.example.parking_service.dto.request.CustomerSearchTicketPurchasedRequest;
-import com.example.parking_service.dto.response.CusTicketPurchasedDetailResponse;
-import com.example.parking_service.dto.response.CusTicketPurchasedSearchResponse;
-import com.example.parking_service.dto.response.LocationNameDTO;
-import com.example.parking_service.dto.response.TicketNameDTO;
+import com.example.parking_service.dto.response.*;
+import com.example.parking_service.entity.TicketInOut;
+import com.example.parking_service.entity.TicketInOut_;
 import com.example.parking_service.entity.TicketPurchased;
 import com.example.parking_service.entity.TicketPurchased_;
+import com.example.parking_service.enums.CheckinStatus;
 import com.example.parking_service.enums.TicketPurchasedStatus;
 import com.example.parking_service.mapper.TicketPurchasedMapper;
 import com.example.parking_service.repository.LocationRepository;
+import com.example.parking_service.repository.TicketInOutRepository;
 import com.example.parking_service.repository.TicketPurchaseRepository;
 import com.example.parking_service.repository.TicketRepository;
 import com.example.parking_service.service.CryptoService;
@@ -52,6 +53,7 @@ public class TicketPurchasedServiceImpl implements TicketPurchasedService {
     TicketPurchaseRepository ticketPurchaseRepository;
     TicketRepository ticketRepository;
     LocationRepository locationRepository;
+    TicketInOutRepository ticketInOutRepository;
     TicketPurchasedSpecification ticketPurchasedSpecification;
     TicketPurchasedMapper ticketPurchasedMapper;
     CryptoService cryptoService;
@@ -226,5 +228,35 @@ public class TicketPurchasedServiceImpl implements TicketPurchasedService {
         DataUtils.setDataAction(ticketPurchased, accountId, false);
         ticketPurchaseRepository.save(ticketPurchased);
         return ApiResponse.builder().build();
+    }
+
+    @Override
+    public ApiResponse<Object> history(String ticketPurchasedId, Pageable pageable) {
+        String accountId = ParkingServiceApplication.testPartnerActionBy;
+        boolean exist = ticketPurchaseRepository.existsByIdAndAccountId(ticketPurchasedId, accountId);
+        if (!exist) {
+            throw new AppException(ErrorCode.NOT_FOUND.withMessage("Không tìm thấy dữ liệu"));
+        }
+        Pageable pageQuery = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
+                Sort.by(Sort.Direction.DESC, TicketInOut_.CHECKIN_AT));
+        Page<TicketInOut> page = ticketInOutRepository.findByTicketPurchasedId(ticketPurchasedId, pageQuery);
+        List<TicketInOutResponse> result = page.map(item -> TicketInOutResponse.builder()
+                .id(item.getId())
+                .checkinAt(item.getCheckinAt())
+                .checkoutAt(item.getCheckoutAt())
+                .status(getStatusCheckIn(item))
+                .build()
+        ).toList();
+        return ApiResponse.builder()
+                .result(new PageResponse<>(result, page.getTotalPages(), page.getTotalElements()))
+                .build();
+    }
+
+    Integer getStatusCheckIn(TicketInOut ticketInOut) {
+        if (ticketInOut.getCheckoutAt() != null) {
+            return CheckinStatus.HOAN_THANH;
+        } else {
+            return CheckinStatus.DANG_GUI;
+        }
     }
 }

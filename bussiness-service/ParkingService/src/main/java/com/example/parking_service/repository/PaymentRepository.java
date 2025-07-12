@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 public interface PaymentRepository extends JpaRepository<Payment, String> {
     @Query("""
@@ -24,4 +25,6 @@ public interface PaymentRepository extends JpaRepository<Payment, String> {
             @Param("paymentBy") String paymentBy,
             Pageable pageable
     );
+
+    Optional<Payment> findByObjectIdAndType(String objectId, Integer paymentType);
 }

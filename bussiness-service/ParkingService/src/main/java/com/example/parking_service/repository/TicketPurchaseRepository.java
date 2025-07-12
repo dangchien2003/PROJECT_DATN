@@ -16,4 +16,6 @@ public interface TicketPurchaseRepository extends JpaRepository<TicketPurchased,
 
     Optional<TicketPurchased> findByIdAndAccountId(String id, String accountId);
 
+    boolean existsByIdAndAccountId(String id, String accountId);
+
 }
