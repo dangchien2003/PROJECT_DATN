@@ -2,7 +2,7 @@
   "name": "smart-parking",
   "version": "0.1.0",
   "private": true,
-  "homepage": ".",
+  "homepage": "/",
   "dependencies": {
     "@ant-design/compatible": "^5.1.4",
     "@ant-design/dark-theme": "^2.0.2",
