@@ -20,7 +20,7 @@ const generateTimeSlots = (max) => {
 
 const ContentTab = ({ date }) => {
   const [data, setData] = useState(null);
-  const [max, setMax] = useState(100);
+  const [max] = useState(100);
   useEffect(() => {
     const id = setTimeout(() => {
       const generateTimeSlotsData = generateTimeSlots(max);
@@ -29,6 +29,7 @@ const ContentTab = ({ date }) => {
     return () => {
       clearTimeout(id);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps 
   }, [])
   return (
     <div>

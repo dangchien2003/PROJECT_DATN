@@ -14,7 +14,6 @@ const Item = ({ label, count, max, isSelect }) => {
     isSelect = true;
   }
   const levelClass = getLevelClass(count, max);
-  const select = isSelect ? "select" : "";
   return (
     <div>
       <div className={`item-time ${levelClass}`}>

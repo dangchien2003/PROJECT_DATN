@@ -35,6 +35,7 @@ const ChooseTime = ({ category, onChangeStartTime, location, ticket }) => {
       category,
       quality
     });
+  // eslint-disable-next-line react-hooks/exhaustive-deps 
   }, [selectedTime, endTime, ticket, location, category])
   
   const getCategoryName = () => {

@@ -1,12 +1,11 @@
-import React, { useState } from "react";
+import { moveAccessToken } from "@/service/cookieService";
+import { deleteRefeshToken } from "@/service/localStorageService";
 import { DownOutlined } from "@ant-design/icons";
 import { Drawer, Dropdown, Space, Typography } from "antd";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { deleteRefeshToken } from "@/service/localStorageService";
-import { moveAccessToken } from "@/service/cookieService";
-import './style.css'
-import Avatar from "../Avatar";
 import AccountInfo from "../AccountInfo";
+import './style.css';
 
 const MenuAccount = ({ linkAvatar, isCustomer }) => {
   const [openAccountInfo, setOpenAccountInfo] = useState(false);
