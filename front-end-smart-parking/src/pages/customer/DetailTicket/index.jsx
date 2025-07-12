@@ -203,7 +203,7 @@ const DetailTicket = () => {
             <Col lg={12} md={12} sm={24} xs={24} className='history'>
               <h2 className='page-name'>Lịch sử</h2>
               <div className='padding-content'>
-                <History />
+                <History id={id}/>
               </div>
             </Col>
           </Row>

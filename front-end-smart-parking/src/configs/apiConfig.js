@@ -47,6 +47,7 @@ export const PARKING_SERVICE = {
     detail: "purchased/detail",
     enableTicket: "purchased/enable",
     disableTicket: "purchased/disable",
+    historyInOut: "purchased/history/:id",
   },
   authen: {
     login: "auth/sign-in",
@@ -66,6 +67,11 @@ export const PARKING_SERVICE = {
   },
   transaction: {
     customerSearch: "transaction/history"
+  },
+  deposit: {
+    requestDeposit: "deposit",
+    getHistory: "deposit/history",
+    cancelRequest: "deposit/cancel/:id",
   }
 }
 
