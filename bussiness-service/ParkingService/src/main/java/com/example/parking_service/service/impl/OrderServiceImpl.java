@@ -6,18 +6,20 @@ import com.example.common.exception.AppException;
 import com.example.common.exception.ErrorCode;
 import com.example.common.utils.DataUtils;
 import com.example.parking_service.ParkingServiceApplication;
-import com.example.parking_service.dto.other.TicketQr;
 import com.example.parking_service.dto.request.ConfirmOrderRequest;
 import com.example.parking_service.dto.request.CreateOrderRequest;
 import com.example.parking_service.dto.response.CreateOrderResponse;
+import com.example.parking_service.dto.response.PayOnlineResponse;
 import com.example.parking_service.entity.*;
 import com.example.parking_service.enums.*;
 import com.example.parking_service.repository.*;
-import com.example.parking_service.service.CryptoService;
 import com.example.parking_service.service.OrderService;
+import com.example.parking_service.service.ProcessPaymentBuyTicketService;
+import com.example.parking_service.service.VnPayService;
+import com.example.parking_service.utils.HttpUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -25,12 +27,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -44,9 +45,9 @@ public class OrderServiceImpl implements OrderService {
     AccountRepository accountRepository;
     OrderRepository orderRepository;
     PaymentRepository paymentRepository;
-    TicketPurchasedRepository ticketPurchasedRepository;
+    ProcessPaymentBuyTicketService processPaymentBuyTicketService;
+    VnPayService vnPayService;
     ObjectMapper objectMapper;
-    CryptoService crypto;
 
     @Override
     public ApiResponse<Object> order(CreateOrderRequest request) throws JsonProcessingException {
@@ -221,7 +222,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public ApiResponse<Object> confirmOrder(ConfirmOrderRequest request) {
+    public ApiResponse<Object> confirmOrder(ConfirmOrderRequest request, HttpServletRequest http) throws UnsupportedEncodingException, JsonProcessingException {
         if (!PaymentMethod.ALL_METHOD.contains(request.getPaymentMethod())) {
             throw new AppException(ErrorCode.INVALID_DATA.withMessage("Phương thức không được hỗ trợ"));
         }
@@ -232,19 +233,46 @@ public class OrderServiceImpl implements OrderService {
             throw new AppException(ErrorCode.INVALID_DATA.withMessage("Không thể xác nhận đơn"));
         }
 
-        Payment payment;
         if (PaymentMethod.SO_DU.equals(request.getPaymentMethod())) {
-            payment = processPaymentByRemaining(order);
+            return ApiResponse.builder()
+                    .result(processPaymentByRemaining(order))
+                    .build();
+
+        } else if (PaymentMethod.VNPAY.equals(request.getPaymentMethod())) {
+            return ApiResponse.builder()
+                    .result(processPaymentByVNPAY(order, http))
+                    .build();
         } else {
             throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
         }
-
-        return ApiResponse.builder()
-                .result(payment)
-                .build();
     }
 
-    Payment processPaymentByRemaining(OrderParking order) {
+    PayOnlineResponse processPaymentByVNPAY(OrderParking order, HttpServletRequest http) throws UnsupportedEncodingException {
+        String actionBy = order.getPaymentBy();
+        // cập nhật trạng thái đơn hàng
+        order.setStatus(OrderStatus.DA_XAC_NHAN);
+        DataUtils.setDataAction(order, actionBy, false);
+        orderRepository.save(order);
+        // lưu thông tin thanh toán
+        Payment payment = Payment.builder()
+                .objectId(order.getOrderId())
+                .paymentBy(actionBy)
+                .status(PaymentStatus.CHO_THANH_TOAN)
+                .type(PaymentType.MUA_VE)
+                .paymentMethod(PaymentMethod.VNPAY)
+                .fluctuation(Fluctuation.GIAM)
+                .total(order.getTotal())
+                .build();
+        DataUtils.setDataAction(payment, actionBy, true);
+        payment = paymentRepository.save(payment);
+        // lấy url thanh toán
+        String ip = HttpUtils.getClientIp(http);
+        PayOnlineResponse response = vnPayService.generateUrl(payment.getPaymentId(), payment.getTotal(), ip,
+                "thanh toan mua ve", UrlReturn.getListTicketUrl());
+        return response;
+    }
+
+    String processPaymentByRemaining(OrderParking order) throws JsonProcessingException {
         String actionBy = order.getPaymentBy();
         Account account = accountRepository.findByIdAndStatus(actionBy, AccountStatus.DANG_HOAT_DONG.getValue())
                 .orElseThrow(() -> new AppException(ErrorCode.NO_ACCESS));
@@ -257,10 +285,6 @@ public class OrderServiceImpl implements OrderService {
             DataUtils.setDataAction(account, order.getPaymentBy(), false);
             accountRepository.save(account);
         }
-        // cập nhật trạng thái đơn hàng
-        order.setStatus(OrderStatus.DA_THANH_TOAN);
-        DataUtils.setDataAction(order, actionBy, false);
-        orderRepository.save(order);
         // lưu thông tin thanh toán
         Payment payment = Payment.builder()
                 .objectId(order.getOrderId())
@@ -273,83 +297,14 @@ public class OrderServiceImpl implements OrderService {
                 .build();
         DataUtils.setDataAction(payment, actionBy, true);
         payment = paymentRepository.save(payment);
+        // cập nhật trạng thái đơn hàng
+        order.setStatus(OrderStatus.THANH_CONG);
+        DataUtils.setDataAction(order, actionBy, false);
+        orderRepository.save(order);
         // xử lý cấp vé
-        processBuyTicketSuccess(order);
-        return payment;
+        processPaymentBuyTicketService.processBuyTicketSuccess(order);
+        return payment.getPaymentId();
     }
 
-    void processBuyTicketSuccess(OrderParking order) {
-        // mua mới
-        List<TicketPurchased> ticketPurchasedSave = new ArrayList<>();
-        if (order.getExtendTicketId() == null) {
-            // mua cho bản thân
-            if (order.getOwners() == null) {
 
-                String id = UUID.randomUUID().toString();
-                TicketQr ticketQr = TicketQr.builder()
-                        .accountId(order.getPaymentBy())
-                        .ticketId(id)
-                        .createdAt(LocalDateTime.now())
-                        .build();
-                TicketPurchased ticketPurchased = null;
-                try {
-                    ticketPurchased = TicketPurchased.builder()
-                            .accountId(order.getPaymentBy())
-                            .ticketId(order.getTicketId())
-                            .locationId(order.getLocationId())
-                            .price(order.getTotal())
-                            .status(TicketPurchasedStatus.BINH_THUONG)
-                            .useStatus(TicketPurchasedUseStatus.KHONG_SU_DUNG)
-                            .startsValidity(order.getStart())
-                            .expires(order.getExpire())
-                            .qrCode(crypto.encrypt(objectMapper.writeValueAsString(ticketQr)))
-                            .createdQrCodeCount(1)
-                            .permitEditContentPlate(PermitEditContentPlate.CO)
-                            .usedTimes(0L)
-                            .build();
-                } catch (JsonProcessingException e) {
-                    throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
-                }
-                DataUtils.setDataAction(ticketPurchased, order.getPaymentBy(), true);
-                ticketPurchasedSave.add(ticketPurchased);
-            } else {
-                // mua hộ
-                List<String> owners = objectMapper.convertValue(order.getOwners(), new TypeReference<List<String>>() {
-                });
-                ticketPurchasedSave = owners.stream().map(item -> {
-                    String id = UUID.randomUUID().toString();
-                    TicketQr ticketQr = TicketQr.builder()
-                            .accountId(item)
-                            .ticketId(id)
-                            .createdAt(LocalDateTime.now())
-                            .build();
-                    TicketPurchased ticketPurchased = null;
-                    try {
-                        ticketPurchased = TicketPurchased.builder()
-                                .id(id)
-                                .accountId(item)
-                                .ticketId(order.getTicketId())
-                                .locationId(order.getLocationId())
-                                .price(order.getTotal())
-                                .status(TicketPurchasedStatus.BINH_THUONG)
-                                .useStatus(TicketPurchasedUseStatus.KHONG_SU_DUNG)
-                                .startsValidity(order.getStart())
-                                .expires(order.getExpire())
-                                .qrCode(crypto.encrypt(objectMapper.writeValueAsString(ticketQr)))
-                                .createdQrCodeCount(1)
-                                .permitEditContentPlate(PermitEditContentPlate.CO)
-                                .usedTimes(0L)
-                                .build();
-                    } catch (JsonProcessingException e) {
-                        throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
-                    }
-                    DataUtils.setDataAction(ticketPurchased, order.getPaymentBy(), true);
-                    return ticketPurchased;
-                }).toList();
-            }
-        } else {
-            // gia hạn
-        }
-        ticketPurchasedRepository.saveAll(ticketPurchasedSave);
-    }
 }

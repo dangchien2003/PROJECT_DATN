@@ -10,6 +10,7 @@ import com.example.parking_service.dto.response.PayOnlineResponse;
 import com.example.parking_service.dto.response.VnPayCheckTransactionResponse;
 import com.example.parking_service.entity.Account;
 import com.example.parking_service.entity.Deposit;
+import com.example.parking_service.entity.OrderParking;
 import com.example.parking_service.entity.Payment;
 import com.example.parking_service.enums.*;
 import com.example.parking_service.httpClient.VnPayClient;
@@ -17,8 +18,10 @@ import com.example.parking_service.repository.AccountRepository;
 import com.example.parking_service.repository.DepositRepository;
 import com.example.parking_service.repository.OrderRepository;
 import com.example.parking_service.repository.PaymentRepository;
+import com.example.parking_service.service.ProcessPaymentBuyTicketService;
 import com.example.parking_service.service.VnPayService;
 import com.example.parking_service.utils.HttpUtils;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -47,6 +50,7 @@ public class VnPayServiceImpl implements VnPayService {
     PaymentRepository paymentRepository;
     DepositRepository depositRepository;
     OrderRepository orderRepository;
+    ProcessPaymentBuyTicketService processPaymentBuyTicketService;
     VnPayClient vnPayClient;
     @NonFinal
     @Value("${vnPay.tmnCode}")
@@ -83,7 +87,7 @@ public class VnPayServiceImpl implements VnPayService {
         LocalDateTime now = LocalDateTime.now();
         String vnpCreateDate = TimeUtil.formatLocalDateTime(now, "yyyyMMddHHmmss");
         vnpParams.put("vnp_CreateDate", vnpCreateDate);
-        LocalDateTime expire = now.plusMinutes(5);
+        LocalDateTime expire = now.plusMinutes(30);
         String vnpExpireDate = TimeUtil.formatLocalDateTime(expire, "yyyyMMddHHmmss");
         vnpParams.put("vnp_ExpireDate", vnpExpireDate);
 
@@ -141,6 +145,7 @@ public class VnPayServiceImpl implements VnPayService {
         try {
             processBusiness(payment, response, "VNPAY");
         } catch (Exception e) {
+            log.error("eror: ", e);
             // câp nhật trạng thái nếu giao dịch thành công nhưng xử lý lỗi
             if (payment.getStatus().equals(PaymentStatus.THANH_CONG)) {
                 payment.setStatus(PaymentStatus.THANH_CONG_NHUNG_LOI_XU_LY);
@@ -154,9 +159,11 @@ public class VnPayServiceImpl implements VnPayService {
                 .build();
     }
 
-    void processBusiness(Payment payment, VnPayCheckTransactionResponse response, String actionBy) {
+    void processBusiness(Payment payment, VnPayCheckTransactionResponse response, String actionBy) throws JsonProcessingException {
         if (payment.getType().equals(PaymentType.NAP_TIEN)) {
             processCallbackTransactionDeposit(payment.getObjectId(), response.getVnpTransactionStatus(), actionBy);
+        } else if (payment.getType().equals(PaymentType.MUA_VE)) {
+            processCallbackTransactionBuyTicket(payment.getObjectId(), response.getVnpTransactionStatus(), actionBy);
         } else {
             throw new AppException(ErrorCode.INVALID_DATA.withMessage("Chưa xử lý giao dịch cho nghiệp vụ này"));
         }
@@ -184,7 +191,6 @@ public class VnPayServiceImpl implements VnPayService {
         DataUtils.setDataAction(payment, actionBy, false);
         paymentRepository.save(payment);
     }
-
 
     void processCallbackTransactionDeposit(String depositId, String transactionStatus, String actionBy) {
         Deposit deposit = depositRepository.findById(Long.parseLong(depositId))
@@ -224,6 +230,41 @@ public class VnPayServiceImpl implements VnPayService {
             throw e;
         }
 
+    }
+
+    void processCallbackTransactionBuyTicket(String orderId, String transactionStatus, String actionBy) throws JsonProcessingException {
+        OrderParking order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
+        Integer newOrderStatus = null;
+        // lấy trạng thái
+        if (transactionStatus.equals(VNPAYTransactionStatus.S_00.getStatus())) {
+            // thành công
+            newOrderStatus = OrderStatus.THANH_CONG;
+        } else if (!transactionStatus.equals(VNPAYTransactionStatus.S_01.getStatus())) {
+            // thất bại
+            newOrderStatus = OrderStatus.THAT_BAI;
+        }
+        // xử lý
+        try {
+            if (newOrderStatus != null) {
+                // cập nhật trạng thái đơn hàng
+                order.setStatus(newOrderStatus);
+                DataUtils.setDataAction(order, actionBy, false);
+                orderRepository.save(order);
+                // xử lý cấp vé nếu hoàn thành
+                if (newOrderStatus.equals(OrderStatus.THANH_CONG)) {
+                    processPaymentBuyTicketService.processBuyTicketSuccess(order);
+                }
+            }
+        } catch (Exception e) {
+            // cập nhật trạng thái nếu có lỗi
+            if (e instanceof AppException) {
+                order.setStatus(OrderStatus.THAT_BAI);
+            }
+            DataUtils.setDataAction(order, actionBy, false);
+            orderRepository.save(order);
+            throw e;
+        }
     }
 
     boolean isValidVnPayCallback(Map<String, String[]> queryParams) {

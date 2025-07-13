@@ -5,6 +5,7 @@ import com.example.parking_service.dto.request.ConfirmOrderRequest;
 import com.example.parking_service.dto.request.CreateOrderRequest;
 import com.example.parking_service.service.OrderService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.io.UnsupportedEncodingException;
 
 @RestController
 @RequestMapping("order")
@@ -27,7 +30,8 @@ public class OrderController {
     }
 
     @PostMapping("confirm")
-    ApiResponse<Object> confirmOrder(@Valid @RequestBody ConfirmOrderRequest request) {
-        return orderService.confirmOrder(request);
+    ApiResponse<Object> confirmOrder(@Valid @RequestBody ConfirmOrderRequest request, HttpServletRequest http)
+            throws UnsupportedEncodingException, JsonProcessingException {
+        return orderService.confirmOrder(request, http);
     }
 }

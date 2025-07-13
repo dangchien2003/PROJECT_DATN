@@ -15,6 +15,10 @@ public class UrlReturn {
         return domainStatic + "/deposit";
     }
 
+    public static String getListTicketUrl() {
+        return domainStatic + "/list/ticket";
+    }
+
     @PostConstruct
     public void init() {
         domainStatic = domainFromConfig;
