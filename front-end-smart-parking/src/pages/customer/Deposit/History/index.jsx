@@ -2,7 +2,7 @@ import { cancelRequest, getHistory } from '@/service/depositService';
 import { getDataApi } from '@/utils/api';
 import { formatCurrency } from '@/utils/number';
 import { showTotal } from '@/utils/table';
-import { toastError } from '@/utils/toast';
+import { toastError, toastSuccess } from '@/utils/toast';
 import { Table, Tooltip } from 'antd';
 import dayjs from "dayjs";
 import { useEffect, useState } from 'react';
@@ -114,6 +114,11 @@ const History = () => {
       .then(() => {
         item.status = 3;
         setData(prev => convertResponseToDataTable([...prev], pagination.current, pagination.pageSize));
+        toastSuccess("Hủy thành công yêu cầu " + item.id);
+      })
+      .catch(e => {
+        const response = getDataApi(e);
+        toastError(response.message);
       })
       .finally(hideLoad);
   };
