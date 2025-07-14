@@ -13,11 +13,19 @@ import { Link, useParams } from 'react-router-dom'
 import Recommend from './Recommend'
 import './style.css'
 import { customerDetail } from '@/service/locationService'
+import { useSelectMenu } from '@/hook/useSelectMenu'
+import { MENU_CUSTOMER_ID } from '@/utils/constants'
 
 const DetailLocation = () => {
   const { id } = useParams();
   const [data, setData] = useState(null);
   const {showLoad, hideLoad} = useLoading();
+  const { select } = useSelectMenu();
+
+  useEffect(() => {
+    select(MENU_CUSTOMER_ID.DAT_VE);
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
+  }, [])
 
   useEffect(() => {
     showLoad({type: 2});

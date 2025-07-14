@@ -2,12 +2,25 @@ import { moveAccessToken } from "@/service/cookieService";
 import { deleteRefeshToken } from "@/service/localStorageService";
 import { DownOutlined } from "@ant-design/icons";
 import { Drawer, Dropdown, Space, Typography } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AccountInfo from "../AccountInfo";
 import './style.css';
+import useResponsiveKey from "@/hook/useReponsive";
+import { formatCurrency } from "@/utils/number";
+import { useDispatch, useSelector } from "react-redux";
+import { getBalance } from "@/service/accountService";
+import { setRemaining } from "@/store/remainingSlice";
+import { getDataApi } from "@/utils/api";
+import { toastError } from "@/utils/toast";
+import SkeletonShimmerLoading from "../Loading/SkeletonShimmerLoading";
 
 const MenuAccount = ({ linkAvatar, isCustomer }) => {
+  const dispatch = useDispatch();
+  const [loadingRemaining, setLoadingRemaining] = useState(true);
+  const { key } = useResponsiveKey();
+  const [itemsMenu, setItemsMenu] = useState([]);
+  const remaining = useSelector(state => state.remaining);
   const [openAccountInfo, setOpenAccountInfo] = useState(false);
   const navigate = useNavigate();
   const handleLogout = () => {
@@ -23,24 +36,36 @@ const MenuAccount = ({ linkAvatar, isCustomer }) => {
     setOpenAccountInfo(false);
   };
 
-  const items = [
+  const itemsBase = [
+    {
+      key: "0",
+      label: <>{loadingRemaining ? <SkeletonShimmerLoading /> : <div className="bold" onClick={showDrawer}>Số dư: <><span className='quantity'>
+        <span>{remaining > 9999999 ? formatCurrency(9999999) : formatCurrency(remaining)}</span>
+        {remaining > 9999999 && <sup>+</sup>}
+      </span>
+        <span style={{ paddingLeft: 4 }}>Đ</span></></div>}</>,
+    },
     {
       key: "1",
-      label: <div onClick={showDrawer}>Thông tin tài khoản</div>,
+      type: "divider",
     },
     {
       key: "2",
+      label: <div onClick={showDrawer}>Thông tin tài khoản</div>,
+    },
+    {
+      key: "3",
       label: <a href="/account-info">Đổi mật khẩu</a>,
     },
     {
-      key: "1.5",
+      key: "4",
       label: <Link to={"/account/transaction"}><div>Quản lý giao dịch</div></Link>,
     },
     {
       type: "divider",
     },
     {
-      key: "3",
+      key: "5",
       label: (
         <div onClick={handleLogout}>
           Đăng xuất
@@ -48,11 +73,37 @@ const MenuAccount = ({ linkAvatar, isCustomer }) => {
       ),
     },
   ];
+
+  useEffect(() => {
+    if (key !== "xs") {
+      setItemsMenu(itemsBase.filter(item => item.key !== "0" && item.key !== "1"))
+    } else {
+      setItemsMenu(itemsBase)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps 
+  }, [key, loadingRemaining]);
+
+  useEffect(() => {
+    setLoadingRemaining(true);
+    getBalance().then((response) => {
+      const data = getDataApi(response);
+      dispatch(setRemaining(data));
+    })
+      .catch(e => {
+        const response = getDataApi(e);
+        toastError(response.message);
+      })
+      .finally(() => {
+        setLoadingRemaining(false);
+      })
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
+  }, [])
+
   return (
     <>
       <Dropdown
         menu={{
-          items,
+          items: itemsMenu,
           selectable: true,
         }}
         trigger={"click"}
@@ -75,7 +126,7 @@ const MenuAccount = ({ linkAvatar, isCustomer }) => {
         onClose={onClose}
         open={openAccountInfo}
       >
-        <AccountInfo/>
+        <AccountInfo />
       </Drawer>
     </>
   );

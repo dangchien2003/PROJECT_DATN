@@ -2,7 +2,7 @@ import ChildContent from '@/components/layout/Customer/ChildContent';
 import { customerGetHistory } from '@/service/transactionService';
 import { setSearching } from '@/store/startSearchSlice';
 import { getDataApi } from '@/utils/api';
-import { TYPE_TRANSACTION } from '@/utils/constants';
+import { MENU_CUSTOMER_ID, TYPE_TRANSACTION } from '@/utils/constants';
 import { formatCurrency } from '@/utils/number';
 import { convertDataSelectboxToObject, convertObjectToDataSelectBox } from '@/utils/object';
 import { showTotal } from '@/utils/table';
@@ -16,6 +16,7 @@ import { IoTimer } from 'react-icons/io5';
 import { useDispatch, useSelector } from 'react-redux';
 import Search from './Search';
 import './style.css';
+import { useSelectMenu } from '@/hook/useSelectMenu';
 
 const baseColumns = [
   {
@@ -81,7 +82,13 @@ const TransactionHistory = () => {
   const [dataSearch] = useState({
     type: null,
     transactionDate: null
-  })
+  });
+  const { select } = useSelectMenu();
+
+  useEffect(() => {
+    select(MENU_CUSTOMER_ID.KHAC);
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
+  }, [])
 
   const convertResponseToDataTable = (data, currentPage, pageSize) => {
     return data.map((item, index) => {

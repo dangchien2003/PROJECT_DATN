@@ -9,6 +9,8 @@ import { setSearching } from '@/store/startSearchSlice';
 import PaymentOnlineComplete from '@/components/PaymentOnlineComplete';
 import { useSearchParams } from 'react-router-dom';
 import ModalCustom from '@/components/ModalCustom';
+import { useSelectMenu } from '@/hook/useSelectMenu';
+import { MENU_CUSTOMER_ID } from '@/utils/constants';
 const items = [
   {
     key: '1',
@@ -33,6 +35,12 @@ const TicketList = () => {
   const [param] = useSearchParams();
   const { isSearching } = useSelector(state => state.startSearch)
   const dispatch = useDispatch();
+  const { select } = useSelectMenu();
+
+  useEffect(() => {
+    select(MENU_CUSTOMER_ID.VE_SU_DUNG);
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
+  }, [])
 
   const [dataSearch] = useState({
     tab: 1,

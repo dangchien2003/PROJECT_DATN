@@ -1,14 +1,22 @@
 import ChildContent from '@/components/layout/Customer/ChildContent';
 import ModalCustom from '@/components/ModalCustom';
 import { Button, Flex } from 'antd';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import RequestAddCard from '../RequestAddCard';
 import CardApproved from './CardApproved';
 import HistoryRequestAdditionalCard from './HistoryRequestAdditionalCard';
 import './style.css';
+import { useSelectMenu } from '@/hook/useSelectMenu';
+import { MENU_CUSTOMER_ID } from '@/utils/constants';
 
 const CardManager = () => {
   const [showFormAdd, setShowFormAdd] = useState(false);
+  const { select } = useSelectMenu();
+
+  useEffect(() => {
+    select(MENU_CUSTOMER_ID.QUAN_LY_THE);
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
+  }, [])
 
   const handleCloseFormAdd = () => {
     setShowFormAdd(false);

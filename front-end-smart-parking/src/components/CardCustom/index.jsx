@@ -34,7 +34,7 @@ const CardCustom = ({ isAdmin, parentRef, data = {} }) => {
             <span>{CARD_STATUS[data.status].label}</span>
           </div>
           <div className='info'>
-            Đang liên kết với vé: <Link to={isAdmin ? "/demo" : "/"} style={{ color: "white", textDecoration: "underline" }}>{data.ticketLink}</Link>
+            Đang liên kết với vé: {data.ticketLink && <Link to={isAdmin ? "/ticket/detail/" + data.ticketLink : "/ticket/detail/" + data.ticketLink} style={{ color: "white", textDecoration: "underline" }}>{data.ticketLink}</Link>}
           </div>
           {isAdmin && <>
             <div>Người yêu cầu: <Link to={"/account/customer/1"} style={{ color: "white", textDecoration: "underline" }}>{data.requestName}</Link></div>

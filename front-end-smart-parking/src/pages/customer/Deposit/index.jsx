@@ -3,7 +3,7 @@ import ModalCustom from '@/components/ModalCustom';
 import { useLoading } from '@/hook/loading';
 import { requestDeposit } from '@/service/depositService';
 import { getDataApi } from '@/utils/api';
-import { lineLoading } from '@/utils/constants';
+import { lineLoading, MENU_CUSTOMER_ID } from '@/utils/constants';
 import { formatCurrency, parseFormattedCurrency } from '@/utils/number';
 import { toastError } from '@/utils/toast';
 // import bank from "@image/bank-icon.png";
@@ -16,6 +16,7 @@ import ItemMethod from './ItemMethod';
 import ItemRecommend from './ItemRecommend';
 import './style.css';
 import DepositComplete from './DepositComplete';
+import { useSelectMenu } from '@/hook/useSelectMenu';
 
 const Deposit = () => {
   const [depositSuccess, setDepositSuccess] = useState(null);
@@ -25,8 +26,10 @@ const Deposit = () => {
   const { showLoad, hideLoad } = useLoading();
   const keyRequesting = "deposit_requesting";
   const [param] = useSearchParams();
+  const {select} = useSelectMenu();
 
   useEffect(() => {
+    select(MENU_CUSTOMER_ID.NAP_TIEN);
     if(param.get("vnp_TransactionStatus")) {
       const depositRequestingSto = localStorage.getItem(keyRequesting);
       if(depositRequestingSto === "1" && param.get("vnp_TransactionStatus") === "00") {

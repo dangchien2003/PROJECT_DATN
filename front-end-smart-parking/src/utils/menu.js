@@ -1,7 +1,9 @@
-import { Link } from "react-router-dom";
 import { HomeOutlined, UserOutlined } from "@ant-design/icons";
-import { IoTicket, IoCard } from "react-icons/io5";
-import { FaLocationDot, FaChartPie } from "react-icons/fa6";
+import { BsCart4 } from "react-icons/bs";
+import { FaChartPie, FaLocationDot } from "react-icons/fa6";
+import { IoCard, IoTicket } from "react-icons/io5";
+import { TbPigMoney } from "react-icons/tb";
+import { Link } from "react-router-dom";
 
 export const ADMIN_MENU = [
   {
@@ -156,3 +158,30 @@ export const PARTNER_MENU = [
   },
 ]
 
+export const CUSTOMER_MENU = [
+  {
+    key: "1",
+    icon: <HomeOutlined style={{ fontSize: 20 }} />,
+    label: <Link to={"/admin"}>Tổng quan</Link>,
+  },
+  {
+    key: "2",
+    icon: <TbPigMoney style={{ fontSize: 20 }} />,
+    label: <Link to={"/deposit"}>Nạp tiền</Link>
+  },
+  {
+    key: "3",
+    icon: <BsCart4 style={{ fontSize: 20 }} />,
+    label: <Link to={"/choose/location"}>Đặt vé</Link>
+  },
+  {
+    key: "4",
+    icon: <IoTicket style={{ fontSize: 20 }} />,
+    label: <Link to={"/list/ticket"}>Vé sử dụng</Link>,
+  },
+  {
+    key: "5",
+    icon: <IoCard style={{ fontSize: 20 }} />,
+    label: <Link to={"/card"}>Quản lý thẻ</Link>,
+  },
+];

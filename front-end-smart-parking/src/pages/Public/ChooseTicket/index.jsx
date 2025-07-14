@@ -10,6 +10,8 @@ import { FaCar, FaMotorcycle } from 'react-icons/fa6'
 import { useParams, useSearchParams } from 'react-router-dom'
 import './style.css'
 import TicketCard from './TicketCard'
+import { useSelectMenu } from '@/hook/useSelectMenu'
+import { MENU_CUSTOMER_ID } from '@/utils/constants'
 
 const ChooseTicket = () => {
   const [searchParams] = useSearchParams();
@@ -24,6 +26,12 @@ const ChooseTicket = () => {
   const [category, setCategory] = useState(null);
   const [vehicle, setVehicle] = useState(null);
   const [data, setData] = useState([]);
+  const { select } = useSelectMenu();
+
+  useEffect(() => {
+    select(MENU_CUSTOMER_ID.DAT_VE);
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
+  }, [])
 
   const loadData = (newPagination) => {
     setData([]);
@@ -70,7 +78,7 @@ const ChooseTicket = () => {
       loadData(page);
     }, 1000);
     setIdTimeOut(timeOut);
-  // eslint-disable-next-line react-hooks/exhaustive-deps 
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
   }, [category, vehicle]);
 
   const handleChangePage = (page) => {
@@ -170,7 +178,7 @@ const ChooseTicket = () => {
             data.map(item => <TicketCard data={item} />)
           }
           {
-            (!loadding && (data === null || data.length === 0)) && <Empty description="Không tìm thấy dữ liệu phù hợp"/>
+            (!loadding && (data === null || data.length === 0)) && <Empty description="Không tìm thấy dữ liệu phù hợp" />
           }
         </div>
         {(!loadding && data.length > 0) && <Flex justify='center'>

@@ -6,7 +6,7 @@ import StepOrder from '@/pages/customer/OrderTicket/StepOrder';
 import { confirmOrder } from '@/service/orderService';
 import { minusRemaining } from '@/store/remainingSlice';
 import { getDataApi } from '@/utils/api';
-import { lineLoading } from '@/utils/constants';
+import { lineLoading, MENU_CUSTOMER_ID } from '@/utils/constants';
 import { deleteCookie, getCookie } from '@/utils/cookie';
 import { formatCurrency } from '@/utils/number';
 import { toastError } from '@/utils/toast';
@@ -19,6 +19,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import PaymentSuccess from './PaymentSuccess';
 import './style.css';
+import { useSelectMenu } from '@/hook/useSelectMenu';
 
 const Payment = () => {
   const [confirmRemaing, setConfirmRemaining] = useState(false);
@@ -28,6 +29,12 @@ const Payment = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { showLoad, hideLoad } = useLoading();
+  const { select } = useSelectMenu();
+
+  useEffect(() => {
+    select(MENU_CUSTOMER_ID.DAT_VE);
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
+  }, [])
 
   useEffect(() => {
     const data = getCookie('confirm');

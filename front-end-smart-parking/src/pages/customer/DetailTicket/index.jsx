@@ -4,7 +4,7 @@ import ModalCustom from '@/components/ModalCustom';
 import QrTicket from '@/components/QrTicket';
 import { getDetail } from '@/service/ticketPurchasedService';
 import { getDataApi } from '@/utils/api';
-import { TICKET_PURCHASED_STATUS } from '@/utils/constants';
+import { MENU_CUSTOMER_ID, TICKET_PURCHASED_STATUS } from '@/utils/constants';
 import { formatCurrency } from '@/utils/number';
 import { convertDataSelectboxToObject, convertObjectToDataSelectBox } from '@/utils/object';
 import { toastError } from '@/utils/toast';
@@ -18,6 +18,7 @@ import { useParams } from 'react-router-dom';
 import History from './History';
 import MoreView from './MoreView';
 import './style.css';
+import { useSelectMenu } from '@/hook/useSelectMenu';
 
 const ticketPurchasedStatus = convertDataSelectboxToObject(convertObjectToDataSelectBox(TICKET_PURCHASED_STATUS));
 const DetailTicket = () => {
@@ -26,6 +27,12 @@ const DetailTicket = () => {
   const [detail, setDetail] = useState(null);
   const [usedRatio, setUsedRatio] = useState(0);
   const [dataTicketShowQr, setDataTicketShowQr] = useState(null);
+  const { select } = useSelectMenu();
+
+  useEffect(() => {
+    select(MENU_CUSTOMER_ID.VE_SU_DUNG);
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
+  }, [])
 
   const handleShowQr = () => {
     setDataTicketShowQr({
@@ -51,7 +58,7 @@ const DetailTicket = () => {
       .finally(() => {
         setLoading(false);
       })
-  // eslint-disable-next-line react-hooks/exhaustive-deps 
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
   }, [])
 
   // cập nhật thời lượng sử dụng sau mỗi 1 phút
@@ -62,7 +69,7 @@ const DetailTicket = () => {
       idInterval = setInterval(getUsedTimePercentage, 60000)
     }
     return () => { clearInterval(idInterval) }
-  // eslint-disable-next-line react-hooks/exhaustive-deps 
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
   }, [detail])
 
   function getUsedTimePercentage() {
@@ -86,11 +93,11 @@ const DetailTicket = () => {
   }
 
   const handleChangeDisableSuccess = (status) => {
-    setDetail(pre => ({...pre, status}))
+    setDetail(pre => ({ ...pre, status }))
   }
 
   const handleRefreshQrSuccess = () => {
-    setDetail(pre => ({...pre, createdQrCodeCount: pre.createdQrCodeCount + 1}));
+    setDetail(pre => ({ ...pre, createdQrCodeCount: pre.createdQrCodeCount + 1 }));
   }
   return (
     <div>
@@ -111,14 +118,14 @@ const DetailTicket = () => {
                             <div className='ticket-name'>{detail?.ticketName}
                             </div>
                             <div className='status'>
-                              <GoDotFill 
-                              className={ticketPurchasedStatus[detail.status].color} /> {ticketPurchasedStatus[detail.status].label}
+                              <GoDotFill
+                                className={ticketPurchasedStatus[detail.status].color} /> {ticketPurchasedStatus[detail.status].label}
                             </div>
                             <div className='error'>{detail?.reason}</div>
                           </div>
                         </Flex>
                         <div>
-                          {(detail?.status === TICKET_PURCHASED_STATUS.BINH_THUONG.value || detail?.status === TICKET_PURCHASED_STATUS.TAM_DINH_CHI.value) && <MoreView ticketId={detail.id} disableInp={detail?.status === TICKET_PURCHASED_STATUS.TAM_DINH_CHI.value} onChangeSuccess={handleChangeDisableSuccess}/>}
+                          {(detail?.status === TICKET_PURCHASED_STATUS.BINH_THUONG.value || detail?.status === TICKET_PURCHASED_STATUS.TAM_DINH_CHI.value) && <MoreView ticketId={detail.id} disableInp={detail?.status === TICKET_PURCHASED_STATUS.TAM_DINH_CHI.value} onChangeSuccess={handleChangeDisableSuccess} />}
                         </div>
                       </Flex>
                     </div>
@@ -203,14 +210,14 @@ const DetailTicket = () => {
             <Col lg={12} md={12} sm={24} xs={24} className='history'>
               <h2 className='page-name'>Lịch sử</h2>
               <div className='padding-content'>
-                <History id={id}/>
+                <History id={id} />
               </div>
             </Col>
           </Row>
         </div >
       </ChildContent >
       {dataTicketShowQr && <ModalCustom onClose={handleCloseQr}>
-        <QrTicket data={dataTicketShowQr} onRefresh={handleRefreshQrSuccess}/>
+        <QrTicket data={dataTicketShowQr} onRefresh={handleRefreshQrSuccess} />
       </ModalCustom>}
     </div >
   );

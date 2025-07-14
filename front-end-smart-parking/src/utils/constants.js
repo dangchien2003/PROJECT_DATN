@@ -510,3 +510,12 @@ export const USERNAME_CATEGORY = {
 }
 
 export const lineLoading = {type: 2};
+
+export const MENU_CUSTOMER_ID = {
+  TONG_QUAN: 1,
+  NAP_TIEN: 2,
+  DAT_VE: 3,
+  VE_SU_DUNG: 4,
+  QUAN_LY_THE: 5,
+  KHAC: null
+}

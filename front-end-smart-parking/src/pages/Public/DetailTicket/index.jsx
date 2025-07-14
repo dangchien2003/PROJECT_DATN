@@ -2,7 +2,7 @@ import ChildContent from '@/components/layout/Customer/ChildContent'
 import { useLoading } from '@/hook/loading'
 import { customerTicketDetail } from '@/service/ticketService'
 import { getDataApi } from '@/utils/api'
-import { VEHICLE } from '@/utils/constants'
+import { MENU_CUSTOMER_ID, VEHICLE } from '@/utils/constants'
 import { isNullOrUndefined } from '@/utils/data'
 import { formatCurrency } from '@/utils/number'
 import { toastError } from '@/utils/toast'
@@ -16,6 +16,7 @@ import { Link, useParams } from 'react-router-dom'
 import Location from './Location'
 import './style.css'
 import ticketIcon from './tickets.png'
+import { useSelectMenu } from '@/hook/useSelectMenu'
 const getPrice = (price) => {
   return <Tooltip title={price.toString().length > 7 ? formatCurrency(price) : undefined}>{formatCurrency(price)}</Tooltip>
 }
@@ -24,6 +25,12 @@ const DetailTicket = () => {
   const [locationChoosed, setLocationChoosed] = React.useState(null);
   const [data, setData] = useState(null);
   const { hideLoad, showLoad } = useLoading();
+  const { select } = useSelectMenu();
+
+  useEffect(() => {
+    select(MENU_CUSTOMER_ID.DAT_VE);
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
+  }, [])
 
   useEffect(() => {
     showLoad({ type: 2 });
