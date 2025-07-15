@@ -78,4 +78,9 @@ public class AccountController {
     ApiResponse<Object> changePassword(ChangePasswordRequest request) {
         return accountService.changePassword(request);
     }
+
+    @PatchMapping("changeInfo")
+    ApiResponse<Object> changeInfo(ChangePasswordRequest request) {
+        return accountService.changePassword(request);
+    }
 }
