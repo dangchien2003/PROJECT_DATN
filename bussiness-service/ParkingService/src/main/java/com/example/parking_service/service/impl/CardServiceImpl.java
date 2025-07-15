@@ -7,6 +7,7 @@ import com.example.common.exception.AppException;
 import com.example.common.exception.ErrorCode;
 import com.example.common.utils.DataUtils;
 import com.example.parking_service.ParkingServiceApplication;
+import com.example.parking_service.dto.request.ActiveCardRequest;
 import com.example.parking_service.dto.request.RequestAdditionalCard;
 import com.example.parking_service.dto.response.CardResponse;
 import com.example.parking_service.dto.response.HistoryRequestAddCardResponse;
@@ -112,5 +113,24 @@ public class CardServiceImpl implements CardService {
         return ApiResponse.builder()
                 .result(new PageResponse<>(result, cardPage.getTotalPages(), cardPage.getTotalElements()))
                 .build();
+    }
+
+    @Override
+    public ApiResponse<Object> active(ActiveCardRequest request) {
+        String owner = ParkingServiceApplication.testPartnerActionBy;
+        Card card = cardRepository.findByIdAndAccountId(request.getId(), owner)
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND.withMessage("Thẻ không xác định")));
+        // kiểm tra trạng thái
+        if (!card.getStatus().equals(CardStatus.CHO_KICH_HOAT)) {
+            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Không thể kích hoạt thẻ"));
+        }
+        // kiểm tra khớp mã kích hoạt
+        if (!card.getCodeActive().equals(request.getCode())) {
+            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Mã kích hoạt không khớp"));
+        }
+        card.setStatus(CardStatus.DANG_HOAT_DONG);
+        DataUtils.setDataAction(card, owner, false);
+        cardRepository.save(card);
+        return ApiResponse.builder().build();
     }
 }

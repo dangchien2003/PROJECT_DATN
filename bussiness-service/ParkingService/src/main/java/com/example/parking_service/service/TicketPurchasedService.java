@@ -2,6 +2,8 @@ package com.example.parking_service.service;
 
 import com.example.common.dto.response.ApiResponse;
 import com.example.parking_service.dto.request.CustomerSearchTicketPurchasedRequest;
+import com.example.parking_service.entity.OrderParking;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.data.domain.Pageable;
 
 
@@ -19,4 +21,8 @@ public interface TicketPurchasedService {
     ApiResponse<Object> enableTicket(String id);
 
     ApiResponse<Object> history(String id, Pageable pageable);
+
+    void cancelTicketExpired();
+
+    void processBuyTicketSuccess(OrderParking order) throws JsonProcessingException;
 }

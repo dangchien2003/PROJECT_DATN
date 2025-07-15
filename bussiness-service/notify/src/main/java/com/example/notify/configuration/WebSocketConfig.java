@@ -21,7 +21,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         // Enable a simple in-memory broker
         config.enableSimpleBroker("/topic", "/queue"); // nơi client sẽ lắng nghe
         config.setApplicationDestinationPrefixes("/app"); // prefix client gửi đến
-        config.setUserDestinationPrefix("/user"); // theo sau là thông tin user /user/:id/**
+        config.setUserDestinationPrefix("/user"); // theo sau là thông tin user /user
     }
 
     @Override

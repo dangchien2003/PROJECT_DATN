@@ -18,7 +18,7 @@ import com.example.parking_service.repository.AccountRepository;
 import com.example.parking_service.repository.DepositRepository;
 import com.example.parking_service.repository.OrderRepository;
 import com.example.parking_service.repository.PaymentRepository;
-import com.example.parking_service.service.ProcessPaymentBuyTicketService;
+import com.example.parking_service.service.TicketPurchasedService;
 import com.example.parking_service.service.VnPayService;
 import com.example.parking_service.utils.HttpUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -50,7 +50,7 @@ public class VnPayServiceImpl implements VnPayService {
     PaymentRepository paymentRepository;
     DepositRepository depositRepository;
     OrderRepository orderRepository;
-    ProcessPaymentBuyTicketService processPaymentBuyTicketService;
+    TicketPurchasedService ticketPurchasedService;
     VnPayClient vnPayClient;
     @NonFinal
     @Value("${vnPay.tmnCode}")
@@ -253,7 +253,7 @@ public class VnPayServiceImpl implements VnPayService {
                 orderRepository.save(order);
                 // xử lý cấp vé nếu hoàn thành
                 if (newOrderStatus.equals(OrderStatus.THANH_CONG)) {
-                    processPaymentBuyTicketService.processBuyTicketSuccess(order);
+                    ticketPurchasedService.processBuyTicketSuccess(order);
                 }
             }
         } catch (Exception e) {

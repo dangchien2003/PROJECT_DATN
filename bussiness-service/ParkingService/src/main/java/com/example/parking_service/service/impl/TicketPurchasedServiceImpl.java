@@ -10,12 +10,11 @@ import com.example.parking_service.Specification.TicketPurchasedSpecification;
 import com.example.parking_service.dto.other.TicketQr;
 import com.example.parking_service.dto.request.CustomerSearchTicketPurchasedRequest;
 import com.example.parking_service.dto.response.*;
-import com.example.parking_service.entity.TicketInOut;
-import com.example.parking_service.entity.TicketInOut_;
-import com.example.parking_service.entity.TicketPurchased;
-import com.example.parking_service.entity.TicketPurchased_;
+import com.example.parking_service.entity.*;
 import com.example.parking_service.enums.CheckinStatus;
+import com.example.parking_service.enums.PermitEditContentPlate;
 import com.example.parking_service.enums.TicketPurchasedStatus;
+import com.example.parking_service.enums.TicketPurchasedUseStatus;
 import com.example.parking_service.mapper.TicketPurchasedMapper;
 import com.example.parking_service.repository.LocationRepository;
 import com.example.parking_service.repository.TicketInOutRepository;
@@ -24,6 +23,7 @@ import com.example.parking_service.repository.TicketRepository;
 import com.example.parking_service.service.CryptoService;
 import com.example.parking_service.service.TicketPurchasedService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +42,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -58,6 +59,7 @@ public class TicketPurchasedServiceImpl implements TicketPurchasedService {
     TicketPurchasedMapper ticketPurchasedMapper;
     CryptoService cryptoService;
     ObjectMapper objectMapper;
+    CryptoService crypto;
 
     @Override
     public ApiResponse<Object> customerSearch(CustomerSearchTicketPurchasedRequest request, Pageable pageable) {
@@ -258,5 +260,96 @@ public class TicketPurchasedServiceImpl implements TicketPurchasedService {
         } else {
             return CheckinStatus.DANG_GUI;
         }
+    }
+
+    @Override
+    public void cancelTicketExpired() {
+        LocalDateTime endTimeScan = LocalDateTime.now();
+        List<Integer> statusScan = List.of(TicketPurchasedStatus.BINH_THUONG, TicketPurchasedStatus.TAM_DINH_CHI);
+        List<TicketPurchased> entityList = ticketPurchaseRepository
+                .findByExpiresLessThanEqualAndUseStatusAndStatusIn(endTimeScan, TicketPurchasedUseStatus.KHONG_SU_DUNG, statusScan);
+        if (!entityList.isEmpty()) {
+            entityList.forEach(item -> {
+                item.setStatus(TicketPurchasedStatus.HUY_VE);
+                DataUtils.setDataAction(item, "SCHEDULER", false);
+            });
+            ticketPurchaseRepository.saveAll(entityList);
+        }
+        log.info("Đã huỷ %d vé hết hạn".formatted(entityList.size()));
+    }
+
+    public void processBuyTicketSuccess(OrderParking order) throws JsonProcessingException {
+        // mua mới
+        List<TicketPurchased> ticketPurchasedSave = new ArrayList<>();
+        if (order.getExtendTicketId() == null) {
+            // mua cho bản thân
+            if (order.getOwners() == null) {
+
+                String id = UUID.randomUUID().toString();
+                TicketQr ticketQr = TicketQr.builder()
+                        .accountId(order.getPaymentBy())
+                        .ticketId(id)
+                        .createdAt(LocalDateTime.now())
+                        .build();
+                TicketPurchased ticketPurchased = null;
+                try {
+                    ticketPurchased = TicketPurchased.builder()
+                            .accountId(order.getPaymentBy())
+                            .ticketId(order.getTicketId())
+                            .locationId(order.getLocationId())
+                            .price(order.getTotal())
+                            .status(TicketPurchasedStatus.BINH_THUONG)
+                            .useStatus(TicketPurchasedUseStatus.KHONG_SU_DUNG)
+                            .startsValidity(order.getStart())
+                            .expires(order.getExpire())
+                            .qrCode(crypto.encrypt(objectMapper.writeValueAsString(ticketQr)))
+                            .createdQrCodeCount(1)
+                            .permitEditContentPlate(PermitEditContentPlate.CO)
+                            .usedTimes(0L)
+                            .build();
+                } catch (JsonProcessingException e) {
+                    throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
+                }
+                DataUtils.setDataAction(ticketPurchased, order.getPaymentBy(), true);
+                ticketPurchasedSave.add(ticketPurchased);
+            } else {
+                // mua hộ
+                List<String> owners = objectMapper.readValue(order.getOwners(), new TypeReference<List<String>>() {
+                });
+                ticketPurchasedSave = owners.stream().map(item -> {
+                    String id = UUID.randomUUID().toString();
+                    TicketQr ticketQr = TicketQr.builder()
+                            .accountId(item)
+                            .ticketId(id)
+                            .createdAt(LocalDateTime.now())
+                            .build();
+                    TicketPurchased ticketPurchased = null;
+                    try {
+                        ticketPurchased = TicketPurchased.builder()
+                                .id(id)
+                                .accountId(item)
+                                .ticketId(order.getTicketId())
+                                .locationId(order.getLocationId())
+                                .price(order.getTotal())
+                                .status(TicketPurchasedStatus.BINH_THUONG)
+                                .useStatus(TicketPurchasedUseStatus.KHONG_SU_DUNG)
+                                .startsValidity(order.getStart())
+                                .expires(order.getExpire())
+                                .qrCode(crypto.encrypt(objectMapper.writeValueAsString(ticketQr)))
+                                .createdQrCodeCount(1)
+                                .permitEditContentPlate(PermitEditContentPlate.CO)
+                                .usedTimes(0L)
+                                .build();
+                    } catch (JsonProcessingException e) {
+                        throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
+                    }
+                    DataUtils.setDataAction(ticketPurchased, order.getPaymentBy(), true);
+                    return ticketPurchased;
+                }).toList();
+            }
+        } else {
+            // gia hạn
+        }
+        ticketPurchaseRepository.saveAll(ticketPurchasedSave);
     }
 }

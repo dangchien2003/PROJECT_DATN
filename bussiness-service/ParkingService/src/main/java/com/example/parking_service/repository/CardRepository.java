@@ -7,12 +7,15 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface CardRepository extends JpaRepository<Card, Long> {
     @Query("SELECT MAX(c.issuedTimes) FROM Card c where c.accountId = :owner")
     Integer getMaxIssuedTimesByOwner(String owner);
 
     Page<Card> findByAccountId(String accountId, Pageable pageable);
+
+    Optional<Card> findByIdAndAccountId(Long id, String accountId);
 
     Page<Card> findByAccountIdAndStatusNotIn(String accountId, List<Integer> statusNotGet, Pageable pageable);
 }

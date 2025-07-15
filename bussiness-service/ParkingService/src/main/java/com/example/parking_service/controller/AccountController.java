@@ -1,6 +1,7 @@
 package com.example.parking_service.controller;
 
 import com.example.common.dto.response.ApiResponse;
+import com.example.parking_service.dto.request.ChangePasswordRequest;
 import com.example.parking_service.dto.request.CreateAccountRequest;
 import com.example.parking_service.dto.request.SearchListAccountRequest;
 import com.example.parking_service.enums.AccountCategory;
@@ -70,5 +71,11 @@ public class AccountController {
     @GetMapping("info")
     ApiResponse<Object> getInfoAccount() {
         return accountService.getInfoAccount();
+    }
+
+
+    @PatchMapping("changePassword")
+    ApiResponse<Object> changePassword(ChangePasswordRequest request) {
+        return accountService.changePassword(request);
     }
 }

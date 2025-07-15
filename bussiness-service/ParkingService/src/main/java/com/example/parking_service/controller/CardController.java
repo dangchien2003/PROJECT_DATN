@@ -1,6 +1,7 @@
 package com.example.parking_service.controller;
 
 import com.example.common.dto.response.ApiResponse;
+import com.example.parking_service.dto.request.ActiveCardRequest;
 import com.example.parking_service.dto.request.RequestAdditionalCard;
 import com.example.parking_service.service.CardService;
 import jakarta.validation.Valid;
@@ -30,5 +31,10 @@ public class CardController {
     @GetMapping("/history/request")
     ApiResponse<Object> getHistoryRequestAdditional(Pageable pageable) {
         return cardService.getHistoryRequestAdditional(pageable);
+    }
+
+    @PutMapping("/active")
+    ApiResponse<Object> active(@Valid @RequestBody ActiveCardRequest request) {
+        return cardService.active(request);
     }
 }

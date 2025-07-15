@@ -283,5 +283,6 @@ public class LocationModifyServiceImpl implements LocationModifyService {
         for (LocationWaitRelease locationWaitRelease : entityList) {
             insertScheduler(locationWaitRelease);
         }
+        log.info("Đã đưa %d địa điểm vào hàng chờ phát hành.".formatted(entityList.size()));
     }
 }

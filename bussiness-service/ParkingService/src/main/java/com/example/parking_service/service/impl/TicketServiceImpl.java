@@ -573,6 +573,7 @@ public class TicketServiceImpl implements TicketService {
         for (TicketWaitRelease ticketWaitRelease : entityList) {
             insertScheduler(ticketWaitRelease);
         }
+        log.info("Đã đưa %d vé vào hàng chờ phát hành.".formatted(entityList.size()));
     }
 
     private void insertScheduler(TicketWaitRelease ticketWaitRelease) {

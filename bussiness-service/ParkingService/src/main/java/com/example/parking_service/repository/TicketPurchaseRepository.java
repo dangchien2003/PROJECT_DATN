@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 public interface TicketPurchaseRepository extends JpaRepository<TicketPurchased, String>, JpaSpecificationExecutor<TicketPurchased> {
@@ -17,5 +19,7 @@ public interface TicketPurchaseRepository extends JpaRepository<TicketPurchased,
     Optional<TicketPurchased> findByIdAndAccountId(String id, String accountId);
 
     boolean existsByIdAndAccountId(String id, String accountId);
+
+    List<TicketPurchased> findByExpiresLessThanEqualAndUseStatusAndStatusIn(LocalDateTime endTimeScan, Integer useStatus, List<Integer> statusScan);
 
 }

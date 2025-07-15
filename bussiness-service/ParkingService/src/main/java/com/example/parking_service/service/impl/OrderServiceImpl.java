@@ -14,7 +14,7 @@ import com.example.parking_service.entity.*;
 import com.example.parking_service.enums.*;
 import com.example.parking_service.repository.*;
 import com.example.parking_service.service.OrderService;
-import com.example.parking_service.service.ProcessPaymentBuyTicketService;
+import com.example.parking_service.service.TicketPurchasedService;
 import com.example.parking_service.service.VnPayService;
 import com.example.parking_service.utils.HttpUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -45,7 +45,7 @@ public class OrderServiceImpl implements OrderService {
     AccountRepository accountRepository;
     OrderRepository orderRepository;
     PaymentRepository paymentRepository;
-    ProcessPaymentBuyTicketService processPaymentBuyTicketService;
+    TicketPurchasedService ticketPurchasedService;
     VnPayService vnPayService;
     ObjectMapper objectMapper;
 
@@ -302,7 +302,7 @@ public class OrderServiceImpl implements OrderService {
         DataUtils.setDataAction(order, actionBy, false);
         orderRepository.save(order);
         // xử lý cấp vé
-        processPaymentBuyTicketService.processBuyTicketSuccess(order);
+        ticketPurchasedService.processBuyTicketSuccess(order);
         return payment.getPaymentId();
     }
 

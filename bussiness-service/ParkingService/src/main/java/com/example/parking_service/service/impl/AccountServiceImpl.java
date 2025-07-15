@@ -9,6 +9,7 @@ import com.example.common.utils.ENumUtils;
 import com.example.common.utils.RandomUtils;
 import com.example.common.utils.RegexUtils;
 import com.example.parking_service.ParkingServiceApplication;
+import com.example.parking_service.dto.request.ChangePasswordRequest;
 import com.example.parking_service.dto.request.CreateAccountRequest;
 import com.example.parking_service.dto.request.SearchListAccountRequest;
 import com.example.parking_service.dto.response.AccountResponse;
@@ -297,5 +298,28 @@ public class AccountServiceImpl implements AccountService {
         return ApiResponse.builder()
                 .result(response)
                 .build();
+    }
+
+    @Override
+    public ApiResponse<Object> changePassword(ChangePasswordRequest request) {
+        String accountId = ParkingServiceApplication.testPartnerActionBy;
+        // valid dto
+        if (request.getNewPassword().equals(request.getOldPassword())) {
+            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Mật khẩu mới không được trùng với hiện tại"));
+        }
+        if (!RegexUtils.checkData(request.getNewPassword(), RegexUtils.REGEX_PASSWORD)) {
+            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Mật khẩu phải chứa ký tự hoa, ký tự thường, ký tự số, ký tự đặc biệt"));
+        }
+
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND.withMessage("Tài khoản không xác định")));
+        // kiểm tra khớp mật khẩu cũ
+        if (!account.getPassword().equals(request.getOldPassword())) {
+            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Mật khẩu không khớp"));
+        }
+        account.setPassword(request.getNewPassword());
+        DataUtils.setDataAction(account, accountId, false);
+        accountRepository.save(account);
+        return ApiResponse.builder().build();
     }
 }
