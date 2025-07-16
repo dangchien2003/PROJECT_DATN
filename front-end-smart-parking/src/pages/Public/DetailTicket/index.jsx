@@ -12,20 +12,23 @@ import month from '@image/30-days.png'
 import week from '@image/7-days.png'
 import { Button, Flex, Tooltip } from 'antd'
 import React, { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import Location from './Location'
 import './style.css'
 import ticketIcon from './tickets.png'
 import { useSelectMenu } from '@/hook/useSelectMenu'
+import { useSelector } from 'react-redux'
 const getPrice = (price) => {
   return <Tooltip title={price.toString().length > 7 ? formatCurrency(price) : undefined}>{formatCurrency(price)}</Tooltip>
 }
 const DetailTicket = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [locationChoosed, setLocationChoosed] = React.useState(null);
   const [data, setData] = useState(null);
   const { hideLoad, showLoad } = useLoading();
   const { select } = useSelectMenu();
+  const authened = useSelector(state => state.authen);
 
   useEffect(() => {
     select(MENU_CUSTOMER_ID.DAT_VE);
@@ -45,12 +48,20 @@ const DetailTicket = () => {
       .finally(() => {
         hideLoad();
       });
-  // eslint-disable-next-line react-hooks/exhaustive-deps 
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
   }, [])
 
   const onChooseLocation = (location) => {
     setLocationChoosed(location);
   }
+  const handleClickOrder = () => {
+    if (!authened) {
+      navigate("/authen");
+    } else {
+      navigate(`/order/${id}?locationChoosed=${!isNullOrUndefined(locationChoosed?.locationId) ? locationChoosed?.locationId : ''}`);
+    }
+  }
+
   return (
     <div id='detail-ticket'>
       <ChildContent backgroundColor='#f0f0f0'>
@@ -110,15 +121,13 @@ const DetailTicket = () => {
                   </Flex>
                 </div>
               </Flex>
-              <Link to={`/order/${id}?locationChoosed=${!isNullOrUndefined(locationChoosed?.locationId) ? locationChoosed?.locationId : ''}`}>
-                <Button className='order' color="danger" variant="solid">ĐẶT VÉ NGAY</Button>
-              </Link>
+              <Button className='order' color="danger" variant="solid" onClick={handleClickOrder}>ĐẶT VÉ NGAY</Button>
               {locationChoosed && <div className='location-choosed'>Bạn đang đặt vé cho địa điểm: <b>{locationChoosed.name}</b></div>}
             </div>
           </Flex>
         </Flex>
       </ChildContent>
-      <Location onChooseLocation={onChooseLocation} ticketId={id}/>
+      <Location onChooseLocation={onChooseLocation} ticketId={id} />
     </div>
   )
 }

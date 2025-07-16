@@ -8,7 +8,7 @@ import { MENU_CUSTOMER_ID } from '@/utils/constants'
 
 const Introduce = () => {
   const { select } = useSelectMenu();
-  select(MENU_CUSTOMER_ID.KHAC);
+  select(MENU_CUSTOMER_ID.GIOI_THIEU);
   return (
     <div className='intro'>
 

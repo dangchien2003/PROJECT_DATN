@@ -4,64 +4,41 @@ import { getParamsPage, getRequestParams, replaceParamsUrl } from '@/utils/api'
 
 export async function createAccountByAdmin(data) {
   return await httpClient.post(PARKING_SERVICE.account.createByAdmin, data, {
-    headers: {
-      Authorization: undefined
-    }
+    skipAuth: true
   })
 }
 
 export async function searchAccountCustomer(dataSearch, page, size, field, sort) {
   return await httpClient.post(PARKING_SERVICE.account.searchListCustomer + "?" + getParamsPage(page, size, field, sort), dataSearch, {
-    headers: {
-      Authorization: undefined
-    }
   })
 }
 
 export async function searchPartner(dataSearch, page, size, field, sort) {
   return await httpClient.post(PARKING_SERVICE.account.searchListPartner + "?" + getParamsPage(page, size, field, sort), dataSearch, {
-    headers: {
-      Authorization: undefined
-    }
   })
 }
 
 export async function detailCustomer(params) {
   return await httpClient.get(replaceParamsUrl(PARKING_SERVICE.account.detailCustomer + "?" + getRequestParams(params), params), {
-    headers: {
-      Authorization: undefined
-    }
   })
 }
 
 export async function detailPartner(params) {
   return await httpClient.get(replaceParamsUrl(PARKING_SERVICE.account.detailPartner + "?" + getRequestParams(params), params), {
-    headers: {
-      Authorization: undefined
-    }
   })
 }
 
 export async function getSuggestions(page, size, key) {
   return await httpClient.get(PARKING_SERVICE.account.getSuggestions + "?" + getRequestParams({key, page, size}), {
-    headers: {
-      Authorization: undefined
-    }
   })
 }
 
 export async function getBalance() {
   return await httpClient.get(PARKING_SERVICE.account.getBalance , {
-    headers: {
-      Authorization: undefined
-    }
   })
 }
 
 export async function getInfoAccount() {
   return await httpClient.get(PARKING_SERVICE.account.infoAccount , {
-    headers: {
-      Authorization: undefined
-    }
   })
 }

@@ -17,7 +17,8 @@ const Header = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [totalHeight, setTotalHeight] = useState("100vh");
   const selecting = useSelector(state => state.menuSelect);
-  const {key} = useResponsiveKey();
+  const authened = useSelector(state => state.authen);
+  const { key } = useResponsiveKey();
   useEffect(() => {
     const updateHeight = () => {
       const contentElement = document.getElementById("content-page");
@@ -47,6 +48,9 @@ const Header = () => {
       window.removeEventListener("resize", updateHeight);
     };
   }, [location.pathname]);
+
+  // điều chỉnh menu
+
   return (
     <div className="header">
       <div className={collapsed ? "icon-menu collapsed-true" : "icon-menu collapsed-false"}>
@@ -77,15 +81,19 @@ const Header = () => {
         />
       </Sider>
       <div className="end-box">
-        <Notifitation />
-        <div class="account">
-          {key !== 'xs' && <Remaining />}
-          <MenuAccount
-            linkAvatar={
-              "https://imgcdn.stablediffusionweb.com/2024/3/24/17ee935b-c63a-4374-8fc3-91b2559e02f2.jpg"
-            }
-          />
-        </div>
+        {authened &&
+          <>
+            <Notifitation />
+            <div class="account">
+              {key !== 'xs' && <Remaining />}
+              <MenuAccount
+                linkAvatar={
+                  "https://imgcdn.stablediffusionweb.com/2024/3/24/17ee935b-c63a-4374-8fc3-91b2559e02f2.jpg"
+                }
+              />
+            </div>
+          </>}
+
       </div>
     </div>
   )

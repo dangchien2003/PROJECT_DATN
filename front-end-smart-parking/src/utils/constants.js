@@ -512,6 +512,7 @@ export const USERNAME_CATEGORY = {
 export const lineLoading = {type: 2};
 
 export const MENU_CUSTOMER_ID = {
+  GIOI_THIEU: 0,
   TONG_QUAN: 1,
   NAP_TIEN: 2,
   DAT_VE: 3,

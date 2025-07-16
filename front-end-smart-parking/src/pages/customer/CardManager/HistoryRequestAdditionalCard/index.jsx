@@ -95,7 +95,7 @@ const HistoryRequestAdditionalCard = () => {
         setLoading(false);
       });
   };
-  console.log(pagination)
+  
   useEffect(() => {
     loadData(pagination);
   // eslint-disable-next-line react-hooks/exhaustive-deps 
