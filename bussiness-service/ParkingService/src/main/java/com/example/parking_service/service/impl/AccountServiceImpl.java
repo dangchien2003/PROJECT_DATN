@@ -8,7 +8,6 @@ import com.example.common.utils.DataUtils;
 import com.example.common.utils.ENumUtils;
 import com.example.common.utils.RandomUtils;
 import com.example.common.utils.RegexUtils;
-import com.example.parking_service.ParkingServiceApplication;
 import com.example.parking_service.dto.request.ChangePasswordRequest;
 import com.example.parking_service.dto.request.CreateAccountRequest;
 import com.example.parking_service.dto.request.SearchListAccountRequest;
@@ -23,6 +22,7 @@ import com.example.parking_service.enums.PublicAccount;
 import com.example.parking_service.mapper.AccountMapper;
 import com.example.parking_service.repository.AccountRepository;
 import com.example.parking_service.service.AccountService;
+import com.example.parking_service.utils.context.UserContextHolder;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -282,7 +282,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public ApiResponse<Object> getBalance() {
-        String accountId = ParkingServiceApplication.testPartnerActionBy;
+        String accountId = UserContextHolder.getContext().getUid();
         long balance = accountRepository.getBalance(accountId);
         return ApiResponse.builder()
                 .result(balance)
@@ -291,7 +291,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public ApiResponse<Object> getInfoAccount() {
-        String accountId = ParkingServiceApplication.testPartnerActionBy;
+        String accountId = UserContextHolder.getContext().getUid();
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
         ClientInfoAccountResponse response = accountMapper.toClientInfoAccountResponse(account);
@@ -302,7 +302,8 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public ApiResponse<Object> changePassword(ChangePasswordRequest request) {
-        String accountId = ParkingServiceApplication.testPartnerActionBy;
+        String accountId = UserContextHolder.getContext().getUid();
+        ;
         // valid dto
         if (request.getNewPassword().equals(request.getOldPassword())) {
             throw new AppException(ErrorCode.INVALID_DATA.withMessage("Mật khẩu mới không được trùng với hiện tại"));

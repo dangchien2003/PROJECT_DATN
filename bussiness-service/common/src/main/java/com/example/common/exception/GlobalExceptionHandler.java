@@ -74,12 +74,6 @@ public class GlobalExceptionHandler {
 //    }
 
     //
-//    @ExceptionHandler(value = AuthorizationDeniedException.class)
-//    ResponseEntity<ApiResponse<Object>> handlingAuthorizationDeniedException(AuthorizationDeniedException e) {
-//        ErrorCode errorCode = ErrorCode.UNAUTHORIZED;
-//        return setResponse(errorCode);
-//    }
-//
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     ResponseEntity<ApiResponse<Object>> handlingMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         log.error("error: ", e);

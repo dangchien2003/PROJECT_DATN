@@ -5,7 +5,6 @@ import com.example.common.enums.IsDel;
 import com.example.common.exception.AppException;
 import com.example.common.exception.ErrorCode;
 import com.example.common.utils.DataUtils;
-import com.example.parking_service.ParkingServiceApplication;
 import com.example.parking_service.dto.request.ConfirmOrderRequest;
 import com.example.parking_service.dto.request.CreateOrderRequest;
 import com.example.parking_service.dto.response.CreateOrderResponse;
@@ -17,6 +16,7 @@ import com.example.parking_service.service.OrderService;
 import com.example.parking_service.service.TicketPurchasedService;
 import com.example.parking_service.service.VnPayService;
 import com.example.parking_service.utils.HttpUtils;
+import com.example.parking_service.utils.context.UserContextHolder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -51,7 +51,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public ApiResponse<Object> order(CreateOrderRequest request) throws JsonProcessingException {
-        String actionBy = ParkingServiceApplication.testPartnerActionBy;
+        String accountId = UserContextHolder.getContext().getUid();
         validateOrderRequest(request);
         validateValue(request);
         // validate tồn tại vé và địa điểm
@@ -109,12 +109,12 @@ public class OrderServiceImpl implements OrderService {
                 .quality(request.getQuality())
                 .start(request.getStartTime())
                 .expire(expire)
-                .paymentBy(actionBy)
+                .paymentBy(accountId)
                 .build();
-        DataUtils.setDataAction(order, actionBy, true);
+        DataUtils.setDataAction(order, accountId, true);
         order = orderRepository.save(order);
         // lấy thông tin người thanh toán
-        Account account = accountRepository.findById(actionBy)
+        Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new AppException(ErrorCode.NO_ACCESS));
         CreateOrderResponse response = CreateOrderResponse.builder()
                 .orderId(order.getOrderId())
@@ -226,7 +226,7 @@ public class OrderServiceImpl implements OrderService {
         if (!PaymentMethod.ALL_METHOD.contains(request.getPaymentMethod())) {
             throw new AppException(ErrorCode.INVALID_DATA.withMessage("Phương thức không được hỗ trợ"));
         }
-        String actionBy = ParkingServiceApplication.testPartnerActionBy;
+        String actionBy = UserContextHolder.getContext().getUid();
         OrderParking order = orderRepository.findByOrderIdAndPaymentBy(request.getOrderId(), actionBy)
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND.withMessage("Không tìm thấy thông tin đơn")));
         if (!order.getStatus().equals(OrderStatus.CHO_XAC_NHAN)) {

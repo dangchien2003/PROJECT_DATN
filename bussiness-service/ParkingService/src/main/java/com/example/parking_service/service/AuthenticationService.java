@@ -6,6 +6,9 @@ import com.example.parking_service.dto.request.CheckTokenRequest;
 import com.example.parking_service.dto.request.ConfirmForgetRequest;
 import com.example.parking_service.dto.request.RegistrationAccount;
 import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jwt.SignedJWT;
+
+import java.text.ParseException;
 
 public interface AuthenticationService {
     ApiResponse<Object> login(AuthenticationRequest request, String userAgent);
@@ -18,4 +21,5 @@ public interface AuthenticationService {
 
     ApiResponse<Object> confirmForget(ConfirmForgetRequest request, String ip);
 
+    SignedJWT verifyToken(String token) throws JOSEException, ParseException;
 }

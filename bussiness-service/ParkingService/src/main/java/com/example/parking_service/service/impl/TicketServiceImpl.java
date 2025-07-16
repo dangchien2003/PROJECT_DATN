@@ -8,7 +8,6 @@ import com.example.common.exception.AppException;
 import com.example.common.exception.ErrorCode;
 import com.example.common.utils.DataUtils;
 import com.example.common.utils.TimeUtil;
-import com.example.parking_service.ParkingServiceApplication;
 import com.example.parking_service.Specification.TicketSpecification;
 import com.example.parking_service.Specification.TicketWaitReleaseSpecification;
 import com.example.parking_service.dto.other.ScheduledJob;
@@ -28,6 +27,7 @@ import com.example.parking_service.mapper.TicketWaitReleaseMapper;
 import com.example.parking_service.repository.*;
 import com.example.parking_service.service.SchedulerService;
 import com.example.parking_service.service.TicketService;
+import com.example.parking_service.utils.context.UserContextHolder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
@@ -77,12 +77,7 @@ public class TicketServiceImpl implements TicketService {
     @Override
     public ApiResponse<Object> cancelWaitRelease(ApproveRequest approveRequest, boolean isAdmin) {
         Long id = Long.parseLong(approveRequest.getId());
-        String actionBy;
-        if (isAdmin) {
-            actionBy = ParkingServiceApplication.testAdminUUID;
-        } else {
-            actionBy = ParkingServiceApplication.testPartnerActionBy;
-        }
+        String actionBy = UserContextHolder.getContext().getUid();
         // xoá hàng hàng đợi trong db
         TicketWaitRelease optionalTicketWaitRelease = ticketWaitReleaseRepository
                 .findByIdAndIsDelAndReleased(id,
@@ -119,8 +114,8 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     public ApiResponse<Object> detail(Long id) {
-        boolean roleAdmin = true;
-        String accountId = ParkingServiceApplication.testPartnerActionBy;
+        boolean roleAdmin = UserContextHolder.getContext().getRoles().contains("ADMIN");
+        String accountId = UserContextHolder.getContext().getUid();
         Ticket ticket = ticketRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
         if (!roleAdmin && !ticket.getPartnerId().equals(accountId)) {
@@ -145,8 +140,8 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     public ApiResponse<Object> detailWaitRelease(Long id) {
-        boolean roleAdmin = true;
-        String accountId = ParkingServiceApplication.testPartnerActionBy;
+        boolean roleAdmin = UserContextHolder.getContext().getRoles().contains("ADMIN");
+        String accountId = UserContextHolder.getContext().getUid();
         TicketWaitRelease ticketWaitRelease = ticketWaitReleaseRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
         if (!roleAdmin && !ticketWaitRelease.getPartnerId().equals(accountId)) {
@@ -370,7 +365,7 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     public ApiResponse<Object> partnerSearch(SearchTicket request, Pageable pageable) {
-        String partnerId = ParkingServiceApplication.testPartnerActionBy;
+        String partnerId = UserContextHolder.getContext().getUid();
         // search like
         String ticketName = DataUtils.convertStringSearchLike(request.getTicketName());
         String locationName = DataUtils.convertStringSearchLike(request.getLocationName());
@@ -486,7 +481,7 @@ public class TicketServiceImpl implements TicketService {
         if (duration.toDays() < 1) {
             throw new AppException(ErrorCode.INVALID_DATA.withMessage("Thời gian áp dụng chưa tuân thủ thời gian tối thiểu"));
         }
-        String partnerId = ParkingServiceApplication.testPartnerActionBy;
+        String partnerId = UserContextHolder.getContext().getUid();
         boolean isCreate = false;
         Ticket ticket = null;
         if (DataUtils.isNullOrEmpty(request.getTicketId())) {

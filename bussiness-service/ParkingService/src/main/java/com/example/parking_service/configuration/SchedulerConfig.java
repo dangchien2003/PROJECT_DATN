@@ -2,7 +2,7 @@ package com.example.parking_service.configuration;
 
 import com.example.parking_service.service.LocationModifyService;
 import com.example.parking_service.service.SchedulerService;
-import com.example.parking_service.service.TicketPurchaseService;
+import com.example.parking_service.service.TicketPurchasedService;
 import com.example.parking_service.service.TicketService;
 import jakarta.annotation.PostConstruct;
 import lombok.AccessLevel;
@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 public class SchedulerConfig {
     LocationModifyService locationModifyService;
     TicketService ticketService;
-    TicketPurchaseService ticketPurchaseService;
+    TicketPurchasedService ticketPurchasedService;
     SchedulerService schedulerService;
 
     // quét địa điểm chờ áp dụng
@@ -39,7 +39,7 @@ public class SchedulerConfig {
     // quét vé hết hạn và chuyển trạng thái
     @Scheduled(cron = "0 */15 * * * *") // giây, phút, giờ, ngày, tháng, thứ
     public void scanTicketExpired() {
-        ticketPurchaseService.cancelTicketExpired();
+        ticketPurchasedService.cancelTicketExpired();
     }
 
     // làm mới hàng đợi
@@ -52,6 +52,6 @@ public class SchedulerConfig {
     public void loadSchedulerLocation() {
         locationModifyService.loadScheduler();
         ticketService.loadScheduler();
-        ticketPurchaseService.cancelTicketExpired();
+        ticketPurchasedService.cancelTicketExpired();
     }
 }

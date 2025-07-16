@@ -6,7 +6,6 @@ import com.example.common.entity.BaseEntity_;
 import com.example.common.exception.AppException;
 import com.example.common.exception.ErrorCode;
 import com.example.common.utils.DataUtils;
-import com.example.parking_service.ParkingServiceApplication;
 import com.example.parking_service.dto.request.ActiveCardRequest;
 import com.example.parking_service.dto.request.RequestAdditionalCard;
 import com.example.parking_service.dto.response.CardResponse;
@@ -18,6 +17,7 @@ import com.example.parking_service.enums.TypeCard;
 import com.example.parking_service.mapper.CardMapper;
 import com.example.parking_service.repository.CardRepository;
 import com.example.parking_service.service.CardService;
+import com.example.parking_service.utils.context.UserContextHolder;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -44,10 +44,10 @@ public class CardServiceImpl implements CardService {
 
     @Override
     public ApiResponse<Object> requestAdditional(RequestAdditionalCard request) {
-        String owner = ParkingServiceApplication.testPartnerActionBy;
+        String accountId = UserContextHolder.getContext().getUid();
         // lần lần yêu cầu gần nhất
         Pageable pageable = PageRequest.of(0, 1, Sort.by(Sort.Direction.DESC, BaseEntity_.CREATED_AT));
-        List<Card> cardLatestList = cardRepository.findByAccountId(owner, pageable).getContent();
+        List<Card> cardLatestList = cardRepository.findByAccountId(accountId, pageable).getContent();
         Card cardLatest = null;
         // lấy giá trị đầu tiên
         if (!cardLatestList.isEmpty()) {
@@ -57,21 +57,21 @@ public class CardServiceImpl implements CardService {
         if (cardLatest != null
                 && (cardLatest.getStatus().equals(CardStatus.CHO_DUYET)
                 || cardLatest.getCreatedAt().plusHours(24).isAfter(LocalDateTime.now()))) {
-            throw new AppException(ErrorCode.NO_ACCESS
+            throw new AppException(ErrorCode.INVALID_DATA
                     .withMessage("Không thể gửi yêu cầu nếu yêu cầu trước đó chưa được xử lý hoặc chưa qua 24 giờ"));
         }
         // tăng số lần lên 1
-        Integer newIssuedTimes = cardLatest == null ? 0 : cardLatest.getIssuedTimes() + 1;
+        Integer newIssuedTimes = cardLatest == null ? 1 : cardLatest.getIssuedTimes() + 1;
         // dữ liệu yêu cầu
         Card card = Card.builder()
-                .accountId(owner)
+                .accountId(accountId)
                 .issuedTimes(newIssuedTimes)
                 .type(TypeCard.THE_CA_NHAN)
                 .status(CardStatus.CHO_DUYET)
-                .requestCreateBy(owner)
+                .requestCreateBy(accountId)
                 .reasonRequest(request.getReason())
                 .build();
-        DataUtils.setDataAction(card, owner, true);
+        DataUtils.setDataAction(card, accountId, true);
         cardRepository.save(card);
         return ApiResponse.builder().build();
     }
@@ -80,10 +80,10 @@ public class CardServiceImpl implements CardService {
     public ApiResponse<Object> getListCardApproved(Pageable pageable) {
         Pageable pageQuery = PageRequest.of(
                 pageable.getPageNumber(), pageable.getPageSize(), Sort.by(Sort.Direction.DESC, Card_.ISSUED_TIMES));
-        String owner = ParkingServiceApplication.testPartnerActionBy;
+        String accountId = UserContextHolder.getContext().getUid();
         String ownerName = "LÊ ĐĂNG CHIẾN"; // lấy từ token
         List<Integer> statusNotGet = List.of(CardStatus.CHO_DUYET, CardStatus.TU_CHOI, CardStatus.CHO_CAP);
-        Page<Card> cards = cardRepository.findByAccountIdAndStatusNotIn(owner, statusNotGet, pageQuery);
+        Page<Card> cards = cardRepository.findByAccountIdAndStatusNotIn(accountId, statusNotGet, pageQuery);
         Random random = new Random();
         List<CardResponse> result = cards.map(item -> {
             CardResponse cardResponse = cardMapper.toCardResponse(item);
@@ -106,9 +106,9 @@ public class CardServiceImpl implements CardService {
 
     @Override
     public ApiResponse<Object> getHistoryRequestAdditional(Pageable pageable) {
-        String owner = ParkingServiceApplication.testPartnerActionBy;
+        String accountId = UserContextHolder.getContext().getUid();
         Pageable pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(Sort.Direction.DESC, BaseEntity_.CREATED_AT));
-        Page<Card> cardPage = cardRepository.findByAccountId(owner, pageRequest);
+        Page<Card> cardPage = cardRepository.findByAccountId(accountId, pageRequest);
         List<HistoryRequestAddCardResponse> result = cardPage.map(cardMapper::toHistoryRequestAddCardResponse).toList();
         return ApiResponse.builder()
                 .result(new PageResponse<>(result, cardPage.getTotalPages(), cardPage.getTotalElements()))
@@ -117,8 +117,8 @@ public class CardServiceImpl implements CardService {
 
     @Override
     public ApiResponse<Object> active(ActiveCardRequest request) {
-        String owner = ParkingServiceApplication.testPartnerActionBy;
-        Card card = cardRepository.findByIdAndAccountId(request.getId(), owner)
+        String accountId = UserContextHolder.getContext().getUid();
+        Card card = cardRepository.findByIdAndAccountId(request.getId(), accountId)
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND.withMessage("Thẻ không xác định")));
         // kiểm tra trạng thái
         if (!card.getStatus().equals(CardStatus.CHO_KICH_HOAT)) {
@@ -129,7 +129,7 @@ public class CardServiceImpl implements CardService {
             throw new AppException(ErrorCode.INVALID_DATA.withMessage("Mã kích hoạt không khớp"));
         }
         card.setStatus(CardStatus.DANG_HOAT_DONG);
-        DataUtils.setDataAction(card, owner, false);
+        DataUtils.setDataAction(card, accountId, false);
         cardRepository.save(card);
         return ApiResponse.builder().build();
     }

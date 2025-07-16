@@ -29,9 +29,17 @@ import java.util.List;
 public class SecurityConfig {
     @NonFinal
     static final String[] PUBLIC_ENDPOINT = {
-            "/**"
+            "/auth/**",
+            "/swagger-ui/**",
+            "/v3/api-docs/**",
+            "/location/customer/search",
+            "/ticket/search",
+            "/ticket/customer/detail",
+            "/ticket/customer/location-use-ticket",
+            "/callback/vn-pay/transaction"
     };
     CustomJwtDecoder customJwtDecoder;
+    JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -48,7 +56,7 @@ public class SecurityConfig {
                                 jwtConfigurer
                                         .decoder(customJwtDecoder)
                                         .jwtAuthenticationConverter(jwtAuthenticationConverter()))
-                        .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
         );
         httpSecurity
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))

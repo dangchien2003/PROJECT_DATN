@@ -9,6 +9,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,21 +20,25 @@ public class CardController {
     CardService cardService;
 
     @PostMapping("request/additional")
+    @PreAuthorize("hasAnyAuthority('CUSTOMER')")
     ApiResponse<Object> requestAdditional(@RequestBody @Valid RequestAdditionalCard request) {
         return cardService.requestAdditional(request);
     }
 
     @GetMapping("/approved")
+    @PreAuthorize("hasAnyAuthority('CUSTOMER')")
     ApiResponse<Object> getListCardApproved(Pageable pageable) {
         return cardService.getListCardApproved(pageable);
     }
 
     @GetMapping("/history/request")
+    @PreAuthorize("hasAnyAuthority('CUSTOMER')")
     ApiResponse<Object> getHistoryRequestAdditional(Pageable pageable) {
         return cardService.getHistoryRequestAdditional(pageable);
     }
 
     @PutMapping("/active")
+    @PreAuthorize("hasAnyAuthority('CUSTOMER')")
     ApiResponse<Object> active(@Valid @RequestBody ActiveCardRequest request) {
         return cardService.active(request);
     }

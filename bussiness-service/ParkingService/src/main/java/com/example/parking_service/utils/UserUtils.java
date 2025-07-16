@@ -27,7 +27,7 @@ public class UserUtils {
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
 
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
-                .subject(objectMapper.writeValueAsString(new SubjectAccessToken(account.getId(), userAgent)))
+                .subject(objectMapper.writeValueAsString(new SubjectAccessToken(account.getId(), userAgent, buildScope(account))))
                 .issuer("parking")
                 .issueTime(new Date())
                 .expirationTime(new Date(

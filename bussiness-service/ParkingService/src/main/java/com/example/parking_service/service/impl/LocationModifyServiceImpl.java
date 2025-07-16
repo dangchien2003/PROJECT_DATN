@@ -7,7 +7,6 @@ import com.example.common.exception.AppException;
 import com.example.common.exception.ErrorCode;
 import com.example.common.utils.DataUtils;
 import com.example.common.utils.TimeUtil;
-import com.example.parking_service.ParkingServiceApplication;
 import com.example.parking_service.dto.other.ScheduledJob;
 import com.example.parking_service.dto.other.ScheduledJobId;
 import com.example.parking_service.dto.request.ApproveRequest;
@@ -26,6 +25,7 @@ import com.example.parking_service.repository.LocationRepository;
 import com.example.parking_service.repository.LocationWaitReleaseRepository;
 import com.example.parking_service.service.LocationModifyService;
 import com.example.parking_service.service.SchedulerService;
+import com.example.parking_service.utils.context.UserContextHolder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
@@ -57,7 +57,7 @@ public class LocationModifyServiceImpl implements LocationModifyService {
     @Override
     public ApiResponse<Object> detailModify(Long id) {
         boolean roleAdmin = false;
-        String accountId = ParkingServiceApplication.testPartnerActionBy;
+        String accountId = UserContextHolder.getContext().getUid();
         LocationModify locationModify = locationModifyRepository.findByModifyIdAndIsDel(id, IsDel.DELETE_NOT_YET.getValue())
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
         if (!roleAdmin && !locationModify.getPartnerId().equals(accountId)) {
@@ -70,6 +70,7 @@ public class LocationModifyServiceImpl implements LocationModifyService {
 
     @Override
     public ApiResponse<Object> approve(ApproveRequest request) {
+        String adminId = UserContextHolder.getContext().getUid();
         Long modifyId = Long.parseLong(request.getId());
         LocationModify modifyEntity = locationModifyRepository.findByModifyIdAndIsDel(modifyId, IsDel.DELETE_NOT_YET.getValue())
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
@@ -97,16 +98,16 @@ public class LocationModifyServiceImpl implements LocationModifyService {
                 // xoá các bản ghi tồn tại
                 locationWaitReleases.forEach(item -> {
                     item.setIsDel(IsDel.DELETED.getValue());
-                    DataUtils.setDataAction(item, ParkingServiceApplication.testAdminUUID, false);
+                    DataUtils.setDataAction(item, adminId, false);
                 });
             }
             // tạo bản ghi
             LocationWaitRelease entity = locationWaitReleaseMapper.toLocationWaitRelease(modifyEntity);
-            entity.setApproveBy(ParkingServiceApplication.testAdminUUID);
+            entity.setApproveBy(adminId);
             entity.setStatus(LocationStatus.DA_DUYET_DANG_HOAT_DONG.getValue());
             entity.setModifyStatus(LocationModifyStatus.DA_DUYET_CHO_AP_DUNG.getValue());
             entity.setReleased(Release.RELEASE_NOT_YET.getValue());
-            DataUtils.setDataAction(entity, ParkingServiceApplication.testAdminUUID, true);
+            DataUtils.setDataAction(entity, adminId, true);
             locationWaitReleases.add(entity);
             // lưu
             locationWaitReleaseRepository.saveAll(locationWaitReleases);
@@ -122,13 +123,15 @@ public class LocationModifyServiceImpl implements LocationModifyService {
             modifyEntity.setModifyStatus(LocationModifyStatus.TU_CHOI_PHE_DUYET.getValue());
             modifyEntity.setReasonReject(request.getReason());
         }
-        DataUtils.setDataAction(modifyEntity, ParkingServiceApplication.testAdminUUID, false);
+        DataUtils.setDataAction(modifyEntity, adminId, false);
         locationModifyRepository.save(modifyEntity);
         return ApiResponse.builder().build();
     }
 
     @Override
-    public ApiResponse<Object> modifyLocation(ModifyLocationRequest request, String actionBy) throws JsonProcessingException {
+    public ApiResponse<Object> modifyLocation(ModifyLocationRequest request) {
+        String actionBy = UserContextHolder.getContext().getUid();
+
         // kiểm tra sự tôn tại bản ghi chính khi chỉnh sửa
         Location location = null;
         if (!DataUtils.isNullOrEmpty(request.getLocationId())) {
@@ -190,9 +193,10 @@ public class LocationModifyServiceImpl implements LocationModifyService {
 
     @Override
     public ApiResponse<Object> deleteModify(Long modifyId) {
+        String partnerId = UserContextHolder.getContext().getUid();
         LocationModify modify = locationModifyRepository.findById(modifyId)
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
-        validateActionRecordByOwner(modify.getPartnerId(), ParkingServiceApplication.testPartnerActionBy);
+        validateActionRecordByOwner(modify.getPartnerId(), partnerId);
         // lỗi khi bản ghi đã xoá trước đó
         if (modify.getIsDel().equals(IsDel.DELETED.getValue())) {
             throw new AppException(ErrorCode.INVALID_DATA.withMessage("Bản ghi đã được xoá trước đó"));
@@ -203,7 +207,7 @@ public class LocationModifyServiceImpl implements LocationModifyService {
         }
         //set dữ liệu
         modify.setIsDel(IsDel.DELETED.getValue());
-        DataUtils.setDataAction(modify, ParkingServiceApplication.testPartnerActionBy, false);
+        DataUtils.setDataAction(modify, partnerId, false);
         locationModifyRepository.save(modify);
         return ApiResponse.builder().build();
     }

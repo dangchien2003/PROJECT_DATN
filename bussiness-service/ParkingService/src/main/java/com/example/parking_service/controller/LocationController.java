@@ -1,16 +1,15 @@
 package com.example.parking_service.controller;
 
 import com.example.common.dto.response.ApiResponse;
-import com.example.parking_service.ParkingServiceApplication;
 import com.example.parking_service.dto.request.*;
 import com.example.parking_service.service.LocationModifyService;
 import com.example.parking_service.service.LocationService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,57 +23,61 @@ public class LocationController {
     LocationService locationService;
 
     @PostMapping("modify")
-        // role đối tác
-    ApiResponse<Object> modifyLocation(@Valid @RequestBody ModifyLocationRequest request) throws JsonProcessingException {
-        String testActionBy = ParkingServiceApplication.testPartnerActionBy;
-        return locationModifyService.modifyLocation(request, testActionBy);
+    @PreAuthorize("hasAnyAuthority('PARTNER')")
+    ApiResponse<Object> modifyLocation(@Valid @RequestBody ModifyLocationRequest request) {
+        return locationModifyService.modifyLocation(request);
     }
 
     @DeleteMapping("delete-modify")
-        // role đối tác
+    @PreAuthorize("hasAnyAuthority('PARTNER')")
     ApiResponse<Object> deleteModify(@RequestBody Long modifyId) {
         return locationModifyService.deleteModify(modifyId);
     }
 
     @PostMapping("partner/search")
-        // role partner
+    @PreAuthorize("hasAnyAuthority('PARTNER')")
     ApiResponse<Object> partnerSearch(@RequestBody PartnerSearchLocation data, Pageable pageable) {
         return locationService.searchLocationByPartner(data, pageable);
     }
 
     @PostMapping("admin/search")
-        // role partner
+    @PreAuthorize("hasAnyAuthority('PARTNER')")
     ApiResponse<Object> adminSearch(@RequestBody AdminSearchLocation data, Pageable pageable) {
         return locationService.searchLocationByAdmin(data, pageable);
     }
 
     @PostMapping("admin/search/wait-approve")
-        // role admin
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     ApiResponse<Object> adminSearchWaitApprove(@RequestBody AdminSearchLocation data, Pageable pageable) {
         return locationService.searchLocationWaitApproveByAdmin(data, pageable);
     }
 
     @PostMapping("approve")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     ApiResponse<Object> approve(@Valid @RequestBody ApproveRequest request) {
         return locationModifyService.approve(request);
     }
 
     @GetMapping("detail/modify")
+    @PreAuthorize("hasAnyAuthority('PARTNER')")
     ApiResponse<Object> detailModify(@RequestParam("id") Long id) {
         return locationModifyService.detailModify(id);
     }
 
     @GetMapping("detail")
+    @PreAuthorize("hasAnyAuthority('PARTNER', 'ADMIN')")
     ApiResponse<Object> detail(@RequestParam("id") Long id) {
         return locationService.details(List.of(id), true);
     }
 
     @GetMapping("customer/detail")
+    @PreAuthorize("hasAnyAuthority('CUSTOMER')")
     ApiResponse<Object> customerDetail(@RequestParam("id") Long id) {
         return locationService.customerDetail(id);
     }
 
     @GetMapping("detail/wait-release")
+    @PreAuthorize("hasAnyAuthority('PARTNER', 'ADMIN')")
     ApiResponse<Object> detailWaitRelease(@RequestParam("id") Long id) {
         return locationService.detailWaitRelease(id);
     }
@@ -85,6 +88,7 @@ public class LocationController {
     }
 
     @GetMapping("all/is-active")
+    @PreAuthorize("hasAnyAuthority('PARTNER')")
     ApiResponse<Object> getAllIsActive(@RequestParam(value = "page", defaultValue = "0") int page) {
         return locationService.getAllIsActive(page);
     }

@@ -11,6 +11,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -21,66 +22,68 @@ public class AccountController {
     AccountService accountService;
 
     @PostMapping("/create")
-        // all role
     ApiResponse<Object> createAccount(@Valid @RequestBody CreateAccountRequest request) {
         return accountService.createAccount(request, null);
     }
 
     @PostMapping("/create-by-admin")
-        // role admin
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     ApiResponse<Object> createAccountByAdmin(@Valid @RequestBody CreateAccountRequest request) {
         return accountService.createAccount(request, "admin");
     }
 
     @PostMapping("/search/customer")
-        // role admin
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     ApiResponse<Object> searchCustomer(@RequestBody SearchListAccountRequest request, Pageable pageable) {
         return accountService.searchListCustomer(request, pageable);
     }
 
     @PostMapping("/search/partner")
-        // role admin
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     ApiResponse<Object> searchPartner(@RequestBody SearchListAccountRequest request, Pageable pageable) {
         return accountService.searchListPartner(request, pageable);
     }
 
     @GetMapping("/customer/detail")
-        // role admin
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     ApiResponse<Object> detailCustomer(@RequestParam("id") String id) {
         return accountService.detail(id, AccountCategory.KHACH_HANG.getValue());
     }
 
     @GetMapping("/partner/detail")
-        // role admin
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     ApiResponse<Object> detailPartner(@RequestParam("id") String id) {
         return accountService.detail(id, AccountCategory.DOI_TAC.getValue());
     }
 
     @GetMapping("/suggestions")
-        // role admin
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     ApiResponse<Object> suggestions(@RequestParam("key") String key, Pageable pageable) {
         return accountService.suggestions(key, pageable);
     }
 
     @GetMapping("/balance")
-        // role customer
+    @PreAuthorize("hasAnyAuthority('CUSTOMER')")
     ApiResponse<Object> getBalance() {
         return accountService.getBalance();
     }
 
     @GetMapping("info")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'PARTNER', 'CUSTOMER')")
     ApiResponse<Object> getInfoAccount() {
         return accountService.getInfoAccount();
     }
 
 
     @PatchMapping("changePassword")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'PARTNER', 'CUSTOMER')")
     ApiResponse<Object> changePassword(ChangePasswordRequest request) {
         return accountService.changePassword(request);
     }
 
-    @PatchMapping("changeInfo")
-    ApiResponse<Object> changeInfo(ChangePasswordRequest request) {
-        return accountService.changePassword(request);
-    }
+//    @PatchMapping("changeInfo")
+//    @PreAuthorize("hasAnyAuthority('ADMIN', 'PARTNER', 'CUSTOMER')")
+//    ApiResponse<Object> changeInfo(ChangePasswordRequest request) {
+//        return accountService.changePassword(request);
+//    }
 }

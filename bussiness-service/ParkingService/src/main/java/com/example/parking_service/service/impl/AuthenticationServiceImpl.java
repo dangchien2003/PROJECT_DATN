@@ -236,7 +236,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .build();
     }
 
-    SignedJWT verifyToken(String token)
+    public SignedJWT verifyToken(String token)
             throws JOSEException, ParseException {
         JWSVerifier verifier = new MACVerifier(secretKey.getBytes());
         SignedJWT signedJWT = SignedJWT.parse(token);

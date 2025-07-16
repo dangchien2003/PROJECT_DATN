@@ -7,6 +7,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,7 +21,7 @@ public class TransactionController {
     TransactionService transactionService;
 
     @PostMapping("/history")
-        // role customer
+    @PreAuthorize("hasAnyAuthority('CUSTOMER')")
     ApiResponse<Object> customerGetHistory(@RequestBody CusSearchHistoryTransactionRequest request, Pageable pageable) {
         return transactionService.customerGetHistory(request, pageable);
     }

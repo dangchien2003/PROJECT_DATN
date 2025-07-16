@@ -4,6 +4,7 @@ import com.example.common.dto.response.ApiResponse;
 import com.example.common.exception.ErrorCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -15,6 +16,12 @@ public class GlobalExceptionHandlerParking {
     ResponseEntity<ApiResponse<Object>> handlingMissingServletRequestParameterException(MissingServletRequestParameterException e) {
         log.error("error: ", e);
         ErrorCode errorCode = ErrorCode.INVALID_DATA;
+        return setResponse(errorCode);
+    }
+
+    @ExceptionHandler(value = AuthorizationDeniedException.class)
+    ResponseEntity<ApiResponse<Object>> handlingAuthorizationDeniedException(AuthorizationDeniedException e) {
+        ErrorCode errorCode = ErrorCode.NO_ACCESS;
         return setResponse(errorCode);
     }
 

@@ -11,6 +11,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -21,31 +22,37 @@ public class TicketController {
     TicketService ticketService;
 
     @PostMapping("modify")
+    @PreAuthorize("hasAnyAuthority('PARTNER')")
     ApiResponse<Object> modify(@Valid @RequestBody ModifyTicketRequest request) {
         return ticketService.modifyTicket(request);
     }
 
     @PostMapping("partner/search")
+    @PreAuthorize("hasAnyAuthority('PARTNER')")
     ApiResponse<Object> partnerSearch(@RequestBody SearchTicket request, Pageable pageable) {
         return ticketService.partnerSearch(request, pageable);
     }
 
     @PostMapping("admin/search")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     ApiResponse<Object> adminSearch(@RequestBody SearchTicket request, Pageable pageable) {
         return ticketService.adminSearch(request, pageable);
     }
 
     @PostMapping("search")
+    @PreAuthorize("hasAnyAuthority('CUSTOMER')")
     ApiResponse<Object> search(@RequestBody CustomerSearchTicket request, Pageable pageable) {
         return ticketService.search(request, pageable);
     }
 
     @GetMapping("detail")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'PARTNER')")
     ApiResponse<Object> detail(@RequestParam("id") Long id) {
         return ticketService.detail(id);
     }
 
     @GetMapping("detail/wait-release")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'PARTNER')")
     ApiResponse<Object> detailWaitRelease(@RequestParam("id") Long id) {
         return ticketService.detailWaitRelease(id);
     }
@@ -61,16 +68,19 @@ public class TicketController {
     }
 
     @PostMapping("partner/cancel/wait-release")
+    @PreAuthorize("hasAnyAuthority('PARTNER')")
     ApiResponse<Object> partnerCancelWaitRelease(@Valid @RequestBody ApproveRequest approveRequest) {
         return ticketService.cancelWaitRelease(approveRequest, false);
     }
 
     @PostMapping("admin/cancel/wait-release")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     ApiResponse<Object> adminCancelWaitRelease(@Valid @RequestBody ApproveRequest approveRequest) {
         return ticketService.cancelWaitRelease(approveRequest, true);
     }
 
     @GetMapping("check-exist-wait-release")
+    @PreAuthorize("hasAnyAuthority('PARTNER')")
     ApiResponse<Object> checkExistWaitRelease(@RequestParam(name = "ticketId", required = true) Long ticketId) {
         ticketService.checkExistWaitRelease(ticketId);
         return ApiResponse.builder().build();

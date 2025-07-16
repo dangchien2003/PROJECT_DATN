@@ -7,7 +7,6 @@ import com.example.common.enums.Release;
 import com.example.common.exception.AppException;
 import com.example.common.exception.ErrorCode;
 import com.example.common.utils.DataUtils;
-import com.example.parking_service.ParkingServiceApplication;
 import com.example.parking_service.dto.request.AdminSearchLocation;
 import com.example.parking_service.dto.request.CustomerSearchLocation;
 import com.example.parking_service.dto.request.PartnerSearchLocation;
@@ -23,6 +22,7 @@ import com.example.parking_service.repository.LocationModifyRepository;
 import com.example.parking_service.repository.LocationRepository;
 import com.example.parking_service.repository.LocationWaitReleaseRepository;
 import com.example.parking_service.service.LocationService;
+import com.example.parking_service.utils.context.UserContextHolder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -59,9 +59,9 @@ public class LocationServiceImpl implements LocationService {
 
     @Override
     public ApiResponse<Object> getAllIsActive(int page) {
-        String partner = ParkingServiceApplication.testPartnerActionBy;
+        String accountId = UserContextHolder.getContext().getUid();
         Pageable fixedPageable = PageRequest.of(page, 20, Sort.by(Sort.Direction.DESC, "name"));
-        Page<Location> pageLocations = locationRepository.findAllByStatusAndPartnerId(LocationStatus.DA_DUYET_DANG_HOAT_DONG.getValue(), partner, fixedPageable);
+        Page<Location> pageLocations = locationRepository.findAllByStatusAndPartnerId(LocationStatus.DA_DUYET_DANG_HOAT_DONG.getValue(), accountId, fixedPageable);
         List<Location> locations = pageLocations.getContent();
         List<LocationResponse> mapLocationResponses = locations.stream()
                 .map(item -> LocationResponse.builder()
@@ -94,8 +94,8 @@ public class LocationServiceImpl implements LocationService {
 
     @Override
     public ApiResponse<Object> detailWaitRelease(Long id) {
-        boolean roleAdmin = false;
-        String accountId = ParkingServiceApplication.testPartnerActionBy;
+        boolean roleAdmin = UserContextHolder.getContext().getRoles().contains("ADMIN");
+        String accountId = UserContextHolder.getContext().getUid();
         LocationWaitRelease entity = locationWaitReleaseRepository.findByIdAndIsDel(id, IsDel.DELETE_NOT_YET.getValue())
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
         if (!roleAdmin && !entity.getPartnerId().equals(accountId)) {
@@ -108,8 +108,8 @@ public class LocationServiceImpl implements LocationService {
 
     @Override
     public ApiResponse<Object> details(List<Long> ids, boolean isDetail) {
-        boolean roleAdmin = false;
-        String accountId = ParkingServiceApplication.testPartnerActionBy;
+        boolean roleAdmin = UserContextHolder.getContext().getRoles().contains("ADMIN");
+        String accountId = UserContextHolder.getContext().getUid();
         List<Location> locations = locationRepository.findAllById(ids);
         if (locations.isEmpty()) {
             throw new AppException(ErrorCode.NOT_FOUND);
@@ -165,6 +165,7 @@ public class LocationServiceImpl implements LocationService {
 
     @Override
     public ApiResponse<Object> searchLocationByPartner(PartnerSearchLocation request, Pageable pageable) {
+        String partnerId = UserContextHolder.getContext().getUid();
         // kiểm tra giá trị tab
         if (DataUtils.isNullOrEmpty(request.getTab()) || !List.of(1, 2, 3, 4, 5).contains(request.getTab())) {
             throw new AppException(ErrorCode.INVALID_DATA.withMessage("Dữ liệu không hợp lệ"));
@@ -193,7 +194,7 @@ public class LocationServiceImpl implements LocationService {
                     request.getCloseTime(),
                     request.getOpenHoliday(),
                     status,
-                    ParkingServiceApplication.testPartnerActionBy,
+                    partnerId,
                     pageable
             );
             List<LocationResponse> dataResponse = dataPage.stream()
@@ -210,7 +211,7 @@ public class LocationServiceImpl implements LocationService {
                     request.getCloseTime(),
                     request.getOpenHoliday(),
                     status,
-                    ParkingServiceApplication.testPartnerActionBy,
+                    partnerId,
                     IsDel.DELETE_NOT_YET.getValue(),
                     Release.RELEASE_NOT_YET.getValue(),
                     pageable
@@ -259,7 +260,7 @@ public class LocationServiceImpl implements LocationService {
                     endRequestDate,
                     request.getUrgentApprovalRequest(),
                     LocalDateTime.now(),
-                    ParkingServiceApplication.testPartnerActionBy,
+                    partnerId,
                     IsDel.DELETE_NOT_YET.getValue(),
                     pageable
             );

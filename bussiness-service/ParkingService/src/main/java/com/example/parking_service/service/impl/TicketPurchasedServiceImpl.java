@@ -5,7 +5,6 @@ import com.example.common.dto.response.PageResponse;
 import com.example.common.exception.AppException;
 import com.example.common.exception.ErrorCode;
 import com.example.common.utils.DataUtils;
-import com.example.parking_service.ParkingServiceApplication;
 import com.example.parking_service.Specification.TicketPurchasedSpecification;
 import com.example.parking_service.dto.other.TicketQr;
 import com.example.parking_service.dto.request.CustomerSearchTicketPurchasedRequest;
@@ -22,6 +21,7 @@ import com.example.parking_service.repository.TicketPurchaseRepository;
 import com.example.parking_service.repository.TicketRepository;
 import com.example.parking_service.service.CryptoService;
 import com.example.parking_service.service.TicketPurchasedService;
+import com.example.parking_service.utils.context.UserContextHolder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -71,8 +71,7 @@ public class TicketPurchasedServiceImpl implements TicketPurchasedService {
             throw new AppException(ErrorCode.INVALID_DATA.withMessage("Tìm kiếm thất bại"));
         }
 
-        String accountId = ParkingServiceApplication.testPartnerActionBy;
-
+        String accountId = UserContextHolder.getContext().getUid();
         LocalDateTime fromBuyDate = null;
         LocalDateTime toBuyDate = null;
         LocalDateTime useDate = null;
@@ -128,7 +127,7 @@ public class TicketPurchasedServiceImpl implements TicketPurchasedService {
 
     @Override
     public ApiResponse<Object> getQr(String id) {
-        String accountId = ParkingServiceApplication.testPartnerActionBy;
+        String accountId = UserContextHolder.getContext().getUid();
         String qrCode = ticketPurchaseRepository.getQr(accountId, id, TicketPurchasedStatus.BINH_THUONG);
         if (qrCode == null) {
             throw new AppException(ErrorCode.NOT_FOUND.withMessage("Không tìm thấy thông tin"));
@@ -140,7 +139,7 @@ public class TicketPurchasedServiceImpl implements TicketPurchasedService {
 
     @Override
     public ApiResponse<Object> refreshQr(String id) {
-        String accountId = ParkingServiceApplication.testPartnerActionBy;
+        String accountId = UserContextHolder.getContext().getUid();
         TicketPurchased ticketPurchased = ticketPurchaseRepository
                 .findByIdAndAccountIdAndStatus(id, accountId, TicketPurchasedStatus.BINH_THUONG)
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
@@ -174,7 +173,7 @@ public class TicketPurchasedServiceImpl implements TicketPurchasedService {
 
     @Override
     public ApiResponse<Object> detail(String id) {
-        String accountId = ParkingServiceApplication.testPartnerActionBy;
+        String accountId = UserContextHolder.getContext().getUid();
         TicketPurchased ticketPurchased = ticketPurchaseRepository.findByIdAndAccountId(id, accountId)
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND.withMessage("Không tìm thấy thông tin vé")));
         CusTicketPurchasedDetailResponse response = ticketPurchasedMapper.toCusTicketPurchasedDetailResponse(ticketPurchased);
@@ -196,7 +195,7 @@ public class TicketPurchasedServiceImpl implements TicketPurchasedService {
 
     @Override
     public ApiResponse<Object> disableTicket(String id) {
-        String accountId = ParkingServiceApplication.testPartnerActionBy;
+        String accountId = UserContextHolder.getContext().getUid();
         TicketPurchased ticketPurchased = ticketPurchaseRepository.findByIdAndAccountId(id, accountId)
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND.withMessage("Không tìm thấy thông tin vé")));
         // kiểm tra trạng thái
@@ -217,7 +216,7 @@ public class TicketPurchasedServiceImpl implements TicketPurchasedService {
 
     @Override
     public ApiResponse<Object> enableTicket(String id) {
-        String accountId = ParkingServiceApplication.testPartnerActionBy;
+        String accountId = UserContextHolder.getContext().getUid();
         TicketPurchased ticketPurchased = ticketPurchaseRepository.findByIdAndAccountId(id, accountId)
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND.withMessage("Không tìm thấy thông tin vé")));
         // validate thời gian và trạng thái
@@ -234,7 +233,7 @@ public class TicketPurchasedServiceImpl implements TicketPurchasedService {
 
     @Override
     public ApiResponse<Object> history(String ticketPurchasedId, Pageable pageable) {
-        String accountId = ParkingServiceApplication.testPartnerActionBy;
+        String accountId = UserContextHolder.getContext().getUid();
         boolean exist = ticketPurchaseRepository.existsByIdAndAccountId(ticketPurchasedId, accountId);
         if (!exist) {
             throw new AppException(ErrorCode.NOT_FOUND.withMessage("Không tìm thấy dữ liệu"));

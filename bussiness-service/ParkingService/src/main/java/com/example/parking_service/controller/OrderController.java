@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,11 +26,13 @@ public class OrderController {
     OrderService orderService;
 
     @PostMapping()
+    @PreAuthorize("hasAnyAuthority('CUSTOMER')")
     ApiResponse<Object> order(@RequestBody CreateOrderRequest request) throws JsonProcessingException {
         return orderService.order(request);
     }
 
     @PostMapping("confirm")
+    @PreAuthorize("hasAnyAuthority('CUSTOMER')")
     ApiResponse<Object> confirmOrder(@Valid @RequestBody ConfirmOrderRequest request, HttpServletRequest http)
             throws UnsupportedEncodingException, JsonProcessingException {
         return orderService.confirmOrder(request, http);

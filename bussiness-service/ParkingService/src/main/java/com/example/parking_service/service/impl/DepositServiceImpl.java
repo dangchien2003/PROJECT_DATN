@@ -5,7 +5,6 @@ import com.example.common.dto.response.PageResponse;
 import com.example.common.exception.AppException;
 import com.example.common.exception.ErrorCode;
 import com.example.common.utils.DataUtils;
-import com.example.parking_service.ParkingServiceApplication;
 import com.example.parking_service.dto.request.AddDepositRequest;
 import com.example.parking_service.dto.response.DepositHistoryResponse;
 import com.example.parking_service.dto.response.PayOnlineResponse;
@@ -19,6 +18,7 @@ import com.example.parking_service.repository.PaymentRepository;
 import com.example.parking_service.service.DepositService;
 import com.example.parking_service.service.VnPayService;
 import com.example.parking_service.utils.HttpUtils;
+import com.example.parking_service.utils.context.UserContextHolder;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -47,7 +47,7 @@ public class DepositServiceImpl implements DepositService {
 
     @Override
     public ApiResponse<Object> requestDeposit(AddDepositRequest request, HttpServletRequest http) throws UnsupportedEncodingException {
-        String accountId = ParkingServiceApplication.testPartnerActionBy;
+        String accountId = UserContextHolder.getContext().getUid();
         // validate
         if (request.getTotal() <= 0) {
             throw new AppException(ErrorCode.INVALID_DATA.withMessage("Số tiền nạp phải lớn hơn 0"));
@@ -99,7 +99,7 @@ public class DepositServiceImpl implements DepositService {
 
     @Override
     public ApiResponse<Object> getHistory(Pageable pageable) {
-        String accountId = ParkingServiceApplication.testPartnerActionBy;
+        String accountId = UserContextHolder.getContext().getUid();
         Pageable pageQuery = PageRequest.of(
                 pageable.getPageNumber(), pageable.getPageSize(), Sort.by(Sort.Direction.DESC, Deposit_.CREATED_AT));
         Page<Deposit> depositPage = depositRepository.findByAccountId(accountId, pageQuery);
@@ -111,7 +111,7 @@ public class DepositServiceImpl implements DepositService {
 
     @Override
     public ApiResponse<Object> cancelRequest(Long id) {
-        String accountId = ParkingServiceApplication.testPartnerActionBy;
+        String accountId = UserContextHolder.getContext().getUid();
         Deposit deposit = depositRepository.findByIdAndAccountId(id, accountId)
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND.withMessage("Không tìm thấy yêu cầu")));
         // kiểm tra trạng thái

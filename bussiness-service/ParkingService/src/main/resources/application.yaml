@@ -33,7 +33,7 @@ spring:
             user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
 auth:
   token:
-    time-live-access-token: 5
+    time-live-access-token: 30
     time-live-refresh-token: 10
     secret-key: ${SECRET_KEY}
   check-user-agent: false

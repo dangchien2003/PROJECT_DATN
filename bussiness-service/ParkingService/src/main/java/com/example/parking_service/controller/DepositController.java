@@ -9,6 +9,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,16 +24,19 @@ public class DepositController {
     DepositService depositService;
 
     @PostMapping()
+    @PreAuthorize("hasAnyAuthority('CUSTOMER')")
     ApiResponse<Object> addDeposit(@Valid @RequestBody AddDepositRequest request, HttpServletRequest http) throws UnsupportedEncodingException {
         return depositService.requestDeposit(request, http);
     }
 
     @GetMapping("history")
+    @PreAuthorize("hasAnyAuthority('CUSTOMER')")
     ApiResponse<Object> getHistory(Pageable pageable) {
         return depositService.getHistory(pageable);
     }
 
     @DeleteMapping("cancel/{id}")
+    @PreAuthorize("hasAnyAuthority('CUSTOMER')")
     ApiResponse<Object> cancelRequest(@PathVariable("id") Long id) {
         return depositService.cancelRequest(id);
     }
