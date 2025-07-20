@@ -5,6 +5,7 @@ import { Button } from 'antd'
 import ChildContent from '@/components/layout/Customer/ChildContent'
 import { useSelectMenu } from '@/hook/useSelectMenu'
 import { MENU_CUSTOMER_ID } from '@/utils/constants'
+import { Link } from 'react-router-dom'
 
 const Introduce = () => {
   const { select } = useSelectMenu();
@@ -18,7 +19,9 @@ const Introduce = () => {
           <div className="banner-content">
             <h1>Giải pháp gửi xe thông minh</h1>
             <p>Dễ dàng gửi phương tiện chỉ bằng chiếc điện thoại</p>
-            <Button type="primary" className="btn">Đăng ký ngay</Button>
+            <Link to={"/authen"}>
+              <Button type="primary" className="btn">Đăng ký ngay</Button>
+            </Link>
           </div>
         </section>
       </ChildContent>

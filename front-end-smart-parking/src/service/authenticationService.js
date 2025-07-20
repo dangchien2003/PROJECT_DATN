@@ -14,6 +14,14 @@ export async function checkAccessToken(data) {
   })
 }
 
+export async function refreshToken(access, refresh) {
+  return await httpClient.post(PARKING_SERVICE.authen.refreshToken, {
+    access, refresh
+  }, {
+    skipAuth: true
+  })
+}
+
 export async function registrationAccount(data) {
   return await httpClient.post(PARKING_SERVICE.authen.registration, data, {
     skipAuth: true

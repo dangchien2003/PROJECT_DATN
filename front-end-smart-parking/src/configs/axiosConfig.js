@@ -1,32 +1,30 @@
 import { API_BASE_URL } from '@/configs/apiConfig'
-import { getAccessToken } from '@/service/cookieService'
+import { refreshToken } from '@/service/authenticationService'
+import { getAccessToken, setAccessToken } from '@/service/cookieService'
+import { getRefeshToken, setAccountFullName, setAccountId, setActor, setPartnerFullName, setRefreshToken } from '@/service/localStorageService'
+import { getDataApi } from '@/utils/api'
 import { toastError } from '@/utils/toast'
 import axios from 'axios'
 
 
 let refreshing = false
 
-const refreshToken = async () => {
+const processRefreshToken = async () => {
   refreshing = true
-  // const response = await axios.post(`${API_BASE_URL}` + PARKING_SERVICE.refreshToken,
-  //   {
-  //     refreshToken: getRefeshToken(),
-  //     accessToken: getAccessToken()
-  //   },
-  //   {
-  //     headers: {
-  //       Authorization: null
-  //     }
-  //   })
+  const response = await refreshToken(getAccessToken(), getRefeshToken());
 
+  if (response.status === 200) {
+    const result = getDataApi(response);
+    setAccessToken(result.accessToken);
+    setRefreshToken(result.refreshToken);
+    setAccountFullName(result?.fullName);
+    setPartnerFullName(result?.partnerFullName);
+    setAccountId(result?.id);
+    setActor(result?.actor)
+  } else {
+    window.location.href = '/authen'
+  }
 
-  // if (response.status === 200) {
-  //   const newAccessToken = response.data.result.token
-  //   setAccessToken(newAccessToken)
-  // }
-  console.log("Chưa dev api refresh");
-
-  window.location.href = '/authen'
   refreshing = false
 }
 
@@ -62,9 +60,9 @@ httpClient.interceptors.response.use(
       originalRequest._retry = true
       try {
         if (!refreshing) {
-          await refreshToken()
+          await processRefreshToken()
         }
-
+        
         await waitForRefreshing()
 
         originalRequest.headers['Authorization'] = 'Bearer ' + getAccessToken()
@@ -74,9 +72,9 @@ httpClient.interceptors.response.use(
         toastError("Phiên làm việc đã hết hạn")
         window.location.href = '/authen'
       }
-    } else if(status === 401 && code === 1041) {
-        window.location.href = '/authen'
-    } 
+    } else if (status === 401 && code === 1041) {
+      window.location.href = '/authen'
+    }
     return Promise.reject(error)
   }
 )

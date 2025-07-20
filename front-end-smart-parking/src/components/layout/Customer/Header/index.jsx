@@ -14,7 +14,7 @@ import useResponsiveKey from "@/hook/useReponsive"
 
 const Header = () => {
   const location = useLocation();
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   const [totalHeight, setTotalHeight] = useState("100vh");
   const selecting = useSelector(state => state.menuSelect);
   const authened = useSelector(state => state.authen);

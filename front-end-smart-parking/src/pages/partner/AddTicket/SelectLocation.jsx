@@ -24,7 +24,7 @@ const SelectLocation = ({ data }) => {
       .then(response => {
         result = getDataApi(response);
         // convert data thành dữ liệu bản đồ
-        const newData = convertData(result);
+        const newData = convertData(result.data);
         // nối thêm data
         setDataKeys(pre => pre.concat(newData));
       }).catch(error => {

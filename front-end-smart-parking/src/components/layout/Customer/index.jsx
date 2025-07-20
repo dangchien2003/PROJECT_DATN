@@ -15,6 +15,7 @@ import { toastError } from '@/utils/toast'
 const CustomerLayout = () => {
   const dispatch = useDispatch();
   const pageSelecting = useSelector(state => state.menuSelect);
+  const authen = useSelector(state => state.authen)
 
   // kết nối websocket
   useEffect(() => {
@@ -25,7 +26,7 @@ const CustomerLayout = () => {
   // kiểm tra token
   useEffect(() => {
     // không check token nếu ở trang đặt vé hoặc giới thiệu
-    if (pageSelecting === null || pageSelecting === 3) {
+    if (pageSelecting === null || pageSelecting === 3 || authen) {
       return;
     }
     const access = getAccessToken();

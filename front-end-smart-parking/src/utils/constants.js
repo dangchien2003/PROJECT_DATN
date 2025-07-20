@@ -518,5 +518,6 @@ export const MENU_CUSTOMER_ID = {
   DAT_VE: 3,
   VE_SU_DUNG: 4,
   QUAN_LY_THE: 5,
+  LICH_SU_GIAO_DICH: 6,
   KHAC: null
 }

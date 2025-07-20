@@ -52,8 +52,8 @@ export const PARKING_SERVICE = {
   authen: {
     login: "auth/sign-in",
     checkAccess: "auth/check-token", 
+    refreshToken: "auth/refresh", 
     registration: "auth/registration",
-    refreshToken: "??",
     forget: "auth/forget",
     confirmForget: "auth/forget/confirm",
   },
