@@ -40,7 +40,6 @@ public class TicketController {
     }
 
     @PostMapping("search")
-    @PreAuthorize("hasAnyAuthority('CUSTOMER')")
     ApiResponse<Object> search(@RequestBody CustomerSearchTicket request, Pageable pageable) {
         return ticketService.search(request, pageable);
     }

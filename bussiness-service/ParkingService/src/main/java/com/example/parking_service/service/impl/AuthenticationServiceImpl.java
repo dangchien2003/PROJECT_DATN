@@ -11,6 +11,8 @@ import com.example.parking_service.client.GoogleProfileClient;
 import com.example.parking_service.client.GoogleTokenClient;
 import com.example.parking_service.dto.other.DataForget;
 import com.example.parking_service.dto.other.DataOtp;
+import com.example.parking_service.dto.other.SubjectAccessToken;
+import com.example.parking_service.dto.other.SubjectRefreshToken;
 import com.example.parking_service.dto.request.*;
 import com.example.parking_service.dto.response.GoogleAccessTokenResponse;
 import com.example.parking_service.dto.response.GoogleUserProfileResponse;
@@ -18,7 +20,9 @@ import com.example.parking_service.entity.Account;
 import com.example.parking_service.enums.*;
 import com.example.parking_service.repository.AccountRepository;
 import com.example.parking_service.service.AuthenticationService;
+import com.example.parking_service.service.CryptoService;
 import com.example.parking_service.utils.UserUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSVerifier;
 import com.nimbusds.jose.crypto.MACVerifier;
@@ -48,6 +52,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     AccountRepository accountRepository;
     GoogleTokenClient googleTokenClient;
     GoogleProfileClient googleProfileClient;
+    UserUtils userUtils;
+    ObjectMapper objectMapper;
+    CryptoService cryptoService;
 
     String redirectUriForRegister = "http://localhost:3000/register";
     String redirectUriForAuth = "http://localhost:3000/authen";
@@ -236,6 +243,43 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .build();
     }
 
+    @Override
+    public ApiResponse<Object> refreshToken(RefreshTokenRequest request, String userAgent) {
+        try {
+            // lỗi khi không call từ trình duyệt
+            if (checkUserAgent && !userUtils.isValidUserAgent(userAgent)) {
+                throw new AppException(ErrorCode.UNAUTHENTICATED);
+            }
+            // valid dữ liệu
+            if (DataUtils.isNullOrEmpty(request.getAccess()) || DataUtils.isNullOrEmpty(request.getRefresh())) {
+                throw new AppException(ErrorCode.UNAUTHENTICATED);
+            }
+            // giải mã refresh
+            SignedJWT signedJWTRefresh = this.verifyToken(request.getRefresh());
+            SubjectRefreshToken subjectRefreshToken = objectMapper.readValue(
+                    signedJWTRefresh.getJWTClaimsSet().getSubject(), SubjectRefreshToken.class);
+            // giải mã access
+            SignedJWT signedJWTAccess = SignedJWT.parse(request.getAccess());
+            SubjectAccessToken subjectAccessToken = objectMapper.readValue(
+                    signedJWTAccess.getJWTClaimsSet().getSubject(), SubjectAccessToken.class);
+            // kiểm tra userAgent
+            if (!userAgent.equals(subjectRefreshToken.getUserAgent())
+                    || !subjectRefreshToken.getUserAgent().equals(subjectAccessToken.getUserAgent())) {
+                throw new AppException(ErrorCode.UNAUTHENTICATED);
+            }
+            // kiểm tra đúng access
+            String accessCrypto = cryptoService.decrypt(subjectRefreshToken.getAccess());
+            if (!accessCrypto.equals(request.getAccess())) {
+                throw new AppException(ErrorCode.UNAUTHENTICATED);
+            }
+            Account account = accountRepository.findById(subjectAccessToken.getUid())
+                    .orElseThrow(() -> new AppException(ErrorCode.UNAUTHENTICATED));
+            return this.verifyAccount(account, userAgent);
+        } catch (Exception e) {
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+        }
+    }
+
     public SignedJWT verifyToken(String token)
             throws JOSEException, ParseException {
         JWSVerifier verifier = new MACVerifier(secretKey.getBytes());
@@ -259,7 +303,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public ApiResponse<Object> login(AuthenticationRequest request, String userAgent) {
         // lỗi khi không call từ trình duyệt
-        if (checkUserAgent && !UserUtils.isValidUserAgent(userAgent)) {
+        if (checkUserAgent && !userUtils.isValidUserAgent(userAgent)) {
             throw new AppException(ErrorCode.INVALID_DATA);
         }
         Account account = null;
@@ -278,6 +322,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new AppException(ErrorCode.NOT_FOUND.withMessage("Tài khoản không tồn tại hoặc mật khẩu không chính xác"));
         }
 
+        return this.verifyAccount(account, userAgent);
+    }
+
+    ApiResponse<Object> verifyAccount(Account account, String userAgent) {
         // kiểm tra trạng thái
         if (account.getStatus().equals(AccountStatus.KHOA_TAM_THOI.getValue())
                 || account.getStatus().equals(AccountStatus.KHOA_TAI_KHOAN.getValue())) {
@@ -286,7 +334,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         // trả kết quả
         try {
             return ApiResponse.builder()
-                    .result(UserUtils.createAuthenticationResponse(
+                    .result(userUtils.createAuthenticationResponse(
                             account, userAgent, secretKey, timeLiveAccessToken, timeLiveRefreshToken))
                     .build();
         } catch (Exception e) {

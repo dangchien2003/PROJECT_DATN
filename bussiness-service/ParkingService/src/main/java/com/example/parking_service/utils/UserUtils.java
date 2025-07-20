@@ -1,28 +1,36 @@
 package com.example.parking_service.utils;
 
+import com.example.common.utils.RegexUtils;
 import com.example.parking_service.dto.other.SubjectAccessToken;
+import com.example.parking_service.dto.other.SubjectRefreshToken;
 import com.example.parking_service.dto.response.AuthenticationResponse;
 import com.example.parking_service.entity.Account;
 import com.example.parking_service.enums.AccountCategory;
+import com.example.parking_service.service.CryptoService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jwt.JWTClaimsSet;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.UUID;
 
+@Component
+@AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserUtils {
-    private static final ObjectMapper objectMapper = ConvertUtil.objectMapper;
+    ObjectMapper objectMapper;
+    CryptoService cryptoService;
 
-    private static final String USER_AGENT_REGEX =
-            ".*(Mozilla|Chrome|Safari|Firefox|Opera|Edge|Trident).*(Windows|Macintosh|Linux|Android|iPhone).*";
-
-    public static String genAccessToken(Account account, int timeLive,
-                                        String secretKey, String userAgent) throws JOSEException, JsonProcessingException {
+    public String genAccessToken(Account account, int timeLive,
+                                 String secretKey, String userAgent) throws JOSEException, JsonProcessingException {
 
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
 
@@ -44,7 +52,7 @@ public class UserUtils {
         return jwsObject.serialize();
     }
 
-    public static String buildScope(Account account) {
+    String buildScope(Account account) {
         if (account.getCategory().equals(AccountCategory.ADMIN.getValue())) {
             return "ADMIN";
         } else if (account.getCategory().equals(AccountCategory.DOI_TAC.getValue())) {
@@ -54,12 +62,17 @@ public class UserUtils {
         }
     }
 
-    public static String genRefreshToken(String userAgent, int timeLive, String secretKey) throws JOSEException {
+    String genRefreshToken(String access, String userAgent, int timeLive, String secretKey) throws JOSEException, JsonProcessingException {
 
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
+        String accessCrypto = cryptoService.encrypt(access);
+        SubjectRefreshToken subjectRefreshToken = SubjectRefreshToken.builder()
+                .userAgent(userAgent)
+                .access(accessCrypto)
+                .build();
 
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
-                .subject(userAgent)
+                .subject(objectMapper.writeValueAsString(subjectRefreshToken))
                 .issuer("book_store")
                 .issueTime(new Date())
                 .expirationTime(new Date(
@@ -75,25 +88,26 @@ public class UserUtils {
         return jwsObject.serialize();
     }
 
-    public static AuthenticationResponse createAuthenticationResponse(
+    public AuthenticationResponse createAuthenticationResponse(
             Account account, String userAgent, String secretKey, int timeLiveAccessToken,
             int timeLiveRefreshToken) throws JOSEException, JsonProcessingException {
+        String access = this.genAccessToken(account, timeLiveAccessToken, secretKey, userAgent);
+        String refresh = this.genRefreshToken(access, userAgent, timeLiveRefreshToken, secretKey);
         return AuthenticationResponse.builder()
                 .id(account.getId())
                 .fullName(account.getFullName())
                 .partnerFullName(account.getPartnerFullName())
-                .accessToken(genAccessToken(account, timeLiveAccessToken, secretKey, userAgent))
-                .refreshToken(genRefreshToken(userAgent, timeLiveRefreshToken, secretKey))
+                .accessToken(access)
+                .refreshToken(refresh)
                 .expire(timeLiveAccessToken * 60)
                 .actor(buildScope(account).toLowerCase())
                 .build();
     }
 
-    public static boolean isValidUserAgent(String userAgent) {
+    public boolean isValidUserAgent(String userAgent) {
         if (userAgent == null || userAgent.trim().isEmpty()) {
             return false;
         }
-
-        return userAgent.matches(USER_AGENT_REGEX);
+        return RegexUtils.checkData(userAgent, RegexUtils.USER_AGENT_REGEX);
     }
 }

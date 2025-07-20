@@ -79,15 +79,15 @@ public class AesCryptoServiceImpl implements CryptoService {
             byteBuffer.get(encryptedBytes);
 
             // Giải mã
-            SecretKeySpec skeySpec = new SecretKeySpec(secretKey.getBytes("UTF-8"), "AES");
+            SecretKeySpec sKeySpec = new SecretKeySpec(secretKey.getBytes("UTF-8"), "AES");
             Cipher cipher = Cipher.getInstance(ALGORITHM);
-            cipher.init(Cipher.DECRYPT_MODE, skeySpec, iv);
+            cipher.init(Cipher.DECRYPT_MODE, sKeySpec, iv);
             byte[] originalBytes = cipher.doFinal(encryptedBytes);
 
             return new String(originalBytes, "UTF-8");
         } catch (Exception ex) {
             log.error("AES decryption failed", ex);
-            throw new RuntimeException("Decrypt error");
+            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Decrypt error"));
         }
     }
 
