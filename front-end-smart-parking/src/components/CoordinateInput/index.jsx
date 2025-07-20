@@ -7,69 +7,58 @@ import InputError from "../InputError";
 
 const CoordinateInput = ({
   label,
-  value = { x: null, y: null },
+  xInp,
+  yInp,
   callbackChangeValue,
   min = -180,
   max = 180,
   step = 0.0001,
   disable,
-  itemKey
+  prefixKey,
+  require
 }) => {
   const keyFocus = useSelector((state) => state.focus);
-  const requireKeys = useSelector(state => state.requireField);
   const inputRefX = useRef();
   const inputRefY = useRef();
-  const [require, setRequire] = useState(false)
   const { pushMessage, deleteKey } = useMessageError();
-  const [x, setX] = useState(value.x);
-  const [y, setY] = useState(value.y);
+  const [x, setX] = useState(xInp);
+  const [y, setY] = useState(yInp);
   const [key] = useState({
-    x: itemKey + ".x",
-    y: itemKey + ".y",
+    x: prefixKey + "X",
+    y: prefixKey + "Y",
   });
 
   useEffect(() => {
-    setX(value?.x);
-    setY(value?.y);
-  }, [value])
+    setX(xInp);
+    setY(yInp);
+  }, [xInp, yInp])
 
   useEffect(() => {
-    if (Array.isArray(requireKeys) && itemKey) {
-      setRequire(requireKeys.includes(itemKey))
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [requireKeys, itemKey]);
-
-  useEffect(() => {
-    if (keyFocus === itemKey + ".x") {
+    if (keyFocus === key.x) {
       inputRefX.current?.focus();
-    } else if (keyFocus === itemKey + ".y") {
+    } else if (keyFocus === key.y) {
       inputRefY.current?.focus();
     }
-  }, [keyFocus, itemKey])
+  // eslint-disable-next-line react-hooks/exhaustive-deps 
+  }, [keyFocus])
 
   const handleChange = (coord, val) => {
-    let x1 = x;
-    let y1 = y;
-    if (coord === "x") {
+    if (coord === key.x) {
       setX(val);
-      x1 = val;
-    } else if (coord === "y") {
+    } else if (coord === key.y) {
       setY(val);
-      y1 = val;
     }
 
-    const newValue = { x: x1, y: y1 };
     if (require) {
-      if (coord === "x") {
-        if (newValue.x === null) {
+      if (coord === key.x) {
+        if (val === null) {
           pushMessage(key.x, "Không được để trống trường X");
         } else {
           deleteKey(key.x);
         }
       }
-      if (coord === "y") {
-        if (newValue.y === null) {
+      if (coord === key.y) {
+        if (val === null) {
           pushMessage(key.y, "Không được để trống trường Y");
         } else {
           deleteKey(key.y);
@@ -78,7 +67,7 @@ const CoordinateInput = ({
     }
 
     if (callbackChangeValue) {
-      callbackChangeValue(itemKey, newValue);
+      callbackChangeValue(coord, val);
     }
   };
 
@@ -102,7 +91,7 @@ const CoordinateInput = ({
             max={max}
             step={step}
             value={x}
-            onChange={(val) => handleChange("x", val)}
+            onChange={(val) => handleChange(key.x, val)}
             placeholder="X"
             disabled={disable}
             style={{ width: "100%" }}
@@ -116,7 +105,7 @@ const CoordinateInput = ({
             max={max}
             step={step}
             value={y}
-            onChange={(val) => handleChange("y", val)}
+            onChange={(val) => handleChange(key.y, val)}
             placeholder="Y"
             disabled={disable}
             style={{ width: "100%" }}

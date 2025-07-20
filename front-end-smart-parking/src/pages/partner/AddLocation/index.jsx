@@ -1,7 +1,7 @@
 import CoordinateInput from "@/components/CoordinateInput";
 import DatePickerLabelDash from "@/components/DatePickerLabelDash";
 import TextFieldLabelDash from "@/components/TextFieldLabelDash";
-import TimeInput from "@/components/TimeInput";
+// import TimeInput from "@/components/TimeInput";
 import AvatarAndVideo from "./AvatarAndVideo";
 import CheckboxWithDash from "@/components/CheckboxWithDash";
 import DateTimePickerWithSortLabelDash from "@/components/DateTimePickerWithSortLabelDash";
@@ -18,21 +18,20 @@ import QuillEditorInput from "@/components/QuillEditorInput";
 import { locationDetail } from "@/service/locationService";
 import { getDataApi } from "@/utils/api";
 import { toastError } from "@/utils/toast";
+import dayjs from "dayjs"
 
-const requireKeys = ["name", "address", "coordinates", "coordinates.x", "coordinates.y", "openTime", "closeTime", "timeAppliedEdit", "description"]
-const indexKeys = ["name", "address", "coordinates.x", "coordinates.y", "openTime", "closeTime", "timeAppliedEdit", "description"]
+const requireKeys = ["name", "address", "coordinatesX", "coordinatesY", "timeAppliedEdit", "description"]
+const indexKeys = ["name", "address", "coordinatesX", "coordinatesY", "timeAppliedEdit", "description"]
 const AddLocation = ({ isModify = false }) => {
   const [dataModify, setDataModify] = useState({
     locationId: null,
     name: null,
     address: null,
     linkGoogleMap: null,
-    coordinates: {
-      x: null,
-      y: null,
-    },
-    openTime: null,
-    closeTime: null,
+    coordinatesX: null,
+    coordinatesY: null,
+    openTime: "00:00:00",
+    closeTime: "00:00:00",
     timeAppliedEdit: null,
     openHoliday: true,
     urgentApprovalRequest: false,
@@ -42,7 +41,7 @@ const AddLocation = ({ isModify = false }) => {
     avatar: null
   })
   const [disableCoordinates, setDisableCoordinates] = useState(false)
-  const [openEveryTime, setOpenEveryTime] = useState(false)
+  // const [openEveryTime, setOpenEveryTime] = useState(false)
   const { hideLoad, showLoad } = useLoading()
   const { id } = useParams()
   const { reset } = useMessageError()
@@ -54,9 +53,9 @@ const AddLocation = ({ isModify = false }) => {
       // gọi api lấy dữ liệu
       locationDetail(id).then((response) => {
         const result = getDataApi(response);
-        if (result.openTime === "00:00:00" && result.openTime === result.closeTime) {
-          setOpenEveryTime(true)
-        }
+        // if (result.openTime === "00:00:00" && result.openTime === result.closeTime) {
+        //   setOpenEveryTime(true)
+        // }
         setDataModify(result)
       })
         .catch((error) => {
@@ -93,27 +92,30 @@ const AddLocation = ({ isModify = false }) => {
     const coordinates = extractGoogleMapCoords(value);
     if (coordinates) {
       setDisableCoordinates(true)
-      updateObjectValue(dataModify, "coordinates", coordinates);
+      updateObjectValue(dataModify, "coordinatesX", coordinates.x);
+      updateObjectValue(dataModify, "coordinatesY", coordinates.y);
     } else {
-      setDisableCoordinates(false)
-      updateObjectValue(dataModify, "coordinates", { x: null, y: null });
+      setDisableCoordinates(false);
+      updateObjectValue(dataModify, "coordinatesX", null);
+      updateObjectValue(dataModify, "coordinatesY", null);
+      
     }
     if (dataModify) {
       updateObjectValue(dataModify, key, value);
     }
   }
 
-  const handleClickEveryTime = (_, value) => {
-    setOpenEveryTime(value)
-    if (value) {
-      // Nếu mở mọi lúc thì set giờ về 00:00:00
-      updateObjectValue(dataModify, "openTime", "00:00:00");
-      updateObjectValue(dataModify, "closeTime", "00:00:00");
-    } else {
-      updateObjectValue(dataModify, "openTime", null);
-      updateObjectValue(dataModify, "closeTime", null);
-    }
-  }
+  // const handleClickEveryTime = (_, value) => {
+  //   setOpenEveryTime(true);
+    // if (value) {
+    //   // Nếu mở mọi lúc thì set giờ về 00:00:00
+    //   updateObjectValue(dataModify, "openTime", "00:00:00");
+    //   updateObjectValue(dataModify, "closeTime", "00:00:00");
+    // } else {
+    //   updateObjectValue(dataModify, "openTime", null);
+    //   updateObjectValue(dataModify, "closeTime", null);
+    // }
+  // }
 
   return (
     <div>
@@ -150,10 +152,10 @@ const AddLocation = ({ isModify = false }) => {
           label={"Toạ độ (AxB)"}
           placeholder={"Nhập toạ độ"}
           key={"td"}
-          itemKey={"coordinates"}
-          value={dataModify?.coordinates}
-          x={dataModify?.coordinates?.x}
-          y={dataModify?.coordinates?.y}
+          prefixKey={"coordinates"}
+          require={true}
+          xInp={dataModify?.coordinatesX}
+          yInp={dataModify?.coordinatesY}
           disable={disableCoordinates}
           callbackChangeValue={handleChange}
         />
@@ -165,7 +167,7 @@ const AddLocation = ({ isModify = false }) => {
           format={"DD/MM/YYYY"}
           defaultValue={dataModify.openDate}
         />}
-        <TimeInput
+        {/* <TimeInput
           label={"Thời gian mở cửa"}
           placeholder={"Chọn thời gian mở cửa"}
           key={"tgm"}
@@ -184,14 +186,7 @@ const AddLocation = ({ isModify = false }) => {
           callbackChangeValue={handleChange}
           defaultValue={openEveryTime ? "00:00:00" : dataModify?.closeTime}
           disable={openEveryTime}
-        />
-        <CheckboxWithDash
-          label={"Mở cửa mọi lúc"}
-          value={openEveryTime}
-          key={"openEveryTime"}
-          itemKey={"openEveryTime"}
-          callbackChangeValue={handleClickEveryTime}
-        />
+        /> */}
         {/* <TextFieldLabelDash
           label={"Sức chứa"}
           placeholder={"Nhập sức chứa"}
@@ -208,10 +203,18 @@ const AddLocation = ({ isModify = false }) => {
           formatShowTime={"HH:mm"}
           placeholder={"Chọn thời điểm áp dụng"}
           defaultValue={dataModify?.timeAppliedEdit}
+          min={dayjs().add(1, "day")}
           key={"tgad"}
           itemKey={"timeAppliedEdit"}
           callbackChangeValue={handleChangeValueInputOrder}
         />
+        {/* <CheckboxWithDash
+          label={"Mở cửa mọi lúc"}
+          value={openEveryTime}
+          key={"openEveryTime"}
+          itemKey={"openEveryTime"}
+          callbackChangeValue={handleClickEveryTime}
+        /> */}
         <CheckboxWithDash
           label={"Mở cửa ngày lễ"}
           value={dataModify?.openHoliday}

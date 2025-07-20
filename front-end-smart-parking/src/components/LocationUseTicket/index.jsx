@@ -10,9 +10,9 @@ import ModalCustom from "../ModalCustom";
 import Map from "../Map";
 
 const convertDataMap = (data = []) => {
-  return data.filter(item => !isNullOrUndefined(item.coordinates)).map((item) => {
+  return data.filter(item => !isNullOrUndefined(item.coordinatesX) && !isNullOrUndefined(item.coordinatesY)).map((item) => {
     return {
-      position: [item.coordinates?.x, item.coordinates?.y],
+      position: [item.coordinatesX, item.coordinatesY],
       popupContent: (
         <a
           href={item.linkGoogleMap}

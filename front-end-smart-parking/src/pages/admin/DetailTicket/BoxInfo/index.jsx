@@ -125,10 +125,10 @@ const BoxInfo = ({data, isWaitApprove, widthPage}) => {
       </div>
         {/* price */}
         <div>
-          <BoxPrice label="Mở bán theo giờ" checked={data?.timeSlot} price={data?.price?.time?.price} />
-          <BoxPrice label="Mở bán theo ngày" checked={data?.daySlot} price={data?.price?.day?.price} />
-          <BoxPrice label="Mở bán theo tuần" checked={data?.weekSlot} price={data?.price?.week?.price} />
-          <BoxPrice label="Mở bán theo tháng" checked={data?.monthSlot} price={data?.price?.month?.price} />
+          <BoxPrice label="Mở bán theo giờ" checked={data?.priceTimeSlot} price={data?.priceTimeSlot} />
+          <BoxPrice label="Mở bán theo ngày" checked={data?.priceDaySlot} price={data?.priceDaySlot} />
+          <BoxPrice label="Mở bán theo tuần" checked={data?.priceWeekSlot} price={data?.priceWeekSlot} />
+          <BoxPrice label="Mở bán theo tháng" checked={data?.priceMonthSlot} price={data?.priceMonthSlot} />
           </div>
         {/* địa điểm áp dụng */}
         <LocationUseTicket ids={data.locationUse}/>

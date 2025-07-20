@@ -20,8 +20,8 @@ import { getDataApi } from "@/utils/api";
 import { toastError } from "@/utils/toast";
 import { useLoading } from "@/hook/loading";
 
-let requireKeys = ["name", "description", "vehicle", "timeAppliedEdit", "price.time", "price.day", "price.week", "price.month"]
-const indexKeys = ["name", "description", "vehicle", "timeAppliedEdit", "price.time", "price.day", "price.week", "price.month"]
+let requireKeys = ["name", "description", "vehicle", "timeAppliedEdit", "priceTimeSlot", "priceDaySlot", "priceWeekSlot", "priceMonthSlot"]
+const indexKeys = ["name", "description", "vehicle", "timeAppliedEdit", "priceTimeSlot", "priceDaySlot", "priceWeekSlot", "priceMonthSlot"]
 const AddTicket = () => {
   const { setRequireField } = useRequireField();
   const { reset, pushMessage, deleteKey, deleteManyKey } = useMessageError()
@@ -42,12 +42,10 @@ const AddTicket = () => {
     daySlot: true,
     weekSlot: true,
     monthSlot: true,
-    price: {
-      time: null,
-      day: null,
-      week: null,
-      month: null,
-    },
+    priceTimeSlot: null,
+    priceDaySlot: null,
+    priceWeekSlot: null,
+    priceMonthSlot: null,
     locationUse: []
   })
 
@@ -72,15 +70,15 @@ const AddTicket = () => {
       dataModify.description = result.description;
       dataModify.timeAppliedEdit = result.timeAppliedEdit;
       dataModify.vehicle = result.vehicle;
-      dataModify.timeSlot = result.timeSlot;
-      dataModify.daySlot = result.daySlot;
-      dataModify.weekSlot = result.weekSlot;
-      dataModify.monthSlot = result.monthSlot;
+      dataModify.timeSlot = !!result.priceTimeSlot;
+      dataModify.daySlot = !!result.priceDaySlot;
+      dataModify.weekSlot = !!result.priceWeekSlot;
+      dataModify.monthSlot = !!result.priceMonthSlot;
       // set lại giá
-      changeCheckBox("price.time", result.price.time?.price)
-      changeCheckBox("price.day", result.price.day?.price)
-      changeCheckBox("price.week", result.price.week?.price)
-      changeCheckBox("price.month", result.price.month?.price)
+      changeCheckBox("price.time", result.priceTimeSlot);
+      changeCheckBox("price.day", result.priceDaySlot);
+      changeCheckBox("price.week", result.priceWeekSlot);
+      changeCheckBox("price.month", result.priceMonthSlot);
       dataModify.locationUse = result.locationUse;
       // lưu lại dữ liệu
       setDataModify({...dataModify});
@@ -134,30 +132,29 @@ const AddTicket = () => {
     changeInput(dataModify, key, value);
     const keysMove = [];
     const keysPush = [];
-    const preKey = "price."
     // thời gian
     if (dataModify.timeSlot) {
-      keysPush.push(preKey + "time");
+      keysPush.push("priceTimeSlot");
     } else {
-      keysMove.push(preKey + "time");
+      keysMove.push("priceTimeSlot");
     }
     // ngày
     if (dataModify.daySlot) {
-      keysPush.push(preKey + "day");
+      keysPush.push("priceDaySlot");
     } else {
-      keysMove.push(preKey + "day");
+      keysMove.push("priceDaySlot");
     }
     // tuần
     if (dataModify.weekSlot) {
-      keysPush.push(preKey + "week");
+      keysPush.push("priceWeekSlot");
     } else {
-      keysMove.push(preKey + "week");
+      keysMove.push("priceWeekSlot");
     }
     // tháng
     if (dataModify.monthSlot) {
-      keysPush.push(preKey + "month");
+      keysPush.push("priceMonthSlot");
     } else {
-      keysMove.push(preKey + "month");
+      keysMove.push("priceMonthSlot");
     }
     setTimeSlotChecked(dataModify.timeSlot);
     setDaySlotChecked(dataModify.daySlot);
@@ -166,7 +163,10 @@ const AddTicket = () => {
     // set require
     requireKeys = requireKeys.concat(keysPush).filter(item => !keysMove.includes(item))
     setRequireField(requireKeys);
-    deleteManyKey(keysMove)
+    deleteManyKey(keysMove);
+    keysMove.forEach(item => {
+      changeInput(dataModify, item, null);
+    })
   }
   return (
     <div>
@@ -198,6 +198,7 @@ const AddTicket = () => {
           defaultValue={dataModify?.vehicle}
           callbackChangeValue={handleChange}
           data={convertObjectToDataSelectBox(VEHICLE)}
+          require={true}
         />
         <DateTimePickerWithSortLabelDash
           label="Thời điểm áp dụng"
@@ -224,7 +225,7 @@ const AddTicket = () => {
             label={"Nhập giá 1 giờ"}
             placeholder={"Nhập giá vé 1 giờ"}
             key={"Nhập giá vé 1 giờ"}
-            itemKey={"price.time"}
+            itemKey={"priceTimeSlot"}
             defaultValue={dataModify?.price?.time}
             callbackChangeValue={handleChange}
             addonAfter="đ/giờ"
@@ -244,7 +245,7 @@ const AddTicket = () => {
             label={"Nhập giá 1 ngày"}
             placeholder={"Nhập giá vé ngày"}
             key={"Nhập giá vé ngày"}
-            itemKey={"price.day"}
+            itemKey={"priceDaySlot"}
             defaultValue={dataModify?.price?.day}
             callbackChangeValue={handleChange}
             addonAfter="đ"
@@ -264,7 +265,7 @@ const AddTicket = () => {
             label={"Nhập giá 1 tuần"}
             placeholder={"Nhập giá vé tuần"}
             key={"Nhập giá vé tuần"}
-            itemKey={"price.week"}
+            itemKey={"priceWeekSlot"}
             defaultValue={dataModify?.price?.week}
             callbackChangeValue={handleChange}
             addonAfter="đ"
@@ -284,7 +285,7 @@ const AddTicket = () => {
             label={"Nhập giá 1 tháng"}
             placeholder={"Nhập giá vé tháng"}
             key={"Nhập giá vé tháng"}
-            itemKey={"price.month"}
+            itemKey={"priceMonthSlot"}
             defaultValue={dataModify?.price?.month}
             callbackChangeValue={handleChange}
             addonAfter="đ"
