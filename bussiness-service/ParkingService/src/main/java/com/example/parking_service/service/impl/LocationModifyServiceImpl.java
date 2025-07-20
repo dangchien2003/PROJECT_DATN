@@ -131,7 +131,10 @@ public class LocationModifyServiceImpl implements LocationModifyService {
     @Override
     public ApiResponse<Object> modifyLocation(ModifyLocationRequest request) {
         String actionBy = UserContextHolder.getContext().getUid();
-
+//        Kiểm tra thời điểm áp dụng
+        if (!request.getTimeAppliedEdit().isAfter(LocalDateTime.now().plusDays(1))) {
+            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Thời điểm áp dụng phải sau hiện tại ít nhất 1 ngày"));
+        }
         // kiểm tra sự tôn tại bản ghi chính khi chỉnh sửa
         Location location = null;
         if (!DataUtils.isNullOrEmpty(request.getLocationId())) {

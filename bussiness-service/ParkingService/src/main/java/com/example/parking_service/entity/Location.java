@@ -67,6 +67,7 @@ public class Location extends BaseEntity {
     String approveBy;
 
     @Lob
+    @Column(columnDefinition = "LONGTEXT")
     String description;
 
     @Lob

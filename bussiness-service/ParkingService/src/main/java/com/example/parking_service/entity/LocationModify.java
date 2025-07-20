@@ -73,6 +73,7 @@ public class LocationModify extends BaseEntity {
     Long capacity;
 
     @Lob
+    @Column(columnDefinition = "LONGTEXT")
     String description;
 
     @Lob

@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,13 +68,15 @@ public class SchedulerServiceImpl implements SchedulerService {
 
     @Override
     public void refresh() {
-        scheduledTasks.keySet().forEach(key -> {
-            ScheduledFuture<?> scheduledFuture = scheduledTasks.get(key);
-            if (scheduledFuture.isDone() && !scheduledFuture.isCancelled()) {
-                removeTask(key);
-            } else if (scheduledFuture.isCancelled()) {
-                scheduledTasks.remove(key);
+        List<ScheduledJobId> toRemove = new ArrayList<>();
+
+        for (Map.Entry<ScheduledJobId, ScheduledFuture<?>> entry : scheduledTasks.entrySet()) {
+            ScheduledFuture<?> future = entry.getValue();
+            if ((future.isDone() && !future.isCancelled()) || future.isCancelled()) {
+                toRemove.add(entry.getKey());
             }
-        });
+        }
+
+        toRemove.forEach(scheduledTasks::remove);
     }
 }

@@ -500,7 +500,7 @@ public class TicketServiceImpl implements TicketService {
             ticketWaitRelease.setIsDel(IsDel.DELETE_NOT_YET.getValue());
             ticketWaitRelease.setReleased(Release.RELEASE_NOT_YET.getValue());
             ticketWaitRelease.setPartnerId(partnerId);
-            ticketWaitRelease.setModifyCount(TicketModifyStatus.CHO_AP_DUNG);
+            ticketWaitRelease.setModifyCount(0);
             ticketWaitRelease.setStatus(TicketStatus.CHO_PHAT_HANH);
             ticketWaitRelease.setCountLocation(request.getLocationUse().size());
             DataUtils.setDataAction(ticketWaitRelease, partnerId, true);

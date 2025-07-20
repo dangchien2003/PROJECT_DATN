@@ -77,6 +77,7 @@ public class LocationWaitRelease extends BaseEntity {
     String approveBy;
 
     @Lob
+    @Column(columnDefinition = "LONGTEXT")
     String description;
 
     @Lob
