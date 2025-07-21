@@ -70,3 +70,9 @@ export async function getListDetail(ids) {
   return await httpClient.post(PARKING_SERVICE.location.listDetail, ids, {
   })
 }
+
+export async function statisticsOfUsedPositions(locationId, date) {
+  return await httpClient.get(PARKING_SERVICE.location.statisticsOfUsedPositions + "?" + getRequestParams({locationId, date}) , {
+    skipAuth: true
+  })
+}

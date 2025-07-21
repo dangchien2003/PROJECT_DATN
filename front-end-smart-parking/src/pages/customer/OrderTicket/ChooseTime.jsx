@@ -9,10 +9,9 @@ import dayjs from 'dayjs';
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import FormBuyFor from './FormBuyFor';
+import { getCharTime } from '@/utils/time';
 
-
-
-const ChooseTime = ({ category, onChangeStartTime, location, ticket }) => {
+const ChooseTime = ({ category, location, ticket, onChangeStartTime, onChangeQuality }) => {
   const [quality, setQuality] = React.useState(1);
   const [openBuyFor, setOpenBuyFor] = React.useState(false);
   const [orderInfo, setOrderInfo] = React.useState({});
@@ -30,14 +29,14 @@ const ChooseTime = ({ category, onChangeStartTime, location, ticket }) => {
       locationId: location?.locationId,
       locationName: location?.name,
       address: location?.address,
-      startTime: selectedTime, 
+      startTime: selectedTime,
       endTime: endTime,
       category,
       quality
     });
-  // eslint-disable-next-line react-hooks/exhaustive-deps 
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
   }, [selectedTime, endTime, ticket, location, category])
-  
+
   const getCategoryName = () => {
     if (category === PRICE_CATEGORY.TIME.value) {
       return "giờ";
@@ -51,20 +50,7 @@ const ChooseTime = ({ category, onChangeStartTime, location, ticket }) => {
     return null;
   }
 
-  const getCharTime = () => {
-    if (category === PRICE_CATEGORY.TIME.value) {
-      return "hour";
-    } else if (category === PRICE_CATEGORY.DAY.value) {
-      return "day";
-    } else if (category === PRICE_CATEGORY.WEEK.value) {
-      return "week";
-    } else if (category === PRICE_CATEGORY.MONTH.value) {
-      return "month";
-    }
-    return null;
-  }
-
-  React.useEffect(()=> {
+  React.useEffect(() => {
     reset();
     // eslint-disable-next-line react-hooks/exhaustive-deps 
   }, [])
@@ -98,10 +84,17 @@ const ChooseTime = ({ category, onChangeStartTime, location, ticket }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps 
   }, [quality])
 
+   React.useEffect(() => {
+    calcExpires(selectedTime)
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
+  }, [category])
+
   const handleChangeTimeUse = (value) => {
     setQuality(value);
+    if (onChangeQuality) {
+      onChangeQuality(value);
+    }
   }
-  
 
   const handleOpenBuyFor = () => {
     setOpenBuyFor(true);
@@ -117,27 +110,32 @@ const ChooseTime = ({ category, onChangeStartTime, location, ticket }) => {
     if (dayjsSelect.isBefore(dayjs())) {
       pushMessage("start-time", "Thời bắt đầu phải lớn hơn hiện tại");
       setEndTime(null);
-    } else if(dayjsSelect.get("minute") % 15 > 0) {
+    } else if (dayjsSelect.get("minute") % 15 > 0) {
       pushMessage("start-time", "Thời gian không hợp lệ");
       setEndTime(null);
-    }  else {
+    } else {
       // cập nhật callback
-      if(onChangeStartTime) {
+      if (onChangeStartTime) {
         onChangeStartTime(value)
       }
       // xoá lỗi
       deleteKey("start-time");
-      // tính thời gian hết hạn
-      if(value) {
-        setEndTime(dayjsSelect.add(quality, getCharTime()))
-      } else {
-        setEndTime(null);
-      }
+      calcExpires(value);
+    }
+  }
+  
+  const calcExpires = (timeStart) => {
+    const dayjsSelect = dayjs(timeStart);
+    // tính thời gian hết hạn
+    if (timeStart) {
+      setEndTime(dayjsSelect.add(quality, getCharTime(category)))
+    } else {
+      setEndTime(null);
     }
   }
 
   const handlePayment = () => {
-    if(validate()) {
+    if (validate()) {
       return;
     }
 
@@ -152,24 +150,24 @@ const ChooseTime = ({ category, onChangeStartTime, location, ticket }) => {
   const validate = () => {
     var error = false;
     var message = null;
-    if(!selectedTime) {
+    if (!selectedTime) {
       message = "Vui lòng điền thông tin để tiếp tục";
       error = true;
     }
     const timeSelect = dayjs(selectedTime);
-    if(timeSelect.isBefore(dayjs())) {
+    if (timeSelect.isBefore(dayjs())) {
       message = "Vui lòng điền thông tin để tiếp tục";
       error = true;
     }
 
-    if(error) {
+    if (error) {
       pushMessage("start-time", message);
-    } 
+    }
 
     return error;
   }
 
-  const handleChangeOwner= (data) => {
+  const handleChangeOwner = (data) => {
     setOwner(data);
     handleCloseBuyFor();
   }
@@ -225,7 +223,7 @@ const ChooseTime = ({ category, onChangeStartTime, location, ticket }) => {
         </div>
       </div>
       {openBuyFor && <ModalCustom onClose={handleCloseBuyFor}>
-        <FormBuyFor onOk={handleChangeOwner}/>
+        <FormBuyFor onOk={handleChangeOwner} />
       </ModalCustom>}
 
     </div>

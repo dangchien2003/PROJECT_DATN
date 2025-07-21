@@ -1,43 +1,44 @@
 import LineLoading from "@/components/Loading/LineLoading";
+import { statisticsOfUsedPositions } from "@/service/locationService";
+import { getDataApi } from "@/utils/api";
+import { toastError } from "@/utils/toast";
+import { Flex } from "antd";
+import dayjs from "dayjs";
+import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
+import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import { useEffect, useState } from "react";
 import Item from "./Item";
-import { Flex } from "antd";
-import './style.css'
+import './style.css';
+dayjs.extend(isSameOrAfter);
+dayjs.extend(isSameOrBefore);
 
-const generateTimeSlots = (max) => {
-  const slots = {};
-  for (let h = 0; h < 24; h++) {
-    slots["00:00"] = max;
-    for (let m = 1; m < 60; m += 15) {
-      const hour = h.toString().padStart(2, '0');
-      const minute = m.toString().padStart(2, '0');
-      const time = `${hour}:${minute}`;
-      slots[time] = Math.floor(Math.random() * max) + 1;
-    }
-  }
-  return slots;
-};
-
-const ContentTab = ({ date }) => {
+const ContentTab = ({ date, locationId, capacity, startTime, expires }) => {
   const [data, setData] = useState(null);
-  const [max] = useState(100);
   useEffect(() => {
-    const id = setTimeout(() => {
-      const generateTimeSlotsData = generateTimeSlots(max);
-      setData(generateTimeSlotsData);
-    }, 2000)
-    return () => {
-      clearTimeout(id);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps 
+    statisticsOfUsedPositions(locationId, date).then(response => {
+      const result = getDataApi(response);
+      const dataSet = result.map(item => ({
+        key: item.time,
+        value: item.quantity
+      }));
+      setData(dataSet)
+    }).catch(e => {
+      const response = getDataApi(e);
+      toastError(response.message);
+    }).finally(() => {
+
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
   }, [])
   return (
     <div>
       {!data && <LineLoading />}
       {data && <Flex wrap className="content-tab hide-scrollbar">
-        {Object.entries(data).map(([key, value]) => (
-          <Item key={key} label={key} count={value} max={max} />
-        ))}
+        {data.map(({ key, value }) => {
+          const currentTime = dayjs(`${date} ${key}`, "YYYY-MM-DD HH:mm");
+          const isSelected = currentTime.isSameOrAfter(dayjs(startTime)) && currentTime.isBefore(dayjs(expires));
+          return <Item label={key} count={value} max={capacity} isSelect={isSelected} />
+        })}
       </Flex>}
     </div>
   );

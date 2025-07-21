@@ -26,6 +26,7 @@ export const PARKING_SERVICE = {
     getMapLocation: "location/list/coordinates",
     getAllRecordIsActive: "location/all/is-active",
     listDetail: "location/list/detail",
+    statisticsOfUsedPositions: "location/statistics-of-used-positions",
   },
   ticket: {
     modify: "ticket/modify",

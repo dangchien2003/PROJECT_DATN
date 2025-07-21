@@ -10,9 +10,6 @@ const getLevelClass = (count, max) => {
 };
 
 const Item = ({ label, count, max, isSelect }) => {
-  if (label === "00:00") {
-    isSelect = true;
-  }
   const levelClass = getLevelClass(count, max);
   return (
     <div>

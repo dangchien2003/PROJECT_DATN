@@ -4,29 +4,26 @@ import React from 'react'
 import ContentTab from "./ContentTab";
 import dayjs from "dayjs";
 
-const PositionUsed = ({startTime}) => {
-  const onChange = key => {
-    console.log(key);
-  };
+const PositionUsed = ({ startTime, expires, locationId, capacity }) => {
+  console.log(startTime, expires)
   const start = startTime ? dayjs(startTime) : dayjs();
   const end = start.add(1, "month");
-  const items = [
-    {
-      key: start.format("DD/MM"),
-      label: <div className="custom-tab">{start.format("DD/MM")}</div>,
-      children: <ContentTab time={start}/>
-    }
-  ];
-  
-  for(let i = 1; i <= 31; i++) {
+  const items = [];
+  for (let i = 0; i <= 31; i++) {
     var current = start.add(i, 'day');
     var format = current.format("DD/MM");
     items.push({
       key: format,
       label: <div className="custom-tab">{format}</div>,
-      children: <ContentTab time={current}/>
+      children: <ContentTab
+        date={current.format("YYYY-MM-DD")}
+        locationId={locationId}
+        capacity={capacity}
+        startTime={startTime}
+        expires={expires}
+      />
     })
-    if(current.isSame(end)) {
+    if (current.isSame(end)) {
       break;
     }
   }
@@ -35,7 +32,7 @@ const PositionUsed = ({startTime}) => {
       <Tabs
         defaultActiveKey="1"
         items={items}
-        onChange={onChange}
+        // onChange={onChange}
         tabPosition="top"
         type="line"
         tabBarGutter={8}

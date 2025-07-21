@@ -17,38 +17,36 @@ const DetailLocation = () => {
   const [dataRoot, setDataRoot] = useState(null)
   const { showLoad, hideLoad } = useLoading();
   const tabNumber = Number(tab);
+  // hàm lấy dữ liệu 
+  const getDataRoot = (id) => {
+    locationDetail(id).then((response) => {
+      const result = getDataApi(response);
+      setDataRoot(result)
+    })
+      .catch((error) => {
+        const dataError = getDataApi(error);
+        toastError(dataError?.message)
+      })
+      .finally(() => {
+        hideLoad()
+      })
+  }
 
+  const getDataModify = (id) => {
+    modifyDetail(id).then((response) => {
+      const result = getDataApi(response);
+      setDataModify(result);
+      return result.locationId;
+    })
+      .catch((error) => {
+        const dataError = getDataApi(error);
+        toastError(dataError?.message)
+      })
+      .finally(() => {
+        hideLoad()
+      })
+  }
   useEffect(() => {
-    // hàm lấy dữ liệu 
-    const getDataRoot = (id) => {
-      locationDetail(id).then((response) => {
-        const result = getDataApi(response);
-        setDataRoot(result)
-      })
-        .catch((error) => {
-          const dataError = getDataApi(error);
-          toastError(dataError?.message)
-        })
-        .finally(() => {
-          hideLoad()
-        })
-    }
-
-    const getDataModify = (id) => {
-      modifyDetail(id).then((response) => {
-        const result = getDataApi(response);
-        setDataModify(result);
-        return result.locationId;
-      })
-        .catch((error) => {
-          const dataError = getDataApi(error);
-          toastError(dataError?.message)
-        })
-        .finally(() => {
-          hideLoad()
-        })
-    }
-
     // xử lý
     showLoad("Đang tải dữ liệu");
     // 1: đang hoạt động, 2: tạm dừng hoạt động, 3: Chờ duyệt, 4: từ chối 5: chờ áp dụng 6: ngưng hoạt động
@@ -58,12 +56,16 @@ const DetailLocation = () => {
 
     if ([3, 4, 5].includes(tabNumber)) {
       getDataModify(id);
-      if (dataModify?.locationId) {
-        getDataRoot(dataModify.locationId);
-      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tabNumber, id])
+  }, [tabNumber, id]);
+
+  useEffect(() => {
+    if (dataModify?.locationId) {
+      getDataRoot(dataModify.locationId);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps 
+  }, [dataModify])
 
   // responsive
   useEffect(() => {

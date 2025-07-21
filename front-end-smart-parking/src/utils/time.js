@@ -1,4 +1,5 @@
 import dayjs from "dayjs";
+import { PRICE_CATEGORY } from "./constants";
 
 export function formatTimestamp(timestamp, format = "DD/MM/YYYY HH:mm:ss", isTime = false) {
   if(!timestamp) {
@@ -66,6 +67,20 @@ export const getValueDate = (valueInput) => {
       // không sort
       return valueInput ? dayjs(valueInput) : null;
     }
+  }
+  return null;
+}
+
+
+export const getCharTime = (category) => {
+  if (category === PRICE_CATEGORY.TIME.value) {
+    return "hour";
+  } else if (category === PRICE_CATEGORY.DAY.value) {
+    return "day";
+  } else if (category === PRICE_CATEGORY.WEEK.value) {
+    return "week";
+  } else if (category === PRICE_CATEGORY.MONTH.value) {
+    return "month";
   }
   return null;
 }
