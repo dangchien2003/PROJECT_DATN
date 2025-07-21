@@ -14,16 +14,13 @@ import com.example.parking_service.dto.response.*;
 import com.example.parking_service.entity.*;
 import com.example.parking_service.enums.LocationModifyStatus;
 import com.example.parking_service.enums.LocationStatus;
+import com.example.parking_service.enums.TicketPurchasedStatus;
 import com.example.parking_service.mapper.LocationMapper;
 import com.example.parking_service.mapper.LocationModifyMapper;
 import com.example.parking_service.mapper.LocationWaitReleaseMapper;
-import com.example.parking_service.repository.AccountRepository;
-import com.example.parking_service.repository.LocationModifyRepository;
-import com.example.parking_service.repository.LocationRepository;
-import com.example.parking_service.repository.LocationWaitReleaseRepository;
+import com.example.parking_service.repository.*;
 import com.example.parking_service.service.LocationService;
 import com.example.parking_service.utils.context.UserContextHolder;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -35,8 +32,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -50,10 +49,10 @@ public class LocationServiceImpl implements LocationService {
     LocationModifyRepository locationModifyRepository;
     AccountRepository accountRepository;
     LocationWaitReleaseRepository locationWaitReleaseRepository;
+    TicketPurchaseRepository ticketPurchaseRepository;
     LocationModifyMapper locationModifyMapper;
     LocationMapper locationMapper;
     LocationWaitReleaseMapper locationWaitReleaseMapper;
-    ObjectMapper objectMapper;
 
     Random random = new Random();
 
@@ -493,5 +492,43 @@ public class LocationServiceImpl implements LocationService {
         return ApiResponse.builder()
                 .result(new PageResponse<>(result, locations.getTotalPages(), locations.getTotalElements()))
                 .build();
+    }
+
+    @Override
+    public ApiResponse<Object> statisticsOfUsedPositions(Long locationId, LocalDate date) {
+        if (DataUtils.isNullOrEmpty(locationId)) {
+            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Không được bỏ trống locationId"));
+        }
+        if (DataUtils.isNullOrEmpty(date)) {
+            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Không được bỏ trống date"));
+        }
+        List<TimeUseTicketPurchased> data = ticketPurchaseRepository
+                .findTimeUseTicketPurchasedOfLocationAndDate(locationId, date, TicketPurchasedStatus.BINH_THUONG);
+        List<ItemCountQuantityTicketUseInDay> response = calculateUsagePer15Minutes(data, date);
+
+        return ApiResponse.builder()
+                .result(response)
+                .build();
+    }
+
+    List<ItemCountQuantityTicketUseInDay> calculateUsagePer15Minutes(List<TimeUseTicketPurchased> data, LocalDate targetDate) {
+        List<ItemCountQuantityTicketUseInDay> result = new ArrayList<>();
+
+        LocalDateTime startOfDay = targetDate.atStartOfDay();
+        for (int i = 0; i < 96; i++) {
+            LocalDateTime intervalStart = startOfDay.plusMinutes(i * 15);
+
+            int count = 0;
+            for (TimeUseTicketPurchased ticket : data) {
+                if (ticket.isValidAt(intervalStart)) {
+                    count++;
+                }
+            }
+
+            String timeStr = intervalStart.toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm"));
+            result.add(new ItemCountQuantityTicketUseInDay(timeStr, count));
+        }
+
+        return result;
     }
 }

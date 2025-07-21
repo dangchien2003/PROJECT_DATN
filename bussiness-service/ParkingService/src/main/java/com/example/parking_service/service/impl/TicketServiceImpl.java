@@ -221,6 +221,7 @@ public class TicketServiceImpl implements TicketService {
                         .coordinatesX(item.getCoordinatesX())
                         .coordinatesY(item.getCoordinatesY())
                         .linkGoogleMap(item.getLinkGoogleMap())
+                        .capacity(item.getCapacity())
                         .build()
         ).toList();
         return ApiResponse.builder()

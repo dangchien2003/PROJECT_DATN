@@ -6,6 +6,7 @@ import com.example.parking_service.dto.request.CustomerSearchLocation;
 import com.example.parking_service.dto.request.PartnerSearchLocation;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface LocationService {
@@ -26,5 +27,7 @@ public interface LocationService {
     ApiResponse<Object> getAllIsActive(int page);
 
     ApiResponse<Object> customerSearch(CustomerSearchLocation request, Pageable pageable);
+
+    ApiResponse<Object> statisticsOfUsedPositions(Long locationId, LocalDate date);
 
 }

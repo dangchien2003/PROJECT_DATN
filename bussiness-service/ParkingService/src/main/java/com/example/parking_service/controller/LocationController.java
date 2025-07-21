@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -41,7 +42,7 @@ public class LocationController {
     }
 
     @PostMapping("admin/search")
-    @PreAuthorize("hasAnyAuthority('PARTNER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     ApiResponse<Object> adminSearch(@RequestBody AdminSearchLocation data, Pageable pageable) {
         return locationService.searchLocationByAdmin(data, pageable);
     }
@@ -59,7 +60,7 @@ public class LocationController {
     }
 
     @GetMapping("detail/modify")
-    @PreAuthorize("hasAnyAuthority('PARTNER')")
+    @PreAuthorize("hasAnyAuthority('PARTNER', 'ADMIN')")
     ApiResponse<Object> detailModify(@RequestParam("id") Long id) {
         return locationModifyService.detailModify(id);
     }
@@ -101,5 +102,13 @@ public class LocationController {
     @PostMapping("customer/search")
     ApiResponse<Object> customerSearch(@RequestBody CustomerSearchLocation request, Pageable pageable) {
         return locationService.customerSearch(request, pageable);
+    }
+
+    @GetMapping("statistics-of-used-positions")
+    ApiResponse<Object> statisticsOfUsedPositions(
+            @RequestParam("locationId") Long locationId,
+            @RequestParam("date") LocalDate date
+    ) {
+        return locationService.statisticsOfUsedPositions(locationId, date);
     }
 }

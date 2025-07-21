@@ -38,6 +38,10 @@ public class TicketSpecificationImpl implements TicketSpecification {
             if (ticketName != null) {
                 predicates.add(cb.like(root.get(Ticket_.name), "%" + ticketName + "%", '!'));
             }
+            // status
+            if (status != null) {
+                predicates.add(cb.equal(root.get(Ticket_.STATUS), status));
+            }
             // modifyStatus
             if (modifyStatus != null) {
                 predicates.add(cb.equal(root.get(Ticket_.modifyStatus), modifyStatus));

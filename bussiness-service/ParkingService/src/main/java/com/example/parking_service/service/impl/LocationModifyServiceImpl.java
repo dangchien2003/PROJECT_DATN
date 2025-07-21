@@ -56,7 +56,7 @@ public class LocationModifyServiceImpl implements LocationModifyService {
 
     @Override
     public ApiResponse<Object> detailModify(Long id) {
-        boolean roleAdmin = false;
+        boolean roleAdmin = UserContextHolder.getContext().getRoles().contains("ADMIN");
         String accountId = UserContextHolder.getContext().getUid();
         LocationModify locationModify = locationModifyRepository.findByModifyIdAndIsDel(id, IsDel.DELETE_NOT_YET.getValue())
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));

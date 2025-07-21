@@ -57,7 +57,7 @@ public class AccountController {
     }
 
     @GetMapping("/suggestions")
-    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('CUSTOMER')")
     ApiResponse<Object> suggestions(@RequestParam("key") String key, Pageable pageable) {
         return accountService.suggestions(key, pageable);
     }

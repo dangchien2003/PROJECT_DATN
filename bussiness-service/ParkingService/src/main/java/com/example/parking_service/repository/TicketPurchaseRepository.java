@@ -1,11 +1,13 @@
 package com.example.parking_service.repository;
 
+import com.example.parking_service.dto.response.TimeUseTicketPurchased;
 import com.example.parking_service.entity.TicketPurchased;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -22,4 +24,12 @@ public interface TicketPurchaseRepository extends JpaRepository<TicketPurchased,
 
     List<TicketPurchased> findByExpiresLessThanEqualAndUseStatusAndStatusIn(LocalDateTime endTimeScan, Integer useStatus, List<Integer> statusScan);
 
+    @Query("SELECT new com.example.parking_service.dto.response.TimeUseTicketPurchased(tp.startsValidity, tp.expires) " +
+            "FROM TicketPurchased tp WHERE tp.status = :status and tp.locationId = :locationId " +
+            "AND :date BETWEEN FUNCTION('date', tp.startsValidity) AND FUNCTION('date', tp.expires)")
+    List<TimeUseTicketPurchased> findTimeUseTicketPurchasedOfLocationAndDate(
+            @Param("locationId") Long locationId,
+            @Param("date") LocalDate date,
+            @Param("status") Integer status
+    );
 }
