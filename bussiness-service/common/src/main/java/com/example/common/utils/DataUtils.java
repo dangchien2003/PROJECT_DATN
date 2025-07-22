@@ -58,6 +58,8 @@ public class DataUtils {
         if (isNullOrEmpty(data))
             return null;
         return data
+                .trim()
+                .toUpperCase()
                 .replace("!", "!!")
                 .replace("_", "!_")
                 .replace("%", "!%");

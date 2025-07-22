@@ -1,8 +1,7 @@
 package com.example.parking_service.service;
 
 import com.example.common.dto.response.ApiResponse;
-import com.example.parking_service.dto.request.ActiveCardRequest;
-import com.example.parking_service.dto.request.RequestAdditionalCard;
+import com.example.parking_service.dto.request.*;
 import org.springframework.data.domain.Pageable;
 
 public interface CardService {
@@ -13,4 +12,12 @@ public interface CardService {
     ApiResponse<Object> getHistoryRequestAdditional(Pageable pageable);
 
     ApiResponse<Object> active(ActiveCardRequest request);
+
+    ApiResponse<Object> adminSearch(SearchCardByAdminRequest request, Pageable pageable);
+
+    ApiResponse<Object> adminSearchRequest(SearchCardAddByAdminRequest request, Pageable pageable);
+
+    ApiResponse<Object> rejectRequest(RejectRequestAddCard request);
+
+    ApiResponse<Object> approveRequest(Long id);
 }

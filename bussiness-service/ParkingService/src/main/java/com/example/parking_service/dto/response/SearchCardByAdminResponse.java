@@ -4,18 +4,21 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@AllArgsConstructor
-@NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class HistoryRequestAddCardResponse {
-    Integer requestTimes;
+public class SearchCardByAdminResponse {
+    Long id;
+    String numberCard;
+    LocalDate issuedDate;
     Integer status;
-    String reasonReject;
-    LocalDateTime createdAt;
-    String reasonRequest;
+    Integer type;
+    String requestName;
+    LocalDate requestDate;
+    String ownerName;
 }

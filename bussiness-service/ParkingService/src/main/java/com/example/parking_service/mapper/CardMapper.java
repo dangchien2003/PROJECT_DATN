@@ -2,6 +2,7 @@ package com.example.parking_service.mapper;
 
 import com.example.parking_service.dto.response.CardResponse;
 import com.example.parking_service.dto.response.HistoryRequestAddCardResponse;
+import com.example.parking_service.dto.response.SearchCardByAdminResponse;
 import com.example.parking_service.entity.Card;
 import org.mapstruct.Mapper;
 
@@ -10,4 +11,6 @@ public interface CardMapper {
     CardResponse toCardResponse(Card card);
 
     HistoryRequestAddCardResponse toHistoryRequestAddCardResponse(Card card);
+
+    SearchCardByAdminResponse toSearchCardByAdminResponse(Card card);
 }

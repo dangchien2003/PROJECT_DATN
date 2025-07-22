@@ -6,15 +6,17 @@ import com.example.common.entity.BaseEntity_;
 import com.example.common.exception.AppException;
 import com.example.common.exception.ErrorCode;
 import com.example.common.utils.DataUtils;
-import com.example.parking_service.dto.request.ActiveCardRequest;
-import com.example.parking_service.dto.request.RequestAdditionalCard;
+import com.example.parking_service.dto.request.*;
 import com.example.parking_service.dto.response.CardResponse;
 import com.example.parking_service.dto.response.HistoryRequestAddCardResponse;
+import com.example.parking_service.dto.response.SearchCardByAdminResponse;
+import com.example.parking_service.entity.Account;
 import com.example.parking_service.entity.Card;
 import com.example.parking_service.entity.Card_;
 import com.example.parking_service.enums.CardStatus;
 import com.example.parking_service.enums.TypeCard;
 import com.example.parking_service.mapper.CardMapper;
+import com.example.parking_service.repository.AccountRepository;
 import com.example.parking_service.repository.CardRepository;
 import com.example.parking_service.service.CardService;
 import com.example.parking_service.utils.context.UserContextHolder;
@@ -30,8 +32,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Random;
+import java.time.LocalTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -39,6 +42,7 @@ import java.util.Random;
 @Transactional
 @Slf4j
 public class CardServiceImpl implements CardService {
+    private final AccountRepository accountRepository;
     CardRepository cardRepository;
     CardMapper cardMapper;
 
@@ -61,11 +65,11 @@ public class CardServiceImpl implements CardService {
                     .withMessage("Không thể gửi yêu cầu nếu yêu cầu trước đó chưa được xử lý hoặc chưa qua 24 giờ"));
         }
         // tăng số lần lên 1
-        Integer newIssuedTimes = cardLatest == null ? 1 : cardLatest.getIssuedTimes() + 1;
+        Integer newIssuedTimes = cardLatest == null ? 1 : cardLatest.getRequestTimes() + 1;
         // dữ liệu yêu cầu
         Card card = Card.builder()
                 .accountId(accountId)
-                .issuedTimes(newIssuedTimes)
+                .requestTimes(newIssuedTimes)
                 .type(TypeCard.THE_CA_NHAN)
                 .status(CardStatus.CHO_DUYET)
                 .requestCreateBy(accountId)
@@ -133,4 +137,112 @@ public class CardServiceImpl implements CardService {
         cardRepository.save(card);
         return ApiResponse.builder().build();
     }
+
+    @Override
+    public ApiResponse<Object> adminSearch(SearchCardByAdminRequest request, Pageable pageable) {
+        String emailOwner = DataUtils.convertStringSearchLike(request.getEmailOwner());
+        String numberCard = DataUtils.convertStringSearchLike(request.getNumberCard());
+        String requestName = DataUtils.convertStringSearchLike(request.getRequestName());
+        LocalDateTime issuedDateFrom = null;
+        LocalDateTime issuedDateTo = null;
+        if (!DataUtils.isNullOrEmpty(request.getIssuedDate())) {
+            issuedDateFrom = request.getIssuedDate().getFirst().toLocalDate().atStartOfDay();
+            issuedDateTo = request.getIssuedDate().get(1).toLocalDate().atTime(LocalTime.MAX);
+        }
+
+        Page<Card> cardPage = cardRepository.adminSearch(
+                emailOwner, numberCard, requestName, issuedDateFrom, issuedDateTo,
+                request.getStatus(), request.getType(), pageable);
+        // lấy id người yêu cầu và chủ sở hữu
+        Set<String> requesterIds = new HashSet<>();
+        cardPage.forEach(item -> {
+            requesterIds.add(item.getAccountId());
+            requesterIds.add(item.getRequestCreateBy());
+        });
+        List<Account> accountList = accountRepository.findAllById(requesterIds);
+        Map<String, String> accountsMap = accountList.stream().collect(
+                Collectors.toMap(Account::getId, Account::getFullName));
+        List<SearchCardByAdminResponse> response = cardPage.map(item -> {
+            SearchCardByAdminResponse itemResponse = cardMapper.toSearchCardByAdminResponse(item);
+            itemResponse.setRequestName(accountsMap.get(item.getRequestCreateBy()));
+            itemResponse.setOwnerName(accountsMap.get(item.getAccountId()));
+            if (item.getIssuedDate() != null) {
+                itemResponse.setIssuedDate(item.getIssuedDate().toLocalDate());
+            }
+            return itemResponse;
+        }).toList();
+        return ApiResponse.builder()
+                .result(new PageResponse<>(response, cardPage.getTotalPages(), cardPage.getTotalElements()))
+                .build();
+    }
+
+    @Override
+    public ApiResponse<Object> adminSearchRequest(SearchCardAddByAdminRequest request, Pageable pageable) {
+        String emailOwner = DataUtils.convertStringSearchLike(request.getEmailOwner());
+        String requestName = DataUtils.convertStringSearchLike(request.getRequestName());
+        LocalDateTime requestDateFrom = null;
+        LocalDateTime requestDateTo = null;
+        if (!DataUtils.isNullOrEmpty(request.getRequestDate())) {
+            requestDateFrom = request.getRequestDate().getFirst().toLocalDate().atStartOfDay();
+            requestDateTo = request.getRequestDate().get(1).toLocalDate().atTime(LocalTime.MAX);
+        }
+
+        Page<Card> cardPage = cardRepository.adminSearchRequestAdd(
+                emailOwner, requestName, requestDateFrom, requestDateTo,
+                request.getStatus(), request.getType(), pageable);
+        // lấy id người yêu cầu và chủ sở hữu
+        Set<String> requesterIds = new HashSet<>();
+        cardPage.forEach(item -> {
+            requesterIds.add(item.getAccountId());
+            requesterIds.add(item.getRequestCreateBy());
+        });
+        List<Account> accountList = accountRepository.findAllById(requesterIds);
+        Map<String, String> accountsMap = accountList.stream().collect(
+                Collectors.toMap(Account::getId, Account::getFullName));
+        List<SearchCardByAdminResponse> response = cardPage.map(item -> {
+            SearchCardByAdminResponse itemResponse = cardMapper.toSearchCardByAdminResponse(item);
+            itemResponse.setRequestName(accountsMap.get(item.getRequestCreateBy()));
+            itemResponse.setRequestDate(item.getCreatedAt().toLocalDate());
+            itemResponse.setOwnerName(accountsMap.get(item.getAccountId()));
+            return itemResponse;
+        }).toList();
+        return ApiResponse.builder()
+                .result(new PageResponse<>(response, cardPage.getTotalPages(), cardPage.getTotalElements()))
+                .build();
+    }
+
+    @Override
+    public ApiResponse<Object> rejectRequest(RejectRequestAddCard request) {
+        String accountId = UserContextHolder.getContext().getUid();
+        Card card = cardRepository.findById(request.getId())
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND.withMessage("Không tìm thấy yêu cầu")));
+        if (!card.getStatus().equals(CardStatus.CHO_DUYET)) {
+            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Không thể thực hiện"));
+        }
+        card.setStatus(CardStatus.TU_CHOI);
+        card.setReasonReject(request.getReason());
+        DataUtils.setDataAction(card, accountId, false);
+        cardRepository.save(card);
+        return ApiResponse.builder().build();
+    }
+
+    @Override
+    public ApiResponse<Object> approveRequest(Long id) {
+        if (DataUtils.isNullOrEmpty(id)) {
+            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Không tìm thấy yêu cầu"));
+        }
+        String accountId = UserContextHolder.getContext().getUid();
+        Card card = cardRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND.withMessage("Không tìm thấy yêu cầu")));
+        if (!card.getStatus().equals(CardStatus.CHO_DUYET)) {
+            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Không thể thực hiện"));
+        }
+        card.setStatus(CardStatus.CHO_CAP);
+        DataUtils.setDataAction(card, accountId, false);
+        cardRepository.save(card);
+        return ApiResponse.builder().build();
+    }
+
+//    Integer issuedTimes = cardRepository.getMaxIssuedTimesByOwner(card.getAccountId());
+//        card.setIssuedTimes(issuedTimes != null ? issuedTimes + 1 : 1);
 }

@@ -1,8 +1,7 @@
 package com.example.parking_service.controller;
 
 import com.example.common.dto.response.ApiResponse;
-import com.example.parking_service.dto.request.ActiveCardRequest;
-import com.example.parking_service.dto.request.RequestAdditionalCard;
+import com.example.parking_service.dto.request.*;
 import com.example.parking_service.service.CardService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -41,5 +40,29 @@ public class CardController {
     @PreAuthorize("hasAnyAuthority('CUSTOMER')")
     ApiResponse<Object> active(@Valid @RequestBody ActiveCardRequest request) {
         return cardService.active(request);
+    }
+
+    @PostMapping("/admin/search")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    ApiResponse<Object> adminSearch(@RequestBody SearchCardByAdminRequest request, Pageable pageable) {
+        return cardService.adminSearch(request, pageable);
+    }
+
+    @PostMapping("/admin/search/add")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    ApiResponse<Object> adminSearchRequest(@RequestBody SearchCardAddByAdminRequest request, Pageable pageable) {
+        return cardService.adminSearchRequest(request, pageable);
+    }
+
+    @PatchMapping("/reject-request")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    ApiResponse<Object> rejectRequest(@Valid @RequestBody RejectRequestAddCard request) {
+        return cardService.rejectRequest(request);
+    }
+
+    @PatchMapping("/approve-request/{id}")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    ApiResponse<Object> approveRequest(@PathVariable("id") Long id) {
+        return cardService.approveRequest(id);
     }
 }

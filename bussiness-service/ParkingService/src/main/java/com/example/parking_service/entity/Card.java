@@ -30,6 +30,8 @@ public class Card extends BaseEntity {
     @Column(nullable = false)
     String accountId;
 
+    Integer requestTimes;
+
     Integer issuedTimes;
 
     LocalDateTime issuedDate;
