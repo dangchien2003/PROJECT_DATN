@@ -29,7 +29,7 @@ const ContentTab = ({ date, locationId, capacity, startTime, expires }) => {
 
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps 
-  }, [])
+  }, [locationId, date])
   return (
     <div>
       {!data && <LineLoading />}

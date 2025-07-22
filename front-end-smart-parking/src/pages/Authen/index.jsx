@@ -9,7 +9,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import FormRegister from './FormRegister';
 import FormForget from './FormForget';
 import { getAccessToken, moveAccessToken } from '@/service/cookieService';
-import { deleteRefeshToken } from '@/service/localStorageService';
+import { deleteRefeshToken, getActor } from '@/service/localStorageService';
 import { isNullOrUndefined } from '@/utils/data';
 import { checkAccessToken } from '@/service/authenticationService';
 import { getDataApi } from '@/utils/api';
@@ -54,7 +54,16 @@ const Authen = () => {
         checkAccessToken({token: accessToken}).then(response => {
           const result = getDataApi(response);
           if(result === true) {
-            navigate("/admin")
+            var url = null;
+            const actor = getActor();
+            if(actor === 'admin') {
+              url= "/admin"
+            } else if(actor === 'partner') {
+              url= "/partner"
+            } else {
+              url= "/"
+            }
+            navigate(url)
           } else {
             setAction("LOGIN");
             setAuthened(false);

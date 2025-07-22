@@ -1,18 +1,26 @@
-import { useState, useEffect } from "react";
-import { Table, Tooltip } from "antd";
-import { fakeDataTable } from "./dataTest";
-import ButtonStatus from "../ButtonStatus";
-import { CARD_STATUS, CARD_TYPE} from "@/utils/constants";
-import { formatTimestamp } from "@/utils/time";
 import { useLoading } from "@/hook/loading";
-import { useNavigate } from "react-router-dom";
+import { adminSearchRequestAdd, approveRequest, rejectRequest } from "@/service/cardService";
+import { setSearching } from "@/store/startSearchSlice";
+import { getDataApi } from "@/utils/api";
+import { CARD_STATUS, CARD_TYPE } from "@/utils/constants";
+import { formatTimestamp } from "@/utils/time";
+import { toastError, toastSuccess } from "@/utils/toast";
+import { Table, Tooltip } from "antd";
+import { useEffect, useState } from "react";
 import { FaRegCheckCircle } from "react-icons/fa";
 import { MdOutlineCancel } from "react-icons/md";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import ButtonStatus from "../ButtonStatus";
 import PopConfirmCustom from "../PopConfirmCustom";
+import MessageReject from "../MessageReject";
 
-const TableListCardWaitApprove = ({searchTimes, dataSearch }) => {
-  const navigate = useNavigate()
-  const { showLoad, hideLoad } = useLoading();
+const TableListCardWaitApprove = ({dataSearch }) => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const {showLoad, hideLoad} = useLoading();
+  const { isSearching } = useSelector(state => state.startSearch);
+  const [firstSearch, setFirstSearch] = useState(false);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [action, setAction] = useState(null);
@@ -22,11 +30,13 @@ const TableListCardWaitApprove = ({searchTimes, dataSearch }) => {
     pageSize: 10,
     total: 0,
   });
-  const defaultSort = {
-    field: "numberCard",
-    order: "ascend",
+  const [sorter] = useState({
+    field: null,
+    order: null,
+  });
+  const reasonReject = {
+    value: null
   }
-  const [sorter, setSorter] = useState(defaultSort);
 
   const columns = [
     {
@@ -41,29 +51,23 @@ const TableListCardWaitApprove = ({searchTimes, dataSearch }) => {
       dataIndex: "statusPrint",
       key: "3",
       sorter: false,
-      // width: 190,
     },
     {
       title: "Loại thẻ",
       dataIndex: "typePrint",
       key: "4",
       sorter: false,
-      // width: 120,
     },
     {
       title: "Ngày yêu cầu",
       dataIndex: "createdDate",
       key: "2",
-      sorter: true,
       align: "center"
-      // width: 120,
     },
     {
       title: "Người yêu cầu",
-      dataIndex: "requestCreateName",
+      dataIndex: "requestName",
       key: "5",
-      sorter: true,
-      // width: 120,
     },
     {
       title: "Hành động",
@@ -76,34 +80,32 @@ const TableListCardWaitApprove = ({searchTimes, dataSearch }) => {
   ];
 
   const loadData = (newPagination, sorter) => {
-    if (!sorter.field || !sorter.order) {
-      sorter = defaultSort;
-      setSorter(sorter);
-    }
     setLoading(true);
-    if (searchTimes > 0) {
-      showLoad();
-    }
-    setTimeout(() => {
-      setLoading(false);
-      hideLoad();
-      const dataResponse = {
-        data: fakeDataTable,
-        totalElement: 60,
-        totalPage: 10,
-      };
-      setData(
-        convertResponseToDataTable(
-          dataResponse,
-          newPagination.current,
-          newPagination.pageSize
-        )
-      );
-      setPagination({
-        ...newPagination,
-        total: dataResponse.totalElement,
-      });
-    }, 1000);
+        setData([]);
+        adminSearchRequestAdd(dataSearch, newPagination.current - 1, newPagination.pageSize, sorter.field, sorter.order)
+          .then((response) => {
+            const result = getDataApi(response);
+            const total = result?.totalElements;
+            setData(
+              convertResponseToDataTable(
+                result.data,
+                newPagination.current,
+                newPagination.pageSize
+              )
+            );
+            setPagination({
+              ...newPagination,
+              total: total,
+            });
+          })
+          .catch((error) => {
+            error = getDataApi(error);
+            toastError(error.message)
+          })
+          .finally(() => {
+            setLoading(false);
+            dispatch(setSearching(false))
+          });
   };
 
   const handleTableChange = (newPagination, _, sorter) => {
@@ -116,10 +118,14 @@ const TableListCardWaitApprove = ({searchTimes, dataSearch }) => {
   };
 
   useEffect(() => {
-    loadData(pagination, sorter);
-    console.log(dataSearch);
+    if (isSearching || !firstSearch) {
+      loadData(pagination, sorter);
+      if (!firstSearch) {
+        setFirstSearch(true)
+      }
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchTimes]);
+  }, [isSearching]);
 
   const resetAction = () => {
     setAction(null);
@@ -127,32 +133,45 @@ const TableListCardWaitApprove = ({searchTimes, dataSearch }) => {
   }
 
   const handleAllowApprove = () => {
-    console.log("đồng ý duyệt")
     showLoad("Đang xử lý");
-    setTimeout(()=> {
+    approveRequest(dataAction.id).then(() => {
+      toastSuccess("Phê duyệt thành công");
+      loadData(pagination, sorter);
+    }).catch(e => {
+      const response = getDataApi(e);
+      toastError(response.message);
+    }).finally(() => {
       hideLoad();
       resetAction();
-    }, 3000)
+    })
   }
 
   const handleCancelApprove = () => {
-    console.log("huỷ việc duyệt")
     resetAction();
   }
 
   const handleAllowReject = () => {
-    console.log("đồng ý từ chối")
+    if(reasonReject.value === null 
+      || reasonReject.value?.trim().length === 0) {
+      return;
+    }
     showLoad("Đang xử lý");
-    setTimeout(()=> {
+    rejectRequest(dataAction.id, reasonReject.value).then(() => {
+      toastSuccess("Từ chối thành công");
+      loadData(pagination, sorter);
+    }).catch(e => {
+      const response = getDataApi(e);
+      toastError(response.message);
+    }).finally(() => {
       hideLoad();
       resetAction();
-    }, 3000)
+      reasonReject.value = null;
+    })
   }
 
   const handleCancelReject = () => {
-    console.log("huỷ việc từ chối")
-    console.log(dataAction)
     resetAction();
+    reasonReject.value = null;
   }
 
 
@@ -162,9 +181,9 @@ const TableListCardWaitApprove = ({searchTimes, dataSearch }) => {
     event.stopPropagation();
   }
 
-  const convertResponseToDataTable = (response, currentPage, pageSize) => {
-  return response.data.map((item, index) => {
-    item.createdDate = formatTimestamp(item.createdAt, "DD/MM/YYYY")
+  const convertResponseToDataTable = (data, currentPage, pageSize) => {
+  return data.map((item, index) => {
+    item.createdDate = formatTimestamp(item.requestDate, "DD/MM/YYYY")
     item.statusPrint = (<ButtonStatus color={CARD_STATUS[item.status]?.color} label = {CARD_STATUS[item.status]?.label} />)
     item.typePrint = CARD_TYPE[item.type]?.label
     item.action = (
@@ -207,8 +226,8 @@ const TableListCardWaitApprove = ({searchTimes, dataSearch }) => {
           };
         }}
       />
-      {action === 1 && <PopConfirmCustom type="warning" title="Bạn có chắc chắn việc tiếp tục cấp thẻ cho Lê Đăng Chiến không?" message="Yêu cầu sẽ được chuyển sang trạng thái chờ cấp" handleOk={handleAllowApprove} handleCancel={handleCancelApprove} key={"approve"}/>}
-      {action === 2 && <PopConfirmCustom type="warning" title="Bạn có chắc chắn việc từ chối cấp thẻ cho Lê Đăng Chiến không?" message="Yêu cầu sẽ được chuyển sang trạng thái bị từ chối" handleOk={handleAllowReject} handleCancel={handleCancelReject} key={"reject"}/>}
+      {action === 1 && <PopConfirmCustom type="warning" title={`Bạn có chắc chắn việc tiếp tục cấp thẻ cho ${dataAction.ownerName?.toUpperCase()} không?`} message="Yêu cầu sẽ được chuyển sang trạng thái chờ cấp" handleOk={handleAllowApprove} handleCancel={handleCancelApprove} key={"approve"}/>}
+      {action === 2 && <PopConfirmCustom type="warning" title={`Bạn có chắc chắn việc từ chối cấp thẻ cho ${dataAction.ownerName?.toUpperCase()} không?`} message={<MessageReject message={"Yêu cầu sẽ được chuyển sang trạng thái bị từ chối"} data={reasonReject} />} handleOk={handleAllowReject} handleCancel={handleCancelReject} key={"reject"} />}
     </>
   );
 };

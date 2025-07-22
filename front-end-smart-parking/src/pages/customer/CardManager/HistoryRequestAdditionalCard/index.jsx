@@ -43,7 +43,7 @@ const baseColumns = [
     scroll: true
   }
 ];
-const HistoryRequestAdditionalCard = () => {
+const HistoryRequestAdditionalCard = ({onload}) => {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
   const [pagination, setPagination] = useState({
@@ -54,7 +54,7 @@ const HistoryRequestAdditionalCard = () => {
 
   const convertResponseToDataTable = (data) => {
     return data.map((item) => {
-      item.timesPrint = "Lần " + item.issuedTimes;
+      item.timesPrint = "Lần " + item.requestTimes;
       item.statusPrint = "";
       if (item.status === CARD_STATUS_2.CHO_DUYET.value) {
         item.statusPrint = <div><IoTimer /> Chờ duyệt</div>
@@ -86,6 +86,9 @@ const HistoryRequestAdditionalCard = () => {
           ...newPagination,
           total: data.totalElements
         });
+        if(newPagination.current === 1 && onload) {
+          onload(data.data[0]?.requestTimes)
+        }
       })
       .catch((error) => {
         error = getDataApi(error);

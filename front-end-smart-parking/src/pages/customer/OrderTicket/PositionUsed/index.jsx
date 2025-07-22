@@ -5,7 +5,6 @@ import ContentTab from "./ContentTab";
 import dayjs from "dayjs";
 
 const PositionUsed = ({ startTime, expires, locationId, capacity }) => {
-  console.log(startTime, expires)
   const start = startTime ? dayjs(startTime) : dayjs();
   const end = start.add(1, "month");
   const items = [];
@@ -37,6 +36,7 @@ const PositionUsed = ({ startTime, expires, locationId, capacity }) => {
         type="line"
         tabBarGutter={8}
         animated
+        destroyInactiveTabPane  
       />
     </div>
   )

@@ -1,21 +1,22 @@
+import useResponsiveKey from "@/hook/useReponsive";
+import { getBalance } from "@/service/accountService";
 import { moveAccessToken } from "@/service/cookieService";
-import { deleteRefeshToken } from "@/service/localStorageService";
+import { deleteAccountFullName, deleteActor, deletePartnerFullName, deleteRefeshToken, getActor } from "@/service/localStorageService";
+import { setRemaining } from "@/store/remainingSlice";
+import { getDataApi } from "@/utils/api";
+import { formatCurrency } from "@/utils/number";
+import { toastError } from "@/utils/toast";
 import { DownOutlined } from "@ant-design/icons";
 import { Drawer, Dropdown, Space, Typography } from "antd";
 import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import AccountInfo from "../AccountInfo";
-import './style.css';
-import useResponsiveKey from "@/hook/useReponsive";
-import { formatCurrency } from "@/utils/number";
-import { useDispatch, useSelector } from "react-redux";
-import { getBalance } from "@/service/accountService";
-import { setRemaining } from "@/store/remainingSlice";
-import { getDataApi } from "@/utils/api";
-import { toastError } from "@/utils/toast";
 import SkeletonShimmerLoading from "../Loading/SkeletonShimmerLoading";
+import './style.css';
 
 const MenuAccount = ({ linkAvatar, isCustomer }) => {
+  const actor = getActor();
   const dispatch = useDispatch();
   const [loadingRemaining, setLoadingRemaining] = useState(true);
   const { key } = useResponsiveKey();
@@ -26,6 +27,9 @@ const MenuAccount = ({ linkAvatar, isCustomer }) => {
   const handleLogout = () => {
     deleteRefeshToken();
     moveAccessToken();
+    deletePartnerFullName();
+    deleteAccountFullName();
+    deleteActor();
     navigate("/authen")
   }
 
@@ -75,7 +79,7 @@ const MenuAccount = ({ linkAvatar, isCustomer }) => {
   ];
 
   useEffect(() => {
-    if (key !== "xs") {
+    if(actor === "admin" || actor === "partner" || key !== "xs") {
       setItemsMenu(itemsBase.filter(item => item.key !== "0" && item.key !== "1"))
     } else {
       setItemsMenu(itemsBase)
@@ -84,6 +88,9 @@ const MenuAccount = ({ linkAvatar, isCustomer }) => {
   }, [key, loadingRemaining]);
 
   useEffect(() => {
+    // không call khi tk là admin hoặc partner
+    if(actor === "admin" || actor === "partner") return;
+
     setLoadingRemaining(true);
     getBalance().then((response) => {
       const data = getDataApi(response);
