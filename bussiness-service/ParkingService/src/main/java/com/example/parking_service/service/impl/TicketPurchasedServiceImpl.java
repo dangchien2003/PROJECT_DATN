@@ -39,10 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -106,16 +103,31 @@ public class TicketPurchasedServiceImpl implements TicketPurchasedService {
                     .build();
         }
         // lấy tên vé
-        List<Long> ticketIds = ticketPurchasedPage.map(TicketPurchased::getTicketId).toList();
+        Set<Long> ticketIds = new HashSet<>();
+        Set<Long> listLocationIdOfResult = new HashSet<>();
+        ticketPurchasedPage.forEach(item -> {
+            ticketIds.add(item.getTicketId());
+            listLocationIdOfResult.add(item.getLocationId());
+        });
+
         List<TicketNameDTO> ticketNames = ticketRepository.findDTOByTicketIdIn(ticketIds);
+        List<LocationNameDTO> locationNames = locationRepository.getNameDto(listLocationIdOfResult);
         // chuyển về map
         Map<Long, TicketNameDTO> ticketNameDTOMap = ticketNames.stream()
                 .collect(Collectors.toMap(TicketNameDTO::getTicketId, item -> item));
+        Map<Long, LocationNameDTO> locationNameDTOMap = locationNames.stream()
+                .collect(Collectors.toMap(LocationNameDTO::getLocationId, item -> item));
+
         List<CusTicketPurchasedSearchResponse> result = ticketPurchasedPage.map(item -> {
             CusTicketPurchasedSearchResponse response = ticketPurchasedMapper.toCusTicketPurchasedSearchResponse(item);
             TicketNameDTO ticketNameDTO = ticketNameDTOMap.get(item.getTicketId());
             if (ticketNameDTO != null) {
                 response.setTicketName(ticketNameDTO.getName());
+            }
+            LocationNameDTO locationNameDTO = locationNameDTOMap.get(item.getLocationId());
+            if (locationNameDTO != null) {
+                response.setLocationName(locationNameDTO.getName());
+                response.setAddress(locationNameDTO.getAddress());
             }
             return response;
         }).toList();

@@ -12,9 +12,9 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ActiveCardRequest {
+public class LinkTicketRequest {
     @NotNull(message = "Thẻ không xác định")
-    Long id;
-    @NotBlank(message = "Mã kích hoạt không được để trống")
-    String code;
+    Long cardId;
+    @NotBlank(message = "Vé không xác định")
+    String ticketId;
 }

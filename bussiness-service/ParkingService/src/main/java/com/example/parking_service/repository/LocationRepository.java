@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -117,5 +118,5 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
             from Location l
             where l.locationId in(:ids)
             """)
-    List<LocationNameDTO> getNameDto(@Param("ids") List<Long> ids);
+    List<LocationNameDTO> getNameDto(@Param("ids") Collection<Long> ids);
 }

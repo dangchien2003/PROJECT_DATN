@@ -20,4 +20,14 @@ public interface CardService {
     ApiResponse<Object> rejectRequest(RejectRequestAddCard request);
 
     ApiResponse<Object> approveRequest(Long id);
+
+    ApiResponse<Object> madeCard(Long id);
+
+    ApiResponse<Object> lock(Long id, boolean lock);
+
+    ApiResponse<Object> permanentLock(Long id);
+
+    ApiResponse<Object> linkTicket(LinkTicketRequest request);
+
+    ApiResponse<Object> cancelLinkTicket(Long cardId);
 }

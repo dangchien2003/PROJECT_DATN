@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -17,7 +18,7 @@ public class CardResponse {
     Integer type;
     String numberCard;
     Integer issuedTimes;
-    LocalDateTime issuedDate;
+    LocalDate issuedDate;
     LocalDateTime expireDate;
     Long usedTimes;
     Integer status;

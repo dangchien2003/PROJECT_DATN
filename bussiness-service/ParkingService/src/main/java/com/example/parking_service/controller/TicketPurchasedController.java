@@ -58,6 +58,4 @@ public class TicketPurchasedController {
     ApiResponse<Object> history(@PathVariable("id") String id, Pageable pageable) {
         return ticketPurchasedService.history(id, pageable);
     }
-
-
 }

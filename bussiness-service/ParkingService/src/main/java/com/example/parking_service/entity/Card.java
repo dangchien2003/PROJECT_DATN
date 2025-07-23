@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -34,13 +35,15 @@ public class Card extends BaseEntity {
 
     Integer issuedTimes;
 
-    LocalDateTime issuedDate;
+    LocalDate issuedDate;
 
     LocalDateTime expireDate;
 
     Integer type;
 
     Integer status;
+
+    LocalDateTime lockAt;
 
     String ticketLink;
 

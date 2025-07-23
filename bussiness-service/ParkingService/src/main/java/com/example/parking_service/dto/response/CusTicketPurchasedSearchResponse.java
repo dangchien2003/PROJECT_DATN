@@ -19,4 +19,6 @@ public class CusTicketPurchasedSearchResponse {
     Integer status;
     LocalDateTime startsValidity;
     LocalDateTime expires;
+    String locationName;
+    String address;
 }

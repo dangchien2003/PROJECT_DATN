@@ -65,4 +65,37 @@ public class CardController {
     ApiResponse<Object> approveRequest(@PathVariable("id") Long id) {
         return cardService.approveRequest(id);
     }
+
+    @PatchMapping("/made-card/{id}")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    ApiResponse<Object> madeCard(@PathVariable("id") Long id) {
+        return cardService.madeCard(id);
+    }
+
+    @PatchMapping("/lock/{id}")
+    @PreAuthorize("hasAnyAuthority('CUSTOMER')")
+    ApiResponse<Object> lock(
+            @PathVariable("id") Long id,
+            @RequestParam("lock") boolean lock
+    ) {
+        return cardService.lock(id, lock);
+    }
+
+    @PatchMapping("/permanent-lock/{id}")
+    @PreAuthorize("hasAnyAuthority('CUSTOMER')")
+    ApiResponse<Object> permanentLock(@PathVariable("id") Long id) {
+        return cardService.permanentLock(id);
+    }
+
+    @PostMapping("/link-ticket")
+    @PreAuthorize("hasAnyAuthority('CUSTOMER')")
+    ApiResponse<Object> linkTicket(@Valid @RequestBody LinkTicketRequest request) {
+        return cardService.linkTicket(request);
+    }
+
+    @PatchMapping("/cancel-link-ticket/{id}")
+    @PreAuthorize("hasAnyAuthority('CUSTOMER')")
+    ApiResponse<Object> cancelLinkTicket(@PathVariable("id") Long id) {
+        return cardService.cancelLinkTicket(id);
+    }
 }

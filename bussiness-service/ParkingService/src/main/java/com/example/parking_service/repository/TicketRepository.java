@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,5 +18,5 @@ public interface TicketRepository extends JpaRepository<Ticket, Long>, JpaSpecif
 
     @Query("SELECT new com.example.parking_service.dto.response.TicketNameDTO(t.ticketId, t.name) " +
             "FROM Ticket t WHERE t.ticketId IN :ticketIds")
-    List<TicketNameDTO> findDTOByTicketIdIn(@Param("ticketIds") List<Long> ids);
+    List<TicketNameDTO> findDTOByTicketIdIn(@Param("ticketIds") Collection<Long> ids);
 }

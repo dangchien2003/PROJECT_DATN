@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -15,7 +15,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class SearchCardByAdminRequest {
     String emailOwner;
-    List<LocalDateTime> issuedDate;
+    List<LocalDate> issuedDate;
     String numberCard;
     Integer status;
     Integer type;

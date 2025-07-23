@@ -6,6 +6,8 @@ import com.example.common.entity.BaseEntity_;
 import com.example.common.exception.AppException;
 import com.example.common.exception.ErrorCode;
 import com.example.common.utils.DataUtils;
+import com.example.common.utils.RandomUtils;
+import com.example.common.utils.TimeUtil;
 import com.example.parking_service.dto.request.*;
 import com.example.parking_service.dto.response.CardResponse;
 import com.example.parking_service.dto.response.HistoryRequestAddCardResponse;
@@ -13,11 +15,14 @@ import com.example.parking_service.dto.response.SearchCardByAdminResponse;
 import com.example.parking_service.entity.Account;
 import com.example.parking_service.entity.Card;
 import com.example.parking_service.entity.Card_;
+import com.example.parking_service.entity.TicketPurchased;
 import com.example.parking_service.enums.CardStatus;
+import com.example.parking_service.enums.TicketPurchasedStatus;
 import com.example.parking_service.enums.TypeCard;
 import com.example.parking_service.mapper.CardMapper;
 import com.example.parking_service.repository.AccountRepository;
 import com.example.parking_service.repository.CardRepository;
+import com.example.parking_service.repository.TicketPurchaseRepository;
 import com.example.parking_service.service.CardService;
 import com.example.parking_service.utils.context.UserContextHolder;
 import lombok.AccessLevel;
@@ -31,6 +36,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
@@ -42,9 +48,11 @@ import java.util.stream.Collectors;
 @Transactional
 @Slf4j
 public class CardServiceImpl implements CardService {
+    private final TicketPurchaseRepository ticketPurchaseRepository;
     private final AccountRepository accountRepository;
     CardRepository cardRepository;
     CardMapper cardMapper;
+    Random random = new Random();
 
     @Override
     public ApiResponse<Object> requestAdditional(RequestAdditionalCard request) {
@@ -85,10 +93,9 @@ public class CardServiceImpl implements CardService {
         Pageable pageQuery = PageRequest.of(
                 pageable.getPageNumber(), pageable.getPageSize(), Sort.by(Sort.Direction.DESC, Card_.ISSUED_TIMES));
         String accountId = UserContextHolder.getContext().getUid();
-        String ownerName = "LÊ ĐĂNG CHIẾN"; // lấy từ token
+        String ownerName = accountRepository.findById(accountId).get().getFullName();
         List<Integer> statusNotGet = List.of(CardStatus.CHO_DUYET, CardStatus.TU_CHOI, CardStatus.CHO_CAP);
         Page<Card> cards = cardRepository.findByAccountIdAndStatusNotIn(accountId, statusNotGet, pageQuery);
-        Random random = new Random();
         List<CardResponse> result = cards.map(item -> {
             CardResponse cardResponse = cardMapper.toCardResponse(item);
             if (cardResponse.getStatus().equals(CardStatus.CHO_KICH_HOAT)) {
@@ -99,7 +106,7 @@ public class CardServiceImpl implements CardService {
             if (cardResponse.getStatus().equals(CardStatus.DANG_HOAT_DONG)
                     || cardResponse.getStatus().equals(CardStatus.TAM_KHOA)
                     || cardResponse.getStatus().equals(CardStatus.KHOA_VINH_VIEN)) {
-                cardResponse.setUsedTimes(random.nextLong(100));
+                this.genUseTimes(cardResponse);
             }
             return cardResponse;
         }).toList();
@@ -135,7 +142,11 @@ public class CardServiceImpl implements CardService {
         card.setStatus(CardStatus.DANG_HOAT_DONG);
         DataUtils.setDataAction(card, accountId, false);
         cardRepository.save(card);
-        return ApiResponse.builder().build();
+        CardResponse cardResponse = cardMapper.toCardResponse(card);
+        this.genUseTimes(cardResponse);
+        return ApiResponse.builder()
+                .result(cardResponse)
+                .build();
     }
 
     @Override
@@ -143,11 +154,11 @@ public class CardServiceImpl implements CardService {
         String emailOwner = DataUtils.convertStringSearchLike(request.getEmailOwner());
         String numberCard = DataUtils.convertStringSearchLike(request.getNumberCard());
         String requestName = DataUtils.convertStringSearchLike(request.getRequestName());
-        LocalDateTime issuedDateFrom = null;
-        LocalDateTime issuedDateTo = null;
+        LocalDate issuedDateFrom = null;
+        LocalDate issuedDateTo = null;
         if (!DataUtils.isNullOrEmpty(request.getIssuedDate())) {
-            issuedDateFrom = request.getIssuedDate().getFirst().toLocalDate().atStartOfDay();
-            issuedDateTo = request.getIssuedDate().get(1).toLocalDate().atTime(LocalTime.MAX);
+            issuedDateFrom = request.getIssuedDate().getFirst();
+            issuedDateTo = request.getIssuedDate().get(1);
         }
 
         Page<Card> cardPage = cardRepository.adminSearch(
@@ -167,7 +178,7 @@ public class CardServiceImpl implements CardService {
             itemResponse.setRequestName(accountsMap.get(item.getRequestCreateBy()));
             itemResponse.setOwnerName(accountsMap.get(item.getAccountId()));
             if (item.getIssuedDate() != null) {
-                itemResponse.setIssuedDate(item.getIssuedDate().toLocalDate());
+                itemResponse.setIssuedDate(item.getIssuedDate());
             }
             return itemResponse;
         }).toList();
@@ -243,6 +254,127 @@ public class CardServiceImpl implements CardService {
         return ApiResponse.builder().build();
     }
 
-//    Integer issuedTimes = cardRepository.getMaxIssuedTimesByOwner(card.getAccountId());
-//        card.setIssuedTimes(issuedTimes != null ? issuedTimes + 1 : 1);
+    @Override
+    public ApiResponse<Object> madeCard(Long id) {
+        String accountId = UserContextHolder.getContext().getUid();
+        Card card = cardRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND.withMessage("Không tìm thấy yêu cầu")));
+        if (!card.getStatus().equals(CardStatus.CHO_CAP)) {
+            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Không thể thực hiện"));
+        }
+        // cập nhật trạng thái
+        card.setStatus(CardStatus.CHO_KICH_HOAT);
+        // gen số
+        card.setNumberCard(TimeUtil.formatLocalDateTime(LocalDateTime.now(), "DDMMYY") + RandomUtils.randomNumber(8));
+        // gen code
+        card.setCodeActive(RandomUtils.randomNumber(6));
+        // set lượt cấp
+        Integer issuedTimes = cardRepository.getMaxIssuedTimesByOwner(card.getAccountId());
+        card.setIssuedTimes(issuedTimes != null ? issuedTimes + 1 : 1);
+        // set ngày phát hành
+        card.setIssuedDate(LocalDate.now());
+        DataUtils.setDataAction(card, accountId, false);
+        cardRepository.save(card);
+        return ApiResponse.builder().build();
+    }
+
+    @Override
+    public ApiResponse<Object> lock(Long id, boolean lock) {
+        String accountId = UserContextHolder.getContext().getUid();
+        Card card = cardRepository.findByIdAndAccountId(id, accountId)
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND.withMessage("Bạn không sở hữu thẻ này")));
+        if (lock) {
+            if (!card.getStatus().equals(CardStatus.DANG_HOAT_DONG)) {
+                throw new AppException(ErrorCode.INVALID_DATA.withMessage("Không thể khoá thẻ"));
+            }
+            card.setStatus(CardStatus.TAM_KHOA);
+            card.setLockAt(LocalDateTime.now());
+        } else {
+            if (!card.getStatus().equals(CardStatus.TAM_KHOA)) {
+                throw new AppException(ErrorCode.INVALID_DATA.withMessage("Không thể khoá thẻ"));
+            }
+            if (card.getLockAt().plusHours(1).isAfter(LocalDateTime.now())) {
+                throw new AppException(ErrorCode.INVALID_DATA.withMessage("Chỉ có thể mở khoá sau khi thư hiện khoá 1 giờ"));
+            }
+            card.setStatus(CardStatus.DANG_HOAT_DONG);
+        }
+        DataUtils.setDataAction(card, accountId, false);
+        cardRepository.save(card);
+        CardResponse cardResponse = cardMapper.toCardResponse(card);
+        this.genUseTimes(cardResponse);
+        return ApiResponse.builder()
+                .result(cardResponse)
+                .build();
+    }
+
+    @Override
+    public ApiResponse<Object> permanentLock(Long id) {
+        String accountId = UserContextHolder.getContext().getUid();
+        Card card = cardRepository.findByIdAndAccountId(id, accountId)
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND.withMessage("Bạn không sở hữu thẻ này")));
+        List<Integer> statusAllow = List.of(CardStatus.DANG_HOAT_DONG, CardStatus.TAM_KHOA);
+        if (!statusAllow.contains(card.getStatus())) {
+            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Không thể thực hiện"));
+        }
+        card.setStatus(CardStatus.KHOA_VINH_VIEN);
+        card.setLockAt(LocalDateTime.now());
+        DataUtils.setDataAction(card, accountId, false);
+        cardRepository.save(card);
+        CardResponse cardResponse = cardMapper.toCardResponse(card);
+        this.genUseTimes(cardResponse);
+        return ApiResponse.builder()
+                .result(cardResponse)
+                .build();
+    }
+
+    @Override
+    public ApiResponse<Object> linkTicket(LinkTicketRequest request) {
+        String accountId = UserContextHolder.getContext().getUid();
+        Card card = cardRepository.findByIdAndAccountId(request.getCardId(), accountId)
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND.withMessage("Bạn không sở hữu thẻ này")));
+        if (!card.getStatus().equals(CardStatus.DANG_HOAT_DONG)) {
+            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Thẻ không hoạt động"));
+        }
+        TicketPurchased ticketPurchased = ticketPurchaseRepository.findByIdAndAccountId(request.getTicketId(), accountId)
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND.withMessage("Bạn không sở hữu vé này")));
+        // validate ticket
+        LocalDateTime now = LocalDateTime.now();
+        if (!ticketPurchased.getStatus().equals(TicketPurchasedStatus.BINH_THUONG)
+                || now.isAfter(ticketPurchased.getExpires())) {
+            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Vé không có hiệu lực"));
+        }
+        // kiểm tra vé đã được liên kết chưa
+        if (cardRepository.existsByAccountIdAndTicketLinkAndStatusIn(
+                accountId, ticketPurchased.getId(), List.of(CardStatus.DANG_HOAT_DONG, CardStatus.TAM_KHOA))) {
+            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Vé đã được liên kết"));
+        }
+
+        card.setTicketLink(ticketPurchased.getId());
+        DataUtils.setDataAction(card, accountId, false);
+        cardRepository.save(card);
+        CardResponse cardResponse = cardMapper.toCardResponse(card);
+        this.genUseTimes(cardResponse);
+        return ApiResponse.builder()
+                .result(cardResponse)
+                .build();
+    }
+
+    @Override
+    public ApiResponse<Object> cancelLinkTicket(Long cardId) {
+        String accountId = UserContextHolder.getContext().getUid();
+        Card card = cardRepository.findByIdAndAccountId(cardId, accountId)
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND.withMessage("Bạn không sở hữu thẻ này")));
+        card.setTicketLink(null);
+        DataUtils.setDataAction(card, accountId, false);
+        cardRepository.save(card);
+        CardResponse cardResponse = cardMapper.toCardResponse(card);
+        this.genUseTimes(cardResponse);
+        return ApiResponse.builder()
+                .result(cardResponse)
+                .build();
+    }
+
+    void genUseTimes(CardResponse cardResponse) {
+        cardResponse.setUsedTimes(random.nextLong(100));
+    }
 }

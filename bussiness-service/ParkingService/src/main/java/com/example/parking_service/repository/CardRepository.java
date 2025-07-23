@@ -6,7 +6,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,8 +37,8 @@ public interface CardRepository extends JpaRepository<Card, Long> {
             String emailOwner,
             String numberCard,
             String requestName,
-            LocalDateTime issuedDateFrom,
-            LocalDateTime issuedDateTo,
+            LocalDate issuedDateFrom,
+            LocalDate issuedDateTo,
             Integer status,
             Integer type,
             Pageable pageable
@@ -61,4 +63,6 @@ public interface CardRepository extends JpaRepository<Card, Long> {
             Integer type,
             Pageable pageable
     );
+
+    boolean existsByAccountIdAndTicketLinkAndStatusIn(String accountId, String ticketId, Collection<Integer> status);
 }
