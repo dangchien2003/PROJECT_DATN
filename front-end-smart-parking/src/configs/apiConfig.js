@@ -65,7 +65,12 @@ export const PARKING_SERVICE = {
     adminSearch: "card/admin/search",
     adminSearchRequestAdd: "card/admin/search/add",
     rejectRequest: "card/reject-request",
-    approveRequest: "card/approve-request/{id}",
+    approveRequest: "card/approve-request/:id",
+    active: "card/active",
+    lock: "card/lock/:id",
+    permanentLock: "card/permanent-lock/:id",
+    linkTicket: "card/link-ticket",
+    unlinkTicket: "card/cancel-link-ticket/:id",
   },
   order: {
     createOrder: "order",

@@ -137,6 +137,10 @@ a.hover:hover {
   color: red;
 }
 
+.gray {
+  color: gray;
+}
+
 img.disable {
   filter: grayscale(100%);
 }

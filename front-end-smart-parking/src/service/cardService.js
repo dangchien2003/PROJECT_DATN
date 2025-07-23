@@ -1,6 +1,6 @@
 import { PARKING_SERVICE } from '@/configs/apiConfig'
 import httpClient from '@/configs/axiosConfig'
-import { getParamsPage, replaceParamsUrl } from '@/utils/api'
+import { getParamsPage, getRequestParams, replaceParamsUrl } from '@/utils/api'
 
 
 export async function requestAddCard(reason) {
@@ -35,5 +35,32 @@ export async function rejectRequest(id, reason) {
 
 export async function approveRequest(id) {
   return await httpClient.patch(replaceParamsUrl(PARKING_SERVICE.card.approveRequest, {id}), null, {
+  })
+}
+
+export async function activeCard(id, code) {
+  return await httpClient.put(PARKING_SERVICE.card.active, {id, code}, {
+  })
+}
+
+export async function lockCard(id, lock) {
+  let url = replaceParamsUrl(PARKING_SERVICE.card.lock, {id}) + "?";
+  url += getRequestParams({lock});
+  return await httpClient.patch(url, {
+  })
+}
+
+export async function permanentLock(id) {
+  return await httpClient.patch(replaceParamsUrl(PARKING_SERVICE.card.permanentLock, {id}), {
+  })
+}
+
+export async function linkTicket(cardId, ticketId) {
+  return await httpClient.post(PARKING_SERVICE.card.linkTicket, {cardId, ticketId}, {
+  })
+}
+
+export async function unlinkTicket(id) {
+  return await httpClient.patch(replaceParamsUrl(PARKING_SERVICE.card.unlinkTicket, {id}), {}, {
   })
 }

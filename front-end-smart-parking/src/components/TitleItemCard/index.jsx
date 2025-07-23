@@ -1,152 +1,231 @@
-import { CARD_STATUS_2 } from '@/utils/constants';
+import { CARD_STATUS_2, lineLoading } from '@/utils/constants';
 import { MoreOutlined } from '@ant-design/icons';
 import { Dropdown, Space, Switch } from 'antd';
 import { useEffect, useState } from 'react';
+import { MdOutlineLock } from 'react-icons/md';
+import ModalCustom from '../ModalCustom';
 import PopConfirmCustom from '../PopConfirmCustom';
+import FormActiveCard from './FormActiveCard';
+import { lockCard, permanentLock } from '@/service/cardService';
+import { getDataApi } from '@/utils/api';
+import { toastError, toastSuccess } from '@/utils/toast';
+import { useLoading } from '@/hook/loading';
 
-const TitleItemCard = ({ isAdmin, parentRef, status }) => {
-  const [open, setOpen] = useState(false);
-  const [optional, setOptional] = useState([]);
+const TitleItemCard = ({ isAdmin, parentRef, status, cardId, onActionSuccess }) => {
+  const [lock, setLock] = useState(status === CARD_STATUS_2.TAM_KHOA.value);
   const [openMore, setOpenMore] = useState(null);
-  const [openKVV, setOpenKVV] = useState(false);
   const [openPopConfirm, setOpenPopConfirm] = useState(false);
   const [openPopConfirmKVV, setOpenPopConfirmKVV] = useState(false);
+  const [openPopActive, setOpenPopActive] = useState(false);
+  const {showLoad, hideLoad} = useLoading();
+
   // handle
-  const handleChangeOpen = () => {
+  const handleChangeOpen = (checked) => {
+    setLock(checked);
     setOpenPopConfirm(true);
-  }
+  };
+
   const handleChangeKVV = (checked) => {
     if (checked) {
       setOpenPopConfirmKVV(true);
     }
-  }
-  // tạm khoá
+  };
+
+  const handleActiveCard = (checked) => {
+    if (checked) {
+      setOpenPopActive(true);
+    }
+  };
+  
+  const handleActiveSuccess = (data) => {
+    setOpenPopActive(false);
+    if (onActionSuccess) {
+      onActionSuccess(data);
+    }
+  };
+
   const handleOk = () => {
-    setOpen(pre => !pre);
-    setOpenPopConfirm(false);
+    showLoad(lineLoading);
+    // call api
+    lockCard(cardId, lock).then((response) => {
+      const newData = getDataApi(response);
+      setOpenPopConfirm(false);
+      toastSuccess(`${lock ? "Khoá thẻ" : "Mở khoá"} thành công`);
+      // cập nhật thông tin thẻ
+      if(onActionSuccess) {
+        onActionSuccess(newData)
+      }
+    }).catch(e => {
+      const response = getDataApi(e);
+      toastError(response.message);
+    }).finally(() => {
+      hideLoad();
+    })
   };
+
   const handleCancel = () => {
+    setLock(pre => !pre);
     setOpenPopConfirm(false);
   };
-  // khoá vĩnh viễn
+
   const handleOkKVV = () => {
-    setOpenKVV(pre => !pre);
-    setOpenPopConfirmKVV(false);
+    showLoad(lineLoading);
+    // call api
+    permanentLock(cardId).then((response) => {
+      const newData = getDataApi(response);
+      setOpenPopConfirmKVV(false);
+      toastSuccess(`Thẻ đã bị khoá vĩnh viễn`);
+      // cập nhật thông tin thẻ
+      if(onActionSuccess) {
+        onActionSuccess(newData)
+      }
+    }).catch(e => {
+      const response = getDataApi(e);
+      toastError(response.message);
+    }).finally(() => {
+      hideLoad();
+    })
   };
+
   const handleCancelKVV = () => {
     setOpenPopConfirmKVV(false);
   };
-  // option
-  const items = [
-    {
-      label: (
-        <div>Tạm khoá: <Switch
-          onChange={handleChangeOpen}
-          checked={open}
-          disabled={openKVV}
-          style={{
-            margin: 16,
-          }}
-        /></div>
-      ),
-      key: '0',
-      onClick: (e) => {
-        e.domEvent.preventDefault();
-      }
-    },
-    {
-      label: (
-        <div>Khoá vĩnh viễn: <Switch
-          onChange={handleChangeKVV}
-          checked={openKVV}
-          disabled={openKVV}
-          style={{
-            margin: 16,
-          }}
-        /></div>
-      ),
-      key: '1',
-    },
-    {
-      label: (
-        <div>Kích hoạt thẻ: <Switch
-          onChange={handleChangeKVV}
-          checked={openKVV}
-          disabled={openKVV}
-          style={{
-            margin: 16,
-          }}
-        /></div>
-      ),
-      key: '2',
-    }
-  ];
 
-  useEffect(() => {
-    if (status === CARD_STATUS_2.DANG_HOAT_DONG.value) {
-      setOptional(items.filter(item => item.key === "0" || item.key === "1"));
+  const getMenuItems = () => {
+    const items = [
+      {
+        key: '0',
+        label: (
+          <div>
+            Tạm khoá:{' '}
+            <Switch
+              checked={lock}
+              onChange={handleChangeOpen}
+              style={{ margin: 16 }}
+            />
+          </div>
+        ),
+        onClick: (e) => e.domEvent.preventDefault(),
+      },
+      {
+        key: '1',
+        label: (
+          <div>
+            Khoá vĩnh viễn:{' '}
+            <Switch
+              checked={false}
+              onChange={handleChangeKVV}
+              style={{ margin: 16 }}
+            />
+          </div>
+        ),
+      },
+      {
+        key: '2',
+        label: (
+          <div>
+            Kích hoạt thẻ:{' '}
+            <Switch
+              checked={openPopActive}
+              onChange={handleActiveCard}
+              style={{ margin: 16 }}
+            />
+          </div>
+        ),
+      },
+    ];
+
+    if (status === CARD_STATUS_2.DANG_HOAT_DONG.value || status === CARD_STATUS_2.TAM_KHOA.value) {
+      return items.filter(item => item.key === '0' || item.key === '1');
+    } else if (status === CARD_STATUS_2.CHO_KICH_HOAT.value) {
+      return items.filter(item => item.key === '2');
     }
-    else if (status === CARD_STATUS_2.CHO_KICH_HOAT.value) {
-      setOptional(items.filter(item => item.key === "2"));
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps 
-  }, [status])
+    return [];
+  };
 
   useEffect(() => {
     if (parentRef) {
       const element = parentRef.current;
-      const handleScroll = (e) => {
-        // tắt dropdown
+      const handleScroll = () => {
         setOpenMore(false);
         setTimeout(() => {
-          // cài lại thành tuỳ chỉnh
           setOpenMore(null);
-        }, 100)
+        }, 100);
       };
 
-      if (element) {
-        element.addEventListener('scroll', handleScroll);
-      }
-
-      return () => {
-        if (element) {
-          element.removeEventListener('scroll', handleScroll);
-        }
-      };
+      element?.addEventListener('scroll', handleScroll);
+      return () => element?.removeEventListener('scroll', handleScroll);
     }
   }, [parentRef]);
+
   return (
-    <div style={{ display: "flex", justifyContent: "space-between" }}>
+    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
       <span>
-        THẺ TỰ LIÊN KẾT
+        THẺ TỰ LIÊN KẾT{' '}
+        {(status === CARD_STATUS_2.KHOA_VINH_VIEN.value || status === CARD_STATUS_2.TAM_KHOA.value) && (
+          <MdOutlineLock />
+        )}
       </span>
-      {!isAdmin &&
+      {!isAdmin && (
         <>
           <Dropdown
-            menu={{ items: optional }}
+            menu={{ items: getMenuItems() }}
             trigger={['click']}
             open={openMore}
             onOpenChange={(visible) => setOpenMore(visible)}
           >
-            {
-              optional.length > 0 && (
-                <a href='/#' onClick={(e) => {
+            {getMenuItems().length > 0 && (
+              <a
+                href="/#"
+                onClick={(e) => {
                   e.preventDefault();
                   setOpenMore(true);
-                }}>
-                  <Space>
-                    <MoreOutlined style={{ fontSize: 25, color: 'white' }} />
-                  </Space>
-                </a>
-              )
-            }
+                }}
+              >
+                <Space>
+                  <MoreOutlined style={{ fontSize: 25, color: 'white' }} />
+                </Space>
+              </a>
+            )}
           </Dropdown>
-          {openPopConfirm && (open ? <PopConfirmCustom type="warning" title="Bạn có chắc chắn muốn tiếp tục sử dụng không?" message="Thẻ sẽ hoạt động bình thường sau khi nhấn đồng ý." handleCancel={handleCancel} handleOk={handleOk} /> : <PopConfirmCustom type="warning" title="Bạn có chắc chắn muốn tạm khoá không?" message="Bạn vẫn có thể mở lại trong vòng 1 giớ tới." handleCancel={handleCancel} handleOk={handleOk} />)}
-          {openPopConfirmKVV && (!openKVV && <PopConfirmCustom type="warning" title="Bạn có chắc chắn muốn khoá thẻ vĩnh viễn không?" message="Bạn sẽ không thể mở lại sau khi nhấn đồng ý." handleCancel={handleCancelKVV} handleOk={handleOkKVV} />)}
-        </>
-      }
-    </div>
-  )
-}
 
-export default TitleItemCard
+          {openPopConfirm && (
+            <PopConfirmCustom
+              type="warning"
+              title={
+                !lock
+                  ? 'Bạn có chắc chắn muốn tiếp tục sử dụng không?'
+                  : 'Bạn có chắc chắn muốn tạm khoá không?'
+              }
+              message={
+                !lock
+                  ? 'Thẻ sẽ hoạt động bình thường sau khi nhấn đồng ý.'
+                  : 'Bạn vẫn có thể mở lại trong vòng 1 giớ tới.'
+              }
+              handleCancel={handleCancel}
+              handleOk={handleOk}
+            />
+          )}
+
+          {openPopConfirmKVV && (
+            <PopConfirmCustom
+              type="warning"
+              title="Bạn có chắc chắn muốn khoá thẻ vĩnh viễn không?"
+              message="Bạn sẽ không thể mở lại sau khi nhấn đồng ý."
+              handleCancel={handleCancelKVV}
+              handleOk={handleOkKVV}
+            />
+          )}
+
+          {openPopActive && (
+            <ModalCustom onClose={() => setOpenPopActive(false)}>
+              <FormActiveCard id={cardId} onSuccess={handleActiveSuccess} />
+            </ModalCustom>
+          )}
+        </>
+      )}
+    </div>
+  );
+};
+
+export default TitleItemCard;
