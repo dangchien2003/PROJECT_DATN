@@ -1,17 +1,20 @@
-import { adminSearch } from "@/service/cardService";
+import { adminSearch, madeCard } from "@/service/cardService";
 import { setSearching } from "@/store/startSearchSlice";
 import { getDataApi } from "@/utils/api";
-import { CARD_STATUS, CARD_TYPE } from "@/utils/constants";
+import { CARD_STATUS, CARD_TYPE, lineLoading } from "@/utils/constants";
 import { showTotal } from "@/utils/table";
 import { formatTimestamp } from "@/utils/time";
-import { toastError } from "@/utils/toast";
-import { Table } from "antd";
+import { toastError, toastSuccess } from "@/utils/toast";
+import { Table, Tooltip } from "antd";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import ButtonStatus from "../ButtonStatus";
+import { FaCheck } from "react-icons/fa6";
+import PopConfirmCustom from "../PopConfirmCustom";
+import { useLoading } from "@/hook/loading";
 
-const columns = [
+const baseColumns = [
   {
     title: "STT",
     dataIndex: "stt",
@@ -47,17 +50,14 @@ const columns = [
     dataIndex: "requestName",
     key: "5",
   },
+  {
+    title: "Hành động",
+    dataIndex: "action",
+    key: "6",
+    fixed: 'right',
+    align: 'center'
+  },
 ];
-
-const convertResponseToDataTable = (data, currentPage, pageSize) => {
-  return data.map((item, index) => {
-    item.issuedDatePrint = formatTimestamp(item.issuedDate, "DD/MM/YYYY")
-    item.statusPrint = (<ButtonStatus color={CARD_STATUS[item.status]?.color} label={CARD_STATUS[item.status]?.label} />)
-    item.typePrint = CARD_TYPE[item.type]?.label
-    item.stt = (currentPage - 1) * pageSize + index + 1;
-    return item;
-  });
-};
 
 const TableListCard = ({ dataSearch }) => {
   const navigate = useNavigate();
@@ -65,7 +65,10 @@ const TableListCard = ({ dataSearch }) => {
   const { isSearching } = useSelector(state => state.startSearch);
   const [firstSearch, setFirstSearch] = useState(false);
   const [data, setData] = useState([]);
+  const [columns, setColumns] = useState([]);
   const [loading, setLoading] = useState(false);
+  const {showLoad, hideLoad} = useLoading();
+  const [cardNextStatus, setCardNextStatus] = useState(null);
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 10,
@@ -75,6 +78,21 @@ const TableListCard = ({ dataSearch }) => {
     field: null,
     order: null,
   });
+
+  const convertResponseToDataTable = (data, currentPage, pageSize) => {
+    return data.map((item, index) => {
+      item.issuedDatePrint = formatTimestamp(item.issuedDate, "DD/MM/YYYY");
+      item.statusPrint = (<ButtonStatus color={CARD_STATUS[item.status]?.color} label={CARD_STATUS[item.status]?.label} />);
+      item.typePrint = CARD_TYPE[item.type]?.label;
+      item.action = <div>
+        <Tooltip title="Đã cấp thẻ">
+          <FaCheck className="success pointer" onClick={(e) => {handleClickNextStatus(e, item)}}/>
+        </Tooltip>
+      </div>
+      item.stt = (currentPage - 1) * pageSize + index + 1;
+      return item;
+    });
+  };
 
   const loadData = (newPagination, sorter) => {
     setLoading(true);
@@ -123,28 +141,60 @@ const TableListCard = ({ dataSearch }) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSearching]);
+
+  useEffect(() =>{
+    if(dataSearch.status !== 1) {
+      setColumns(baseColumns.filter(item => (item.key !== "6")))
+    } else {
+      setColumns(baseColumns.filter(item => item.key !== "1"))
+    }
+  }, [dataSearch.status])
+  
+  const handleClickNextStatus = (e, card) => {
+    e.stopPropagation();
+    setCardNextStatus(card);
+  }
+
+  const handleAgreeNextStatus = () => {
+    showLoad(lineLoading);
+    madeCard(cardNextStatus.id).then(response => {
+      loadData(pagination, sorter);
+      toastSuccess("Chuyển trạng thái thành công");
+      setCardNextStatus(null);
+    }).catch(e => {
+      const response = getDataApi(e);
+      toastError(response.message);
+    }).finally(hideLoad);
+  }
+  
+  const handleCancelNextStatus = () => {
+    setCardNextStatus(null);
+  }
   return (
-    <Table
-      columns={columns}
-      dataSource={data}
-      rowKey="id"
-      loading={loading}
-      scroll={{
-        x: "max-content",
-      }}
-      onChange={handleTableChange}
-      pagination={{
-        ...pagination,
-        showSizeChanger: true,
-        pageSizeOptions: ["10", "20", "50", "100"],
-        showTotal: showTotal
-      }}
-      onRow={(record) => {
-        return {
-          onClick: () => handleClickRow(record),
-        };
-      }}
-    />
+    <>
+      <Table
+        columns={columns}
+        dataSource={data}
+        rowKey="id"
+        loading={loading}
+        scroll={{
+          x: "max-content",
+        }}
+        onChange={handleTableChange}
+        pagination={{
+          ...pagination,
+          showSizeChanger: true,
+          pageSizeOptions: ["10", "20", "50", "100"],
+          showTotal: showTotal
+        }}
+        onRow={(record) => {
+          return {
+            onClick: () => handleClickRow(record),
+          };
+        }}
+      />
+      {cardNextStatus && <PopConfirmCustom type={'warning'} title={`Bạn có chắc chắn muốn chuyển trạng thái thẻ yêu cầu bởi "${cardNextStatus.requestName}" không?`} message={`Thẻ sẽ được chuyển trạng thái chờ kích hoạt`} handleOk={handleAgreeNextStatus} handleCancel={handleCancelNextStatus} />}
+    </>
   );
 };
 

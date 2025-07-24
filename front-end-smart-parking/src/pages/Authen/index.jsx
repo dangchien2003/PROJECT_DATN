@@ -1,18 +1,18 @@
-import './style.css'
-import background from '@image/bg_authen.png'
-import feature from '@image/image_authen.png'
-import FormLogin from './FormLogin';
 import LineLoading from '@/components/Loading/LineLoading';
-import { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useLocation, useNavigate } from 'react-router-dom';
-import FormRegister from './FormRegister';
-import FormForget from './FormForget';
+import { checkAccessToken } from '@/service/authenticationService';
 import { getAccessToken, moveAccessToken } from '@/service/cookieService';
 import { deleteRefeshToken, getActor } from '@/service/localStorageService';
-import { isNullOrUndefined } from '@/utils/data';
-import { checkAccessToken } from '@/service/authenticationService';
 import { getDataApi } from '@/utils/api';
+import { isNullOrUndefined } from '@/utils/data';
+import background from '@image/bg_authen.png';
+import feature from '@image/image_authen.png';
+import { AnimatePresence, motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import FormForget from './FormForget';
+import FormLogin from './FormLogin';
+import FormRegister from './FormRegister';
+import './style.css';
 
 const Authen = () => {
   const location = useLocation();

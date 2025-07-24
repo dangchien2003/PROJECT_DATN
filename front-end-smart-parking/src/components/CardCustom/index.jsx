@@ -3,7 +3,7 @@ import { unlinkTicket } from '@/service/cardService';
 import { getDataApi } from '@/utils/api';
 import { CARD_STATUS, CARD_STATUS_2, CARD_TYPE, lineLoading } from '@/utils/constants';
 import { toastError, toastSuccess } from '@/utils/toast';
-import { Card, Flex, Tooltip } from 'antd';
+import { Card, Tooltip } from 'antd';
 import dayjs from "dayjs";
 import { useState } from 'react';
 import { FaLink } from 'react-icons/fa6';

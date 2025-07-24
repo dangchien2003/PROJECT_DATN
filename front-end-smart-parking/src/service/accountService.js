@@ -4,7 +4,6 @@ import { getParamsPage, getRequestParams, replaceParamsUrl } from '@/utils/api'
 
 export async function createAccountByAdmin(data) {
   return await httpClient.post(PARKING_SERVICE.account.createByAdmin, data, {
-    skipAuth: true
   })
 }
 

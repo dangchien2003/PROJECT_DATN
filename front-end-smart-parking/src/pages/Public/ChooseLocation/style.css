@@ -5,12 +5,15 @@
 #choose-location .search {
   display: flex;
   justify-content: center;
+  position: relative;
+  z-index: 10;
+  padding-top: 16px;
 }
 
 #choose-location .search .input {
   width: 500px;
-  padding-top: 16px;
 }
+
 
 #choose-location .search .input .ant-btn {
   font-size: 16px;

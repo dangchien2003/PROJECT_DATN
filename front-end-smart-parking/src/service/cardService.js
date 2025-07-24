@@ -64,3 +64,8 @@ export async function unlinkTicket(id) {
   return await httpClient.patch(replaceParamsUrl(PARKING_SERVICE.card.unlinkTicket, {id}), {}, {
   })
 }
+
+export async function madeCard(id) {
+  return await httpClient.patch(replaceParamsUrl(PARKING_SERVICE.card.madeCard, {id}), {}, {
+  })
+}

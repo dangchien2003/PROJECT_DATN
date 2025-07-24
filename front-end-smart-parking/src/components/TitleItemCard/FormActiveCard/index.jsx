@@ -6,6 +6,7 @@ import { getDataApi } from '@/utils/api';
 import { Flex, Input } from 'antd';
 import { useEffect, useState } from 'react';
 import './style.css';
+import { toastSuccess } from '@/utils/toast';
 
 const keyOtpError = "keyActive"
 const FormActiveCard = ({ id, onSuccess }) => {
@@ -24,6 +25,7 @@ const FormActiveCard = ({ id, onSuccess }) => {
       if(onSuccess) {
         onSuccess(data);
       }
+      toastSuccess("Kích hoạt thành công")
     }).catch((e) => {
       const error = getDataApi(e);
       pushMessage(keyOtpError, error.message);

@@ -27,6 +27,7 @@ export const PARKING_SERVICE = {
     getAllRecordIsActive: "location/all/is-active",
     listDetail: "location/list/detail",
     statisticsOfUsedPositions: "location/statistics-of-used-positions",
+    getSuggestions: "location/suggestions",
   },
   ticket: {
     modify: "ticket/modify",
@@ -71,6 +72,7 @@ export const PARKING_SERVICE = {
     permanentLock: "card/permanent-lock/:id",
     linkTicket: "card/link-ticket",
     unlinkTicket: "card/cancel-link-ticket/:id",
+    madeCard: "card/made-card/:id",
   },
   order: {
     createOrder: "order",

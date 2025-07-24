@@ -1,7 +1,7 @@
 import { API_BASE_URL } from '@/configs/apiConfig'
 import { refreshToken } from '@/service/authenticationService'
-import { getAccessToken, setAccessToken } from '@/service/cookieService'
-import { getRefeshToken, setAccountFullName, setAccountId, setActor, setPartnerFullName, setRefreshToken } from '@/service/localStorageService'
+import { getAccessToken, moveAccessToken, setAccessToken } from '@/service/cookieService'
+import { deleteRefeshToken, getRefeshToken, setAccountFullName, setAccountId, setActor, setPartnerFullName, setRefreshToken } from '@/service/localStorageService'
 import { getDataApi } from '@/utils/api'
 import { toastError } from '@/utils/toast'
 import axios from 'axios'
@@ -9,7 +9,7 @@ import axios from 'axios'
 
 let refreshing = false
 
-const processRefreshToken = async () => {
+export const processRefreshToken = async () => {
   refreshing = true
   const response = await refreshToken(getAccessToken(), getRefeshToken());
 
@@ -22,6 +22,8 @@ const processRefreshToken = async () => {
     setAccountId(result?.id);
     setActor(result?.actor)
   } else {
+    moveAccessToken();
+    deleteRefeshToken();
     window.location.href = '/authen'
   }
 
@@ -62,7 +64,7 @@ httpClient.interceptors.response.use(
         if (!refreshing) {
           await processRefreshToken()
         }
-        
+
         await waitForRefreshing()
 
         originalRequest.headers['Authorization'] = 'Bearer ' + getAccessToken()

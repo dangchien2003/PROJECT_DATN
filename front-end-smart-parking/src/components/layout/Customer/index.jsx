@@ -11,6 +11,7 @@ import { getDataApi } from '@/utils/api'
 import { authened } from '@/store/authenSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { toastError } from '@/utils/toast'
+import { processRefreshToken } from '@/configs/axiosConfig'
 
 const CustomerLayout = () => {
   const dispatch = useDispatch();
@@ -36,10 +37,7 @@ const CustomerLayout = () => {
         if (result === true) {
           dispatch(authened(true));
         } else {
-          dispatch(authened(false));
-          // gọi refeshtoken
-          // nếu vẫn không được thì quay về login
-          window.location.href = '/authen';
+          processRefreshToken();
         }
       })
         .catch(e => {

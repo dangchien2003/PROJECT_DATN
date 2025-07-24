@@ -1,16 +1,14 @@
 import ChildContent from '@/components/layout/Customer/ChildContent'
-import Map from '@/components/Map'
-import { Flex, List, Tooltip } from 'antd'
-import Search from 'antd/es/input/Search'
-import React, { useEffect, useState } from 'react'
-import { FaSearch } from 'react-icons/fa'
-import { IoCheckmarkDoneOutline } from 'react-icons/io5'
-import { GiClick } from "react-icons/gi";
-import { convertDataMap, isNullOrUndefined } from '@/utils/data'
 import LoadingComponent from '@/components/LoadingComponent'
+import Map from '@/components/Map'
 import { customerGetLocationUseTicket } from '@/service/ticketService'
 import { getDataApi } from '@/utils/api'
+import { convertDataMap, isNullOrUndefined } from '@/utils/data'
 import { toastError } from '@/utils/toast'
+import { Flex, List } from 'antd'
+import { useEffect, useState } from 'react'
+import { GiClick } from "react-icons/gi"
+import { IoCheckmarkDoneOutline } from 'react-icons/io5'
 
 const Location = ({ onChooseLocation, ticketId }) => {
   const [selected, setSelected] = useState(null);
@@ -54,14 +52,14 @@ const Location = ({ onChooseLocation, ticketId }) => {
                 </div>
                 <div style={{ padding: "4px 0" }}><GiClick className='rainbow-text' /> Nhấn chọn vào địa điểm để xem vị trí</div>
                 <div className='scroll'>
-                  <div className='search '>
+                  {/* <div className='search '>
                     <Search className='input' placeholder="Tìm kiếm địa điểm" enterButton={
                       <Tooltip title="Tìm kiếm">
                         <span>
                           <FaSearch />
                         </span>
                       </Tooltip>} />
-                  </div>
+                  </div> */}
                   <List
                     itemLayout="horizontal"
                     dataSource={data}

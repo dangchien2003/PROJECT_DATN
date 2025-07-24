@@ -76,3 +76,12 @@ export async function statisticsOfUsedPositions(locationId, date) {
     skipAuth: true
   })
 }
+
+export async function getLocationSuggestions(key, page, size) {
+  return await httpClient.get(PARKING_SERVICE.location.getSuggestions, {
+    params: {
+      key, page, size
+    },
+    skipAuth: true
+  })
+}
