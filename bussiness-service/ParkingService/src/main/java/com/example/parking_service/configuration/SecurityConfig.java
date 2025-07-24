@@ -37,7 +37,8 @@ public class SecurityConfig {
             "/ticket/customer/detail",
             "/ticket/customer/location-use-ticket",
             "/callback/vn-pay/transaction",
-            "/location/statistics-of-used-positions"
+            "/location/statistics-of-used-positions",
+            "/location/suggestions"
     };
     CustomJwtDecoder customJwtDecoder;
     JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;

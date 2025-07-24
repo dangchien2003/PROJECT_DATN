@@ -119,4 +119,19 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
             where l.locationId in(:ids)
             """)
     List<LocationNameDTO> getNameDto(@Param("ids") Collection<Long> ids);
+
+    @Query("""
+                   SELECT l from Location l
+                   LEFT JOIN Account a ON a.id = l.partnerId
+                   where
+                   (:keyQuery IS NULL OR
+                       l.name LIKE CONCAT('%', :keyQuery, '%') ESCAPE '!'
+                       OR a.partnerFullName LIKE CONCAT('%', :keyQuery, '%') ESCAPE '!'
+                   )
+                   AND l.status = :status
+            """)
+    Page<Location> getSuggestionsByKey(
+            @Param("keyQuery") String keyQuery,
+            @Param("status") int status,
+            Pageable pageable);
 }

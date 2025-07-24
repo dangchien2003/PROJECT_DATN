@@ -531,4 +531,33 @@ public class LocationServiceImpl implements LocationService {
 
         return result;
     }
+
+    @Override
+    public ApiResponse<Object> suggestions(String key, Pageable pageable) {
+        // Sắp xếp theo tên
+        Pageable pageableQuery = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                Sort.by(Sort.Direction.ASC, Location_.NAME)
+        );
+        // escape
+        String keyQuery = DataUtils.convertStringSearchLike(key);
+        // Truy vấn dữ liệu
+        Page<Location> locations = locationRepository.getSuggestionsByKey(
+                keyQuery,
+                LocationStatus.DA_DUYET_DANG_HOAT_DONG.getValue(),
+                pageableQuery
+        );
+        // Map sang DTO
+        List<LocationResponse> result = locations.map(item -> LocationResponse.builder()
+                .locationId(item.getLocationId())
+                .name(item.getName())
+                .address(item.getAddress())
+                .build()
+        ).stream().collect(Collectors.toList());
+        // Trả về response dạng paged (tuỳ theo ApiResponse bạn dùng)
+        return ApiResponse.builder()
+                .result(new PageResponse<>(result, locations.getTotalPages(), locations.getTotalElements()))
+                .build();
+    }
 }

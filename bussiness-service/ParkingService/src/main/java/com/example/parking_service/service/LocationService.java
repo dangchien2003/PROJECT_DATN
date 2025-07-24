@@ -30,4 +30,6 @@ public interface LocationService {
 
     ApiResponse<Object> statisticsOfUsedPositions(Long locationId, LocalDate date);
 
+    ApiResponse<Object> suggestions(String key, Pageable pageable);
+
 }

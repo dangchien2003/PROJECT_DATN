@@ -49,17 +49,13 @@ public class RandomUtils {
 
         List<Character> passwordChars = new ArrayList<>();
 
-        String allChars = null;
         // Bắt buộc có ít nhất 1 ký tự từ mỗi nhóm
         passwordChars.add(UPPER.charAt(RANDOM.nextInt(UPPER.length())));
         passwordChars.add(LOWER.charAt(RANDOM.nextInt(LOWER.length())));
         passwordChars.add(DIGITS.charAt(RANDOM.nextInt(DIGITS.length())));
-        if (isPassword) {
-            allChars = UPPER + LOWER + DIGITS;
-        } else {
-            passwordChars.add(SPECIAL.charAt(RANDOM.nextInt(SPECIAL.length())));
-            allChars = UPPER + LOWER + DIGITS + SPECIAL;
-        }
+        passwordChars.add(SPECIAL.charAt(RANDOM.nextInt(DIGITS.length())));
+        passwordChars.add(SPECIAL.charAt(RANDOM.nextInt(SPECIAL.length())));
+        String allChars = allChars = UPPER + LOWER + DIGITS + SPECIAL;
 
 
         // Random ký ký tự còn lại

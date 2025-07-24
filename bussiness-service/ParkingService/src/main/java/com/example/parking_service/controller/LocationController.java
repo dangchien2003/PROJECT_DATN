@@ -111,4 +111,9 @@ public class LocationController {
     ) {
         return locationService.statisticsOfUsedPositions(locationId, date);
     }
+
+    @GetMapping("/suggestions")
+    ApiResponse<Object> suggestions(@RequestParam("key") String key, Pageable pageable) {
+        return locationService.suggestions(key, pageable);
+    }
 }
