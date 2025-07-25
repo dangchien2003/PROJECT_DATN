@@ -9,6 +9,7 @@ import com.example.common.utils.ENumUtils;
 import com.example.common.utils.RandomUtils;
 import com.example.common.utils.RegexUtils;
 import com.example.parking_service.dto.request.ChangePasswordRequest;
+import com.example.parking_service.dto.request.ChangeStatusAccountRequest;
 import com.example.parking_service.dto.request.CreateAccountRequest;
 import com.example.parking_service.dto.request.SearchListAccountRequest;
 import com.example.parking_service.dto.response.AccountResponse;
@@ -35,6 +36,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -322,5 +324,23 @@ public class AccountServiceImpl implements AccountService {
         DataUtils.setDataAction(account, accountId, false);
         accountRepository.save(account);
         return ApiResponse.builder().build();
+    }
+
+    @Override
+    public ApiResponse<Object> changeStatus(ChangeStatusAccountRequest request) {
+        String actionBy = UserContextHolder.getContext().getUid();
+        Account account = accountRepository.findById(request.getAccountId())
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND.withMessage("Tài khoản không tồn tại")));
+        if (Arrays.stream(AccountStatus.values()).noneMatch(item -> item.getValue().equals(request.getStatus()))) {
+            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Trạng thái không hợp lệ"));
+        }
+        account.setStatus(request.getStatus());
+        account.setReason(request.getReason());
+        DataUtils.setDataAction(account, actionBy, false);
+        accountRepository.save(account);
+        AccountResponse accountResponse = accountMapper.toAccountResponse(account);
+        return ApiResponse.builder()
+                .result(accountResponse)
+                .build();
     }
 }

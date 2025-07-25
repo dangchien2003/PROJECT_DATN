@@ -24,6 +24,8 @@ public interface LocationService {
 
     ApiResponse<Object> getListCoordinates(int page);
 
+    ApiResponse<Object> getListCoordinatesOfPartner(String partnerId);
+
     ApiResponse<Object> getAllIsActive(int page);
 
     ApiResponse<Object> customerSearch(CustomerSearchLocation request, Pageable pageable);

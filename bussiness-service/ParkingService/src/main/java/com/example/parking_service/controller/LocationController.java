@@ -84,8 +84,16 @@ public class LocationController {
     }
 
     @GetMapping("list/coordinates")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     ApiResponse<Object> getListCoordinates(@RequestParam(value = "page", defaultValue = "0") int page) {
         return locationService.getListCoordinates(page);
+    }
+
+    @GetMapping("list/coordinates-of-partner")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    ApiResponse<Object> getListCoordinatesOfPartner(
+            @RequestParam(value = "partnerId", required = false) String partnerId) {
+        return locationService.getListCoordinatesOfPartner(partnerId);
     }
 
     @GetMapping("all/is-active")

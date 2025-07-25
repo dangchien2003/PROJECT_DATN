@@ -2,6 +2,8 @@ package com.example.parking_service.repository;
 
 import com.example.parking_service.dto.response.TicketNameDTO;
 import com.example.parking_service.entity.Ticket;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -19,4 +21,6 @@ public interface TicketRepository extends JpaRepository<Ticket, Long>, JpaSpecif
     @Query("SELECT new com.example.parking_service.dto.response.TicketNameDTO(t.ticketId, t.name) " +
             "FROM Ticket t WHERE t.ticketId IN :ticketIds")
     List<TicketNameDTO> findDTOByTicketIdIn(@Param("ticketIds") Collection<Long> ids);
+
+    Page<Ticket> findByPartnerId(String partnerId, Pageable pageable);
 }

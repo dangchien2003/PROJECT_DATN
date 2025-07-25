@@ -77,7 +77,11 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
             @Param("offset") int offset
     );
 
-    Page<Location> findAllByStatusAndCoordinatesXNotNullAndCoordinatesYNotNull(Integer status, Pageable pageable);
+    @Query("SELECT l from Location  l where l.status = :status and (:partnerId is null or l.partnerId = :partnerId)")
+    Page<Location> findByStatus(Integer status, String partnerId, Pageable pageable);
+
+    @Query("SELECT l from Location  l where l.status = :status and (:partnerId is null or l.partnerId = :partnerId)")
+    List<Location> findAllByStatus(Integer status, String partnerId);
 
     Page<Location> findAllByStatusAndPartnerId(Integer status, String partnerId, Pageable pageable);
 

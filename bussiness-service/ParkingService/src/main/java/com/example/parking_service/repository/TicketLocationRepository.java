@@ -1,10 +1,12 @@
 package com.example.parking_service.repository;
 
+import com.example.parking_service.dto.response.CountLocationByTicket;
 import com.example.parking_service.entity.TicketLocation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface TicketLocationRepository extends JpaRepository<TicketLocation, Long> {
@@ -21,4 +23,11 @@ public interface TicketLocationRepository extends JpaRepository<TicketLocation, 
             @Param("locationIds") List<Long> locationIds,
             @Param("type") Integer type
     );
+
+    @Query("""
+                select new com.example.parking_service.dto.response.CountLocationByTicket(tl.objectId, count(*)) from TicketLocation tl
+                where tl.objectId in :ticketIds and tl.type = :type
+                group by tl.objectId
+            """)
+    List<CountLocationByTicket> countLocationByTicket(Collection<Long> ticketIds, Integer type);
 }

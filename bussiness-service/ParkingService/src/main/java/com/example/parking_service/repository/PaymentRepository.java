@@ -27,4 +27,6 @@ public interface PaymentRepository extends JpaRepository<Payment, String> {
     );
 
     Optional<Payment> findByObjectIdAndType(String objectId, Integer paymentType);
+
+    Page<Payment> findByPaymentBy(String accountId, Pageable pageable);
 }

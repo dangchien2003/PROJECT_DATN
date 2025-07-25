@@ -76,7 +76,7 @@ public class LocationServiceImpl implements LocationService {
     @Override
     public ApiResponse<Object> getListCoordinates(int page) {
         Pageable fixedPageable = PageRequest.of(page, 20, Sort.by(Sort.Direction.DESC, "coordinates"));
-        Page<Location> pageLocations = locationRepository.findAllByStatusAndCoordinatesXNotNullAndCoordinatesYNotNull(LocationStatus.DA_DUYET_DANG_HOAT_DONG.getValue(), fixedPageable);
+        Page<Location> pageLocations = locationRepository.findByStatus(LocationStatus.DA_DUYET_DANG_HOAT_DONG.getValue(), null, fixedPageable);
         List<Location> locations = pageLocations.getContent();
         Set<String> partnerId = locations.stream().map(Location::getPartnerId).collect(Collectors.toSet());
         List<Account> accounts = accountRepository.findAllById(partnerId);
@@ -88,6 +88,20 @@ public class LocationServiceImpl implements LocationService {
         }).toList();
         return ApiResponse.builder()
                 .result(new PageResponse<>(mapLocationResponses, pageLocations.getTotalPages(), pageLocations.getTotalElements()))
+                .build();
+    }
+
+    @Override
+    public ApiResponse<Object> getListCoordinatesOfPartner(String partnerId) {
+        List<Location> locations = locationRepository.findAllByStatus(LocationStatus.DA_DUYET_DANG_HOAT_DONG.getValue(), partnerId);
+        Account account = accountRepository.findById(partnerId).orElse(new Account());
+        List<MapLocationResponse> mapLocationResponses = locations.stream().map(item -> {
+            MapLocationResponse mapLocationResponse = locationMapper.toMapLocationResponse(item);
+            mapLocationResponse.setPartnerFullName(account.getPartnerFullName());
+            return mapLocationResponse;
+        }).toList();
+        return ApiResponse.builder()
+                .result(mapLocationResponses)
                 .build();
     }
 

@@ -2,6 +2,7 @@ package com.example.parking_service.controller;
 
 import com.example.common.dto.response.ApiResponse;
 import com.example.parking_service.dto.request.ChangePasswordRequest;
+import com.example.parking_service.dto.request.ChangeStatusAccountRequest;
 import com.example.parking_service.dto.request.CreateAccountRequest;
 import com.example.parking_service.dto.request.SearchListAccountRequest;
 import com.example.parking_service.enums.AccountCategory;
@@ -77,8 +78,14 @@ public class AccountController {
 
     @PatchMapping("changePassword")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'PARTNER', 'CUSTOMER')")
-    ApiResponse<Object> changePassword(ChangePasswordRequest request) {
+    ApiResponse<Object> changePassword(@RequestBody ChangePasswordRequest request) {
         return accountService.changePassword(request);
+    }
+
+    @PatchMapping("change-status")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    ApiResponse<Object> changeStatus(@RequestBody ChangeStatusAccountRequest request) {
+        return accountService.changeStatus(request);
     }
 
 //    @PatchMapping("changeInfo")
