@@ -10,7 +10,8 @@ export const PARKING_SERVICE = {
     detailPartner: "account/partner/detail",
     getSuggestions: "account/suggestions",
     getBalance: "account/balance",
-    infoAccount: "account/info"
+    infoAccount: "account/info",
+    changeStatus: "account/change-status",
   },
   location: {
     modify: "location/modify",
@@ -85,6 +86,13 @@ export const PARKING_SERVICE = {
     requestDeposit: "deposit",
     getHistory: "deposit/history",
     cancelRequest: "deposit/cancel/:id",
+  },
+  statistical: {
+    getTicketOfCustomer: "statistical/ticket-of-customer",
+    getTransactionOfCustomer: "statistical/transaction-of-customer",
+    getTicketOfPartner: "statistical/ticket-of-partner",
+    getAllLocationOfPartner: "location/list/coordinates-of-partner",
+    getListTicketPurchaseOfPartner: "statistical/ticket-purchased-of-partner"
   }
 }
 

@@ -1,22 +1,18 @@
 import TableCustomTicketPurchased from "@/components/TableCustomTicketPurchased";
 import TkTicketPurchased from "@/components/TkTicketPurchased";
+import { Col, Row } from "antd";
 import React from "react";
 
-const TicketPurchased = () => {
+const TicketPurchased = ({info}) => {
   return (
-    <div
-      style={{
-        display: "flex",
-        flexWrap: "wrap",
-      }}
-    >
-      <div style={{ paddingRight: 16, width: 800 }}>
-        <TableCustomTicketPurchased />
-      </div>
-      <div>
-        <TkTicketPurchased />
-      </div>
-    </div>
+    <Row gutter={16}>
+      <Col xs={24} sm={24} md={16} lg={16}>
+        <TableCustomTicketPurchased accountId={info.id}/>
+      </Col>
+      <Col xs={24} sm={24} md={8} lg={8}>
+        <TkTicketPurchased accountId={info.id}/>
+      </Col>
+    </Row>
   );
 };
 

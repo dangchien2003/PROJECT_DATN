@@ -8,7 +8,7 @@ import { useState } from "react";
 import ShowBoxEdit from "./ShowBoxEdit";
 import dayj from "dayjs";
 
-const InfoBox = ({ data }) => {
+const InfoBox = ({ data,  onUpdate }) => {
   const [showEdit, setShowEdit] = useState(false);
   return (
     <div style={{display: "flex" }}>
@@ -52,11 +52,11 @@ const InfoBox = ({ data }) => {
           </div>
           <div className="item">
             <span>Trạng thái: </span>
-            <Status info={{ id: data.id, status: data.status, fullName: data.fullName }} />
+            <Status info={{ id: data.id, status: data.status, fullName: data.fullName }} onChangeSuccess={onUpdate}/>
           </div>
           <div className="item">
             <span>Lý do: </span>
-            <span></span>
+            <span>{data.reason}</span>
           </div>
         </div>
       </div>

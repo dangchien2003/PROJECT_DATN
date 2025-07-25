@@ -1,9 +1,5 @@
-import { useState, useEffect } from "react";
-import { Table } from "antd";
-import { fakePayment } from "./dataTest";
-import { formatCurrency } from "@/utils/number";
-import { formatTimestamp } from "@/utils/time";
-import ButtonStatus from "../ButtonStatus";
+import { getTransactionOfCustomer } from "@/service/statisticalService";
+import { getDataApi } from "@/utils/api";
 import {
   COLOR_BUTTON_ACCOUNT_STATUS,
   COLORS_CHART,
@@ -11,8 +7,14 @@ import {
   PAYMENT_STATUS,
   PAYMENT_TYPE,
 } from "@/utils/constants";
-import { FaAngleDoubleUp, FaAngleDoubleDown } from "react-icons/fa";
+import { formatCurrency } from "@/utils/number";
 import { showTotal } from "@/utils/table";
+import { formatTimestamp } from "@/utils/time";
+import { toastError } from "@/utils/toast";
+import { Table } from "antd";
+import { useEffect, useState } from "react";
+import { FaAngleDoubleDown, FaAngleDoubleUp } from "react-icons/fa";
+import ButtonStatus from "../ButtonStatus";
 
 const columns = [
   {
@@ -62,9 +64,9 @@ const columns = [
   },
 ];
 
-const convertResponseToDataTable = (response, currentPage, pageSize) => {
+const convertResponseToDataTable = (data, currentPage, pageSize) => {
   const now = new Date().getTime();
-  return response.data.map((item, index) => {
+  return data.map((item, index) => {
     item.totalPrint = (
       <span>
         {item.type === 2 ? (
@@ -109,7 +111,7 @@ const convertResponseToDataTable = (response, currentPage, pageSize) => {
   });
 };
 
-const TableCustomPayment = () => {
+const TableCustomPayment = ({accountId}) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState({
@@ -117,40 +119,33 @@ const TableCustomPayment = () => {
     pageSize: 10,
     total: 0,
   });
-  const [sorter, setSorter] = useState({
-    field: "name",
-    order: "ascend",
-  });
 
-  const loadData = (newPagination, sorter) => {
-    if (!sorter.field || !sorter.order) {
-      sorter = {
-        field: "name",
-        order: "ascend",
-      };
-      setSorter(sorter);
-    }
+  const loadData = (newPagination) => {
     setLoading(true);
-    setData([]);
-    setTimeout(() => {
-      setLoading(false);
-      const dataResponse = {
-        data: fakePayment,
-        totalElement: 60,
-        totalPage: 10,
-      };
-      setData(
-        convertResponseToDataTable(
-          dataResponse,
-          newPagination.current,
-          newPagination.pageSize
-        )
-      );
-      setPagination({
-        ...newPagination,
-        total: dataResponse.totalElement,
+    setData([])
+    getTransactionOfCustomer(accountId, newPagination.current - 1, newPagination.pageSize)
+      .then((response) => {
+        const data = getDataApi(response);
+        const total = data?.totalElements;
+        setData(
+          convertResponseToDataTable(
+            data.data,
+            newPagination.current,
+            newPagination.pageSize
+          )
+        );
+        setPagination({
+          ...newPagination,
+          total: total,
+        });
+      })
+      .catch((error) => {
+        error = getDataApi(error);
+        toastError(error.message)
+      })
+      .finally(() => {
+        setLoading(false);
       });
-    }, 1000);
   };
 
   const handleTableChange = (newPagination, _, sorter) => {
@@ -159,7 +154,7 @@ const TableCustomPayment = () => {
   };
 
   useEffect(() => {
-    loadData(pagination, sorter);
+    loadData(pagination);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

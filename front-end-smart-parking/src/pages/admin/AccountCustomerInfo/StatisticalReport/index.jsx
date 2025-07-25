@@ -24,7 +24,7 @@ const StatisticalReport = ({ info }) => {
   ];
   return (
     <div>
-      <Tabs defaultActiveKey="1" items={items} style={{ minHeight: 400 }} />
+      <Tabs defaultActiveKey="1" items={items} style={{ minHeight: 400 }} destroyInactiveTabPane/>
     </div>
   );
 };

@@ -41,3 +41,7 @@ export async function getInfoAccount() {
   return await httpClient.get(PARKING_SERVICE.account.infoAccount , {
   })
 }
+
+export async function changeStatusAccount(accountId, status, reason) {
+  return await httpClient.patch(PARKING_SERVICE.account.changeStatus , {accountId, status, reason}, {})
+}

@@ -92,7 +92,19 @@ export const PAYMENT_STATUS = {
     color: "cyan",
   },
   3: {
-    label: "Thất bại",
+    label: "Hết hạn",
+    color: "danger",
+  },
+  4: {
+    label: "Huỷ giao dịch",
+    color: "danger",
+  },
+  5: {
+    label: "Lỗi giao dịch",
+    color: "danger",
+  },
+  6: {
+    label: "Giao dịch thành công nhưng lỗi xử lý",
     color: "danger",
   },
 };
@@ -187,6 +199,25 @@ export const TICKET_PURCHASED_STATUS = {
     color: "danger",
   },
 };
+
+export const TICKET_CATEGORY = {
+  VE_GIO: {
+    value: 1,
+    label: "Vé giờ"
+  },
+  VE_NGAY: {
+    value: 2,
+    label: "Vé ngày"
+  },
+  VE_TUAN: {
+    value: 3,
+    label: "Vé tuần"
+  },
+  VE_THANG: {
+    value: 4,
+    label: "Vé tháng"
+  },
+}
 
 export const TICKET_STATUS = {
   CHO_DUYET: {

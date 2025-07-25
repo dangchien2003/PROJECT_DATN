@@ -11,7 +11,7 @@ const Ticket = ({ info }) => {
       }}
     >
       <div style={{ paddingRight: 16, width: 800 }}>
-        <TableCustomTicketOfPartner />
+        <TableCustomTicketOfPartner accountId={info.id}/>
       </div>
       <div>
         <TkTicketOfPartner />

@@ -1,9 +1,13 @@
 import ButtonStatus from "@/components/ButtonStatus";
+import { useLoading } from "@/hook/loading";
+import { changeStatusAccount } from "@/service/accountService";
+import { getDataApi } from "@/utils/api";
 import {
   ACCOUNT_STATUS,
   ACCOUNT_STATUS_OBJECT,
   COLOR_BUTTON_ACCOUNT_STATUS,
 } from "@/utils/constants";
+import { toastError, toastSuccess } from "@/utils/toast";
 import { Input, Modal, Select } from "antd";
 import { useState } from "react";
 const renderOptionsSelectBox = () => {
@@ -20,24 +24,35 @@ const renderOptionsSelectBox = () => {
   });
 };
 
-const Status = ({ info }) => {
-  const [inputValue, setInputValue] = useState("");
+const Status = ({ info, onChangeSuccess }) => {
+  const [reason, setReason] = useState("");
   const [pendingStatus, setPendingStatus] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
+  const { showLoad, hideLoad } = useLoading();
 
   const handleChange = (newValue) => {
     setPendingStatus(newValue);
   };
 
   const handleOk = () => {
-    if (!inputValue.trim()) {
-      Modal.error({
-        title: "Lỗi",
-        content: "Vui lòng nhập lý do trước khi xác nhận!",
-      });
+    if (!reason.trim()) {
+      setErrorMessage("Vui lòng nhập lý do");
       return;
     }
-    setPendingStatus(null);
-    setInputValue("");
+    showLoad("Đang xử lý");
+    setErrorMessage(null);
+    changeStatusAccount(info.id, pendingStatus, reason).then(response => {
+      toastSuccess("Thay đổi trạng thái thành công");
+      setPendingStatus(null);
+      const result = getDataApi(response);
+      setReason("");
+      onChangeSuccess(result);
+    }).catch(e => {
+      const response = getDataApi(e);
+      toastError(response.message);
+    }).finally(() => {
+      hideLoad();
+    })
   };
 
   const handleCancel = () => {
@@ -67,9 +82,10 @@ const Status = ({ info }) => {
           <p>Vui lòng nhập lý do:</p>
           <Input
             placeholder="Nhập lý do..."
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
           />
+          <div className={"error-field"} style={{ fontSize: 12, padding: 4, color: "red" }}>{errorMessage}</div>
         </Modal>
       </div>
     </div>

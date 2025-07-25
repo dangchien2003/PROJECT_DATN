@@ -2,25 +2,9 @@ import Map from "@/components/Map"
 import { useLoading } from "@/hook/loading"
 import { getMapLocation } from "@/service/locationService"
 import { getDataApi } from "@/utils/api"
+import { convertDataMap } from "@/utils/data"
 import { toastError } from "@/utils/toast"
 import { useEffect, useState } from "react"
-const convertDataMap = (data) => {
-  return data.map((item) => {
-    return {
-      position: [item.coordinatesX, item.coordinatesY],
-      popupContent: (
-        <a
-          href={item.linkGoogleMap}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ color: "black", textDecoration: "none" }}
-        >
-          {item.name}
-        </a>
-      ),
-    }
-  })
-}
 
 const MapAllLocation = () => {
   const [page, setPage] = useState(0);
@@ -30,7 +14,6 @@ const MapAllLocation = () => {
   const callApi = () => {
     let result = null;
     getMapLocation(page).then((response) => {
-      console.log(response)
       result = getDataApi(response);
       // convert data thành dữ liệu bản đồ
       const newData = convertDataMap(result);
