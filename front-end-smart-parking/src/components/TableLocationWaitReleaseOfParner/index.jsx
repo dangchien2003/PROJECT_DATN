@@ -1,12 +1,10 @@
-import { getLocationOfPartner } from "@/service/statisticalService";
+import { getLocationWaitReleaseOfPartner } from "@/service/statisticalService";
 import { getDataApi } from "@/utils/api";
-import { LOCATION_STATUS } from "@/utils/constants";
 import { showTotal } from "@/utils/table";
 import { formatTimestamp } from "@/utils/time";
 import { toastError } from "@/utils/toast";
 import { Table } from "antd";
 import { useEffect, useState } from "react";
-import ButtonStatus from "../ButtonStatus";
 import { useNavigate } from "react-router-dom";
 
 const columns = [
@@ -40,36 +38,35 @@ const columns = [
     sorter: false,
     width: 120,
   },
+  {
+    title: "Thời điểm áp dụng",
+    dataIndex: "timeAppliedEditPrint",
+    align: "center",
+    key: "5",
+    sorter: false,
+    width: 120,
+  },
 ];
 
 const convertResponseToDataTable = (data, currentPage, pageSize) => {
   return data.map((item, index) => {
     item.namePrint = (
-      <div>{`${item.locationId} - ${item.name}`}</div>
+      <div>{`${item.modifyId} - ${item.name}`}</div>
     );
     item.coordinatesPrint = (
       <div>
-        <div>
-          <ButtonStatus
-            label={LOCATION_STATUS[item.status].label}
-            color={LOCATION_STATUS[item.status].color}
-          />
-        </div>
-        <div>
-          <a
-            href={item.linkGoogleMap}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {item.coordinatesX ? `${item.coordinatesX} x ${item.coordinatesY}` : "Không có tọa độ"}
-          </a>
-        </div>
+        <a
+          href={item.linkGoogleMap}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {item.coordinatesX ? `${item.coordinatesX} x ${item.coordinatesY}` : "Không có tọa độ"}
+        </a>
       </div>
     );
-    item.buyTime = (
+    item.timeAppliedEditPrint = (
       <div>
-        {formatTimestamp(item.createdAt, "DD/MM/YYYY")} <br />
-        {formatTimestamp(item.createdAt, "HH:mm:ss")}
+        {formatTimestamp(item.timeAppliedEdit, "DD/MM/YYYY HH:mm:ss")}
       </div>
     );
     item.stt = (currentPage - 1) * pageSize + index + 1;
@@ -77,7 +74,7 @@ const convertResponseToDataTable = (data, currentPage, pageSize) => {
   });
 };
 
-const TableCustomLocationOfParner = ({ partnerId }) => {
+const TableLocationWaitReleaseOfParner = ({ partnerId }) => {
   const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -90,7 +87,7 @@ const TableCustomLocationOfParner = ({ partnerId }) => {
   const loadData = (newPagination) => {
     setLoading(true);
     setData([])
-    getLocationOfPartner(partnerId, newPagination.current - 1, newPagination.pageSize)
+    getLocationWaitReleaseOfPartner(partnerId, newPagination.current - 1, newPagination.pageSize)
       .then((response) => {
         const data = getDataApi(response);
         const total = data?.totalElements;
@@ -126,7 +123,7 @@ const TableCustomLocationOfParner = ({ partnerId }) => {
   }, []);
 
   const handleClickRow = (data) => {
-    navigate(`/admin/location/detail/1/${data.locationId}`)
+    navigate(`/admin/location/detail/5/${data.modifyId}`)
   };
 
   return (
@@ -154,4 +151,4 @@ const TableCustomLocationOfParner = ({ partnerId }) => {
   );
 };
 
-export default TableCustomLocationOfParner;
+export default TableLocationWaitReleaseOfParner;

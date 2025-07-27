@@ -1,13 +1,14 @@
-import { getLocationOfPartner } from "@/service/statisticalService";
+import { StatisticalTicketWaitReleaseOfPartner } from "@/service/statisticalService";
 import { getDataApi } from "@/utils/api";
-import { LOCATION_STATUS } from "@/utils/constants";
+import { TICKET_STATUS, VEHICLE } from "@/utils/constants";
+import { convertDataSelectboxToObject } from "@/utils/object";
 import { showTotal } from "@/utils/table";
-import { formatTimestamp } from "@/utils/time";
 import { toastError } from "@/utils/toast";
 import { Table } from "antd";
 import { useEffect, useState } from "react";
-import ButtonStatus from "../ButtonStatus";
 import { useNavigate } from "react-router-dom";
+import ButtonStatus from "../ButtonStatus";
+import { formatTimestamp } from "@/utils/time";
 
 const columns = [
   {
@@ -15,69 +16,86 @@ const columns = [
     dataIndex: "stt",
     key: "0",
     sorter: false,
-    width: 0,
+    width: 1,
   },
   {
-    title: "Địa điểm",
-    dataIndex: "namePrint",
+    title: "Tên vé",
+    dataIndex: "ticketNamePrint",
     key: "1",
     sorter: false,
-    width: 200,
+    width: 150,
   },
   {
-    title: "Toạ độ",
-    dataIndex: "coordinatesPrint",
+    title: "Phân loại",
+    dataIndex: "category",
     key: "2",
     sorter: false,
-    align: "center",
+    width: 100,
+  },
+  {
+    title: "Lần chỉnh sửa",
+    dataIndex: "modifyCount",
+    key: "3",
+    sorter: false,
+    width: 100,
+  },
+  {
+    title: "Trạng thái",
+    dataIndex: "statusPrint",
+    key: "4",
+    sorter: false,
     width: 120,
   },
   {
-    title: "Sức chứa",
-    dataIndex: "capacity",
+    title: "Phương tiện",
+    dataIndex: "vehiclePrint",
+    key: "5",
+    sorter: false,
+    width: 150,
+  },
+  {
+    title: "Địa điểm áp dụng",
+    dataIndex: "countLocationUse",
+    key: "6",
+    sorter: false,
+    width: 100,
+  },
+  {
+    title: "Thời điểm áp dụng",
+    dataIndex: "releaseTime",
     align: "center",
-    key: "4",
+    key: "6",
     sorter: false,
     width: 120,
   },
 ];
 
+const ticketStatus = convertDataSelectboxToObject(TICKET_STATUS);
 const convertResponseToDataTable = (data, currentPage, pageSize) => {
   return data.map((item, index) => {
-    item.namePrint = (
-      <div>{`${item.locationId} - ${item.name}`}</div>
+    item.ticketNamePrint = `${item.id} - ${item.name}`; 
+    item.category = item.ticketId ? "Chỉnh sửa" : "Thêm mới"; 
+    item.statusPrint = (
+      <>
+        <ButtonStatus
+          label={ticketStatus[item.status].label}
+          color={ticketStatus[item.status].color}
+        />
+      </>
     );
-    item.coordinatesPrint = (
+    item.vehiclePrint = (
       <div>
-        <div>
-          <ButtonStatus
-            label={LOCATION_STATUS[item.status].label}
-            color={LOCATION_STATUS[item.status].color}
-          />
-        </div>
-        <div>
-          <a
-            href={item.linkGoogleMap}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {item.coordinatesX ? `${item.coordinatesX} x ${item.coordinatesY}` : "Không có tọa độ"}
-          </a>
-        </div>
+        <span style={{ margin: "0 4px" }}>{VEHICLE[item.vehicle].icon}</span>
+        {VEHICLE[item.vehicle].name}
       </div>
     );
-    item.buyTime = (
-      <div>
-        {formatTimestamp(item.createdAt, "DD/MM/YYYY")} <br />
-        {formatTimestamp(item.createdAt, "HH:mm:ss")}
-      </div>
-    );
+    item.releaseTime = formatTimestamp(item.releaseAt, "DD/MM/YYYY HH:mm");
     item.stt = (currentPage - 1) * pageSize + index + 1;
     return item;
   });
 };
 
-const TableCustomLocationOfParner = ({ partnerId }) => {
+const TableCustomTicketWaitApproveOfPartner = ({ accountId }) => {
   const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -90,13 +108,13 @@ const TableCustomLocationOfParner = ({ partnerId }) => {
   const loadData = (newPagination) => {
     setLoading(true);
     setData([])
-    getLocationOfPartner(partnerId, newPagination.current - 1, newPagination.pageSize)
+    StatisticalTicketWaitReleaseOfPartner(accountId, newPagination.current - 1, newPagination.pageSize)
       .then((response) => {
-        const data = getDataApi(response);
-        const total = data?.totalElements;
+        const result = getDataApi(response);
+        const total = result?.totalElements;
         setData(
           convertResponseToDataTable(
-            data.data,
+            result.data,
             newPagination.current,
             newPagination.pageSize
           )
@@ -125,10 +143,9 @@ const TableCustomLocationOfParner = ({ partnerId }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleClickRow = (data) => {
-    navigate(`/admin/location/detail/1/${data.locationId}`)
-  };
-
+  const handleClickRow = (record) => {
+    navigate(`/admin/ticket/detail/1/${record.id}`)
+  }
   return (
     <Table
       columns={columns}
@@ -154,4 +171,4 @@ const TableCustomLocationOfParner = ({ partnerId }) => {
   );
 };
 
-export default TableCustomLocationOfParner;
+export default TableCustomTicketWaitApproveOfPartner;

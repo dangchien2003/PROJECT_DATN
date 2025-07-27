@@ -16,7 +16,7 @@ const MapAllLocation = () => {
     getMapLocation(page).then((response) => {
       result = getDataApi(response);
       // convert data thành dữ liệu bản đồ
-      const newData = convertDataMap(result);
+      const newData = convertDataMap(result.data);
       // nối thêm data
       setData(pre => pre.concat(newData));
     })

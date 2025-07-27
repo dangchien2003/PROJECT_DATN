@@ -91,8 +91,12 @@ export const PARKING_SERVICE = {
     getTicketOfCustomer: "statistical/ticket-of-customer",
     getTransactionOfCustomer: "statistical/transaction-of-customer",
     getTicketOfPartner: "statistical/ticket-of-partner",
+    StatisticalTicketWaitReleaseOfPartner: "statistical/ticket-wait-approve-of-partner",
     getAllLocationOfPartner: "location/list/coordinates-of-partner",
-    getListTicketPurchaseOfPartner: "statistical/ticket-purchased-of-partner"
+    getListTicketPurchaseOfPartner: "statistical/ticket-purchased-of-partner",
+    getLocationOfPartner: "statistical/location-of-partner",
+    getLocationWaitReleaseOfPartner: "statistical/location-wait-release-of-partner",
+    getLocationWaitApproveOfPartner: "statistical/location-wait-approve-of-partner",
   }
 }
 
