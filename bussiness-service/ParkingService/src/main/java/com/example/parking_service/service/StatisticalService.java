@@ -17,4 +17,6 @@ public interface StatisticalService {
     ApiResponse<Object> getLocationOfPartner(String partnerId, Pageable pageable);
 
     ApiResponse<Object> getLocationWaitReleaseOfPartner(String partnerId, Pageable pageable);
+
+    ApiResponse<Object> getLocationWaitApproveOfPartner(String partnerId, Pageable pageable);
 }

@@ -45,7 +45,7 @@ public interface LocationModifyRepository extends JpaRepository<LocationModify, 
             "AND (:urgentApprovalRequest IS NULL OR lm.urgentApprovalRequest = :urgentApprovalRequest) " +
             "AND (:modifyStatus <> 2 OR :modifyStatus = 2 AND lm.timeAppliedEdit > :now) "
     )
-    Page<LocationModify> partnerSearch(
+    Page<LocationModify> partnerSearchModify(
             @Param("category") Integer category,
             @Param("name") String name,
             @Param("openTime") LocalTime openTime,
@@ -162,7 +162,55 @@ public interface LocationModifyRepository extends JpaRepository<LocationModify, 
 
     Optional<LocationModify> findByModifyIdAndIsDel(Long locationId, Integer isDel);
 
+    @Query("select lm from LocationModify lm where lm.partnerId = :partnerId and lm.released = 0 and lm.isDel = 0")
+    Page<LocationModify> getLocationWaitReleaseOfPartner(String partnerId, Pageable pageable);
 
-    //
-    Page<LocationModify> findByPartnerId(String partnerId, Pageable pageable);
+    @Query("select lm from LocationModify lm where lm.partnerId = :partnerId and lm.modifyStatus = :waitApproveStatus and lm.isDel = 0")
+    Page<LocationModify> getLocationWaitApproveOfPartner(String partnerId, Integer waitApproveStatus, Pageable pageable);
+
+
+    // realease
+    @Query(value = "SELECT lwr FROM LocationModify lwr where " +
+            "((:locationId IS NULL OR lwr.locationId = :locationId) " +
+            "OR (:modifyId IS NULL OR lwr.modifyId = :modifyId)) " +
+            "AND lwr.isDel = :isDel AND lwr.released  = :release"
+    )
+    List<LocationModify> findRecord(
+            @Param("locationId") Long locationId,
+            @Param("modifyId") Long modifyId,
+            @Param("isDel") Integer isDel,
+            @Param("release") Integer release
+    );
+
+    @Query("SELECT lwr FROM LocationModify lwr " +
+            "WHERE lwr.partnerId = :partnerId AND lwr.modifyStatus = :status AND lwr.isDel = :isDel AND lwr.released = :released " +
+            "AND (:name IS NULL OR lwr.name LIKE CONCAT('%', :name, '%') ESCAPE '!') " +
+            "AND (:openTime IS NULL OR lwr.openTime = :openTime) " +
+            "AND (:closeTime IS NULL OR lwr.closeTime = :closeTime) " +
+            "AND (:openHoliday IS NULL OR lwr.openHoliday = :openHoliday) "
+    )
+    Page<LocationModify> partnerSearchWaitApprove(
+            @Param("name") String name,
+            @Param("openTime") LocalTime openTime,
+            @Param("closeTime") LocalTime closeTime,
+            @Param("openHoliday") Integer openHoliday,
+            @Param("status") Integer status,
+            @Param("partnerId") String partnerId,
+            @Param("isDel") Integer isDel,
+            @Param("released") Integer released,
+            Pageable pageable
+    );
+
+    @Query(value = """
+                SELECT lwr FROM LocationModify lwr 
+                WHERE lwr.isDel = :isDel AND lwr.released = :released 
+                AND lwr.timeAppliedEdit <= :to
+            """)
+    List<LocationModify> findAllRecordWaitReleaseThisHour(
+            @Param("to") LocalDateTime to,
+            @Param("isDel") Integer isDel,
+            @Param("released") Integer released
+    );
+
+    Optional<LocationModify> findByModifyIdAndIsDelAndReleasedIsNotNull(Long id, Integer isDel);
 }

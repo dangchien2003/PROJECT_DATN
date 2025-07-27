@@ -18,7 +18,10 @@ import com.example.parking_service.enums.TicketPurchasedStatus;
 import com.example.parking_service.mapper.LocationMapper;
 import com.example.parking_service.mapper.LocationModifyMapper;
 import com.example.parking_service.mapper.LocationWaitReleaseMapper;
-import com.example.parking_service.repository.*;
+import com.example.parking_service.repository.AccountRepository;
+import com.example.parking_service.repository.LocationModifyRepository;
+import com.example.parking_service.repository.LocationRepository;
+import com.example.parking_service.repository.TicketPurchaseRepository;
 import com.example.parking_service.service.LocationService;
 import com.example.parking_service.utils.context.UserContextHolder;
 import lombok.AccessLevel;
@@ -48,7 +51,7 @@ public class LocationServiceImpl implements LocationService {
     LocationRepository locationRepository;
     LocationModifyRepository locationModifyRepository;
     AccountRepository accountRepository;
-    LocationWaitReleaseRepository locationWaitReleaseRepository;
+    //    LocationWaitReleaseRepository locationWaitReleaseRepository;
     TicketPurchaseRepository ticketPurchaseRepository;
     LocationModifyMapper locationModifyMapper;
     LocationMapper locationMapper;
@@ -109,7 +112,7 @@ public class LocationServiceImpl implements LocationService {
     public ApiResponse<Object> detailWaitRelease(Long id) {
         boolean roleAdmin = UserContextHolder.getContext().getRoles().contains("ADMIN");
         String accountId = UserContextHolder.getContext().getUid();
-        LocationWaitRelease entity = locationWaitReleaseRepository.findByIdAndIsDel(id, IsDel.DELETE_NOT_YET.getValue())
+        LocationModify entity = locationModifyRepository.findByModifyIdAndIsDelAndReleasedIsNotNull(id, IsDel.DELETE_NOT_YET.getValue())
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
         if (!roleAdmin && !entity.getPartnerId().equals(accountId)) {
             throw new AppException(ErrorCode.NO_ACCESS);
@@ -178,6 +181,14 @@ public class LocationServiceImpl implements LocationService {
 
     @Override
     public ApiResponse<Object> searchLocationByPartner(PartnerSearchLocation request, Pageable pageable) {
+        Pageable pageableQuery;
+        if (pageable.getSort().isUnsorted()) {
+            pageableQuery = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
+                    Sort.by(Sort.Direction.DESC, List.of(3, 4, 5).contains(request.getTab()) ? LocationModify_.MODIFY_ID : Location_.LOCATION_ID));
+        } else {
+            pageableQuery = pageable;
+        }
+
         String partnerId = UserContextHolder.getContext().getUid();
         // kiểm tra giá trị tab
         if (DataUtils.isNullOrEmpty(request.getTab()) || !List.of(1, 2, 3, 4, 5).contains(request.getTab())) {
@@ -187,6 +198,7 @@ public class LocationServiceImpl implements LocationService {
         String name = DataUtils.convertStringSearchLike(request.getName());
         // trạng thái
         Integer status = null;
+        Integer modifyStatus = null;
         if (request.getTab().equals(1)) {
             status = LocationStatus.DA_DUYET_DANG_HOAT_DONG.getValue();
         } else if (request.getTab().equals(2)) {
@@ -194,9 +206,9 @@ public class LocationServiceImpl implements LocationService {
         } else if (request.getTab().equals(3)) {
             status = LocationModifyStatus.CHO_DUYET.getValue();
         } else if (request.getTab().equals(4)) {
-            status = LocationModifyStatus.TU_CHOI_PHE_DUYET.getValue();
+            modifyStatus = LocationModifyStatus.TU_CHOI_PHE_DUYET.getValue();
         } else if (request.getTab().equals(5)) {
-            status = LocationStatus.DA_DUYET_DANG_HOAT_DONG.getValue();
+            modifyStatus = LocationModifyStatus.DA_DUYET_CHO_AP_DUNG.getValue();
         }
 
         if (List.of(1, 2).contains(request.getTab())) {
@@ -208,7 +220,7 @@ public class LocationServiceImpl implements LocationService {
                     request.getOpenHoliday(),
                     status,
                     partnerId,
-                    pageable
+                    pageableQuery
             );
             List<LocationResponse> dataResponse = dataPage.stream()
                     .map(locationMapper::toLocationResponse).toList();
@@ -218,16 +230,16 @@ public class LocationServiceImpl implements LocationService {
                     .build();
         } else if (request.getTab().equals(5)) {
             // truy vấn
-            Page<LocationWaitRelease> dataPage = locationWaitReleaseRepository.partnerSearch(
+            Page<LocationModify> dataPage = locationModifyRepository.partnerSearchWaitApprove(
                     name,
                     request.getOpenTime(),
                     request.getCloseTime(),
                     request.getOpenHoliday(),
-                    status,
+                    modifyStatus,
                     partnerId,
                     IsDel.DELETE_NOT_YET.getValue(),
                     Release.RELEASE_NOT_YET.getValue(),
-                    pageable
+                    pageableQuery
             );
             List<LocationWaitReleaseResponse> dataResponse = dataPage.stream()
                     .map(locationWaitReleaseMapper::toResponse).toList();
@@ -260,13 +272,13 @@ public class LocationServiceImpl implements LocationService {
                 }
             }
             // truy vấn
-            Page<LocationModify> dataPage = locationModifyRepository.partnerSearch(
+            Page<LocationModify> dataPage = locationModifyRepository.partnerSearchModify(
                     request.getCategory(),
                     name,
                     request.getOpenTime(),
                     request.getCloseTime(),
                     request.getOpenHoliday(),
-                    status,
+                    modifyStatus,
                     applyDate,
                     trendApplyDate,
                     fromRequestDate,
@@ -275,7 +287,7 @@ public class LocationServiceImpl implements LocationService {
                     LocalDateTime.now(),
                     partnerId,
                     IsDel.DELETE_NOT_YET.getValue(),
-                    pageable
+                    pageableQuery
             );
             List<LocationModifyResponse> dataResponse = dataPage.stream()
                     .map(locationModifyMapper::toLocationModifyResponse).toList();

@@ -60,4 +60,10 @@ public class StatisticalController {
     ApiResponse<Object> getLocationWaitReleaseOfPartner(@RequestParam("partnerId") String partnerId, Pageable pageable) {
         return statisticalService.getLocationWaitReleaseOfPartner(partnerId, pageable);
     }
+
+    @GetMapping("/location-wait-approve-of-partner")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    ApiResponse<Object> getLocationWaitApproveOfPartner(@RequestParam("partnerId") String partnerId, Pageable pageable) {
+        return statisticalService.getLocationWaitApproveOfPartner(partnerId, pageable);
+    }
 }

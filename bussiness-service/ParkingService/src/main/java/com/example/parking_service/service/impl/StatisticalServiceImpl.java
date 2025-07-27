@@ -5,6 +5,7 @@ import com.example.common.dto.response.PageResponse;
 import com.example.common.entity.BaseEntity_;
 import com.example.parking_service.dto.response.*;
 import com.example.parking_service.entity.*;
+import com.example.parking_service.enums.LocationModifyStatus;
 import com.example.parking_service.mapper.LocationMapper;
 import com.example.parking_service.mapper.LocationModifyMapper;
 import com.example.parking_service.mapper.LocationWaitReleaseMapper;
@@ -43,7 +44,7 @@ public class StatisticalServiceImpl implements StatisticalService {
     TicketLocationRepository ticketLocationRepository;
     OrderRepository orderRepository;
     LocationRepository locationRepository;
-    LocationWaitReleaseRepository locationWaitReleaseRepository;
+    //    LocationWaitReleaseRepository locationWaitReleaseRepository;
     PaymentMapper paymentMapper;
     LocationMapper locationMapper;
     LocationWaitReleaseMapper locationWaitReleaseMapper;
@@ -156,7 +157,18 @@ public class StatisticalServiceImpl implements StatisticalService {
     public ApiResponse<Object> getLocationWaitReleaseOfPartner(String partnerId, Pageable pageable) {
         Pageable pageQuery = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
                 Sort.by(Sort.Direction.DESC, BaseEntity_.MODIFIED_AT));
-        Page<LocationModify> locationPage = locationModifyRepository.findByPartnerId(partnerId, pageQuery);
+        Page<LocationModify> locationPage = locationModifyRepository.getLocationWaitReleaseOfPartner(partnerId, pageQuery);
+        List<StatisticalLocationOfPartner> result = locationPage.stream().map(locationModifyMapper::toStatisticalLocationOfPartner).toList();
+        return ApiResponse.builder()
+                .result(new PageResponse<>(result, locationPage.getTotalPages(), locationPage.getTotalElements()))
+                .build();
+    }
+
+    @Override
+    public ApiResponse<Object> getLocationWaitApproveOfPartner(String partnerId, Pageable pageable) {
+        Pageable pageQuery = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
+                Sort.by(Sort.Direction.DESC, BaseEntity_.MODIFIED_AT));
+        Page<LocationModify> locationPage = locationModifyRepository.getLocationWaitApproveOfPartner(partnerId, LocationModifyStatus.CHO_DUYET.getValue(), pageQuery);
         List<StatisticalLocationOfPartner> result = locationPage.stream().map(locationModifyMapper::toStatisticalLocationOfPartner).toList();
         return ApiResponse.builder()
                 .result(new PageResponse<>(result, locationPage.getTotalPages(), locationPage.getTotalElements()))

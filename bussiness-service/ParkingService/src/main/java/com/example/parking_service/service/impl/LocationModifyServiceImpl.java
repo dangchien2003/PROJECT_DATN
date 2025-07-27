@@ -13,7 +13,6 @@ import com.example.parking_service.dto.request.ApproveRequest;
 import com.example.parking_service.dto.request.ModifyLocationRequest;
 import com.example.parking_service.entity.Location;
 import com.example.parking_service.entity.LocationModify;
-import com.example.parking_service.entity.LocationWaitRelease;
 import com.example.parking_service.enums.LocationModifyStatus;
 import com.example.parking_service.enums.LocationStatus;
 import com.example.parking_service.enums.ModuleName;
@@ -22,7 +21,6 @@ import com.example.parking_service.mapper.LocationModifyMapper;
 import com.example.parking_service.mapper.LocationWaitReleaseMapper;
 import com.example.parking_service.repository.LocationModifyRepository;
 import com.example.parking_service.repository.LocationRepository;
-import com.example.parking_service.repository.LocationWaitReleaseRepository;
 import com.example.parking_service.service.LocationModifyService;
 import com.example.parking_service.service.SchedulerService;
 import com.example.parking_service.utils.context.UserContextHolder;
@@ -47,7 +45,7 @@ import java.util.List;
 public class LocationModifyServiceImpl implements LocationModifyService {
     LocationModifyRepository locationModifyRepository;
     LocationRepository locationRepository;
-    LocationWaitReleaseRepository locationWaitReleaseRepository;
+    //    LocationWaitReleaseRepository locationWaitReleaseRepository;
     SchedulerService schedulerService;
     LocationModifyMapper locationModifyMapper;
     LocationMapper locationMapper;
@@ -85,10 +83,8 @@ public class LocationModifyServiceImpl implements LocationModifyService {
         }
         if (Boolean.TRUE.equals(request.getApprove())) {
             // xử lý khi duyệt
-            // update modify
-            modifyEntity.setModifyStatus(LocationModifyStatus.DA_DUYET_CHO_AP_DUNG.getValue());
-            // cập nhật và thêm bản ghi chờ áp dụng
-            List<LocationWaitRelease> locationWaitReleases = locationWaitReleaseRepository.findRecord(
+            // xoá các bản ghi chờ áp dụng và update bản ghi duyệt thành chờ áp dụng mới
+            List<LocationModify> locationWaitReleases = locationModifyRepository.findRecord(
                     modifyEntity.getLocationId(),
                     modifyEntity.getModifyId(),
                     IsDel.DELETE_NOT_YET.getValue(),
@@ -101,17 +97,16 @@ public class LocationModifyServiceImpl implements LocationModifyService {
                     DataUtils.setDataAction(item, adminId, false);
                 });
             }
-            // tạo bản ghi
-            LocationWaitRelease entity = locationWaitReleaseMapper.toLocationWaitRelease(modifyEntity);
-            entity.setApproveBy(adminId);
-            entity.setStatus(LocationStatus.DA_DUYET_DANG_HOAT_DONG.getValue());
-            entity.setModifyStatus(LocationModifyStatus.DA_DUYET_CHO_AP_DUNG.getValue());
-            entity.setReleased(Release.RELEASE_NOT_YET.getValue());
-            DataUtils.setDataAction(entity, adminId, true);
-            locationWaitReleases.add(entity);
+            // update modify thành bản ghi chờ áp dụng
+            modifyEntity.setModifyStatus(LocationModifyStatus.DA_DUYET_CHO_AP_DUNG.getValue());
+            modifyEntity.setReleased(Release.RELEASE_NOT_YET.getValue());
+            modifyEntity.setApproveBy(adminId);
+            DataUtils.setDataAction(modifyEntity, adminId, false);
+            // thêm vào danh sách update
+            locationWaitReleases.add(modifyEntity);
             // lưu
-            locationWaitReleaseRepository.saveAll(locationWaitReleases);
-            insertScheduler(entity);
+            locationModifyRepository.saveAll(locationWaitReleases);
+            insertScheduler(modifyEntity);
         } else {
             // xử lý khi từ chối duyệt
             if (modifyEntity.getLocationId() != null) {
@@ -222,7 +217,7 @@ public class LocationModifyServiceImpl implements LocationModifyService {
         }
     }
 
-    private void insertScheduler(LocationWaitRelease locationWaitRelease) {
+    private void insertScheduler(LocationModify locationWaitRelease) {
         String actionBy = "scheduler";
         if (locationWaitRelease.getTimeAppliedEdit().isAfter(TimeUtil.getStartOfNextHour())) {
             return;
@@ -236,21 +231,22 @@ public class LocationModifyServiceImpl implements LocationModifyService {
             }
         };
         ScheduledJob scheduledJob = ScheduledJob.builder()
-                .scheduledJobId(new ScheduledJobId(ModuleName.LOCATION, locationWaitRelease.getId().toString()))
+                .scheduledJobId(new ScheduledJobId(ModuleName.LOCATION, locationWaitRelease.getModifyId().toString()))
                 .task(runnable)
                 .runAt(locationWaitRelease.getTimeAppliedEdit())
                 .build();
         schedulerService.addTask(scheduledJob);
     }
 
-    public void executeApplyLocation(LocationWaitRelease locationWaitRelease, String actionBy) throws JsonProcessingException {
+    public void executeApplyLocation(LocationModify locationWaitRelease, String actionBy) throws JsonProcessingException {
         String beforeUpdate = objectMapper.writeValueAsString(locationWaitRelease);
         // thay đổi entity release
         locationWaitRelease.setReleased(Release.RELEASE.getValue());
         locationWaitRelease.setReleaseAt(LocalDateTime.now());
+        locationWaitRelease.setModifyStatus(LocationModifyStatus.DA_AP_DUNG.getValue());
         DataUtils.setDataAction(locationWaitRelease, actionBy, false);
         // lưu
-        locationWaitReleaseRepository.save(locationWaitRelease);
+        locationModifyRepository.save(locationWaitRelease);
 
         try {
             // thay thế bản ghi phát hành
@@ -264,6 +260,7 @@ public class LocationModifyServiceImpl implements LocationModifyService {
             // map dữ liệu
             locationMapper.toLocationFromReleaseEntity(location, locationWaitRelease);
             location.setModifyStatus(LocationModifyStatus.DA_AP_DUNG.getValue());
+            location.setStatus(LocationStatus.DA_DUYET_DANG_HOAT_DONG.getValue());
             // thay đổi thời gian tác động
             DataUtils.setDataAction(location, actionBy, DataUtils.isNullOrEmpty(locationWaitRelease.getLocationId()));
             // lưu dữ liệu
@@ -272,8 +269,8 @@ public class LocationModifyServiceImpl implements LocationModifyService {
             log.error("error: ", e);
             // rollback nếu lỗi
             try {
-                LocationWaitRelease locationWaitReleaseRollback = objectMapper.readValue(beforeUpdate, LocationWaitRelease.class);
-                locationWaitReleaseRepository.save(locationWaitReleaseRollback);
+                LocationModify locationWaitReleaseRollback = objectMapper.readValue(beforeUpdate, LocationModify.class);
+                locationModifyRepository.save(locationWaitReleaseRollback);
             } catch (JsonProcessingException ex) {
                 log.error("error: ", ex);
                 log.error("lỗi rollback dữ liệu(LocationWaitRelease): " + beforeUpdate);
@@ -283,11 +280,10 @@ public class LocationModifyServiceImpl implements LocationModifyService {
 
     @Override
     public void loadScheduler() {
-        LocalDateTime from = TimeUtil.getStartOfCurrentHour();
         LocalDateTime to = TimeUtil.getStartOfNextHour();
-        List<LocationWaitRelease> entityList = locationWaitReleaseRepository
-                .findAllRecordWaitReleaseThisHour(from, to, IsDel.DELETE_NOT_YET.getValue(), Release.RELEASE_NOT_YET.getValue());
-        for (LocationWaitRelease locationWaitRelease : entityList) {
+        List<LocationModify> entityList = locationModifyRepository
+                .findAllRecordWaitReleaseThisHour(to, IsDel.DELETE_NOT_YET.getValue(), Release.RELEASE_NOT_YET.getValue());
+        for (LocationModify locationWaitRelease : entityList) {
             insertScheduler(locationWaitRelease);
         }
         log.info("Đã đưa %d địa điểm vào hàng chờ phát hành.".formatted(entityList.size()));

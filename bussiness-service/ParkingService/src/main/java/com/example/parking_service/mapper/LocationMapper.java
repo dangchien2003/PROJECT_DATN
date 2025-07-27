@@ -2,7 +2,7 @@ package com.example.parking_service.mapper;
 
 import com.example.parking_service.dto.response.*;
 import com.example.parking_service.entity.Location;
-import com.example.parking_service.entity.LocationWaitRelease;
+import com.example.parking_service.entity.LocationModify;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
@@ -17,7 +17,7 @@ public interface LocationMapper {
     @Mapping(target = "createdBy", ignore = true)
     @Mapping(target = "modifiedAt", ignore = true)
     @Mapping(target = "modifiedBy", ignore = true)
-    void toLocationFromReleaseEntity(@MappingTarget Location location, LocationWaitRelease releaseEntity);
+    void toLocationFromReleaseEntity(@MappingTarget Location location, LocationModify releaseEntity);
 
     MapLocationResponse toMapLocationResponse(Location location);
 
