@@ -4,10 +4,10 @@ import com.example.common.dto.response.ApiResponse;
 import com.example.common.dto.response.PageResponse;
 import com.example.common.entity.BaseEntity_;
 import com.example.parking_service.dto.response.*;
-import com.example.parking_service.entity.Account;
-import com.example.parking_service.entity.Payment;
-import com.example.parking_service.entity.Ticket;
-import com.example.parking_service.enums.TypeTicket;
+import com.example.parking_service.entity.*;
+import com.example.parking_service.mapper.LocationMapper;
+import com.example.parking_service.mapper.LocationModifyMapper;
+import com.example.parking_service.mapper.LocationWaitReleaseMapper;
 import com.example.parking_service.mapper.PaymentMapper;
 import com.example.parking_service.repository.*;
 import com.example.parking_service.service.StatisticalService;
@@ -34,6 +34,8 @@ import java.util.stream.Collectors;
 @Transactional
 @Slf4j
 public class StatisticalServiceImpl implements StatisticalService {
+    LocationModifyRepository locationModifyRepository;
+    TicketWaitReleaseRepository ticketWaitReleaseRepository;
     TicketPurchaseRepository ticketPurchaseRepository;
     PaymentRepository paymentRepository;
     AccountRepository accountRepository;
@@ -41,7 +43,11 @@ public class StatisticalServiceImpl implements StatisticalService {
     TicketLocationRepository ticketLocationRepository;
     OrderRepository orderRepository;
     LocationRepository locationRepository;
+    LocationWaitReleaseRepository locationWaitReleaseRepository;
     PaymentMapper paymentMapper;
+    LocationMapper locationMapper;
+    LocationWaitReleaseMapper locationWaitReleaseMapper;
+    LocationModifyMapper locationModifyMapper;
 
     @Override
     public ApiResponse<Object> getTicketOfCustomer(String accountId, Pageable pageable) {
@@ -82,22 +88,37 @@ public class StatisticalServiceImpl implements StatisticalService {
         Pageable pageQuery = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
                 Sort.by(Sort.Direction.DESC, BaseEntity_.MODIFIED_AT));
         Page<Ticket> ticketPage = ticketRepository.findByPartnerId(partnerId, pageQuery);
-        List<Long> ticketIds = ticketPage.map(Ticket::getTicketId).toList();
-        List<CountLocationByTicket> countResult = ticketLocationRepository.countLocationByTicket(ticketIds, TypeTicket.PHAT_HANH.getValue());
-        Map<Long, Long> countLocationMap = countResult.stream().collect(Collectors.toMap(CountLocationByTicket::getTicketId, CountLocationByTicket::getQuantity));
-        List<StatisticalTicketOfPartner> result = ticketPage.stream().map(item -> {
-            Long countLocation = countLocationMap.get(item.getTicketId());
-            if (countLocation == null) {
-                countLocation = 0L;
-            }
-            return StatisticalTicketOfPartner.builder()
-                    .ticketId(item.getTicketId())
-                    .name(item.getName())
-                    .status(item.getStatus())
-                    .vehicle(item.getVehicle())
-                    .countLocationUse(countLocation)
-                    .build();
-        }).toList();
+        List<StatisticalTicketOfPartner> result = ticketPage.stream().map(item ->
+                StatisticalTicketOfPartner.builder()
+                        .ticketId(item.getTicketId())
+                        .name(item.getName())
+                        .status(item.getStatus())
+                        .vehicle(item.getVehicle())
+                        .countLocationUse(item.getCountLocation())
+                        .build()
+        ).toList();
+        return ApiResponse.builder()
+                .result(new PageResponse<>(result, ticketPage.getTotalPages(), ticketPage.getTotalElements()))
+                .build();
+    }
+
+    @Override
+    public ApiResponse<Object> getTicketWaitReleaseOfPartner(String partnerId, Pageable pageable) {
+        Pageable pageQuery = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
+                Sort.by(Sort.Direction.DESC, TicketWaitRelease_.TIME_APPLIED_EDIT));
+        Page<TicketWaitRelease> ticketPage = ticketWaitReleaseRepository.findByPartnerId(partnerId, pageQuery);
+        List<StatisticalTicketWaitReleaseOfPartner> result = ticketPage.stream().map(item ->
+                StatisticalTicketWaitReleaseOfPartner.builder()
+                        .id(item.getId())
+                        .ticketId(item.getTicketId())
+                        .name(item.getName())
+                        .modifyCount(item.getModifyCount())
+                        .status(item.getStatus())
+                        .releaseAt(item.getTimeAppliedEdit())
+                        .vehicle(item.getVehicle())
+                        .countLocationUse(item.getCountLocation())
+                        .build()
+        ).toList();
         return ApiResponse.builder()
                 .result(new PageResponse<>(result, ticketPage.getTotalPages(), ticketPage.getTotalElements()))
                 .build();
@@ -117,6 +138,28 @@ public class StatisticalServiceImpl implements StatisticalService {
         });
         return ApiResponse.builder()
                 .result(new PageResponse<>(orderPage.getContent(), orderPage.getTotalPages(), orderPage.getTotalElements()))
+                .build();
+    }
+
+    @Override
+    public ApiResponse<Object> getLocationOfPartner(String partnerId, Pageable pageable) {
+        Pageable pageQuery = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
+                Sort.by(Sort.Direction.DESC, BaseEntity_.MODIFIED_AT));
+        Page<Location> locationPage = locationRepository.findByPartnerId(partnerId, pageQuery);
+        List<StatisticalLocationOfPartner> result = locationPage.stream().map(locationMapper::toStatisticalLocationOfPartner).toList();
+        return ApiResponse.builder()
+                .result(new PageResponse<>(result, locationPage.getTotalPages(), locationPage.getTotalElements()))
+                .build();
+    }
+
+    @Override
+    public ApiResponse<Object> getLocationWaitReleaseOfPartner(String partnerId, Pageable pageable) {
+        Pageable pageQuery = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
+                Sort.by(Sort.Direction.DESC, BaseEntity_.MODIFIED_AT));
+        Page<LocationModify> locationPage = locationModifyRepository.findByPartnerId(partnerId, pageQuery);
+        List<StatisticalLocationOfPartner> result = locationPage.stream().map(locationModifyMapper::toStatisticalLocationOfPartner).toList();
+        return ApiResponse.builder()
+                .result(new PageResponse<>(result, locationPage.getTotalPages(), locationPage.getTotalElements()))
                 .build();
     }
 }

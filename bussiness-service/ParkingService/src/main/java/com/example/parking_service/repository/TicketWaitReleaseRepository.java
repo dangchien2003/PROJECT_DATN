@@ -58,4 +58,6 @@ public interface TicketWaitReleaseRepository extends JpaRepository<TicketWaitRel
             @Param("isDel") Integer isDel,
             @Param("released") Integer released
     );
+
+    Page<TicketWaitRelease> findByPartnerId(String partnerId, Pageable pageable);
 }

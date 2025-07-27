@@ -138,4 +138,6 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
             @Param("keyQuery") String keyQuery,
             @Param("status") int status,
             Pageable pageable);
+
+    Page<Location> findByPartnerId(String partnerId, Pageable pageable);
 }

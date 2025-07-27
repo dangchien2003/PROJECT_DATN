@@ -161,4 +161,8 @@ public interface LocationModifyRepository extends JpaRepository<LocationModify, 
     );
 
     Optional<LocationModify> findByModifyIdAndIsDel(Long locationId, Integer isDel);
+
+
+    //
+    Page<LocationModify> findByPartnerId(String partnerId, Pageable pageable);
 }

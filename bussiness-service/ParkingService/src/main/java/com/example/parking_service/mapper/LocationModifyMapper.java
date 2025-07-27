@@ -2,6 +2,7 @@ package com.example.parking_service.mapper;
 
 import com.example.parking_service.dto.request.ModifyLocationRequest;
 import com.example.parking_service.dto.response.LocationModifyResponse;
+import com.example.parking_service.dto.response.StatisticalLocationOfPartner;
 import com.example.parking_service.entity.LocationModify;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -16,6 +17,8 @@ public interface LocationModifyMapper {
     @Mapping(target = "urgentApprovalRequest", source = "urgentApprovalRequest", qualifiedByName = "convertToBoolean")
     @Mapping(target = "isDel", source = "isDel", qualifiedByName = "convertToBoolean")
     LocationModifyResponse toLocationModifyResponse(LocationModify entity);
+
+    StatisticalLocationOfPartner toStatisticalLocationOfPartner(LocationModify locationModify);
 
     @Named("convertToBoolean")
     default Boolean convertToBoolean(Integer data) {

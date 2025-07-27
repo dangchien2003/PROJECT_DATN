@@ -1,9 +1,6 @@
 package com.example.parking_service.mapper;
 
-import com.example.parking_service.dto.response.CustomerLocationResponse;
-import com.example.parking_service.dto.response.CustomerSearchLocationResponse;
-import com.example.parking_service.dto.response.LocationResponse;
-import com.example.parking_service.dto.response.MapLocationResponse;
+import com.example.parking_service.dto.response.*;
 import com.example.parking_service.entity.Location;
 import com.example.parking_service.entity.LocationWaitRelease;
 import org.mapstruct.Mapper;
@@ -29,6 +26,8 @@ public interface LocationMapper {
 
     @Mapping(target = "openHoliday", source = "openHoliday", qualifiedByName = "convertToBoolean")
     CustomerLocationResponse toCustomerLocationResponse(Location location);
+
+    StatisticalLocationOfPartner toStatisticalLocationOfPartner(Location location);
 
     @Named("convertToBoolean")
     default Boolean convertToBoolean(Integer data) {

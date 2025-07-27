@@ -12,11 +12,13 @@ import java.time.LocalDateTime;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class StatisticalTicketOfPartner {
+public class StatisticalTicketWaitReleaseOfPartner {
+    Long id;
     Long ticketId;
     String name;
+    Integer modifyCount;
     Integer status;
-    LocalDateTime releasedTime;
+    LocalDateTime releaseAt;
     Integer vehicle;
     Integer countLocationUse;
 }

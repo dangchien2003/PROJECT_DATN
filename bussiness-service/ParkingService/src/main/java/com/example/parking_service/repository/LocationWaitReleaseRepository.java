@@ -57,4 +57,6 @@ public interface LocationWaitReleaseRepository extends JpaRepository<LocationWai
             @Param("isDel") Integer isDel,
             @Param("released") Integer released
     );
+
+    Page<LocationWaitRelease> findByPartnerId(String partnerId, Pageable pageable);
 }

@@ -27,7 +27,7 @@ public interface OrderRepository extends JpaRepository<OrderParking, String> {
                 ) from OrderParking  o
                 LEFT JOIN Ticket t on t.ticketId = o.ticketId
                 where t.partnerId = :partnerId
-                and o.status = 2
+                and o.status = 2 and o.extendTicketId is null
             """)
     Page<StatisticalTicketPurchasedOfPartner> getListTicketPurchaseOfPartner(String partnerId, Pageable pageable);
 }

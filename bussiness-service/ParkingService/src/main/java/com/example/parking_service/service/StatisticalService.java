@@ -10,5 +10,11 @@ public interface StatisticalService {
 
     ApiResponse<Object> getTicketOfPartner(String partnerId, Pageable pageable);
 
+    ApiResponse<Object> getTicketWaitReleaseOfPartner(String partnerId, Pageable pageable);
+
     ApiResponse<Object> getTicketPurchasedOfPartner(String partnerId, Pageable pageable);
+
+    ApiResponse<Object> getLocationOfPartner(String partnerId, Pageable pageable);
+
+    ApiResponse<Object> getLocationWaitReleaseOfPartner(String partnerId, Pageable pageable);
 }

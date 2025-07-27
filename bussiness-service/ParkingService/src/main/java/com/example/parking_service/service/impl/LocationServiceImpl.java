@@ -75,7 +75,7 @@ public class LocationServiceImpl implements LocationService {
 
     @Override
     public ApiResponse<Object> getListCoordinates(int page) {
-        Pageable fixedPageable = PageRequest.of(page, 20, Sort.by(Sort.Direction.DESC, "coordinates"));
+        Pageable fixedPageable = PageRequest.of(page, 20, Sort.by(Sort.Direction.DESC, Location_.COORDINATES_X));
         Page<Location> pageLocations = locationRepository.findByStatus(LocationStatus.DA_DUYET_DANG_HOAT_DONG.getValue(), null, fixedPageable);
         List<Location> locations = pageLocations.getContent();
         Set<String> partnerId = locations.stream().map(Location::getPartnerId).collect(Collectors.toSet());

@@ -1,6 +1,7 @@
 package com.example.parking_service.mapper;
 
 import com.example.parking_service.dto.response.LocationWaitReleaseResponse;
+import com.example.parking_service.dto.response.StatisticalLocationOfPartner;
 import com.example.parking_service.entity.LocationModify;
 import com.example.parking_service.entity.LocationWaitRelease;
 import org.mapstruct.Mapper;
@@ -26,6 +27,8 @@ public interface LocationWaitReleaseMapper {
     @Mapping(target = "modifiedAt", ignore = true)
     @Mapping(target = "modifiedBy", ignore = true)
     void toLocationWaitReleaseFromModify(@MappingTarget LocationWaitRelease locationWaitRelease, LocationModify locationModify);
+
+    StatisticalLocationOfPartner toStatisticalLocationOfPartner(LocationWaitRelease locationWaitRelease);
 
     @Named("convertToBoolean")
     default Boolean convertToBoolean(Integer data) {

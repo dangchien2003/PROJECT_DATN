@@ -37,9 +37,27 @@ public class StatisticalController {
         return statisticalService.getTicketOfPartner(partnerId, pageable);
     }
 
+    @GetMapping("/ticket-wait-approve-of-partner")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    ApiResponse<Object> getTicketWaitApproveOfPartner(@RequestParam("partnerId") String partnerId, Pageable pageable) {
+        return statisticalService.getTicketWaitReleaseOfPartner(partnerId, pageable);
+    }
+
     @GetMapping("/ticket-purchased-of-partner")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     ApiResponse<Object> getTicketPurchasedOfPartner(@RequestParam("partnerId") String partnerId, Pageable pageable) {
         return statisticalService.getTicketPurchasedOfPartner(partnerId, pageable);
+    }
+
+    @GetMapping("/location-of-partner")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    ApiResponse<Object> getLocationOfPartner(@RequestParam("partnerId") String partnerId, Pageable pageable) {
+        return statisticalService.getLocationOfPartner(partnerId, pageable);
+    }
+
+    @GetMapping("/location-wait-release-of-partner")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    ApiResponse<Object> getLocationWaitReleaseOfPartner(@RequestParam("partnerId") String partnerId, Pageable pageable) {
+        return statisticalService.getLocationWaitReleaseOfPartner(partnerId, pageable);
     }
 }
