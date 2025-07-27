@@ -1,6 +1,5 @@
 package com.example.parking_service.entity;
 
-
 import com.example.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -68,10 +67,6 @@ public class LocationModify extends BaseEntity {
 
     LocalDateTime timeAppliedEdit;
 
-    Integer urgentApprovalRequest;
-
-    Long capacity;
-
     @Lob
     @Column(columnDefinition = "LONGTEXT")
     String description;
@@ -82,5 +77,15 @@ public class LocationModify extends BaseEntity {
     @Lob
     String modifyDescription;
 
+    Long capacity;
+
     Integer isDel;
+
+    Integer urgentApprovalRequest; // chỉ có trong LocationModify, giữ lại
+
+    Integer released; // từ LocationWaitRelease
+
+    LocalDateTime releaseAt; // từ LocationWaitRelease
+
+    String approveBy; // từ LocationWaitRelease
 }
