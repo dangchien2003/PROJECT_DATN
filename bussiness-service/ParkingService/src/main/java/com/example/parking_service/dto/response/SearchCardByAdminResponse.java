@@ -21,4 +21,5 @@ public class SearchCardByAdminResponse {
     String requestName;
     LocalDate requestDate;
     String ownerName;
+    String reasonReject;
 }

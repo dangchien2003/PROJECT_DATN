@@ -10,6 +10,7 @@ import com.example.common.utils.RandomUtils;
 import com.example.common.utils.TimeUtil;
 import com.example.parking_service.dto.request.*;
 import com.example.parking_service.dto.response.CardResponse;
+import com.example.parking_service.dto.response.DetailCardByAdminResponse;
 import com.example.parking_service.dto.response.HistoryRequestAddCardResponse;
 import com.example.parking_service.dto.response.SearchCardByAdminResponse;
 import com.example.parking_service.entity.Account;
@@ -116,8 +117,7 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
-    public ApiResponse<Object> getHistoryRequestAdditional(Pageable pageable) {
-        String accountId = UserContextHolder.getContext().getUid();
+    public ApiResponse<Object> getHistoryRequestAdditional(Pageable pageable, String accountId) {
         Pageable pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(Sort.Direction.DESC, BaseEntity_.CREATED_AT));
         Page<Card> cardPage = cardRepository.findByAccountId(accountId, pageRequest);
         List<HistoryRequestAddCardResponse> result = cardPage.map(cardMapper::toHistoryRequestAddCardResponse).toList();
@@ -373,6 +373,53 @@ public class CardServiceImpl implements CardService {
                 .result(cardResponse)
                 .build();
     }
+
+    @Override
+    public ApiResponse<Object> detailCardByAdmin(Long cardId) {
+        Card card = cardRepository.findById(cardId)
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND.withMessage("Không tìm thấy dữ liệu")));
+        DetailCardByAdminResponse response = convertCardResponse(card);
+        response.setRequestDate(card.getCreatedAt().toLocalDate());
+        response.setUsedTimes(random.nextLong(100));
+        return ApiResponse.builder()
+                .result(response)
+                .build();
+    }
+
+    //    @Override
+//    public ApiResponse<Object> lockCard(Long cardId) {
+//        String actionBy = UserContextHolder.getContext().getUid();
+//        Card card = cardRepository.findById(cardId)
+//                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND.withMessage("Không tìm thấy dữ liệu")));
+//        if (card.getStatus().equals(CardStatus.KHOA_VINH_VIEN)) {
+//            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Thẻ đang bị khoá vĩnh viễn. Hãy mở khoá trước"));
+//        }
+//        if (card.getStatus().equals(CardStatus.TAM_KHOA)) {
+//            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Thẻ đã ở trạng thái tạm khoá"));
+//        }
+//        card.setStatus(CardStatus.TAM_KHOA);
+//        DataUtils.setDataAction(card, actionBy, false);
+//        card = cardRepository.save(card);
+//        return ApiResponse.builder()
+//                .result(convertCardResponse(card))
+//                .build();
+//    }
+
+    DetailCardByAdminResponse convertCardResponse(Card card) {
+        DetailCardByAdminResponse response = cardMapper.toDetailCardByAdminResponse(card);
+        // lấy tên chủ sở hữu và người yêu cầu
+        List<Account> accounts = accountRepository.findAllById(List.of(card.getAccountId(), card.getRequestCreateBy()));
+        Account owner = accounts.stream()
+                .filter(item -> item.getId().equalsIgnoreCase(card.getAccountId()))
+                .findFirst().orElse(null);
+        Account request = accounts.stream()
+                .filter(item -> item.getId().equalsIgnoreCase(card.getAccountId()))
+                .findFirst().orElse(null);
+        response.setOwner(owner != null ? owner.getFullName() : null);
+        response.setRequestCreateName(request != null ? request.getFullName() : null);
+        return response;
+    }
+
 
     void genUseTimes(CardResponse cardResponse) {
         cardResponse.setUsedTimes(random.nextLong(100));

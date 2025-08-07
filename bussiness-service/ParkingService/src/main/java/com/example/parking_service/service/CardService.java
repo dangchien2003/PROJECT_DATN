@@ -9,7 +9,7 @@ public interface CardService {
 
     ApiResponse<Object> getListCardApproved(Pageable pageable);
 
-    ApiResponse<Object> getHistoryRequestAdditional(Pageable pageable);
+    ApiResponse<Object> getHistoryRequestAdditional(Pageable pageable, String accountId);
 
     ApiResponse<Object> active(ActiveCardRequest request);
 
@@ -30,4 +30,6 @@ public interface CardService {
     ApiResponse<Object> linkTicket(LinkTicketRequest request);
 
     ApiResponse<Object> cancelLinkTicket(Long cardId);
+
+    ApiResponse<Object> detailCardByAdmin(Long cardId);
 }

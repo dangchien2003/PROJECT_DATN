@@ -3,6 +3,7 @@ package com.example.parking_service.controller;
 import com.example.common.dto.response.ApiResponse;
 import com.example.parking_service.dto.request.*;
 import com.example.parking_service.service.CardService;
+import com.example.parking_service.utils.context.UserContextHolder;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +34,8 @@ public class CardController {
     @GetMapping("/history/request")
     @PreAuthorize("hasAnyAuthority('CUSTOMER')")
     ApiResponse<Object> getHistoryRequestAdditional(Pageable pageable) {
-        return cardService.getHistoryRequestAdditional(pageable);
+        String accountId = UserContextHolder.getContext().getUid();
+        return cardService.getHistoryRequestAdditional(pageable, accountId);
     }
 
     @PutMapping("/active")
@@ -97,5 +99,17 @@ public class CardController {
     @PreAuthorize("hasAnyAuthority('CUSTOMER')")
     ApiResponse<Object> cancelLinkTicket(@PathVariable("id") Long id) {
         return cardService.cancelLinkTicket(id);
+    }
+
+    @GetMapping("/admin/detail")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    ApiResponse<Object> detailCardByAdmin(@RequestParam("id") Long id) {
+        return cardService.detailCardByAdmin(id);
+    }
+
+    @GetMapping("/history/request-of")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    ApiResponse<Object> getHistoryRequestAdditionalOf(@RequestParam("accountId") String accountId, Pageable pageable) {
+        return cardService.getHistoryRequestAdditional(pageable, accountId);
     }
 }
