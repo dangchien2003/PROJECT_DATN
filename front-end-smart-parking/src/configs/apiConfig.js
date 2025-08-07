@@ -64,6 +64,7 @@ export const PARKING_SERVICE = {
     customerAdditional: "card/request/additional",
     customerCardApprove: "card/approved",
     customerHistoryRequest: "card/history/request",
+    customerHistoryRequestOfCustomer: "card/history/request-of",
     adminSearch: "card/admin/search",
     adminSearchRequestAdd: "card/admin/search/add",
     rejectRequest: "card/reject-request",
@@ -74,6 +75,7 @@ export const PARKING_SERVICE = {
     linkTicket: "card/link-ticket",
     unlinkTicket: "card/cancel-link-ticket/:id",
     madeCard: "card/made-card/:id",
+    detailCardByadmin: "card/admin/detail"
   },
   order: {
     createOrder: "order",

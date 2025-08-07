@@ -70,6 +70,12 @@ const TableListCardWaitApprove = ({dataSearch }) => {
       key: "5",
     },
     {
+      title: "Lý do từ chối",
+      dataIndex: "reasonReject",
+      key: "5.5",
+      hidden: dataSearch.status !== 6
+    },
+    {
       title: "Hành động",
       dataIndex: "action",
       key: "6",
@@ -114,7 +120,7 @@ const TableListCardWaitApprove = ({dataSearch }) => {
   };
 
   const handleClickRow = (data) => {
-    navigate(`/card/detail/1/${data.id}`)
+    navigate(`/admin/card/detail/1/${data.id}`)
   };
 
   useEffect(() => {

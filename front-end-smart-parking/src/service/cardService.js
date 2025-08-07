@@ -18,6 +18,13 @@ export async function getHistoryRequest(page, size) {
   })
 }
 
+export async function getHistoryRequestOf(page, size, accountId) {
+  return await httpClient.get(PARKING_SERVICE.card.customerHistoryRequestOfCustomer + "?" + getParamsPage(page, size, null, null), {
+    params: {accountId}
+  })
+}
+
+
 export async function adminSearch(dataSearch, page, size, field, order) {
   return await httpClient.post(PARKING_SERVICE.card.adminSearch + "?" + getParamsPage(page, size, field, order), dataSearch, {
   })
@@ -67,5 +74,11 @@ export async function unlinkTicket(id) {
 
 export async function madeCard(id) {
   return await httpClient.patch(replaceParamsUrl(PARKING_SERVICE.card.madeCard, {id}), {}, {
+  })
+}
+
+export async function detailCardByadmin(id) {
+  return await httpClient.get(PARKING_SERVICE.card.detailCardByadmin, {
+    params: {id}
   })
 }

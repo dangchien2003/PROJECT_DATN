@@ -5,7 +5,7 @@ import { CARD_STATUS, CARD_STATUS_2, CARD_TYPE, lineLoading } from '@/utils/cons
 import { toastError, toastSuccess } from '@/utils/toast';
 import { Card, Tooltip } from 'antd';
 import dayjs from "dayjs";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FaLink } from 'react-icons/fa6';
 import { LuUnlink } from "react-icons/lu";
 import { Link } from 'react-router-dom';
@@ -19,6 +19,11 @@ const CardCustom = ({ isAdmin, parentRef, data = {} }) => {
   const { showLoad, hideLoad } = useLoading();
   const [dataCard, setDataCard] = useState(data);
   const [openLink, setOpenLink] = useState(false);
+
+  useEffect(() => {
+    setDataCard(data);
+  }, [data])
+
   const onActionSuccess = (newData) => {
     setDataCard(newData);
     handleCloseLinkTicket(false);
@@ -57,21 +62,22 @@ const CardCustom = ({ isAdmin, parentRef, data = {} }) => {
             <span className='card-number'>{dataCard.numberCard}</span>
           </div>
           {isAdmin && <>
-            <div className='info'>Chủ sở hữu: <Link to={"/account/customer/1"} style={{ color: "white", textDecoration: "underline" }}>{dataCard.owner}</Link></div>
-            <div className='info'>Loại thẻ: {CARD_TYPE[dataCard.type].label}</div>
+            <div className='info'>Chủ sở hữu: <Link to={"/admin/account/customer/" + dataCard.accountId} style={{ color: "white", textDecoration: "underline" }}>{dataCard.owner}</Link></div>
+            <div className='info'>Loại thẻ: {CARD_TYPE[dataCard.type]?.label}</div>
           </>}
           <div className='info'>Lần cấp: {dataCard.issuedTimes}</div>
-          <div className='info'>Ngày cấp: {dayjs(dataCard.issuedDate).format("DD/MM/YYYY")}</div>
+          <div className='info'>Ngày cấp: {dataCard.issuedDate && dayjs(dataCard.issuedDate).format("DD/MM/YYYY")}</div>
           <div className='info'>Thời hạn: {!dataCard.expireDate ? "Vô hạn" : dayjs(dataCard.expireDate).format("DD/MM/YYYY")}</div>
           <div className='info'>Số lần sử dụng: {dataCard.usedTimes}</div>
           <div className='info'>
             <span>Trạng thái: </span>
-            <span className={CARD_STATUS[dataCard.status].color}><DotStatus /></span>
-            <span>{CARD_STATUS[dataCard.status].label}</span>
+            <span className={CARD_STATUS[dataCard.status]?.color}><DotStatus /></span>
+            <span>{CARD_STATUS[dataCard.status]?.label}</span>
           </div>
           {(dataCard.status === CARD_STATUS_2.DANG_HOAT_DONG.value || dataCard.status === CARD_STATUS_2.TAM_KHOA.value) && <div className='info'>
             Đang liên kết: {dataCard.ticketLink && <Link to={isAdmin ? "/ticket/detail/" + dataCard.ticketLink : "/ticket/detail/" + dataCard.ticketLink} style={{ color: "white", textDecoration: "underline" }}>{dataCard.ticketLink}</Link>}
-            <span style={{ padding: '0px 4px' }}>
+            {
+              !isAdmin && <span style={{ padding: '0px 4px' }}>
               {dataCard.status === CARD_STATUS_2.DANG_HOAT_DONG.value && <Tooltip title={"Thay đổi liên kết"}>
                 <span onClick={handleLinkTicket} style={{paddingRight: 4}}>
                   <FaLink />
@@ -83,10 +89,11 @@ const CardCustom = ({ isAdmin, parentRef, data = {} }) => {
                 </span>
               </Tooltip>}
             </span>
+            }
           </div>}
           {isAdmin && <>
-            <div>Người yêu cầu: <Link to={"/account/customer/1"} style={{ color: "white", textDecoration: "underline" }}>{dataCard.requestName}</Link></div>
-            <div>Ngày yêu cầu: {dayjs(dataCard.created).format("DD/MM/YYYY")}</div>
+            <div>Người yêu cầu: <Link to={"/admin/account/customer/" + dataCard.requestCreateBy} style={{ color: "white", textDecoration: "underline" }}>{dataCard.requestCreateName}</Link></div>
+            <div>Ngày yêu cầu: {dataCard.requestDate && dayjs(dataCard.requestDate).format("DD/MM/YYYY")}</div>
           </>}
         </div>
       </Card >

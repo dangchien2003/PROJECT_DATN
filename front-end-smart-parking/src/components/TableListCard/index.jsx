@@ -129,7 +129,7 @@ const TableListCard = ({ dataSearch }) => {
   };
 
   const handleClickRow = (data) => {
-    navigate(`/card/detail/0/${data.numberCard}`)
+    navigate(`/admin/card/detail/0/${data.id}`)
   };
 
   useEffect(() => {

@@ -105,7 +105,6 @@ const TableActionHistoryCard = () => {
 
   return (
     <Table
-    style={{width: "100%"}}
       columns={columns}
       dataSource={data}
       rowKey="id"

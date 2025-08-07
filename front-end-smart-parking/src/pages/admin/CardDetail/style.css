@@ -1,17 +1,6 @@
-.card-detail {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.card-detail .detail {
-  min-width: 400px;
-  width: 50%;
-}
-
 .card-detail .history {
-  border-left: 1px solid #B9B7B7  ;
+  border-left: 1px solid #B9B7B7;
   min-height: 100vh;
-  flex: 1;
 }
 
 .card-detail .action {
