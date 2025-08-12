@@ -12,6 +12,7 @@ export const PARKING_SERVICE = {
     getBalance: "account/balance",
     infoAccount: "account/info",
     changeStatus: "account/change-status",
+    changeInfo: "account/change-info",
   },
   location: {
     modify: "location/modify",

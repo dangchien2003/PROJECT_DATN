@@ -141,7 +141,6 @@ const LocationSearch = ({ dataSearch }) => {
       )}
     </div>
   );
-  console.log(autoCompleteOptions)
   return (
     <div className='parent-search'>
       <div className='search'>

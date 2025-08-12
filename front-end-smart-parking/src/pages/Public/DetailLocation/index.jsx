@@ -60,7 +60,7 @@ const DetailLocation = () => {
               <div>{getUsedStatus(data?.capacity, data?.used)}</div>
             </div>
             <div>
-              <Link to={"/choose/ticket/1"} className=''>
+              <Link to={`/choose/ticket/${data?.locationId}?name=${data?.name}&partner=${data?.partnerName}`} className=''>
                 <button className='btn-choose br3'>
                   <span>Chọn vé</span>
                 </button>
@@ -91,7 +91,7 @@ const DetailLocation = () => {
       </ChildContent> */}
       <ChildContent backgroundColor='#f0f0f0'>
         <div className='title-box br3'>Gợi ý cho bạn</div>
-        <Recommend id={id}/>
+        <Recommend location={data}/>
       </ChildContent>
     </div>
   )

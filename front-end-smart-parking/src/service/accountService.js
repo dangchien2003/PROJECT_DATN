@@ -33,15 +33,17 @@ export async function getSuggestions(page, size, key) {
 }
 
 export async function getBalance() {
-  return await httpClient.get(PARKING_SERVICE.account.getBalance , {
-  })
+  return await httpClient.get(PARKING_SERVICE.account.getBalance , {})
 }
 
 export async function getInfoAccount() {
-  return await httpClient.get(PARKING_SERVICE.account.infoAccount , {
-  })
+  return await httpClient.get(PARKING_SERVICE.account.infoAccount , {})
 }
 
 export async function changeStatusAccount(accountId, status, reason) {
   return await httpClient.patch(PARKING_SERVICE.account.changeStatus , {accountId, status, reason}, {})
+}
+
+export async function changeInfo(key, newInfo) {
+  return await httpClient.patch(PARKING_SERVICE.account.changeInfo , {key, newInfo}, {})
 }

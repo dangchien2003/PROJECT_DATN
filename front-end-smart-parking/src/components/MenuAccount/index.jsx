@@ -15,7 +15,7 @@ import AccountInfo from "../AccountInfo";
 import SkeletonShimmerLoading from "../Loading/SkeletonShimmerLoading";
 import './style.css';
 
-const MenuAccount = ({ linkAvatar, isCustomer }) => {
+const MenuAccount = ({ linkAvatar }) => {
   const actor = getActor();
   const dispatch = useDispatch();
   const [loadingRemaining, setLoadingRemaining] = useState(true);
