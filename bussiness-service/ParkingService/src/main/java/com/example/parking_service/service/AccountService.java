@@ -26,5 +26,11 @@ public interface AccountService {
 
     ApiResponse<Object> changeStatus(ChangeStatusAccountRequest request);
 
+    ApiResponse<Object> changeName(String newName);
 
+    ApiResponse<Object> changeEmail(String newEmail);
+
+    ApiResponse<Object> changePhoneNumber(String newPhoneNumber);
+
+    ApiResponse<Object> changeSex(String newSex);
 }

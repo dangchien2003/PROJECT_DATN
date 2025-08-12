@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome Email</title>
+</head>
+<body>
+<h2>Xin chào <span th:text="${name}">Người dùng</span>!</h2>
+<p>Cảm ơn bạn đã đăng ký. Mã OTP của bạn là: <strong th:text="${otp}">123456</strong></p>
+<p>Thời gian gửi: <span th:text="${time}">2025-08-11</span></p>
+</body>
+</html>

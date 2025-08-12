@@ -1,4 +1,4 @@
-package com.example.common.dto.request;
+package com.example.common.dto.kafka;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -8,7 +8,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class SendNotifyRequest {
+public class PushNotifyRequest {
     String to;
     String title;
     String content;

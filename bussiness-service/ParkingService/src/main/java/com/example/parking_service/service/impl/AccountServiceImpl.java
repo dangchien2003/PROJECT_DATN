@@ -1,5 +1,7 @@
 package com.example.parking_service.service.impl;
 
+import com.example.common.dto.kafka.PushNotifyRequest;
+import com.example.common.dto.kafka.SendEmail;
 import com.example.common.dto.response.ApiResponse;
 import com.example.common.dto.response.PageResponse;
 import com.example.common.exception.AppException;
@@ -23,6 +25,7 @@ import com.example.parking_service.enums.PublicAccount;
 import com.example.parking_service.mapper.AccountMapper;
 import com.example.parking_service.repository.AccountRepository;
 import com.example.parking_service.service.AccountService;
+import com.example.parking_service.service.NotifyService;
 import com.example.parking_service.utils.context.UserContextHolder;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -36,10 +39,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -49,6 +49,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class AccountServiceImpl implements AccountService {
     AccountRepository accountRepository;
+    NotifyService notifyService;
     AccountMapper accountMapper;
 
     @Override
@@ -343,4 +344,113 @@ public class AccountServiceImpl implements AccountService {
                 .result(accountResponse)
                 .build();
     }
+
+    @Override
+    public ApiResponse<Object> changeName(String newName) {
+        String accountId = UserContextHolder.getContext().getUid();
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
+        if (!account.getStatus().equals(AccountStatus.DANG_HOAT_DONG.getValue())) {
+            throw new AppException(ErrorCode.NO_ACCESS.withMessage("Tài khoản không còn quyền thực hiện hành động này"));
+        }
+        if (account.getFullName().equals(newName)) {
+            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Tên mới không được trùng với hiện tại"));
+        }
+        String oldName = account.getFullName();
+        account.setFullName(newName);
+        DataUtils.setDataAction(account, accountId, false);
+        accountRepository.save(account);
+        try {
+            // gửi mail thông báo
+            Map<String, Object> data = new HashMap<>();
+            data.put("name", newName);
+            data.put("otp", "123");
+            data.put("time", "11111");
+            SendEmail sendEmail = SendEmail.builder()
+                    .to(account.getEmail())
+                    .data(data)
+                    .build();
+            notifyService.sendEmail(sendEmail, "sendEmailChangeInfoSuccess");
+            PushNotifyRequest pushNotifyRequest = PushNotifyRequest.builder()
+                    .to(account.getId())
+                    .title("Thay đổi thông tin thành công")
+                    .content(String.format("Tên của bạn đã được thay đổi từ %s thành %s", oldName, newName))
+                    .link(null)
+                    .actionBy(accountId)
+                    .build();
+            notifyService.pushNotify(pushNotifyRequest);
+        } catch (Exception e) {
+            log.error("send notify error", e);
+        }
+        return ApiResponse.builder().build();
+    }
+
+    @Override
+    public ApiResponse<Object> changeSex(String newGender) {
+        // kiểm tra dữ liệu vào
+        if (!newGender.equals("0") && !newGender.equals("1")) {
+            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Giới tính không xác định"));
+        }
+        Integer newGenderCode = Integer.parseInt(newGender);
+        // lấy dữ liệu tài khoản
+        String accountId = UserContextHolder.getContext().getUid();
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
+        // valid
+        if (!account.getStatus().equals(AccountStatus.DANG_HOAT_DONG.getValue())) {
+            throw new AppException(ErrorCode.NO_ACCESS.withMessage("Tài khoản không còn quyền thực hiện hành động này"));
+        }
+        if (account.getGender().equals(newGenderCode)) {
+            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Giới tính mới không được trùng với hiện tại"));
+        }
+        account.setGender(newGenderCode);
+        DataUtils.setDataAction(account, accountId, false);
+        accountRepository.save(account);
+        return ApiResponse.builder().build();
+    }
+
+    @Override
+    public ApiResponse<Object> changeEmail(String newEmail) {
+        String accountId = UserContextHolder.getContext().getUid();
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
+        // valid
+        if (!account.getStatus().equals(AccountStatus.DANG_HOAT_DONG.getValue())) {
+            throw new AppException(ErrorCode.NO_ACCESS.withMessage("Tài khoản không còn quyền thực hiện hành động này"));
+        }
+        if (newEmail.equalsIgnoreCase(account.getEmail())) {
+            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Email mới không được trùng với hiện tại"));
+        }
+        // kiểm trùng email
+        if (accountRepository.existsByEmail(newEmail)) {
+            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Email đã được sử dụng. Vui lòng điền email khác"));
+        }
+        // lưu cache sự thay đổi
+        // gửi email về email cũ(thông báo email sẽ bị thay đổi)
+        // gửi email về email mới(thông báo xác nhận)
+        return ApiResponse.builder().build();
+    }
+
+    @Override
+    public ApiResponse<Object> changePhoneNumber(String newPhoneNumber) {
+        String accountId = UserContextHolder.getContext().getUid();
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
+        // valid
+        if (!account.getStatus().equals(AccountStatus.DANG_HOAT_DONG.getValue())) {
+            throw new AppException(ErrorCode.NO_ACCESS.withMessage("Tài khoản không còn quyền thực hiện hành động này"));
+        }
+        if (newPhoneNumber.equalsIgnoreCase(account.getPhoneNumber())) {
+            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Số điện thoại mới không được trùng với hiện tại"));
+        }
+        // kiểm trùng email
+        if (accountRepository.existsByPhoneNumber(newPhoneNumber)) {
+            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Số điện thoại đã được sử dụng. Vui lòng điền số điện thoại khác"));
+        }
+        // lưu cache sự thay đổi
+        // gửi email xác nhận thay đổi sđt
+        return ApiResponse.builder().build();
+    }
+
+
 }

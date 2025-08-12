@@ -19,6 +19,8 @@ public class CustomerLocationResponse {
 
     String name;
 
+    String partnerName;
+
     String address;
 
     Double coordinatesX;

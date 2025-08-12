@@ -31,9 +31,14 @@ spring:
           google:
             token-uri: https://oauth2.googleapis.com/token
             user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 auth:
   token:
-    time-live-access-token: 10
+    time-live-access-token: 10000
     time-live-refresh-token: 10080
     secret-key: ${SECRET_KEY}
   check-user-agent: false

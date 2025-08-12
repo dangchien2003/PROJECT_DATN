@@ -1,10 +1,9 @@
 package com.example.parking_service.controller;
 
 import com.example.common.dto.response.ApiResponse;
-import com.example.parking_service.dto.request.ChangePasswordRequest;
-import com.example.parking_service.dto.request.ChangeStatusAccountRequest;
-import com.example.parking_service.dto.request.CreateAccountRequest;
-import com.example.parking_service.dto.request.SearchListAccountRequest;
+import com.example.common.exception.AppException;
+import com.example.common.exception.ErrorCode;
+import com.example.parking_service.dto.request.*;
 import com.example.parking_service.enums.AccountCategory;
 import com.example.parking_service.service.AccountService;
 import jakarta.validation.Valid;
@@ -78,19 +77,29 @@ public class AccountController {
 
     @PatchMapping("changePassword")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'PARTNER', 'CUSTOMER')")
-    ApiResponse<Object> changePassword(@RequestBody ChangePasswordRequest request) {
+    ApiResponse<Object> changePassword(@Valid @RequestBody ChangePasswordRequest request) {
         return accountService.changePassword(request);
     }
 
     @PatchMapping("change-status")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
-    ApiResponse<Object> changeStatus(@RequestBody ChangeStatusAccountRequest request) {
+    ApiResponse<Object> changeStatus(@Valid @RequestBody ChangeStatusAccountRequest request) {
         return accountService.changeStatus(request);
     }
 
-//    @PatchMapping("changeInfo")
-//    @PreAuthorize("hasAnyAuthority('ADMIN', 'PARTNER', 'CUSTOMER')")
-//    ApiResponse<Object> changeInfo(ChangePasswordRequest request) {
-//        return accountService.changePassword(request);
-//    }
+    @PatchMapping("change-info")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'PARTNER', 'CUSTOMER')")
+    ApiResponse<Object> changeInfo(@Valid @RequestBody ChangeInfoRequest request) {
+        if (request.getKey().equals("name")) {
+            return accountService.changeName(request.getNewInfo());
+        } else if (request.getKey().equals("gender")) {
+            return accountService.changeSex(request.getNewInfo());
+        } else if (request.getKey().equals("email")) {
+            return accountService.changeEmail(request.getNewInfo());
+        } else if (request.getKey().equals("phone-number")) {
+            return accountService.changePhoneNumber(request.getNewInfo());
+        } else {
+            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Thông tin không xác định"));
+        }
+    }
 }

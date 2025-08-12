@@ -164,7 +164,12 @@ public class LocationServiceImpl implements LocationService {
         }
         // kết quả
         Location location = optionalLocation.get();
+        // lấy thông tin đối tác
+        Account partner = accountRepository.findById(location.getPartnerId()).orElse(null);
         CustomerLocationResponse response = locationMapper.toCustomerLocationResponse(location);
+        if (partner != null) {
+            response.setPartnerName(partner.getPartnerFullName());
+        }
         // lượng chỗ đã sur dụng
         response.setUsed(random.nextLong(response.getCapacity()));
         return ApiResponse.builder()

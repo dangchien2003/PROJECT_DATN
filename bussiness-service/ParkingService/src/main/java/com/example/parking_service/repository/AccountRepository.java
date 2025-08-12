@@ -86,4 +86,8 @@ public interface AccountRepository extends JpaRepository<Account, String> {
 
     @Query("SELECT a.balance from Account a where a.id = :accountId")
     long getBalance(String accountId);
+
+    boolean existsByEmail(String email);
+
+    boolean existsByPhoneNumber(String phoneNumber);
 }

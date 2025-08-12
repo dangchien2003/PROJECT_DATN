@@ -1,6 +1,6 @@
 package com.example.notify.service.impl;
 
-import com.example.common.dto.request.SendNotifyRequest;
+import com.example.common.dto.kafka.PushNotifyRequest;
 import com.example.common.dto.response.ApiResponse;
 import com.example.common.dto.response.PageResponse;
 import com.example.common.entity.BaseEntity_;
@@ -64,7 +64,7 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public ApiResponse<Object> send(SendNotifyRequest request) {
+    public ApiResponse<Object> send(PushNotifyRequest request) {
         Notification notification = notificationMapper.toNotification(request);
         DataUtils.setDataAction(notification, request.getActionBy(), true);
         notification = notificationRepository.save(notification);

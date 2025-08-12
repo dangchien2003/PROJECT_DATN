@@ -1,6 +1,6 @@
 package com.example.notify.controller.rest;
 
-import com.example.common.dto.request.SendNotifyRequest;
+import com.example.common.dto.kafka.PushNotifyRequest;
 import com.example.common.dto.response.ApiResponse;
 import com.example.notify.service.NotificationService;
 import lombok.AccessLevel;
@@ -17,7 +17,7 @@ public class NotifyRestController {
 
     // nhận thông báo
     @PostMapping("send")
-    ApiResponse<Object> send(@RequestBody SendNotifyRequest request) {
+    ApiResponse<Object> send(@RequestBody PushNotifyRequest request) {
         return notificationService.send(request);
     }
 
