@@ -223,7 +223,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             // gửi mail xác nhận
             Map<String, Object> dataMail = new HashMap<>();
             dataMail.put("email", account.getEmail());
-            dataMail.put("confirmationUrl", domainFE + "/authen/confirm-regis?code=" + code);
+            dataMail.put("confirmationUrl", domainFE + "/confirm-regis?code=" + code);
             dataMail.put("expires", expire + " " + TimeUtil.toUnitNameVN(unit));
             SendEmail sendEmail = SendEmail.builder()
                     .to(account.getEmail())
@@ -267,7 +267,18 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         DataUtils.setDataAction(account, ip, false);
         accountRepository.save(account);
         cacheService.delete("waitConfirm:" + email);
-        return ApiResponse.builder().build();
+        Map<String, Object> dataMail = new HashMap<>();
+        dataMail.put("email", account.getEmail());
+        SendEmail sendEmail = SendEmail.builder()
+                .to(account.getEmail())
+                .data(dataMail)
+                .template("welcome")
+                .subject("Chào mừng bạn đến với Parking")
+                .build();
+        notifyService.sendEmail(sendEmail, "common");
+        return ApiResponse.builder()
+                .result(account.getEmail())
+                .build();
     }
 
     void validateRegisAccountForEP(String email, String password) {

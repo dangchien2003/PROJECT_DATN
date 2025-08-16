@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/auth")
@@ -45,8 +47,10 @@ public class AuthenticationController {
     }
 
     @PostMapping("/confirm-regis")
-    ApiResponse<Object> confirmRegis(@RequestParam("code") String code, HttpServletRequest http) {
+    ApiResponse<Object> confirmRegis(@RequestBody Map<String, String> body, HttpServletRequest http) {
         String ip = HttpUtils.getClientIp(http);
+        String code = body.get("code");
+        code = code.replaceAll(" ", "+");
         return authenticationService.confirmRegis(code, ip);
     }
 
