@@ -5,6 +5,8 @@ import fieldErrorReducer from "./fieldErrorSlice";
 import requireFieldReducer from "./requireFieldSlice";
 import startSearchReducer from "./startSearchSlice";
 import remainingReducer from "./remainingSlice";
+import menuSelectReducer from "./menuSelectSlice";
+import authenReducer from "./authenSlice";
 
 const store = configureStore({
   reducer: {
@@ -14,6 +16,8 @@ const store = configureStore({
     requireField: requireFieldReducer,
     startSearch: startSearchReducer,
     remaining: remainingReducer,
+    menuSelect: menuSelectReducer,
+    authen: authenReducer,
   },
 });
 

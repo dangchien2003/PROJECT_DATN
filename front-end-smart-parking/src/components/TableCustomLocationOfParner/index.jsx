@@ -1,11 +1,13 @@
-import { useState, useEffect } from "react";
-import { Table } from "antd";
-import { fakeDataTable } from "./dataTest";
-import { formatTimestamp } from "@/utils/time";
-import ButtonStatus from "../ButtonStatus";
-import { LOCATION_STATUS, LOCALTION_MODIFY_STATUS } from "@/utils/constants";
+import { getLocationOfPartner } from "@/service/statisticalService";
+import { getDataApi } from "@/utils/api";
+import { LOCATION_STATUS } from "@/utils/constants";
 import { showTotal } from "@/utils/table";
-import { convertDataSelectboxToObject } from "@/utils/object";
+import { formatTimestamp } from "@/utils/time";
+import { toastError } from "@/utils/toast";
+import { Table } from "antd";
+import { useEffect, useState } from "react";
+import ButtonStatus from "../ButtonStatus";
+import { useNavigate } from "react-router-dom";
 
 const columns = [
   {
@@ -40,31 +42,18 @@ const columns = [
   },
 ];
 
-const locaitonModifyStatus = convertDataSelectboxToObject(LOCALTION_MODIFY_STATUS);
-const convertResponseToDataTable = (response, currentPage, pageSize) => {
-  return response.data.map((item, index) => {
+const convertResponseToDataTable = (data, currentPage, pageSize) => {
+  return data.map((item, index) => {
     item.namePrint = (
-      <div>
-        <div style={{ textAlign: "center" }}>{item.id}</div>
-        <div>{`${item.name}`}</div>
-      </div>
+      <div>{`${item.locationId} - ${item.name}`}</div>
     );
     item.coordinatesPrint = (
       <div>
         <div>
-          <>
-            {item.modifyStatus !== null ? (
-              <ButtonStatus
-                label={locaitonModifyStatus[item.modifyStatus].label}
-                color={locaitonModifyStatus[item.modifyStatus].color}
-              />
-            ) : (
-              <ButtonStatus
-                label={LOCATION_STATUS[item.status].label}
-                color={LOCATION_STATUS[item.status].color}
-              />
-            )}
-          </>
+          <ButtonStatus
+            label={LOCATION_STATUS[item.status].label}
+            color={LOCATION_STATUS[item.status].color}
+          />
         </div>
         <div>
           <a
@@ -72,7 +61,7 @@ const convertResponseToDataTable = (response, currentPage, pageSize) => {
             target="_blank"
             rel="noopener noreferrer"
           >
-            {item.coordinates}
+            {item.coordinatesX ? `${item.coordinatesX} x ${item.coordinatesY}` : "Không có tọa độ"}
           </a>
         </div>
       </div>
@@ -88,7 +77,8 @@ const convertResponseToDataTable = (response, currentPage, pageSize) => {
   });
 };
 
-const TableCustomLocationOfParner = () => {
+const TableCustomLocationOfParner = ({ partnerId }) => {
+  const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState({
@@ -96,40 +86,33 @@ const TableCustomLocationOfParner = () => {
     pageSize: 10,
     total: 0,
   });
-  const [sorter, setSorter] = useState({
-    field: "name",
-    order: "ascend",
-  });
 
-  const loadData = (newPagination, sorter) => {
-    if (!sorter.field || !sorter.order) {
-      sorter = {
-        field: "name",
-        order: "ascend",
-      };
-      setSorter(sorter);
-    }
+  const loadData = (newPagination) => {
     setLoading(true);
-    setData([]);
-    setTimeout(() => {
-      setLoading(false);
-      const dataResponse = {
-        data: fakeDataTable,
-        totalElement: 60,
-        totalPage: 10,
-      };
-      setData(
-        convertResponseToDataTable(
-          dataResponse,
-          newPagination.current,
-          newPagination.pageSize
-        )
-      );
-      setPagination({
-        ...newPagination,
-        total: dataResponse.totalElement,
+    setData([])
+    getLocationOfPartner(partnerId, newPagination.current - 1, newPagination.pageSize)
+      .then((response) => {
+        const data = getDataApi(response);
+        const total = data?.totalElements;
+        setData(
+          convertResponseToDataTable(
+            data.data,
+            newPagination.current,
+            newPagination.pageSize
+          )
+        );
+        setPagination({
+          ...newPagination,
+          total: total,
+        });
+      })
+      .catch((error) => {
+        error = getDataApi(error);
+        toastError(error.message)
+      })
+      .finally(() => {
+        setLoading(false);
       });
-    }, 1000);
   };
 
   const handleTableChange = (newPagination, _, sorter) => {
@@ -138,9 +121,13 @@ const TableCustomLocationOfParner = () => {
   };
 
   useEffect(() => {
-    loadData(pagination, sorter);
+    loadData(pagination);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const handleClickRow = (data) => {
+    navigate(`/admin/location/detail/1/${data.locationId}`)
+  };
 
   return (
     <Table
@@ -157,6 +144,11 @@ const TableCustomLocationOfParner = () => {
         showSizeChanger: true,
         pageSizeOptions: ["10", "20", "50", "100"],
         showTotal: showTotal,
+      }}
+      onRow={(record) => {
+        return {
+          onClick: () => handleClickRow(record),
+        };
       }}
     />
   );

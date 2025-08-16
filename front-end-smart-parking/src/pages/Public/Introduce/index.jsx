@@ -3,18 +3,25 @@ import './style.css'
 import bg from "./bg.png"
 import { Button } from 'antd'
 import ChildContent from '@/components/layout/Customer/ChildContent'
+import { useSelectMenu } from '@/hook/useSelectMenu'
+import { MENU_CUSTOMER_ID } from '@/utils/constants'
+import { Link } from 'react-router-dom'
 
 const Introduce = () => {
+  const { select } = useSelectMenu();
+  select(MENU_CUSTOMER_ID.GIOI_THIEU);
   return (
     <div className='intro'>
 
       {/* Banner */}
       <ChildContent>
-        <section className="banner br3" style={{ backgroundImage: `url(${bg})`, backgroundSize: 'contain'}}>
+        <section className="banner br3" style={{ backgroundImage: `url(${bg})`, backgroundSize: 'contain' }}>
           <div className="banner-content">
             <h1>Giải pháp gửi xe thông minh</h1>
             <p>Dễ dàng gửi phương tiện chỉ bằng chiếc điện thoại</p>
-            <Button type="primary" className="btn">Đăng ký ngay</Button>
+            <Link to={"/authen"}>
+              <Button type="primary" className="btn">Đăng ký ngay</Button>
+            </Link>
           </div>
         </section>
       </ChildContent>

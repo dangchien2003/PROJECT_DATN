@@ -4,7 +4,7 @@ import { ACCOUNT_CATEGORY_NAME, GENDER } from "@/utils/constants";
 import { Radio } from "antd";
 import Status from "./Status";
 import { formatCurrency } from "@/utils/number";
-const InfoBox = ({ data }) => {
+const InfoBox = ({ data, onUpdate }) => {
   return (
     <div style={{ width: 500 }}>
       <div>
@@ -45,7 +45,7 @@ const InfoBox = ({ data }) => {
         </div>
         <div className="item">
           <span>Trạng thái: </span>
-          <Status info={{ id: data.id, status: data.status, fullName: data.fullName }} />
+          <Status info={{ id: data.id, status: data.status, fullName: data.fullName }} onChangeSuccess={onUpdate}/>
         </div>
         <div className="item">
           <span>Lý do: </span>

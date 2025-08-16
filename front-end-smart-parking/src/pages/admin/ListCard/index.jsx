@@ -5,35 +5,36 @@ import "./style.css";
 import DividerCustom from "@/components/DividerCustom";
 import { updateObjectValue } from "@/utils/object";
 import TableListCard from "@/components/TableListCard";
+import { useDispatch, useSelector } from "react-redux";
+import { setSearching } from "@/store/startSearchSlice";
 
 const ListCard = () => {
-  const [searchTimes, setSearchTimes] = useState(0);
+  const { isSearching } = useSelector(state => state.startSearch)
+  const dispatch = useDispatch();
   const [dataSearch] = useState({
     numberCard: null,
     emailOwner: null,
     type: null,
-    issuedDateFrom: null,
-    issuedDateTo: null,
+    issuedDate: null,
     requestName: null,
     status: 3,
   });
-  
+
   const propTabStatus = {
     onChange: (status) => {
       updateObjectValue(dataSearch, "status", status);
-      onClickSearch();
+      if (!isSearching) {
+        dispatch(setSearching(true))
+      }
     },
   };
 
-  const onClickSearch = () => {
-    setSearchTimes((pre) => ++pre);
-  };
   return (
     <div>
       <TabStatus {...propTabStatus} />
-      <Search onSearch={onClickSearch} dataSearch={dataSearch} />
+      <Search dataSearch={dataSearch} />
       <DividerCustom style={{ width: "80%" }} />
-      <TableListCard searchTimes={searchTimes} dataSearch={dataSearch} />
+      <TableListCard dataSearch={dataSearch} />
     </div>
   );
 };

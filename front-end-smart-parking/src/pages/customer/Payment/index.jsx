@@ -6,11 +6,11 @@ import StepOrder from '@/pages/customer/OrderTicket/StepOrder';
 import { confirmOrder } from '@/service/orderService';
 import { minusRemaining } from '@/store/remainingSlice';
 import { getDataApi } from '@/utils/api';
-import { lineLoading, PAYMENT_METHOD_VALUE } from '@/utils/constants';
+import { lineLoading, MENU_CUSTOMER_ID } from '@/utils/constants';
 import { deleteCookie, getCookie } from '@/utils/cookie';
 import { formatCurrency } from '@/utils/number';
 import { toastError } from '@/utils/toast';
-import bank from "@image/bank.png";
+// import bank from "@image/bank.png";
 import remainingImg from "@image/remaining.png";
 import vnpay from "@image/vnpay.png";
 import { Col, Row } from 'antd';
@@ -19,6 +19,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import PaymentSuccess from './PaymentSuccess';
 import './style.css';
+import { useSelectMenu } from '@/hook/useSelectMenu';
 
 const Payment = () => {
   const [confirmRemaing, setConfirmRemaining] = useState(false);
@@ -27,24 +28,32 @@ const Payment = () => {
   const remaining = useSelector(state => state.remaining);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const {showLoad, hideLoad} = useLoading();
+  const { showLoad, hideLoad } = useLoading();
+  const { select } = useSelectMenu();
+
+  useEffect(() => {
+    select(MENU_CUSTOMER_ID.DAT_VE);
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
+  }, [])
 
   useEffect(() => {
     const data = getCookie('confirm');
-    if(!data) navigate("/404");
+    if (!data) navigate("/404");
     setDataConfirm(JSON.parse(data));
-  // eslint-disable-next-line react-hooks/exhaustive-deps 
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
   }, [])
 
-  const handleClickMothod = (id) => {
-    switch(id) {
-      case 1: 
-        break;
-      case 2: 
-        break;
-      case 3: 
+  const handleClickMothod = (method) => {
+    switch (method) {
+      case 0:
         onPayRemaining();
         break;
+      case 1:
+        handleAgreePayment(method);
+        break;
+      // case 2:
+      //   handleAgreePayment(method);
+      //   break;
       default:
         toastError("Phương thức không xác định");
     }
@@ -58,33 +67,44 @@ const Payment = () => {
     setConfirmRemaining(false);
   }
 
-  const handleAgreePaymentByRemaining = () => {
+  const handleAgreePayment = (method) => {
     // kiểm tra số dư
-    if(remaining < dataConfirm.total) {
-      toastError("Số dư không đủ");
-      return;
+    if (method === 0) {
+      if (remaining < dataConfirm.total) {
+        toastError("Số dư không đủ");
+        return;
+      }
     }
 
     showLoad(lineLoading);
 
     const dataRequest = {
       orderId: dataConfirm.orderId,
-      paymentMethod: PAYMENT_METHOD_VALUE.SO_DU
+      paymentMethod: method
     }
     confirmOrder(dataRequest).then(response => {
-      dispatch(minusRemaining(dataConfirm.total))
-      setConfirmRemaining(false);
-      setPaymentSuccess(true);
+      if(method === 0) {
+        dispatch(minusRemaining(dataConfirm.total))
+        setConfirmRemaining(false);
+        setPaymentSuccess(true);
+      } else {
+        // chuyển hướng khi thanh toán online
+        const result = getDataApi(response);
+        if(result.urlRedirect) {
+          window.location.href = result.urlRedirect;
+        }
+        localStorage.setItem("wait_payment_ticket", 1)
+      }
       deleteCookie("order");
       deleteCookie("confirm");
     })
-    .catch(e => {
-      const response = getDataApi(e);
-      toastError(response.message);
-    })
-    .finally(() => {
-      hideLoad();
-    })
+      .catch(e => {
+        const response = getDataApi(e);
+        toastError(response.message);
+      })
+      .finally(() => {
+        hideLoad();
+      })
   }
 
   return (
@@ -95,7 +115,15 @@ const Payment = () => {
       <ChildContent className='padding-footer'>
         <h2>Chọn hình thức thanh toán</h2>
         <Row gutter={16}>
-          <Col lg={8} md={24}>
+          <Col lg={12} md={24}>
+            <div className='payment-method'>
+              <div className='img-wrapper'>
+                <img src={remainingImg} alt="remaining" onClick={() => { handleClickMothod(0) }} />
+              </div>
+              <div className='description-method'>Số tiền thanh toán được trừ trực tiếp vào số dư tài khoản của bạn. Không thể thanh toán nếu số dư không đủ.</div>
+            </div>
+          </Col>
+          <Col lg={12} md={24}>
             <div className='payment-method'>
               <div className='img-wrapper'>
                 <img src={vnpay} alt="vnpay" onClick={() => { handleClickMothod(1) }} />
@@ -103,25 +131,21 @@ const Payment = () => {
               <div className='description-method'>Bạn sẽ được dẫn tới cổng thanh toán của VNPAY sau khi nhấn vào biểu tượng trên. Sau đó thực hiện thanh toán qua các phương thức VNPAY cung cấp.</div>
             </div>
           </Col>
+          {/* 
           <Col lg={8} md={24} >
-            <div className='payment-method'>
+            <div className='payment-method di'>
               <div className='img-wrapper'>
-                <img src={bank} alt="vnpay" onClick={() => { handleClickMothod(2) }} />
+                <img src={bank} alt="bank" onClick={() => { handleClickMothod(2) }} className='disable'/>
               </div>
-              <div className='description-method'>Bạn sẽ được dẫn tới trang thanh toán sau khi nhấn vào biểu tượng trên, sau đó tiến thành quét mã QR để thực hiện thanh toán.</div></div>
+              <div className='description-method'>Bạn sẽ được dẫn tới trang thanh toán sau khi nhấn vào biểu tượng trên, sau đó tiến thành quét mã QR để thực hiện thanh toán.</div>
+            </div>
           </Col>
-          <Col lg={8} md={24} >
-            <div className='payment-method'>
-              <div className='img-wrapper'>
-                <img src={remainingImg} alt="remaining" onClick={() => { handleClickMothod(3) }} />
-              </div>
-              <div className='description-method'>Số tiền thanh toán được trừ trực tiếp vào số dư tài khoản của bạn. Không thể thanh toán nếu số dư không đủ.</div></div>
-          </Col>
+          */}
         </Row>
       </ChildContent>
       {confirmRemaing && <PopConfirmCustom title={"Bạn có chắc chắn muốn thanh toán bằng số dư không?"}
-      message={`Số tiền bạn sẽ thanh toán là ${formatCurrency(dataConfirm.total)} Đ`}
-      handleCancel={handleCancelPopup} handleOk={handleAgreePaymentByRemaining} type={"warning"}/>}
+        message={`Số tiền bạn sẽ thanh toán là ${formatCurrency(dataConfirm.total)} Đ`}
+        handleCancel={handleCancelPopup} handleOk={() => {handleAgreePayment(0)}} type={"warning"} />}
       {paymentSuccess && <ModalCustom close={false}>
         <PaymentSuccess />
       </ModalCustom>}

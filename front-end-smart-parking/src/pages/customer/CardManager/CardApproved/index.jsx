@@ -23,7 +23,6 @@ const CardApproved = () => {
     setLoading(true);
     getCardApproved(currentPage, pageSize).then((res) => {
       const response = getDataApi(res);
-      console.log(response)
       setData(response.data);
       // setData([]);
       // setTotalPage(response.totalPages)

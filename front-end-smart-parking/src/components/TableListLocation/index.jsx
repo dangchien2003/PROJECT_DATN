@@ -66,12 +66,10 @@ const mapFieldSort = {
 
 const locaitonModifyStatus = convertDataSelectboxToObject(LOCALTION_MODIFY_STATUS);
 const convertResponseToDataTable = (data, currentPage, pageSize) => {
-    console.log(data)
     return data.map((item, index) => {
       item.locationNamePrint = `${item.locationId} - ${item.name}`;
-      const coordinates = JSON.parse(item?.coordinates)
       item.coordinatesPrint = <a href={item.linkGoogleMap}
-      target="_blank" rel="noreferrer" onClick={(event)=> {event.stopPropagation()}}>{coordinates && `[${coordinates?.x} x ${coordinates?.y}]`}</a>;
+      target="_blank" rel="noreferrer" onClick={(event)=> {event.stopPropagation()}}>{(item.coordinatesX && item.coordinatesY) && `[${item.coordinatesX} x ${item.coordinatesY}]`}</a>;
       item.openDatePrint = formatTimestamp(item.openDate, "DD/MM/YYYY")
       item.statusPrint = (
         <div>
@@ -122,11 +120,11 @@ const TableListLocation = ({dataSearch }) => {
     setData([])
     adminSearch(dataSearch, newPagination.current - 1, newPagination.pageSize, sorter.field, sorter.order)
       .then((response) => {
-        const data = getDataApi(response);
-        const total = data?.totalElements;
+        const result = getDataApi(response);
+        const total = result?.totalElements;
         setData(
           convertResponseToDataTable(
-            data.data,
+            result.data,
             newPagination.current,
             newPagination.pageSize
           )

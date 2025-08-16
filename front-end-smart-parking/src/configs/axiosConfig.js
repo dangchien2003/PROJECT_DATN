@@ -1,30 +1,34 @@
-import axios from 'axios'
 import { API_BASE_URL } from '@/configs/apiConfig'
+import { refreshToken } from '@/service/authenticationService'
+import { getAccessToken, moveAccessToken, setAccessToken } from '@/service/cookieService'
+import { deleteRefeshToken, getRefeshToken, setAccountFullName, setAccountId, setActor, setPartnerFullName, setRefreshToken } from '@/service/localStorageService'
+import { getDataApi } from '@/utils/api'
+import { toastError } from '@/utils/toast'
+import axios from 'axios'
 
 
-// let refreshing = false
+let refreshing = false
 
-// const refreshToken = async () => {
-//   refreshing = true
-//   const response = await axios.post(`${API_BASE_URL}` + API_IDENTITY_SERVICE.refreshToken,
-//     {
-//       // refreshToken: getRefeshToken(),
-//       // accessToken: getAccessToken()
-//     },
-//     {
-//       headers: {
-//         Authorization: undefined
-//       }
-//     })
+export const processRefreshToken = async () => {
+  refreshing = true
+  const response = await refreshToken(getAccessToken(), getRefeshToken());
 
+  if (response.status === 200) {
+    const result = getDataApi(response);
+    setAccessToken(result.accessToken);
+    setRefreshToken(result.refreshToken);
+    setAccountFullName(result?.fullName);
+    setPartnerFullName(result?.partnerFullName);
+    setAccountId(result?.id);
+    setActor(result?.actor)
+  } else {
+    moveAccessToken();
+    deleteRefeshToken();
+    window.location.href = '/authen'
+  }
 
-//   if (response.status === 200) {
-//     const newAccessToken = response.data.result.token
-//     setAccessToken(newAccessToken)
-//   }
-
-//   refreshing = false
-// }
+  refreshing = false
+}
 
 const httpClient = axios.create({
   baseURL: `${API_BASE_URL}`,
@@ -34,62 +38,59 @@ const httpClient = axios.create({
   timeout: 60000
 })
 
-// httpClient.interceptors.request.use(
-//   (config) => {
-//     const token = getAccessToken()
-//     if (token) {
-//       config.headers['Authorization'] = `Bearer ${token}`
-//     }
-//     return config
-//   },
-//   (error) => {
-//     return Promise.reject(error)
-//   }
-// )
+httpClient.interceptors.request.use(
+  (config) => {
+    const token = getAccessToken()
+    if (!config.headers['Authorization'] && !config.skipAuth && token) {
+      config.headers['Authorization'] = `Bearer ${token}`
+    }
+    return config
+  },
+  (error) => {
+    return Promise.reject(error)
+  }
+)
 
-// httpClient.interceptors.response.use(
-//   (response) => response,
-//   async (error) => {
-//     const originalRequest = error.config
-//     const status = error.response?.status
-//     const code = error.response?.data?.code
+httpClient.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config
+    const status = error.response?.status
+    const code = error.response?.data?.code
 
-//     if (status === 401 && code === 1041 && !originalRequest._retry) {
+    if (status === 401 && code === 1041 && !originalRequest._retry) {
+      originalRequest._retry = true
+      try {
+        if (!refreshing) {
+          await processRefreshToken()
+        }
 
-//       originalRequest._retry = true
-//       try {
-//         if (!refreshing) {
-//           await refreshToken()
-//         }
+        await waitForRefreshing()
 
-//         await waitForRefreshing()
+        originalRequest.headers['Authorization'] = 'Bearer ' + getAccessToken()
 
-//         originalRequest.headers['Authorization'] = 'Bearer ' + getAccessToken()
+        return httpClient(originalRequest)
+      } catch (refreshError) {
+        toastError("Phiên làm việc đã hết hạn")
+        window.location.href = '/authen'
+      }
+    } else if (status === 401 && code === 1041) {
+      window.location.href = '/authen'
+    }
+    return Promise.reject(error)
+  }
+)
 
-//         return httpClient(originalRequest)
-//       } catch (refreshError) {
-//         window.location.href = '/login?message=Phiên làm việc hết hạn'
-//       }
-//     } else {
-//       const response = error.response.data
-//       const message = messageError[response.code]
-//       toastError(message ? message : response.message)
-//     }
-
-//     return Promise.reject(error)
-//   }
-// )
-
-// const waitForRefreshing = () => {
-//   return new Promise((resolve) => {
-//     const interval = setInterval(() => {
-//       if (!refreshing) {
-//         clearInterval(interval)
-//         resolve()
-//       }
-//     }, 100)
-//   })
-// }
+const waitForRefreshing = () => {
+  return new Promise((resolve) => {
+    const interval = setInterval(() => {
+      if (!refreshing) {
+        clearInterval(interval)
+        resolve()
+      }
+    }, 100)
+  })
+}
 
 
 export default httpClient

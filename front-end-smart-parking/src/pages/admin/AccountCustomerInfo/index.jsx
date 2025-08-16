@@ -10,6 +10,7 @@ import { toastError } from "@/utils/toast";
 const AccountCustomerInfo = () => {
   const { id } = useParams();
   const [data, setData] = useState({});
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -26,6 +27,10 @@ const AccountCustomerInfo = () => {
     };
     fetchData();
   }, [id])
+
+  const handleUpdateData = (newData) => {
+    setData(newData);
+  }
   return (
     <div>
       {/* định danh tài khoản */}
@@ -48,7 +53,7 @@ const AccountCustomerInfo = () => {
         />
         <div style={{ paddingLeft: 16, display: "flex", flexWrap: "wrap" }}>
           {/* Thông tin tài khoản */}
-          <InfoBox data={data}/>
+          <InfoBox data={data} onUpdate={handleUpdateData}/>
           {/* Quyền của tài khoản */}
           {/* tạm thời không cần */}
           {/* <PermissionBox /> */}
@@ -56,7 +61,7 @@ const AccountCustomerInfo = () => {
       </div>
       {/* báo cáo - thống kê */}
       <div>
-        <StatisticalReport />
+        <StatisticalReport info={data}/>
       </div>
     </div>
   );

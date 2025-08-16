@@ -6,14 +6,20 @@ import { Button, Input } from 'antd'
 import React, { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import ideaImg from '@image/idea.png'
+import { changeInfo } from '@/service/accountService'
+import { getDataApi } from '@/utils/api'
+import { toastError, toastSuccess } from '@/utils/toast'
+import { useLoading } from '@/hook/loading'
 
-const EditName = ({ oldData, itemKey }) => {
+const key = "name";
+const EditName = ({ oldData, itemKey, onSuccess }) => {
   const dispatch = useDispatch();
   const { pushMessage, reset, deleteKey } = useMessageError();
   const keyFocus = useSelector((state) => state.focus);
   const fieldError = useSelector(state => state.fieldError);
   const [newValue, setNewValue] = useState(oldData);
   const inputRef = useRef();
+  const { showLoad, hideLoad } = useLoading();
 
   useEffect(() => {
     reset();
@@ -62,6 +68,15 @@ const EditName = ({ oldData, itemKey }) => {
     if (!validateInput(fieldError, [itemKey], dispatch)) {
       return
     }
+    showLoad();
+    // call api chỉnh sửa
+    changeInfo(key, newValue).then(() => {
+      toastSuccess("Thay đổi thông tin thành công");
+      onSuccess("fullName", newValue)
+    }).catch(e => {
+      const response = getDataApi(e);
+      toastError(response.message);
+    }).finally(hideLoad)
   }
   return (
     <div className='edit-name form-edit-account'>

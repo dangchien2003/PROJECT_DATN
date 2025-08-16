@@ -14,6 +14,7 @@ import { useLoading } from "@/hook/loading"
 import { cancelRememberUser, getRememberUser, setAccessToken, setRememberUser } from "@/service/cookieService"
 import { setAccountFullName, setAccountId, setActor, setPartnerFullName, setRefreshToken } from "@/service/localStorageService"
 import { isNullOrUndefined } from "@/utils/data"
+import { authened } from "@/store/authenSlice"
 
 const keyAuthenError = "password"
 const FormLogin = ({ data }) => {
@@ -53,6 +54,7 @@ const FormLogin = ({ data }) => {
     }
     showLoad({ type: 2 })
     login(dataAuthen).then((response) => {
+      dispatch(authened(true));
       const result = getDataApi(response);
       setAccessToken(result?.accessToken);
       setRefreshToken(result?.refreshToken);
@@ -70,7 +72,7 @@ const FormLogin = ({ data }) => {
       } else if (result?.actor === "admin") {
         navigate("/admin");
       } else if (result?.actor === "customer") {
-        navigate("/register")
+        navigate("/list/ticket")
       } else {
         navigate("/404")
       }

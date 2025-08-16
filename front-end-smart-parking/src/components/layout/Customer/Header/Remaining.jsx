@@ -27,7 +27,7 @@ const Remaining = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps 
   }, [])
   return (
-    <div class="remaining">
+    <div className="remaining">
       <div className='label'>Số dư:</div>
       <div className='box-quantity'>
         {loading && <SkeletonShimmerLoading />}

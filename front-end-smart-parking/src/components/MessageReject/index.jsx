@@ -8,6 +8,10 @@ const MessageReject = ({data, message = "Yêu cầu sẽ chuyển sang trạng t
   const {pushMessage, deleteKey} = useMessageError();
   const handleChange = (e) => {
     const newValue = e.target.value;
+    processValue(newValue);
+  }
+
+  const processValue = (newValue) => {
     if(newValue === "" || newValue === null) {
       pushMessage(itemKey, "Vui lòng nhập lý do từ chối")
     }else {
@@ -19,11 +23,15 @@ const MessageReject = ({data, message = "Yêu cầu sẽ chuyển sang trạng t
     setValue(newValue);
     data.value = newValue;
   }
+
+  const handleBLur = () => {
+    processValue(data.value?.trim());
+  }
   return (
     <div>
       <div>{message}</div>
       <div style={{ fontStyle: "italic", color: "black" }}>Lý do từ chối</div>
-      <textarea style={{ width: 300, height: 100, fontSize: 14, padding: 4 }} onChange={handleChange} value={value}></textarea>
+      <textarea style={{ width: 300, height: 100, fontSize: 14, padding: 4 }} onChange={handleChange} onBlur={handleBLur} value={value}></textarea>
       <InputError itemKey={itemKey} key={itemKey}/>
     </div>
   )

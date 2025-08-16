@@ -76,6 +76,7 @@ const baseColumns = [
 
 const mapFieldSort = {
   openDatePrint: "openDate",
+  namePrint: "name" 
 }
 
 const locaitonModifyStatus = convertDataSelectboxToObject(LOCALTION_MODIFY_STATUS);
@@ -115,10 +116,8 @@ const TableListLocationPartner = ({ dataSearch }) => {
   const convertResponseToDataTable = (data, currentPage, pageSize) => {
     return data.map((item, index) => {
       var idShow = item.locationId;
-      if(dataSearch.tab === 3 || dataSearch.tab === 4) {
+      if(dataSearch.tab === 3 || dataSearch.tab === 4 || dataSearch.tab === 5) {
         idShow = item.modifyId;
-      } else if(dataSearch.tab === 5) {
-        idShow = item.id;
       }
       item.namePrint = `${idShow} - ${item.name}`;
       item.coordinatesPrint = <a href={item.linkGoogleMap}
@@ -205,10 +204,8 @@ const TableListLocationPartner = ({ dataSearch }) => {
 
   const handleClickRow = (data) => {
     let id = data.locationId;
-    if(dataSearch.tab === 3 || dataSearch.tab === 4) {
+    if(dataSearch.tab === 3 || dataSearch.tab === 4 || dataSearch.tab === 5) {
       id = data.modifyId;
-    } else if(dataSearch.tab === 5) {
-      id = data.id;
     }
     navigate(`/partner/location/detail/${dataSearch.tab}/${id}`)
   };

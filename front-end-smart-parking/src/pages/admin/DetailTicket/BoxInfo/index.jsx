@@ -117,7 +117,7 @@ const BoxInfo = ({data, isWaitApprove, widthPage}) => {
         <div className="box-ticket-detail">
         <BoxTextField label="Tên vé" value={data?.name} disabled={true} colorGray={false} key={"tv"}/>
         <BoxTextField label="Lần chỉnh sửa" value={data?.modifyCount} disabled={true} colorGray={false} key={"lcs"}/>
-        <BoxTextField label="Thời gian phát hành" value={formatTimestamp(data?.releasedTime, "DD/MM/YYYY HH:mm")} disabled={true} colorGray={false} key={"tgph"}/>
+        <BoxTextField label="Thời gian phát hành" value={formatTimestamp(data.id ? data.timeAppliedEdit: data?.releasedTime, "DD/MM/YYYY HH:mm")} disabled={true} colorGray={false} key={"tgph"}/>
         <BoxTextField label="Phương tiện sử dụng" value={VEHICLE[data?.vehicle] ? VEHICLE[data?.vehicle].name : null} disabled={true} colorGray={false} key={"ptsd"}/>
         <BoxTextField label="Trạng thái" value={ticketStatus[data?.status].label} disabled={true} colorGray={false} key={"tt"}/>
         <BoxTextField label="Lý do thay đổi trạng thái" value={data?.reason} disabled={true} colorGray={false} key={"ldtdtt"}/>
@@ -125,10 +125,10 @@ const BoxInfo = ({data, isWaitApprove, widthPage}) => {
       </div>
         {/* price */}
         <div>
-          <BoxPrice label="Mở bán theo giờ" checked={data?.timeSlot} price={data?.price?.time?.price} />
-          <BoxPrice label="Mở bán theo ngày" checked={data?.daySlot} price={data?.price?.day?.price} />
-          <BoxPrice label="Mở bán theo tuần" checked={data?.weekSlot} price={data?.price?.week?.price} />
-          <BoxPrice label="Mở bán theo tháng" checked={data?.monthSlot} price={data?.price?.month?.price} />
+          <BoxPrice label="Mở bán theo giờ" checked={data?.priceTimeSlot} price={data?.priceTimeSlot} />
+          <BoxPrice label="Mở bán theo ngày" checked={data?.priceDaySlot} price={data?.priceDaySlot} />
+          <BoxPrice label="Mở bán theo tuần" checked={data?.priceWeekSlot} price={data?.priceWeekSlot} />
+          <BoxPrice label="Mở bán theo tháng" checked={data?.priceMonthSlot} price={data?.priceMonthSlot} />
           </div>
         {/* địa điểm áp dụng */}
         <LocationUseTicket ids={data.locationUse}/>

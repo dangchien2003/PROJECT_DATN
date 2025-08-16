@@ -1,3 +1,8 @@
+# Bật websocket
+
+Tìm kiếm và bỏ comment cụm từ WebSocket.connect();
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

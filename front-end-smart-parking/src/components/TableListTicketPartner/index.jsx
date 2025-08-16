@@ -84,7 +84,7 @@ const mapFieldSort = {
 const ticketModifyStatus = convertDataSelectboxToObject(TICKET_MODIFY_STATUS);
 const ticketStatus = convertDataSelectboxToObject(TICKET_STATUS);
 const TableListTicketPartner = ({ dataSearch }) => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const { isSearching } = useSelector(state => state.startSearch)
   const dispatch = useDispatch();
   const [data, setData] = useState([]);

@@ -1,0 +1,19 @@
+.history-request-additional-card {
+  margin-top: 16px;
+}
+
+.history-request-additional-card .ant-table {
+  font-size: 16px !important;
+}
+
+.history-request-additional-card .ant-table .success {
+  color: green;
+}
+
+.history-request-additional-card .ant-table .cancel {
+  color: red;
+}
+
+.history-request-additional-card .ant-table .cancel .reason {
+  font-size: 14px;
+}

@@ -56,7 +56,7 @@ const CardNotify = ({ setCountNotify, onClose }) => {
       getAllNotify(page).then(response => {
         const result = getDataApi(response);
         maxPage = response.data.result.totalPages;
-        setDatas(pre => [...pre, ...result])
+        setDatas(pre => [...pre, ...result.data])
       }).catch(error => {
         const dataError = getDataApi(error);
         toastError(dataError.message);

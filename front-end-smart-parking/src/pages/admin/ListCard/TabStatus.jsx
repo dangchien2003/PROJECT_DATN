@@ -25,7 +25,7 @@ const items = [
 const TabStatus = ({ ...prop }) => {
   return (
     <div className="tabs-ticket">
-      <Tabs defaultActiveKey={1} items={items} {...prop} />
+      <Tabs defaultActiveKey={3} items={items} {...prop} />
     </div>
   );
 };

@@ -1,31 +1,13 @@
 import { useLoading } from "@/hook/loading";
 import { getListDetail } from "@/service/locationService";
 import { getDataApi } from "@/utils/api";
-import { isNullOrUndefined } from "@/utils/data";
+import { convertDataMap, isNullOrUndefined } from "@/utils/data";
 import { toastError } from "@/utils/toast";
 import { Avatar, Button, Empty, List } from "antd";
 import { useEffect, useState } from "react";
 import { FaMapMarkedAlt } from "react-icons/fa";
 import ModalCustom from "../ModalCustom";
 import Map from "../Map";
-
-const convertDataMap = (data = []) => {
-  return data.filter(item => !isNullOrUndefined(item.coordinates)).map((item) => {
-    return {
-      position: [item.coordinates?.x, item.coordinates?.y],
-      popupContent: (
-        <a
-          href={item.linkGoogleMap}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ color: "black", textDecoration: "none" }}
-        >
-          {item.name}
-        </a>
-      ),
-    }
-  })
-}
 
 const LocationUseTicket = ({ ids }) => {
   const [data, setData] = useState([]);

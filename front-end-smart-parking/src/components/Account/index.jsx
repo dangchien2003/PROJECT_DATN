@@ -1,7 +1,10 @@
 import React from "react";
 import MenuAccount from "../MenuAccount";
+import { getAccountFullName, getPartnerFullName } from "@/service/localStorageService";
 
 const Account = () => {
+  const partnerName = getPartnerFullName();
+  const accountName = getAccountFullName();
   return (
     <div style={{ padding: "0 10px", display: "flex", paddingLeft: 48 }}>
       <MenuAccount
@@ -14,7 +17,7 @@ const Account = () => {
         className="truncated-text"
         style={{ lineHeight: "50px", paddingLeft: 5, width: 130, fontSize: 18 }}
       >
-        Lê Đăng Chiến
+        {partnerName || accountName}
       </div>
     </div>
   );

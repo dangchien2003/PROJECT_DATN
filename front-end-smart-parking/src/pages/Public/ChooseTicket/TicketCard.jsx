@@ -3,14 +3,20 @@ import { formatCurrency } from '@/utils/number';
 import bgTicket from '@image/cut2.png';
 import { Button, Flex, Radio, Tooltip } from 'antd';
 import { useRef } from 'react';
+import { useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 
 const TicketCard = ({ data }) => {
   const ref = useRef();
   const navigate = useNavigate();
+  const authened = useSelector(state => state.authen);
 
   const handleClickOrder = () => {
-    navigate("/order/" + data.ticketId)
+    if(!authened) {
+      navigate("/authen");
+    } else {
+      navigate("/order/" + data.ticketId);
+    }
   }
 
   const order = "Đặt vé";

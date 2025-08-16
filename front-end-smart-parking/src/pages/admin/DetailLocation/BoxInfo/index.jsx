@@ -175,7 +175,7 @@ const BoxInfo = ({ data, isModify, widthPage, tab }) => {
             <BoxTextArea label={"Lý do từ chối"} value={data?.reasonReject} rows={5} disabled={true} />
           </div>}
           <BoxTextField label="Tên địa điểm" value={data.name} disabled={true} colorGray={false} key={"tdd"} />
-          <BoxTextField label={<span>Toạ độ {data.linkGoogleMap && <a href={data.linkGoogleMap} target="_blank" rel="noreferrer">google map</a>}</span>} value={data.coordinates ? `${data.coordinates?.x} x ${data?.coordinates?.y}` : null} disabled={true} colorGray={false} key={"tđ"} />
+          <BoxTextField label={<span>Toạ độ {data.linkGoogleMap && <a href={data.linkGoogleMap} target="_blank" rel="noreferrer">google map</a>}</span>} value={(data.coordinatesX && data.coordinatesY) ? `${data.coordinatesX} x ${data?.coordinatesY}` : null} disabled={true} colorGray={false} key={"tđ"} />
           <BoxTextField label="Lần chỉnh sửa" value={data.modifyCount} disabled={true} colorGray={false} key={"lcs"} />
           <BoxTextField label="Sức chứa" value={data.capacity} disabled={true} colorGray={false} key={"sc"} />
           <BoxTextField label="Mở cửa lúc" value={data.openTime} disabled={true} colorGray={false} key={"mc"} />

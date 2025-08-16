@@ -13,11 +13,19 @@ import { Link, useParams } from 'react-router-dom'
 import Recommend from './Recommend'
 import './style.css'
 import { customerDetail } from '@/service/locationService'
+import { useSelectMenu } from '@/hook/useSelectMenu'
+import { MENU_CUSTOMER_ID } from '@/utils/constants'
 
 const DetailLocation = () => {
   const { id } = useParams();
   const [data, setData] = useState(null);
   const {showLoad, hideLoad} = useLoading();
+  const { select } = useSelectMenu();
+
+  useEffect(() => {
+    select(MENU_CUSTOMER_ID.DAT_VE);
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
+  }, [])
 
   useEffect(() => {
     showLoad({type: 2});
@@ -52,7 +60,7 @@ const DetailLocation = () => {
               <div>{getUsedStatus(data?.capacity, data?.used)}</div>
             </div>
             <div>
-              <Link to={"/choose/ticket/1"} className=''>
+              <Link to={`/choose/ticket/${data?.locationId}?name=${data?.name}&partner=${data?.partnerName}`} className=''>
                 <button className='btn-choose br3'>
                   <span>Chọn vé</span>
                 </button>
@@ -83,7 +91,7 @@ const DetailLocation = () => {
       </ChildContent> */}
       <ChildContent backgroundColor='#f0f0f0'>
         <div className='title-box br3'>Gợi ý cho bạn</div>
-        <Recommend id={id}/>
+        <Recommend location={data}/>
       </ChildContent>
     </div>
   )

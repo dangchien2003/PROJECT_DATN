@@ -1,9 +1,8 @@
 import { Tabs } from "antd";
-import React from "react";
-import Ticket from "./Ticket";
-import Map from "@/components/Map";
-import SalesTicket from "./SalesTicket";
 import Location from "./Location";
+import MapAllLoaction from "./MapAllLoaction";
+import SalesTicket from "./SalesTicket";
+import Ticket from "./Ticket";
 
 const StatisticalReport = ({ info }) => {
   const items = [
@@ -25,7 +24,7 @@ const StatisticalReport = ({ info }) => {
     {
       key: "4",
       label: "Bản đồ",
-      children: <Map style={{ height: 500 }} />,
+      children: <MapAllLoaction info={info}/>,
     },
   ];
   return (

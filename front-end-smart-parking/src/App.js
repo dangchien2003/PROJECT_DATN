@@ -1,47 +1,47 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import AdminLayout from "./components/layout/admin";
-import DashBoardAdmin from "./pages/admin/DashBoardAdmin";
-import AccountCustomerList from "./pages/admin/AccountCustomerList";
-import AccountCustomerInfo from "./pages/admin/AccountCustomerInfo";
 import FullPageLoading from "./components/FullPageLoading";
-import PartnerList from "./pages/admin/PartnerList";
-import PartnerInfo from "./pages/admin/PartnerInfo";
-import CreateAccount from "./pages/admin/CreateAccount";
-import ListTicket from "./pages/admin/ListTicket";
+import AdminLayout from "./components/layout/admin";
+import CustomerLayout from "./components/layout/Customer";
 import NotFound from "./components/layout/NotFound";
-import RequestApproveTicket from "./pages/admin/RequestApproveTicket";
+import PartnerLayout from "./components/layout/partner";
+import AccountCustomerInfo from "./pages/admin/AccountCustomerInfo";
+import AccountCustomerList from "./pages/admin/AccountCustomerList";
+import CardDetail from "./pages/admin/CardDetail";
+import CreateAccount from "./pages/admin/CreateAccount";
+import DashBoardAdmin from "./pages/admin/DashBoardAdmin";
+import DetailLocation from "./pages/admin/DetailLocation";
 import DetailTicket from "./pages/admin/DetailTicket";
-import DetailTicketCustomer from "./pages/customer/DetailTicket";
-import DetailTicketPartner from "./pages/partner/DetailTicket";
 import ListCard from "./pages/admin/ListCard";
 import ListCardWaitApprove from "./pages/admin/ListCardWaitApprove";
-import MapAllLocation from "./pages/admin/MapAllLocation";
 import ListLocation from "./pages/admin/ListLocation";
 import ListLocationWaitApprove from "./pages/admin/ListLocationWaitApprove";
+import ListTicket from "./pages/admin/ListTicket";
+import MapAllLocation from "./pages/admin/MapAllLocation";
+import PartnerInfo from "./pages/admin/PartnerInfo";
+import PartnerList from "./pages/admin/PartnerList";
+import RequestApproveTicket from "./pages/admin/RequestApproveTicket";
+import Authen from "./pages/Authen";
 import ComponentDemo from "./pages/ComponentDemo";
-import CardDetail from "./pages/admin/CardDetail";
-import DetailLocation from "./pages/admin/DetailLocation";
-import DetailLocationPublic from "./pages/Public/DetailLocation";
-import DetailTicketPublic from "./pages/Public/DetailTicket";
-import PartnerLayout from "./components/layout/partner";
-import DashboardPartner from "./pages/partner/DashBoardPartner";
-import AddLocation from "./pages/partner/AddLocation";
-import ListLocationPartner from "./pages/partner/ListLocation";
-import DetailLocationPartner from "./pages/partner/DetailLocation";
-import AddTicket from "./pages/partner/AddTicket";
-import ListTicketPartner from "./pages/partner/ListTicket";
-import Authen from "./pages/Authen"
-import CustomerLayout from "./components/layout/Customer";
-import Introduce from "./pages/Public/Introduce";
-import ChooseLocation from "./pages/Public/ChooseLocation";
-import ChooseTicket from "./pages/Public/ChooseTicket";
-import OrderTicket from "./pages/customer/OrderTicket";
+import CardManager from "./pages/customer/CardManager";
 import ConfirmOrder from "./pages/customer/ConfirmOrder";
+import Deposit from "./pages/customer/Deposit";
+import DetailTicketCustomer from "./pages/customer/DetailTicket";
+import OrderTicket from "./pages/customer/OrderTicket";
 import Payment from "./pages/customer/Payment";
 import TicketList from "./pages/customer/TicketList";
-import CardManager from "./pages/customer/CardManager";
-import Deposit from "./pages/customer/Deposit";
 import TransactionHistory from "./pages/customer/TransactionHistory";
+import AddLocation from "./pages/partner/AddLocation";
+import AddTicket from "./pages/partner/AddTicket";
+import DashboardPartner from "./pages/partner/DashBoardPartner";
+import DetailLocationPartner from "./pages/partner/DetailLocation";
+import DetailTicketPartner from "./pages/partner/DetailTicket";
+import ListLocationPartner from "./pages/partner/ListLocation";
+import ListTicketPartner from "./pages/partner/ListTicket";
+import ChooseLocation from "./pages/Public/ChooseLocation";
+import ChooseTicket from "./pages/Public/ChooseTicket";
+import DetailLocationPublic from "./pages/Public/DetailLocation";
+import DetailTicketPublic from "./pages/Public/DetailTicket";
+import Introduce from "./pages/Public/Introduce";
 
 const router = createBrowserRouter([
   {
@@ -49,18 +49,18 @@ const router = createBrowserRouter([
     element: <CustomerLayout />,
     children: [
       { path: "/", element: <Introduce /> },
-      { path: "/choose/location", element: <ChooseLocation />},
-      { path: "/choose/ticket/:locationId", element: <ChooseTicket />},
-      { path: "/location/:id", element: <DetailLocationPublic />},
-      { path: "/ticket/:id", element: <DetailTicketPublic />},
-      { path: "/order/confirm", element: <ConfirmOrder />},
-      { path: "/order/:id", element: <OrderTicket />},
-      { path: "/payment/:id", element: <Payment />},
-      { path: "/list/ticket", element: <TicketList />},
-      { path: "/ticket/detail/:id", element: <DetailTicketCustomer />},
-      { path: "/card", element: <CardManager />},
-      { path: "/deposit", element: <Deposit />},
-      { path: "/account/transaction", element: <TransactionHistory />},
+      { path: "/choose/location", element: <ChooseLocation /> },
+      { path: "/choose/ticket/:locationId", element: <ChooseTicket /> },
+      { path: "/location/:id", element: <DetailLocationPublic /> },
+      { path: "/ticket/:id", element: <DetailTicketPublic /> },
+      { path: "/order/confirm", element: <ConfirmOrder /> },
+      { path: "/order/:id", element: <OrderTicket /> },
+      { path: "/payment/:id", element: <Payment /> },
+      { path: "/list/ticket", element: <TicketList /> },
+      { path: "/ticket/detail/:id", element: <DetailTicketCustomer /> },
+      { path: "/card", element: <CardManager /> },
+      { path: "/deposit", element: <Deposit /> },
+      { path: "/account/transaction", element: <TransactionHistory /> },
     ]
   },
   { path: "authen", element: <Authen /> },
@@ -91,26 +91,26 @@ const router = createBrowserRouter([
       { path: "location/wait-approve", element: <ListLocationWaitApprove /> },
       { path: "location/map/all", element: <MapAllLocation /> },
     ],
-  }, 
+  },
   {
     path: "/partner",
     element: <PartnerLayout />,
     children: [
       { path: "demo", element: <ComponentDemo /> },
       { index: true, element: <DashboardPartner /> },
-      { path: "location/add", element: <AddLocation isModify={false}/> },
-      { path: "location/edit/:id", element: <AddLocation isModify={true}/> },
+      { path: "location/add", element: <AddLocation isModify={false} /> },
+      { path: "location/edit/:id", element: <AddLocation isModify={true} /> },
       { path: "location/list", element: <ListLocationPartner /> },
       { path: "location/detail/:tab/:id", element: <DetailLocationPartner /> },
       { path: "account/partner/:id", element: <PartnerInfo /> },
       { path: "account/customer/:id", element: <AccountCustomerInfo /> },
 
-      { path: "ticket/add", element: <AddTicket waitRelease={false}/> },
-      { path: "ticket/edit/:id", element: <AddTicket waitRelease={false}/> },
+      { path: "ticket/add", element: <AddTicket waitRelease={false} /> },
+      { path: "ticket/edit/:id", element: <AddTicket waitRelease={false} /> },
       { path: "ticket/list", element: <ListTicketPartner /> },
       { path: "ticket/detail/:isWaitRelease/:id", element: <DetailTicketPartner /> },
     ]
-  }, 
+  },
   {
     path: "/*",
     element: <NotFound />,

@@ -2,7 +2,7 @@ import ChildContent from '@/components/layout/Customer/ChildContent';
 import { customerGetHistory } from '@/service/transactionService';
 import { setSearching } from '@/store/startSearchSlice';
 import { getDataApi } from '@/utils/api';
-import { TYPE_TRANSACTION } from '@/utils/constants';
+import { MENU_CUSTOMER_ID, TYPE_TRANSACTION } from '@/utils/constants';
 import { formatCurrency } from '@/utils/number';
 import { convertDataSelectboxToObject, convertObjectToDataSelectBox } from '@/utils/object';
 import { showTotal } from '@/utils/table';
@@ -16,6 +16,8 @@ import { IoTimer } from 'react-icons/io5';
 import { useDispatch, useSelector } from 'react-redux';
 import Search from './Search';
 import './style.css';
+import { useSelectMenu } from '@/hook/useSelectMenu';
+import { TiWarning } from 'react-icons/ti';
 
 const baseColumns = [
   {
@@ -81,7 +83,13 @@ const TransactionHistory = () => {
   const [dataSearch] = useState({
     type: null,
     transactionDate: null
-  })
+  });
+  const { select } = useSelectMenu();
+
+  useEffect(() => {
+    select(MENU_CUSTOMER_ID.LICH_SU_GIAO_DICH);
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
+  }, [])
 
   const convertResponseToDataTable = (data, currentPage, pageSize) => {
     return data.map((item, index) => {
@@ -104,13 +112,26 @@ const TransactionHistory = () => {
         </div>
       } else if (item.status === 2) {
         item.statusPrint = <div className='success'>
-          <IoMdCheckmarkCircleOutline /> Hoàn thành
+          <IoMdCheckmarkCircleOutline /> Đã thanh toán
         </div>
       } else if (item.status === 3) {
         item.statusPrint = <div className='cancel'>
-          <ImCancelCircle /> Thất bại
+          <ImCancelCircle /> Giao dịch hết hạn
+        </div>
+      } else if (item.status === 4) {
+        item.statusPrint = <div className='cancel'>
+          <ImCancelCircle /> Huỷ giao dịch
+        </div>
+      } else if (item.status === 5) {
+        item.statusPrint = <div className='cancel'>
+          <ImCancelCircle /> Lỗi giao dịch
+        </div>
+      } else if (item.status === 6) {
+        item.statusPrint = <div className='cancel'>
+          <TiWarning /> Giao dịch thành công nhưng không thể xử lý
         </div>
       }
+
 
       // phương thức thanh toán
       item.paymentMethodPrint = null;

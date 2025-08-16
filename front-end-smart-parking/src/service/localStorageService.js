@@ -39,6 +39,10 @@ export function getAccountFullName() {
   return localStorage.getItem(KEY.accountFullname);
 }
 
+export function deleteAccountFullName() {
+  return localStorage.removeItem(KEY.accountFullname);
+}
+
 export function setPartnerFullName(name) {
   if (isNullOrUndefined(name) || name === "") {
     return;
@@ -48,6 +52,10 @@ export function setPartnerFullName(name) {
 
 export function getPartnerFullName() {
   return localStorage.getItem(KEY.partnerFullname);
+}
+
+export function deletePartnerFullName() {
+  return localStorage.removeItem(KEY.partnerFullname);
 }
 
 export function setAccountId(id) {
@@ -64,4 +72,8 @@ export function setActor(actor) {
 
 export function getActor() {
   return localStorage.getItem(KEY.actor);
+}
+
+export function deleteActor() {
+  return localStorage.removeItem(KEY.actor);
 }

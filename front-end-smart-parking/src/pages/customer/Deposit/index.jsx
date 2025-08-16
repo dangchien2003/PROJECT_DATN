@@ -3,10 +3,10 @@ import ModalCustom from '@/components/ModalCustom';
 import { useLoading } from '@/hook/loading';
 import { requestDeposit } from '@/service/depositService';
 import { getDataApi } from '@/utils/api';
-import { lineLoading } from '@/utils/constants';
+import { lineLoading, MENU_CUSTOMER_ID } from '@/utils/constants';
 import { formatCurrency, parseFormattedCurrency } from '@/utils/number';
 import { toastError } from '@/utils/toast';
-import bank from "@image/bank-icon.png";
+// import bank from "@image/bank-icon.png";
 import { Button, Flex, Input } from 'antd';
 import { useEffect, useState } from 'react';
 import { TiWarning } from "react-icons/ti";
@@ -16,6 +16,7 @@ import ItemMethod from './ItemMethod';
 import ItemRecommend from './ItemRecommend';
 import './style.css';
 import DepositComplete from './DepositComplete';
+import { useSelectMenu } from '@/hook/useSelectMenu';
 
 const Deposit = () => {
   const [depositSuccess, setDepositSuccess] = useState(null);
@@ -25,8 +26,10 @@ const Deposit = () => {
   const { showLoad, hideLoad } = useLoading();
   const keyRequesting = "deposit_requesting";
   const [param] = useSearchParams();
+  const {select} = useSelectMenu();
 
   useEffect(() => {
+    select(MENU_CUSTOMER_ID.NAP_TIEN);
     if(param.get("vnp_TransactionStatus")) {
       const depositRequestingSto = localStorage.getItem(keyRequesting);
       if(depositRequestingSto === "1" && param.get("vnp_TransactionStatus") === "00") {
@@ -114,7 +117,7 @@ const Deposit = () => {
             </div> */}
             <h3>Phương thức thanh toán</h3>
             <ItemMethod icon={"https://cdn.haitrieu.com/wp-content/uploads/2022/10/Icon-VNPAY-QR.png"} name={"Thanh toán VNPAY"} method={"vnpay"} value={1} choosed={method} onClick={handleClickMethod} />
-            <ItemMethod icon={bank} name={"Thanh toán ngân hàng"} method={"bank"} value={2} choosed={method} onClick={handleClickMethod} />
+            {/* <ItemMethod icon={bank} name={"Thanh toán ngân hàng"} method={"bank"} value={2} choosed={method} onClick={handleClickMethod} /> */}
           </div>
           <div className="action">
             <Button variant='solid' type='primary' onClick={handleDepositRequest} disabled={(!numberCoin || numberCoin < 10000 || !method)}>THỰC HIỆN</Button>

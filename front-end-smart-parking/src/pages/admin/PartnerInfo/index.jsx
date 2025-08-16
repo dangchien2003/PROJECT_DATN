@@ -10,22 +10,29 @@ import "./style.css"
 const PartnerInfo = () => {
   const { id } = useParams();
   const [data, setData] = useState({});
-    useEffect(() => {
-      const fetchData = async () => {
-        try {
-          const response = await detailPartner({ id });
-          if (response) {
-            setData(getDataApi(response));
-          }
-        } catch (error) {
-          const result = getDataApi(error);
-          toastError(result.message);  
-        } finally {
-          
+  // gắn id
+  data.id = id;
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await detailPartner({ id });
+        if (response) {
+          setData(getDataApi(response));
         }
-      };
-      fetchData();
-    }, [id])
+      } catch (error) {
+        const result = getDataApi(error);
+        toastError(result.message);
+      } finally {
+
+      }
+    };
+    fetchData();
+  }, [id])
+
+  const handleUpdateData = (newData) => {
+    setData(newData);
+  }
   return (
     <div>
       {/* định danh tài khoản */}
@@ -44,14 +51,14 @@ const PartnerInfo = () => {
         {/* <Avatar linkImage={null} /> */}
         <div style={{ paddingLeft: 16, display: "flex", flexWrap: "wrap" }}>
           {/* Thông tin tài khoản */}
-          <InfoBox data={data}/>
+          <InfoBox data={data} onUpdate={handleUpdateData}/>
           {/* Quyền của tài khoản */}
           {/* <PermissionBox /> */}
         </div>
       </div>
       {/* báo cáo - thống kê */}
       <div>
-        <StatisticalReport />
+        <StatisticalReport info={data} />
       </div>
     </div>
   );

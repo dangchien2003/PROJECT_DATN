@@ -17,18 +17,27 @@ import dayjs from 'dayjs';
 import { toastError } from '@/utils/toast';
 import LoadingComponent from '@/components/LoadingComponent';
 import { formatCurrency } from '@/utils/number';
+import { useSelectMenu } from '@/hook/useSelectMenu';
+import { MENU_CUSTOMER_ID } from '@/utils/constants';
 
 const ConfirmOrder = () => {
   const navigate = useNavigate();
   const [orderInfo, setOrderInfo] = useState({});
   const [bill, setBill] = useState(null);
+  const { select } = useSelectMenu();
+
+  useEffect(() => {
+    select(MENU_CUSTOMER_ID.DAT_VE);
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
+  }, [])
+
   useEffect(() => {
     const order = getCookie("order");
     if (!order) {
       navigate("/404")
     }
-      // data ui
-      var data = null;
+    // data ui
+    var data = null;
     try {
       // data ui
       data = JSON.parse(order);
@@ -58,7 +67,7 @@ const ConfirmOrder = () => {
         const response = getDataApi(e);
         toastError(response.message);
       })
-  // eslint-disable-next-line react-hooks/exhaustive-deps 
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
   }, [])
 
   const handleNext = () => {
@@ -135,7 +144,7 @@ const ConfirmOrder = () => {
                     <div className='action'>
                       <Button onClick={handleNext} color="primary" variant="solid">Thực hiện thanh toán</Button>
                     </div>
-                  </div> : <LoadingComponent transparent/>}
+                  </div> : <LoadingComponent transparent />}
                 </div>
               </div>
             </div>

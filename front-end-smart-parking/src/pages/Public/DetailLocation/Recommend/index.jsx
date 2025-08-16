@@ -8,7 +8,7 @@ import LoadingComponent from '@/components/LoadingComponent';
 import { customerSearch } from '@/service/ticketService';
 import { Empty } from 'antd';
 
-const Recommend = ({ id }) => {
+const Recommend = ({ location }) => {
   const [loadding, setLoading] = useState(false);
   const [data, setData] = useState([]);
 
@@ -16,14 +16,12 @@ const Recommend = ({ id }) => {
     setData([]);
     setLoading(true);
     const dataSearch = {
-      locationId: id,
+      locationId: location?.locationId,
     }
     customerSearch(dataSearch, 0, 5)
       .then((response) => {
-        const data = getDataApi(response);
-        setData(
-          data
-        );
+        const result = getDataApi(response);
+        setData(result.data);
       })
       .catch((error) => {
         error = getDataApi(error);
@@ -37,7 +35,7 @@ const Recommend = ({ id }) => {
   useEffect(() => {
     loadData();
     // eslint-disable-next-line react-hooks/exhaustive-deps 
-  }, []);
+  }, [location]);
   return (
     <div className='recomment-wrapper br3 pr'>
       {loadding && <LoadingComponent transparent />}
@@ -45,7 +43,7 @@ const Recommend = ({ id }) => {
         (!loadding && data !== null && data.length > 0) &&
         <>
           <div className='view-all'>
-            <Link className='no-style hover' to={"/choose/ticket/1"}>{">> "}Xem tất cả</Link>
+            <Link className='no-style hover' to={`/choose/ticket/${location?.locationId}?name=${location?.name}&partner=${location.partnerName}`}>{">> "}Xem tất cả</Link>
           </div>
           <div className='recommend'>
             {

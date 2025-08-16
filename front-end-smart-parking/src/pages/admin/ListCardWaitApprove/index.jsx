@@ -5,34 +5,35 @@ import "./style.css";
 import DividerCustom from "@/components/DividerCustom";
 import { updateObjectValue } from "@/utils/object";
 import TableListCardWaitApprove from "@/components/TableListCardWaitApprove";
+import { useDispatch, useSelector } from "react-redux";
+import { setSearching } from "@/store/startSearchSlice";
 
 const ListCardWaitApprove = () => {
-  const [searchTimes, setSearchTimes] = useState(0);
+  const { isSearching } = useSelector(state => state.startSearch)
+  const dispatch = useDispatch();
   const [dataSearch] = useState({
     emailOwner: null,
     type: null,
-    issuedDateFrom: null,
-    issuedDateTo: null,
-    requestName: null,
+    requestDate: null,
     status: 0,
+    requestName: null
   });
   
   const propTabStatus = {
     onChange: (status) => {
       updateObjectValue(dataSearch, "status", status);
-      onClickSearch();
+      if(!isSearching) {
+        dispatch(setSearching(true))
+      }
     },
   };
 
-  const onClickSearch = () => {
-    setSearchTimes((pre) => ++pre);
-  };
   return (
     <div>
       <TabStatus {...propTabStatus} />
-      <Search onSearch={onClickSearch} dataSearch={dataSearch} />
+      <Search dataSearch={dataSearch} />
       <DividerCustom style={{ width: "80%" }} />
-      <TableListCardWaitApprove searchTimes={searchTimes} dataSearch={dataSearch} />
+      <TableListCardWaitApprove dataSearch={dataSearch} />
     </div>
   );
 };

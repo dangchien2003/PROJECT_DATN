@@ -47,7 +47,7 @@ const SelectBoxLabelDash = ({
       if(newValue === null || newValue === undefined) {
         pushMessage(itemKey, "Không được để trống trường " + label?.toLowerCase())
       } else {
-        deleteKey(itemKey)
+        deleteKey(itemKey);
       }
     }
 

@@ -10,7 +10,9 @@ export const PARKING_SERVICE = {
     detailPartner: "account/partner/detail",
     getSuggestions: "account/suggestions",
     getBalance: "account/balance",
-    infoAccount: "account/info"
+    infoAccount: "account/info",
+    changeStatus: "account/change-status",
+    changeInfo: "account/change-info",
   },
   location: {
     modify: "location/modify",
@@ -26,6 +28,8 @@ export const PARKING_SERVICE = {
     getMapLocation: "location/list/coordinates",
     getAllRecordIsActive: "location/all/is-active",
     listDetail: "location/list/detail",
+    statisticsOfUsedPositions: "location/statistics-of-used-positions",
+    getSuggestions: "location/suggestions",
   },
   ticket: {
     modify: "ticket/modify",
@@ -52,6 +56,7 @@ export const PARKING_SERVICE = {
   authen: {
     login: "auth/sign-in",
     checkAccess: "auth/check-token", 
+    refreshToken: "auth/refresh", 
     registration: "auth/registration",
     forget: "auth/forget",
     confirmForget: "auth/forget/confirm",
@@ -60,6 +65,18 @@ export const PARKING_SERVICE = {
     customerAdditional: "card/request/additional",
     customerCardApprove: "card/approved",
     customerHistoryRequest: "card/history/request",
+    customerHistoryRequestOfCustomer: "card/history/request-of",
+    adminSearch: "card/admin/search",
+    adminSearchRequestAdd: "card/admin/search/add",
+    rejectRequest: "card/reject-request",
+    approveRequest: "card/approve-request/:id",
+    active: "card/active",
+    lock: "card/lock/:id",
+    permanentLock: "card/permanent-lock/:id",
+    linkTicket: "card/link-ticket",
+    unlinkTicket: "card/cancel-link-ticket/:id",
+    madeCard: "card/made-card/:id",
+    detailCardByadmin: "card/admin/detail"
   },
   order: {
     createOrder: "order",
@@ -72,6 +89,17 @@ export const PARKING_SERVICE = {
     requestDeposit: "deposit",
     getHistory: "deposit/history",
     cancelRequest: "deposit/cancel/:id",
+  },
+  statistical: {
+    getTicketOfCustomer: "statistical/ticket-of-customer",
+    getTransactionOfCustomer: "statistical/transaction-of-customer",
+    getTicketOfPartner: "statistical/ticket-of-partner",
+    StatisticalTicketWaitReleaseOfPartner: "statistical/ticket-wait-approve-of-partner",
+    getAllLocationOfPartner: "location/list/coordinates-of-partner",
+    getListTicketPurchaseOfPartner: "statistical/ticket-purchased-of-partner",
+    getLocationOfPartner: "statistical/location-of-partner",
+    getLocationWaitReleaseOfPartner: "statistical/location-wait-release-of-partner",
+    getLocationWaitApproveOfPartner: "statistical/location-wait-approve-of-partner",
   }
 }
 
