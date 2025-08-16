@@ -1,5 +1,6 @@
 package com.example.parking_service.service.impl;
 
+import com.example.common.dto.kafka.SendEmail;
 import com.example.common.dto.response.ApiResponse;
 import com.example.common.enums.TimeUnit;
 import com.example.common.exception.AppException;
@@ -7,6 +8,7 @@ import com.example.common.exception.ErrorCode;
 import com.example.common.utils.DataUtils;
 import com.example.common.utils.RandomUtils;
 import com.example.common.utils.RegexUtils;
+import com.example.common.utils.TimeUtil;
 import com.example.parking_service.client.GoogleProfileClient;
 import com.example.parking_service.client.GoogleTokenClient;
 import com.example.parking_service.dto.other.DataForget;
@@ -20,7 +22,9 @@ import com.example.parking_service.entity.Account;
 import com.example.parking_service.enums.*;
 import com.example.parking_service.repository.AccountRepository;
 import com.example.parking_service.service.AuthenticationService;
+import com.example.parking_service.service.CacheService;
 import com.example.parking_service.service.CryptoService;
+import com.example.parking_service.service.NotifyService;
 import com.example.parking_service.utils.UserUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.JOSEException;
@@ -38,6 +42,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.text.ParseException;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @Service
@@ -47,17 +52,22 @@ import java.util.*;
 @Slf4j
 public class AuthenticationServiceImpl implements AuthenticationService {
     // tạm lưu cache tại đây
-    Map<String, Account> cacheAccount = new HashMap<>();
-    Map<String, DataOtp> cacheAccountForget = new HashMap<>();
     AccountRepository accountRepository;
     GoogleTokenClient googleTokenClient;
     GoogleProfileClient googleProfileClient;
     UserUtils userUtils;
     ObjectMapper objectMapper;
     CryptoService cryptoService;
+    CacheService cacheService;
+    NotifyService notifyService;
+
 
     String redirectUriForRegister = "http://localhost:3000/register";
     String redirectUriForAuth = "http://localhost:3000/authen";
+
+    @NonFinal
+    @Value("${DOMAIN_FE}")
+    String domainFE;
 
     @NonFinal
     @Value("${spring.security.oauth2.client.registration.google.client-id}")
@@ -97,7 +107,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public ApiResponse<Object> confirmForget(ConfirmForgetRequest request, String ip) {
-        DataOtp dataOtp = cacheAccountForget.get(request.getId());
+        String keyCache = "forgetAccount-" + request.getId();
+        DataOtp dataOtp = cacheService.get(keyCache, DataOtp.class);
         if (dataOtp == null) {
             throw new AppException(ErrorCode.NOT_FOUND.withMessage("Yêu cầu đã hết hạn. Vui lòng thao tác lại"));
         }
@@ -121,7 +132,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         account.setPermitChangePassword(PermitChangePassword.CHUA_THAY_DOI);
         DataUtils.setDataAction(account, ip, false);
         accountRepository.save(account);
-        cacheAccountForget.remove(request.getId());
+        cacheService.delete(keyCache);
+        // gửi mail otp
+        Map<String, Object> dataMail = new HashMap<>();
+        dataMail.put("newPassword", newPassword);
+        SendEmail sendEmail = SendEmail.builder()
+                .to(account.getEmail())
+                .data(dataMail)
+                .build();
+        notifyService.sendEmail(sendEmail, "sendNewPassword");
         return ApiResponse.builder()
                 .result(account.getEmail())
                 .build();
@@ -145,6 +164,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             category = UsernameCategory.EMAIL;
         }
         // data response
+        ChronoUnit chronoUnit = TimeUnit.valueOf(timeUnitForget).getUnit();
         DataForget dataForget = DataForget.builder()
                 .id(account.getId())
                 .expire(LocalDateTime.now().plus(timeQualityForget, TimeUnit.valueOf(timeUnitForget).getUnit()))
@@ -152,14 +172,24 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .length(lengthOtpForget)
                 .build();
         // cata cache
+        String otp = RandomUtils.randomNumber(lengthOtpForget);
         DataOtp dataOtp = DataOtp.builder()
-                .otp(RandomUtils.randomNumber(lengthOtpForget))
+                .otp(otp)
                 .ip(ip)
                 .dataForget(dataForget)
                 .build();
         // cache
-        cacheAccountForget.put(account.getId(), dataOtp);
-        System.out.println(dataOtp);
+        cacheService.putWithTTL("forgetAccount-" + account.getId(), dataOtp, timeQualityForget, TimeUtil.toTimeUnit(chronoUnit));
+        // gửi mail otp
+        Map<String, Object> dataMail = new HashMap<>();
+        dataMail.put("email", account.getEmail());
+        dataMail.put("otp", otp);
+        dataMail.put("expires", timeQualityForget + " " + TimeUtil.toUnitNameVN(chronoUnit));
+        SendEmail sendEmail = SendEmail.builder()
+                .to(account.getEmail())
+                .data(dataMail)
+                .build();
+        notifyService.sendEmail(sendEmail, "forgetAccount");
         return ApiResponse.builder()
                 .result(dataForget)
                 .build();
@@ -170,12 +200,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         if (request.getType() == null) {
             throw new AppException(ErrorCode.INVALID_DATA);
         }
+        Account account = null;
         String email = null;
         if (request.getType().equals(AuthenType.USERNAME_PASSWORD)) {
             email = request.getEmail();
             String password = request.getPassword();
             validateRegisAccountForEP(email, password);
-            Account account = Account.builder()
+            account = Account.builder()
                     .email(email)
                     .password(password)
                     .category(AccountCategory.KHACH_HANG.getValue())
@@ -184,16 +215,59 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     .build();
             DataUtils.setDataAction(account, ip, true);
             // cache
-            cacheAccount.put(account.getEmail(), account);
-            // gửi mail kafka
+            long expire = 10;
+            ChronoUnit unit = TimeUnit.m.getUnit();
+            cacheService.putWithTTL("waitConfirm:" + account.getEmail(), account, expire, TimeUtil.toTimeUnit(unit));
+            // mã hoá key
+            String code = cryptoService.encrypt(account.getEmail());
+            // gửi mail xác nhận
+            Map<String, Object> dataMail = new HashMap<>();
+            dataMail.put("email", account.getEmail());
+            dataMail.put("confirmationUrl", domainFE + "/authen/confirm-regis?code=" + code);
+            dataMail.put("expires", expire + " " + TimeUtil.toUnitNameVN(unit));
+            SendEmail sendEmail = SendEmail.builder()
+                    .to(account.getEmail())
+                    .data(dataMail)
+                    .template("confirmCreateAccount")
+                    .subject("Xác nhận đăng ký tài khoản")
+                    .build();
+            notifyService.sendEmail(sendEmail, "common");
         } else if (request.getType().equals(AuthenType.GOOGLE)) {
             System.out.println("tạo tk bằng google");
+            // gửi mail
+            Map<String, Object> dataMail = new HashMap<>();
+            dataMail.put("email", account.getEmail());
+            SendEmail sendEmail = SendEmail.builder()
+                    .to(account.getEmail())
+                    .data(dataMail)
+                    .template("welcome")
+                    .subject("Chào mừng bạn đến với Parking")
+                    .build();
+            notifyService.sendEmail(sendEmail, "common");
         } else {
             throw new AppException(ErrorCode.INVALID_DATA);
         }
         return ApiResponse.builder()
                 .result(email)
                 .build();
+    }
+
+    @Override
+    public ApiResponse<Object> confirmRegis(String code, String ip) {
+        String email;
+        try {
+            email = cryptoService.decrypt(code);
+        } catch (AppException e) {
+            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Mã xác nhận không hợp lệ"));
+        }
+        Account account = cacheService.get("waitConfirm:" + email, Account.class);
+        if (account == null) {
+            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Yêu cầu đã hết hạn xử lý. Vui lòng thực hiện tạo lại từ đầu"));
+        }
+        DataUtils.setDataAction(account, ip, false);
+        accountRepository.save(account);
+        cacheService.delete("waitConfirm:" + email);
+        return ApiResponse.builder().build();
     }
 
     void validateRegisAccountForEP(String email, String password) {
@@ -212,7 +286,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new AppException(ErrorCode.INVALID_DATA.withMessage("Mật khẩu phải lớn hơn 8 ký tự"));
         }
         // kiểm tra cache
-        if (cacheAccount.get(email) != null) {
+        if (cacheService.get("waitConfirm:" + email, Account.class) != null) {
             throw new AppException(ErrorCode.CONFLICT_DATA.withMessage("Tài khoản đang chờ xác thực. Vui lòng kiểm tra hòm thư"));
         }
         // kiểm tra sự tồn tại db
@@ -351,9 +425,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new AppException(ErrorCode.INVALID_DATA);
         }
         // kiểm tra tài khoản
-        account = cacheAccount.get(request.getUsername());
+        account = cacheService.get("waitConfirm:" + request.getUsername(), Account.class);
         if (account != null) {
             if (!this.checkPasswordAccount(request.getPassword(), account.getPassword())) {
+                // trả về null và thông báo tk mật khẩu không chính xác
                 return null;
             } else {
                 throw new AppException(ErrorCode.NO_ACCESS.withMessage("Tài khoản đang chờ xác thực. Vui lòng kiểm tra hòm thư"));
@@ -364,6 +439,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             account = accounts.getFirst();
             // kiểm tra mật khâu
             if (!this.checkPasswordAccount(request.getPassword(), account.getPassword())) {
+                // trả về null và thông báo tk mật khẩu không chính xác
                 return null;
             }
         }

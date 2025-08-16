@@ -15,6 +15,11 @@ public interface AccountRepository extends JpaRepository<Account, String> {
 
     List<Account> findAllByEmailOrPhoneNumber(String email, String phoneNumber);
 
+    @Query("""
+                select a.id from Account a where a.email = :email or a.phoneNumber = :phoneNumber
+            """)
+    List<String> getIdAccountByEmailOrPhoneNumber(String email, String phoneNumber);
+
     @Query("SELECT a FROM Account a WHERE a.category = :category " +
             "AND (:partnerFullName IS NULL OR a.partnerFullName LIKE CONCAT('%', :partnerFullName, '%') ESCAPE '!') " +
             "AND (:partnerEmail IS NULL OR a.partnerEmail LIKE CONCAT('%', :partnerEmail, '%') ESCAPE '!') " +

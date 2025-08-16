@@ -14,4 +14,6 @@ import java.util.Map;
 public class SendEmail {
     String to;
     Map<String, Object> data;
+    String template;
+    String subject;
 }

@@ -1,12 +1,74 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Welcome Email</title>
+    <title>Chào mừng bạn đến với Parking</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            background-color: #004aad;
+            color: #ffffff;
+            text-align: center;
+            padding: 24px;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .content {
+            padding: 30px;
+            color: #333333;
+            line-height: 1.6;
+        }
+
+        .content p {
+            margin: 12px 0;
+        }
+
+        .button {
+            display: inline-block !important;
+            margin-top: 20px !important;;
+            padding: 12px 24px !important;;
+            background-color: #004aad !important;;
+            color: white !important;;
+            text-decoration: none !important;;
+            border-radius: 5px !important;;
+            font-weight: bold !important;;
+        }
+    </style>
 </head>
 <body>
-<h2>Xin chào <span th:text="${name}">Người dùng</span>!</h2>
-<p>Cảm ơn bạn đã đăng ký. Mã OTP của bạn là: <strong th:text="${otp}">123456</strong></p>
-<p>Thời gian gửi: <span th:text="${time}">2025-08-11</span></p>
+<div class="container">
+    <div class="header">Chào mừng bạn đến với Parking</div>
+    <div class="content">
+        <p>Kính chào <strong th:text="${email}">Người dùng</strong>,</p>
+        <p>Chúng tôi xin trân trọng thông báo rằng quá trình đăng ký tài khoản của bạn tại Parking đã được hoàn tất
+            thành công.</p>
+        <p>Bạn có thể đăng nhập và bắt đầu sử dụng các dịch vụ của chúng tôi ngay hôm nay.</p>
+        <p>
+            <a class="button" href="https://project-datn-git-front-end-dangchien2003s-projects.vercel.app/authen">Đăng
+                nhập ngay</a>
+        </p>
+        <p>Nếu cần hỗ trợ hoặc có bất kỳ thắc mắc nào, vui lòng liên hệ với chúng tôi qua địa chỉ email:
+            <a href="mailto:chienka0003@gmail.com">giaiphapparking@gmail.com</a>.
+        </p>
+        <p>Chúng tôi hy vọng sẽ mang đến cho bạn trải nghiệm tốt nhất và mong được đồng hành cùng bạn trong thời gian
+            tới.</p>
+    </div>
+</div>
 </body>
 </html>

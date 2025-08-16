@@ -36,6 +36,13 @@ spring:
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+  cache:
+    type: redis
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
 auth:
   token:
     time-live-access-token: 10000
@@ -44,7 +51,7 @@ auth:
   check-user-agent: false
   forget:
     length-otp: 6
-    time-quality: 1
+    time-quality: 5
     time-unit: m
 crypto:
   AES:

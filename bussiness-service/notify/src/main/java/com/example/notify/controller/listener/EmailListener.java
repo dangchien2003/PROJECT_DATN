@@ -20,11 +20,41 @@ public class EmailListener {
     SendEmailService sendEmailService;
 
     @KafkaListener(topics = "sendEmailChangeInfoSuccess", groupId = "my-group")
-    public void listen(SendEmail payload) {
+    public void sendEmailChangeInfoSuccess(SendEmail payload) {
         log.info("run sendEmailChangeInfoSuccess: {}", payload);
         EmailContext emailContext = EmailContext.builder()
                 .template("welcome")
                 .subject("Chào mừng")
+                .build();
+        sendEmailService.sendEmail(payload, emailContext);
+    }
+
+    @KafkaListener(topics = "forgetAccount", groupId = "my-group")
+    public void forgetAccount(SendEmail payload) {
+        log.info("run forgetAccount: {}", payload);
+        EmailContext emailContext = EmailContext.builder()
+                .template("forgetPassword")
+                .subject("Quên mật khẩu")
+                .build();
+        sendEmailService.sendEmail(payload, emailContext);
+    }
+
+    @KafkaListener(topics = "sendNewPassword", groupId = "my-group")
+    public void sendNewPassword(SendEmail payload) {
+        log.info("run sendNewPassword: {}", payload);
+        EmailContext emailContext = EmailContext.builder()
+                .template("newPassword")
+                .subject("Cấp lại mật khẩu đăng nhập")
+                .build();
+        sendEmailService.sendEmail(payload, emailContext);
+    }
+
+    @KafkaListener(topics = "common", groupId = "my-group")
+    public void common(SendEmail payload) {
+        log.info("run common: {}", payload);
+        EmailContext emailContext = EmailContext.builder()
+                .template(payload.getTemplate())
+                .subject(payload.getSubject())
                 .build();
         sendEmailService.sendEmail(payload, emailContext);
     }

@@ -16,6 +16,8 @@ public interface AuthenticationService {
 
     ApiResponse<Object> registrationAccount(RegistrationAccount request, String ip);
 
+    ApiResponse<Object> confirmRegis(String code, String ip);
+
     ApiResponse<Object> forgetAccount(String username, String ip);
 
     ApiResponse<Object> confirmForget(ConfirmForgetRequest request, String ip);

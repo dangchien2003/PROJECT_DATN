@@ -145,6 +145,16 @@ public class AccountServiceImpl implements AccountService {
             removePartnerInfo(accountEntity);
         }
         accountRepository.save(accountEntity);
+        // gửi mail
+        Map<String, Object> dataMail = new HashMap<>();
+        dataMail.put("email", accountEntity.getEmail());
+        SendEmail sendEmail = SendEmail.builder()
+                .to(accountEntity.getEmail())
+                .data(dataMail)
+                .template("welcome")
+                .subject("Chào mừng bạn đến với Parking")
+                .build();
+        notifyService.sendEmail(sendEmail, "common");
         return ApiResponse.builder()
                 .build();
     }
@@ -353,7 +363,7 @@ public class AccountServiceImpl implements AccountService {
         if (!account.getStatus().equals(AccountStatus.DANG_HOAT_DONG.getValue())) {
             throw new AppException(ErrorCode.NO_ACCESS.withMessage("Tài khoản không còn quyền thực hiện hành động này"));
         }
-        if (account.getFullName().equals(newName)) {
+        if (account.getFullName() != null && account.getFullName().equals(newName)) {
             throw new AppException(ErrorCode.INVALID_DATA.withMessage("Tên mới không được trùng với hiện tại"));
         }
         String oldName = account.getFullName();
@@ -400,7 +410,7 @@ public class AccountServiceImpl implements AccountService {
         if (!account.getStatus().equals(AccountStatus.DANG_HOAT_DONG.getValue())) {
             throw new AppException(ErrorCode.NO_ACCESS.withMessage("Tài khoản không còn quyền thực hiện hành động này"));
         }
-        if (account.getGender().equals(newGenderCode)) {
+        if (account.getGender() != null && account.getGender().equals(newGenderCode)) {
             throw new AppException(ErrorCode.INVALID_DATA.withMessage("Giới tính mới không được trùng với hiện tại"));
         }
         account.setGender(newGenderCode);

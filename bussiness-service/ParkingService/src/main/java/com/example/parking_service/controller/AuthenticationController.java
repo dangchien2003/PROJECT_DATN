@@ -44,6 +44,13 @@ public class AuthenticationController {
         return authenticationService.registrationAccount(request, ip);
     }
 
+    @PostMapping("/confirm-regis")
+    ApiResponse<Object> confirmRegis(@RequestParam("code") String code, HttpServletRequest http) {
+        String ip = HttpUtils.getClientIp(http);
+        return authenticationService.confirmRegis(code, ip);
+    }
+
+
     @PostMapping("/forget")
     ApiResponse<Object> forgetAccount(@RequestBody AuthenticationRequest request, HttpServletRequest http) {
         String ip = HttpUtils.getClientIp(http);
