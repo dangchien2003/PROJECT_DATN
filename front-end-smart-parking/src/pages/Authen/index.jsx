@@ -13,6 +13,7 @@ import FormForget from './FormForget';
 import FormLogin from './FormLogin';
 import FormRegister from './FormRegister';
 import './style.css';
+import ConfirmRegisAccount from './ConfirmRegisAccount';
 
 const Authen = () => {
   const location = useLocation();
@@ -39,6 +40,10 @@ const Authen = () => {
       resetToken();
     } else if (location.pathname === "/forget"){
       setAction("FORGET");
+      setAuthened(false);
+      resetToken();
+    }else if (location.pathname === "/confirm-regis"){
+      setAction("CONFIRM_REGIS");
       setAuthened(false);
       resetToken();
     } else {
@@ -130,6 +135,17 @@ const Authen = () => {
                   transition={{ duration: 0.5 }}
                 >
                   <FormForget data={data}/>
+                </motion.div>
+              </AnimatePresence>}
+              {action === "CONFIRM_REGIS" && <AnimatePresence>
+                <motion.div
+                  key="forget-form"
+                  initial={{ opacity: 0, y: 50 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -50 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <ConfirmRegisAccount/>
                 </motion.div>
               </AnimatePresence>}
             </>

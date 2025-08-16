@@ -65,6 +65,7 @@ const router = createBrowserRouter([
   },
   { path: "authen", element: <Authen /> },
   { path: "register", element: <Authen /> },
+  { path: "confirm-regis", element: <Authen /> },
   { path: "forget", element: <Authen /> },
   {
     path: "/admin",

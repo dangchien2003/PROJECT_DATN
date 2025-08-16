@@ -58,6 +58,7 @@ export const PARKING_SERVICE = {
     checkAccess: "auth/check-token", 
     refreshToken: "auth/refresh", 
     registration: "auth/registration",
+    confirmRegis: "auth/confirm-regis",
     forget: "auth/forget",
     confirmForget: "auth/forget/confirm",
   },
