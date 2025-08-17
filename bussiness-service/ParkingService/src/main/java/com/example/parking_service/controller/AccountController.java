@@ -75,7 +75,7 @@ public class AccountController {
     }
 
 
-    @PatchMapping("changePassword")
+    @PatchMapping("change-password")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'PARTNER', 'CUSTOMER')")
     ApiResponse<Object> changePassword(@Valid @RequestBody ChangePasswordRequest request) {
         return accountService.changePassword(request);

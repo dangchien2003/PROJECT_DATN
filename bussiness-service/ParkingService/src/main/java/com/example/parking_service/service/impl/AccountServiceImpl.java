@@ -39,6 +39,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -321,9 +322,9 @@ public class AccountServiceImpl implements AccountService {
         if (request.getNewPassword().equals(request.getOldPassword())) {
             throw new AppException(ErrorCode.INVALID_DATA.withMessage("Mật khẩu mới không được trùng với hiện tại"));
         }
-        if (!RegexUtils.checkData(request.getNewPassword(), RegexUtils.REGEX_PASSWORD)) {
-            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Mật khẩu phải chứa ký tự hoa, ký tự thường, ký tự số, ký tự đặc biệt"));
-        }
+//        if (!RegexUtils.checkData(request.getNewPassword(), RegexUtils.REGEX_PASSWORD)) {
+//            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Mật khẩu phải chứa ký tự hoa, ký tự thường, ký tự số, ký tự đặc biệt"));
+//        }
 
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND.withMessage("Tài khoản không xác định")));
@@ -334,6 +335,15 @@ public class AccountServiceImpl implements AccountService {
         account.setPassword(request.getNewPassword());
         DataUtils.setDataAction(account, accountId, false);
         accountRepository.save(account);
+        // send mail change passowrd
+        Map<String, Object> data = new HashMap<>();
+        data.put("time", LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")));
+        data.put("email", account.getEmail());
+        SendEmail sendEmail = SendEmail.builder()
+                .to(account.getEmail())
+                .data(data)
+                .build();
+        notifyService.sendEmail(sendEmail, "changePassword");
         return ApiResponse.builder().build();
     }
 
@@ -366,7 +376,6 @@ public class AccountServiceImpl implements AccountService {
         if (account.getFullName() != null && account.getFullName().equals(newName)) {
             throw new AppException(ErrorCode.INVALID_DATA.withMessage("Tên mới không được trùng với hiện tại"));
         }
-        String oldName = account.getFullName();
         account.setFullName(newName);
         DataUtils.setDataAction(account, accountId, false);
         accountRepository.save(account);
@@ -384,7 +393,7 @@ public class AccountServiceImpl implements AccountService {
             PushNotifyRequest pushNotifyRequest = PushNotifyRequest.builder()
                     .to(account.getId())
                     .title("Thay đổi thông tin thành công")
-                    .content(String.format("Tên của bạn đã được thay đổi từ %s thành %s", oldName, newName))
+                    .content(String.format("Tên của bạn đã được thay đổi thành %s", newName))
                     .link(null)
                     .actionBy(accountId)
                     .build();

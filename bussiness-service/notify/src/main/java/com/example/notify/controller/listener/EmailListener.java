@@ -49,6 +49,16 @@ public class EmailListener {
         sendEmailService.sendEmail(payload, emailContext);
     }
 
+    @KafkaListener(topics = "changePassword", groupId = "my-group")
+    public void changePassword(SendEmail payload) {
+        log.info("run sendNewPassword: {}", payload);
+        EmailContext emailContext = EmailContext.builder()
+                .template("notifyChangePassword")
+                .subject("Thông báo thay đổi mật khẩu")
+                .build();
+        sendEmailService.sendEmail(payload, emailContext);
+    }
+
     @KafkaListener(topics = "common", groupId = "my-group")
     public void common(SendEmail payload) {
         log.info("run common: {}", payload);
