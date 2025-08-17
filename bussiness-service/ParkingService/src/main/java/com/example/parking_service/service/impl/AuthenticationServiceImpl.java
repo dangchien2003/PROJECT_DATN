@@ -37,6 +37,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,6 +61,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     CryptoService cryptoService;
     CacheService cacheService;
     NotifyService notifyService;
+    PasswordEncoder passwordEncoder;
 
 
     String redirectUriForRegister = "http://localhost:3000/register";
@@ -233,7 +235,28 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     .build();
             notifyService.sendEmail(sendEmail, "common");
         } else if (request.getType().equals(AuthenType.GOOGLE)) {
-            System.out.println("tạo tk bằng google");
+            // gọi sang google lấy thông tin
+            GoogleUserProfileResponse googleUserProfileResponse;
+            try {
+                googleUserProfileResponse =
+                        getInfoGoogleAccount(request.getAuthorizationCode(), request.getCodeVerifier(), redirectUriForRegister);
+            } catch (Exception e) {
+                throw new AppException(ErrorCode.INVALID_DATA.withMessage("Đăng ký thất bại"));
+            }
+            // random mật khẩu
+            String passwordRandom = RandomUtils.generatePassword(10);
+            email = googleUserProfileResponse.getEmail();
+            // kiểm tra dữ liệu/ kiểm trùng
+            validateRegisAccountForEP(email, passwordRandom);
+            account = Account.builder()
+                    .email(email)
+                    .password(passwordEncoder.encode(passwordRandom))
+                    .category(AccountCategory.KHACH_HANG.getValue())
+                    .status(AccountStatus.DANG_HOAT_DONG.getValue())
+                    .balance(0L)
+                    .build();
+            DataUtils.setDataAction(account, ip, true);
+            accountRepository.save(account);
             // gửi mail
             Map<String, Object> dataMail = new HashMap<>();
             dataMail.put("email", account.getEmail());
@@ -244,7 +267,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     .subject("Chào mừng bạn đến với Parking")
                     .build();
             notifyService.sendEmail(sendEmail, "common");
-        } else {
+        } else { // lỗi khi không phải đăng ký bằng google hoặc email password
             throw new AppException(ErrorCode.INVALID_DATA);
         }
         return ApiResponse.builder()
@@ -394,7 +417,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         Account account = null;
         if (Objects.equals(request.getType(), AuthenType.GOOGLE)) {
             account = this.authByGoogle(request);
-            if (!account.getCategory().equals(AccountCategory.KHACH_HANG.getValue())) {
+            if (account != null && !account.getCategory().equals(AccountCategory.KHACH_HANG.getValue())) {
                 account = null;
             }
         } else if (Objects.equals(request.getType(), AuthenType.USERNAME_PASSWORD)) {
@@ -468,7 +491,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new AppException(ErrorCode.INVALID_DATA);
         }
         // lấy thông tin tài khoản google
-        GoogleUserProfileResponse googleUserProfileResponse = this.getInfoGoogleAccount(request.getAuthorizationCode(), request.getCodeVerifier(), redirectUriForRegister);
+        GoogleUserProfileResponse googleUserProfileResponse = this.getInfoGoogleAccount(request.getAuthorizationCode(), request.getCodeVerifier(), redirectUriForAuth);
         // kiểm tra thông tin tài khoản
         Optional<Account> accountOptional = accountRepository.findByEmail(googleUserProfileResponse.getEmail());
         return accountOptional.orElse(null);
