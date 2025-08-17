@@ -42,6 +42,7 @@ import ChooseTicket from "./pages/Public/ChooseTicket";
 import DetailLocationPublic from "./pages/Public/DetailLocation";
 import DetailTicketPublic from "./pages/Public/DetailTicket";
 import Introduce from "./pages/Public/Introduce";
+import ChangePassword from "./pages/common/ChangePassword";
 
 const router = createBrowserRouter([
   {
@@ -61,6 +62,7 @@ const router = createBrowserRouter([
       { path: "/card", element: <CardManager /> },
       { path: "/deposit", element: <Deposit /> },
       { path: "/account/transaction", element: <TransactionHistory /> },
+      { path: "/account/change-password", element: <ChangePassword /> },
     ]
   },
   { path: "authen", element: <Authen /> },

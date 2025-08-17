@@ -16,7 +16,8 @@ const TextFieldLabelDash = ({
   disable,
   maxLength,
   minLength,
-  color
+  color,
+  isPassword
 }) => {
   const [value, setValue] = useState(defaultValue);
   const keyFocus = useSelector((state) => state.focus);
@@ -112,7 +113,7 @@ const TextFieldLabelDash = ({
       }}
     >
       <InputLabel label={label} require={require}/>
-      <Input
+      {isPassword ? <Input.Password
         ref={inputRef}
         placeholder={placeholder}
         allowClear
@@ -123,7 +124,18 @@ const TextFieldLabelDash = ({
         prefix={prefix}
         disabled={disable}
         style={color ? {color: color} : {}}
-      />
+      /> : <Input
+        ref={inputRef}
+        placeholder={placeholder}
+        allowClear
+        value={value}
+        onChange={handleChangeValue}
+        onBlur={handleBlur}
+        onClear={handleClear}
+        prefix={prefix}
+        disabled={disable}
+        style={color ? {color: color} : {}}
+      />}
       <InputError itemKey={itemKey}/>
     </div>
   );

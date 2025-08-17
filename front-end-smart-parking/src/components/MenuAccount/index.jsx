@@ -59,7 +59,7 @@ const MenuAccount = ({ linkAvatar }) => {
     },
     {
       key: "3",
-      label: <a href="/account-info">Đổi mật khẩu</a>,
+      label: <Link to="/account/change-password">Đổi mật khẩu</Link>,
     },
     {
       key: "4",

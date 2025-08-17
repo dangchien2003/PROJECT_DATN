@@ -8,9 +8,11 @@ import { getDataApi } from '@/utils/api';
 import { toastError } from '@/utils/toast';
 import noAvatar from '@image/no_avatar.png'
 import { ACCOUNT_CATEGORY } from '@/utils/constants';
+import { useSelector } from 'react-redux';
 
 const AccountInfo = () => {
   const [info, setInfo] = useState({});
+  const remaining = useSelector(state => state.remaining)
   useEffect(() => {
     getInfoAccount().then(response => {
       const data = getDataApi(response);
@@ -52,7 +54,7 @@ const AccountInfo = () => {
             Số dư:
           </div>
           <div className='value'>
-            80.000<sup>Đ</sup>
+            {remaining}<sup>Đ</sup>
           </div>
         </div>}
       </div>

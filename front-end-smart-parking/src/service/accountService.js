@@ -47,3 +47,7 @@ export async function changeStatusAccount(accountId, status, reason) {
 export async function changeInfo(key, newInfo) {
   return await httpClient.patch(PARKING_SERVICE.account.changeInfo , {key, newInfo}, {})
 }
+
+export async function changePassword(oldPassword, newPassword) {
+  return await httpClient.patch(PARKING_SERVICE.account.changePassword , {oldPassword, newPassword}, {})
+}
