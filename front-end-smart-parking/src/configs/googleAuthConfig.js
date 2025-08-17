@@ -1,6 +1,6 @@
 export const googleAuthUrl = 'https://accounts.google.com/o/oauth2/v2/auth'
 
-export const clientId = '1039904573470-ep7tl8j0ecu3q5p3nub0b1456gekdsj4.apps.googleusercontent.com'
+export const clientId = '105144144492-1ljsgo147tm26om4fkl4ms8jhs5pa048.apps.googleusercontent.com'
 
-export const redirectUriForSignIn = `${window.location.origin}/auth`
-export const redirectUriForSignUp = `${window.location.origin}/sign-up`
+export const redirectUriForSignIn = `${window.location.origin}/authen`
+export const redirectUriForSignUp = `${window.location.origin}/register`
