@@ -1,4 +1,6 @@
 // services/WebSocketService.js
+import { getAccessToken } from '@/service/cookieService';
+import { getAccountId } from '@/service/localStorageService';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 
@@ -18,7 +20,7 @@ class WebSocketConfig {
       debug: () => {}, // tắt log
       reconnectDelay: 5000,
       connectHeaders: {
-        'user-id': '641a00fd-9936-4a95-aa0c-d2fbc0fca9a3'
+        'user-id': getAccountId()
       },
       onConnect: () => {
         this.queueSubscribe.forEach(({ topic, callback }) => {
@@ -53,7 +55,7 @@ class WebSocketConfig {
         destination,
         body: JSON.stringify(body),
         headers: {
-          'user-id': '641a00fd-9936-4a95-aa0c-d2fbc0fca9a3',
+          'user-id': getAccountId(),
         },
       });
     }

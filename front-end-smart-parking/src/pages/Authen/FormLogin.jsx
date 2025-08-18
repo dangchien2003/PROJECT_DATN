@@ -3,7 +3,7 @@ import { useLoading } from "@/hook/loading"
 import { useMessageError } from "@/hook/validate"
 import { login } from "@/service/authenticationService"
 import { cancelRememberUser, getRememberUser, setAccessToken, setRememberUser } from "@/service/cookieService"
-import { getCodeVerifierToLocalStorage, setAccountFullName, setAccountId, setActor, setCodeVerifierToLocalStorage, setPartnerFullName, setRefreshToken } from "@/service/localStorageService"
+import { getCodeVerifierToLocalStorage, setAccountFullName, setAccountId, setActor, setAvatar, setCodeVerifierToLocalStorage, setPartnerFullName, setRefreshToken } from "@/service/localStorageService"
 import { authened } from "@/store/authenSlice"
 import { getDataApi } from "@/utils/api"
 import { TYPE_AUTHEN } from "@/utils/constants"
@@ -108,6 +108,7 @@ const FormLogin = ({ data }) => {
     setPartnerFullName(result?.partnerFullName);
     setAccountId(result?.id);
     setActor(result?.actor)
+    setAvatar(result?.avatar ? result.avatar : "")
     if (remember) {
       setRememberUser(dataAuthen.username);
     } else {

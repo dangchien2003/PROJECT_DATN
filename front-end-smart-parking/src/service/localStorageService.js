@@ -77,3 +77,15 @@ export function getActor() {
 export function deleteActor() {
   return localStorage.removeItem(KEY.actor);
 }
+
+export function setAvatar(avatar) {
+  return localStorage.setItem(KEY.avatar, avatar);
+}
+
+export function getAvatar() {
+  return localStorage.getItem(KEY.avatar);
+}
+
+export function deleteAvatar() {
+  return localStorage.removeItem(KEY.avatar);
+}

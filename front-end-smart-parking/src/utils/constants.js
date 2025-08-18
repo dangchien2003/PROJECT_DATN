@@ -527,7 +527,8 @@ export const KEY = {
   accountFullname: "account-fullname",
   partnerFullname: "partner-fullname",
   accountId: "identify",
-  actor: "actor"
+  actor: "actor",
+  avatar: "avatar",
 }
 
 export const REGEX_TEMPLATE = {
