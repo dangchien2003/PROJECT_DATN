@@ -9,6 +9,7 @@ import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
+import java.time.Instant;
 
 @Component
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -18,9 +19,15 @@ public class CustomJwtDecoder implements JwtDecoder {
     public Jwt decode(String token) throws JwtException {
         try {
             SignedJWT signedJWT = SignedJWT.parse(token);
+            Instant now = Instant.now();
+            Instant exp = signedJWT.getJWTClaimsSet().getExpirationTime().toInstant();
+
+            if (exp.isBefore(now)) {
+                throw new JwtException("Invalid token");
+            }
             return new Jwt(token,
                     signedJWT.getJWTClaimsSet().getIssueTime().toInstant(),
-                    signedJWT.getJWTClaimsSet().getExpirationTime().toInstant(),
+                    exp,
                     signedJWT.getHeader().toJSONObject(),
                     signedJWT.getJWTClaimsSet().getClaims());
         } catch (ParseException e) {
