@@ -1,8 +1,7 @@
-package com.example.parking_service.configuration;
+package com.example.notify.configuration;
 
 import com.example.common.dto.other.ContextHolderDto;
 import com.example.common.utils.context.UserContextHolder;
-import com.example.parking_service.service.AuthenticationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -18,7 +17,6 @@ import java.io.IOException;
 @Component
 @AllArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-    private AuthenticationService authenticationService;
     private ObjectMapper objectMapper;
 
     @Override

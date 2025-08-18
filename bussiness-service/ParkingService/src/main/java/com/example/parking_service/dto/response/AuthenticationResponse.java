@@ -18,4 +18,5 @@ public class AuthenticationResponse {
     String refreshToken;
     int expire;
     String actor;
+    String avatar;
 }

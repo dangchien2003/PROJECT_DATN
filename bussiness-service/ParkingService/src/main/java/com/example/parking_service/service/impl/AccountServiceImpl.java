@@ -10,6 +10,7 @@ import com.example.common.utils.DataUtils;
 import com.example.common.utils.ENumUtils;
 import com.example.common.utils.RandomUtils;
 import com.example.common.utils.RegexUtils;
+import com.example.common.utils.context.UserContextHolder;
 import com.example.parking_service.dto.request.ChangePasswordRequest;
 import com.example.parking_service.dto.request.ChangeStatusAccountRequest;
 import com.example.parking_service.dto.request.CreateAccountRequest;
@@ -26,7 +27,6 @@ import com.example.parking_service.mapper.AccountMapper;
 import com.example.parking_service.repository.AccountRepository;
 import com.example.parking_service.service.AccountService;
 import com.example.parking_service.service.NotifyService;
-import com.example.parking_service.utils.context.UserContextHolder;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -35,6 +35,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,6 +53,7 @@ public class AccountServiceImpl implements AccountService {
     AccountRepository accountRepository;
     NotifyService notifyService;
     AccountMapper accountMapper;
+    PasswordEncoder passwordEncoder;
 
     @Override
     public ApiResponse<Object> detail(String idAccount, Integer category) {
@@ -145,6 +147,8 @@ public class AccountServiceImpl implements AccountService {
             // xoá dữ liệu thừa
             removePartnerInfo(accountEntity);
         }
+        // mã hoá mật khẩu
+        accountEntity.setPassword(passwordEncoder.encode(accountEntity.getPassword()));
         accountRepository.save(accountEntity);
         // gửi mail
         Map<String, Object> dataMail = new HashMap<>();
@@ -380,16 +384,7 @@ public class AccountServiceImpl implements AccountService {
         DataUtils.setDataAction(account, accountId, false);
         accountRepository.save(account);
         try {
-            // gửi mail thông báo
-            Map<String, Object> data = new HashMap<>();
-            data.put("name", newName);
-            data.put("otp", "123");
-            data.put("time", "11111");
-            SendEmail sendEmail = SendEmail.builder()
-                    .to(account.getEmail())
-                    .data(data)
-                    .build();
-            notifyService.sendEmail(sendEmail, "sendEmailChangeInfoSuccess");
+            // gửi thông báo
             PushNotifyRequest pushNotifyRequest = PushNotifyRequest.builder()
                     .to(account.getId())
                     .title("Thay đổi thông tin thành công")
@@ -425,6 +420,14 @@ public class AccountServiceImpl implements AccountService {
         account.setGender(newGenderCode);
         DataUtils.setDataAction(account, accountId, false);
         accountRepository.save(account);
+        PushNotifyRequest pushNotifyRequest = PushNotifyRequest.builder()
+                .to(account.getId())
+                .title("Thay đổi thông tin thành công")
+                .content(String.format("Giới tính của bạn đã được thay đổi thành %s", newGender.equals("2") ? "nam" : "nữ"))
+                .link(null)
+                .actionBy(accountId)
+                .build();
+        notifyService.pushNotify(pushNotifyRequest);
         return ApiResponse.builder().build();
     }
 

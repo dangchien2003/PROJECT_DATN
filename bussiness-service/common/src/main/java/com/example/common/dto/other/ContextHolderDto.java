@@ -1,4 +1,4 @@
-package com.example.parking_service.dto.other;
+package com.example.common.dto.other;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.*;

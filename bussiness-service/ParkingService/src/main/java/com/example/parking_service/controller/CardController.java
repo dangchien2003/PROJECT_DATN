@@ -1,9 +1,9 @@
 package com.example.parking_service.controller;
 
 import com.example.common.dto.response.ApiResponse;
+import com.example.common.utils.context.UserContextHolder;
 import com.example.parking_service.dto.request.*;
 import com.example.parking_service.service.CardService;
-import com.example.parking_service.utils.context.UserContextHolder;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

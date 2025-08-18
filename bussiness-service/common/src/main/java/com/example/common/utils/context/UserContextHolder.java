@@ -1,7 +1,7 @@
-package com.example.parking_service.utils.context;
+package com.example.common.utils.context;
 
 
-import com.example.parking_service.dto.other.ContextHolderDto;
+import com.example.common.dto.other.ContextHolderDto;
 
 public class UserContextHolder {
     private static final ThreadLocal<ContextHolderDto> userContext = new InheritableThreadLocal<>();

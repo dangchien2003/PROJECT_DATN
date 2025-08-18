@@ -210,7 +210,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             validateRegisAccountForEP(email, password);
             account = Account.builder()
                     .email(email)
-                    .password(password)
+                    .password(passwordEncoder.encode(password))
                     .category(AccountCategory.KHACH_HANG.getValue())
                     .status(AccountStatus.DANG_HOAT_DONG.getValue())
                     .balance(0L)
@@ -254,6 +254,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     .category(AccountCategory.KHACH_HANG.getValue())
                     .status(AccountStatus.DANG_HOAT_DONG.getValue())
                     .balance(0L)
+                    .avatar(googleUserProfileResponse.getPicture())
                     .build();
             DataUtils.setDataAction(account, ip, true);
             accountRepository.save(account);
@@ -481,7 +482,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     boolean checkPasswordAccount(String passwordInput, String correctPassword) {
-        return correctPassword.equals(passwordInput);
+        return passwordEncoder.matches(passwordInput, correctPassword);
     }
 
     Account authByGoogle(AuthenticationRequest request) {

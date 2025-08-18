@@ -6,7 +6,7 @@ import com.example.common.dto.response.PageResponse;
 import com.example.common.entity.BaseEntity_;
 import com.example.common.enums.View;
 import com.example.common.utils.DataUtils;
-import com.example.notify.NotifyApplication;
+import com.example.common.utils.context.UserContextHolder;
 import com.example.notify.dto.response.NotificationResponse;
 import com.example.notify.entity.Notification;
 import com.example.notify.mapper.NotificationMapper;
@@ -49,14 +49,14 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public ApiResponse<Object> viewAll() {
-        String id = NotifyApplication.testPartnerActionBy;
+        String id = UserContextHolder.getContext().getUid();
         notificationRepository.readAllNotify(View.VIEWED, id, LocalDateTime.now(), id);
         return ApiResponse.builder().build();
     }
 
     @Override
     public ApiResponse<Object> countViewedNotYet() {
-        String id = NotifyApplication.testPartnerActionBy;
+        String id = UserContextHolder.getContext().getUid();
         long count = notificationRepository.countAllByViewedAndAccountId(View.VIEW_NOT_YET, id);
         return ApiResponse.builder()
                 .result(count)
@@ -77,7 +77,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public ApiResponse<Object> getAllNotify(int page) {
-        String id = NotifyApplication.testPartnerActionBy;
+        String id = UserContextHolder.getContext().getUid();
         Pageable pageable = PageRequest.of(page, 10, Sort.by(BaseEntity_.CREATED_AT).descending());
         Page<Notification> notificationPage = notificationRepository.findAllByAccountId(id, pageable);
         List<NotificationResponse> data = notificationPage.stream()

@@ -101,6 +101,7 @@ public class UserUtils {
                 .refreshToken(refresh)
                 .expire(timeLiveAccessToken * 60)
                 .actor(buildScope(account).toLowerCase())
+                .avatar(account.getAvatar())
                 .build();
     }
 
