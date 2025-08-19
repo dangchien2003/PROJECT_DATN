@@ -19,4 +19,10 @@ public interface StatisticalService {
     ApiResponse<Object> getLocationWaitReleaseOfPartner(String partnerId, Pageable pageable);
 
     ApiResponse<Object> getLocationWaitApproveOfPartner(String partnerId, Pageable pageable);
+
+    ApiResponse<Object> getStatisticalCardAtHomeByAdmin();
+
+    ApiResponse<Object> getStatisticalPieAtHomeByAdmin();
+
+    ApiResponse<Object> getStatisticalAreaAtHomeByAdmin();
 }

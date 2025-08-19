@@ -140,4 +140,6 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
             Pageable pageable);
 
     Page<Location> findByPartnerId(String partnerId, Pageable pageable);
+
+    long countByStatus(Integer status);
 }

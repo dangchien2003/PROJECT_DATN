@@ -42,4 +42,16 @@ public interface TicketPurchaseRepository extends JpaRepository<TicketPurchased,
             where tp.accountId = :accountId
                 """)
     Page<TicketPurchasedResponse> getAllByAccountId(String accountId, Pageable pageable);
+
+    @Query("""
+                SELECT count(t) FROM TicketPurchased t
+                where t.createdAt between :start and :end
+            """)
+    Long layVeBanDuocTrongThang(LocalDateTime start, LocalDateTime end);
+
+    @Query("SELECT count(t) FROM TicketPurchased t where t.extendCount > 0 and t.createdAt between :start and :end ")
+    Long demSoLuongVeGiaHan(LocalDateTime start, LocalDateTime end);
+
+    @Query("SELECT count(t) FROM TicketPurchased t where t.extendCount is null and t.createdAt between :start and :end ")
+    Long demSoLuongVeKhongGiaHan(LocalDateTime start, LocalDateTime end);
 }

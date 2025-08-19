@@ -44,3 +44,10 @@ spring:
           starttls:
             enable: true
     default-encoding: UTF-8
+logging:
+  level:
+    org:
+      apache:
+        kafka: ERROR
+      springframework:
+        kafka: ERROR

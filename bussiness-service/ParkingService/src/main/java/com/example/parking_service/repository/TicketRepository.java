@@ -23,4 +23,6 @@ public interface TicketRepository extends JpaRepository<Ticket, Long>, JpaSpecif
     List<TicketNameDTO> findDTOByTicketIdIn(@Param("ticketIds") Collection<Long> ids);
 
     Page<Ticket> findByPartnerId(String partnerId, Pageable pageable);
+
+    long countByStatus(Integer status);
 }

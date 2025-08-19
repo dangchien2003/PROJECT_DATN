@@ -66,4 +66,23 @@ public class StatisticalController {
     ApiResponse<Object> getLocationWaitApproveOfPartner(@RequestParam("partnerId") String partnerId, Pageable pageable) {
         return statisticalService.getLocationWaitApproveOfPartner(partnerId, pageable);
     }
+
+
+    @GetMapping("/card-at-home-admin")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    ApiResponse<Object> getStatisticalCardAtHomeByAdmin() {
+        return statisticalService.getStatisticalCardAtHomeByAdmin();
+    }
+
+    @GetMapping("/pie-at-home-admin")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    ApiResponse<Object> getStatisticalPieAtHomeByAdmin() {
+        return statisticalService.getStatisticalPieAtHomeByAdmin();
+    }
+
+    @GetMapping("/area-at-home-admin")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    ApiResponse<Object> getStatisticalAreaAtHomeByAdmin() {
+        return statisticalService.getStatisticalAreaAtHomeByAdmin();
+    }
 }
