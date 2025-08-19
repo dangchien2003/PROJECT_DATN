@@ -3,7 +3,7 @@ import React from 'react';
 import up from '@image/up.png'
 import down from '@image/down.png'
 
-const CardDashboard = ({ borderColor = "#f6a621", label, value="...", icon, growth }) => {
+const CardDashboard = ({ borderColor = "#f6a621", label, value="--", icon, growth }) => {
   return (
     <Card
       style={{

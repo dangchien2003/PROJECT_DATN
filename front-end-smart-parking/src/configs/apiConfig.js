@@ -102,6 +102,9 @@ export const PARKING_SERVICE = {
     getLocationOfPartner: "statistical/location-of-partner",
     getLocationWaitReleaseOfPartner: "statistical/location-wait-release-of-partner",
     getLocationWaitApproveOfPartner: "statistical/location-wait-approve-of-partner",
+    getStatisticalCardAtHomeByAdmin: "statistical/card-at-home-admin",
+    getStatisticalPieAtHomeByAdmin: "statistical/pie-at-home-admin",
+    getStatisticalAreaAtHomeByAdmin: "statistical/area-at-home-admin",
   }
 }
 

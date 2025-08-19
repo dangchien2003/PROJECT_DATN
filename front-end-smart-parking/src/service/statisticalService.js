@@ -56,5 +56,17 @@ export async function getLocationWaitApproveOfPartner(partnerId, page, size) {
 }
 
 
+export async function getStatisticalCardAtHomeByAdmin() {
+  return await httpClient.get(PARKING_SERVICE.statistical.getStatisticalCardAtHomeByAdmin, {})
+}
+
+export async function getStatisticalPieAtHomeByAdmin() {
+  return await httpClient.get(PARKING_SERVICE.statistical.getStatisticalPieAtHomeByAdmin, {})
+}
+
+
+export async function getStatisticalAreaAtHomeByAdmin() {
+  return await httpClient.get(PARKING_SERVICE.statistical.getStatisticalAreaAtHomeByAdmin, {})
+}
 
 
