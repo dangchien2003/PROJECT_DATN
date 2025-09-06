@@ -1,4 +1,4 @@
-import PieChartCustom from "@/components/PieChartCustom";
+import PieChartCustom from "@/components/chart/PieChartCustom";
 
 const ThongKeSoDon = () => {
   return (

@@ -1,54 +1,72 @@
 import ReactECharts from "echarts-for-react";
 
 const HorizontalBarChart = ({
-  data = [],
+  Wapper,
+  data = {},
   height = 400,
-  nameChart }) => {
-  // data mẫu
-  const categories = [
-    "Đại học Công Nghệ Đông Á",
-    "Eaon mall hà đông",
-    "Cao tốc Bắc Kạn – Cao Bằng",
-    "Cao tốc Bắc Kạn – Cao Bằng",
-    "Cao tốc Bắc Kạn – Cao Bằng",
-    "Cao tốc Bắc Kạn – Cao Bằng",
-    "Cao tốc Bắc Kạn – Cao Bằng",
-    "Cao tốc Bắc Kạn – Cao Bằng",
-    "Cao tốc Bắc Kạn – Cao Bằng",
-    "Cao tốc Bắc Kạn – Cao Bằng",
-  ];
-
-  const values = [10.5, 10.5, 40.1, 60.2, 80.2, 10.5, 10.5, 40.1, 60.2, 80.2];
-
+  nameChart,
+  nameX }) => {
   const options = {
     grid: {
-      left: "25%",
-      right: "10%",
-      top: "5%",
-      bottom: "5%"
+      left: "0%",
+      right: "10px",
+      top: "10px",
+      bottom: "0%"
     },
     xAxis: {
       type: "value",
       axisLabel: {
-        formatter: "{value}%"
-      }
+        formatter: "{value}"
+      },
+      name: nameX,
+      nameLocation: "middle",
+      nameGap: 0
     },
     yAxis: {
       type: "category",
-      data: categories,
+      data: data.categories,
       inverse: true,
       axisLine: {
         show: false
       },
+      axisLabel: {
+        // Giới hạn độ dài text
+        formatter: function (value) {
+          const maxLength = 15; // Điều chỉnh số ký tự tối đa
+          if (value.length > maxLength) {
+            return value.substring(0, maxLength) + '...';
+          }
+          return value;
+        },
+        // Thêm style cho label
+        textStyle: {
+          fontSize: 12,
+          color: '#666'
+        }
+      }
+    },
+    // Thêm tooltip cho axis labels
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'shadow'
+      },
+      formatter: function (params) {
+        const dataIndex = params[0].dataIndex;
+        const fullName = data.categories[dataIndex];
+        const value = params[0].value;
+        return `<div style="font-weight: bold; margin-bottom: 4px;">${fullName}</div>
+                <div><span style="font-weight: bold;">${value}</span></div>`;
+      }
     },
     series: [
       {
         type: "bar",
-        data: values,
+        data: data.values,
         label: {
           show: true,
           position: "right",
-          formatter: "{c}%"
+          formatter: "{c}"
         },
         itemStyle: {
           color: "#ff6b6b",

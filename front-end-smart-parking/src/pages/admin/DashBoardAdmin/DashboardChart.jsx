@@ -1,6 +1,6 @@
 import AreaChartCustom from "@/components/AreaChartCustom";
 import DividerCustom from "@/components/DividerCustom";
-import PieChartCustom from "@/components/PieChartCustom";
+import PieChartCustom from "@/components/chart/PieChartCustom";
 import { getStatisticalAreaAtHomeByAdmin, getStatisticalPieAtHomeByAdmin } from "@/service/statisticalService";
 import { getDataApi } from "@/utils/api";
 import { toastError } from "@/utils/toast";

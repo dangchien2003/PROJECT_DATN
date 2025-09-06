@@ -1,6 +1,6 @@
 import AreaChartCustom from "@/components/AreaChartCustom";
 import DividerCustom from "@/components/DividerCustom";
-import PieChartCustom from "@/components/PieChartCustom";
+import PieChartCustom from "@/components/chart/PieChartCustom";
 import React from "react";
 
 const DashboardChart = () => {

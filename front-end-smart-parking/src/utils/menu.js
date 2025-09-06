@@ -82,11 +82,11 @@ export const ADMIN_MENU = [
     children: [
       {
         key: "6.1",
-         label: <Link to={"/admin/statistics/business"}>Doanh thu</Link>,
+        label: <Link to={"/admin/statistics/business"}>Doanh thu</Link>,
       },
       {
         key: "6.2",
-        label: "Vé",
+        label: <Link to={"/admin/statistics/ticket"}>Vé</Link>,
       },
       {
         key: "6.3",
@@ -157,7 +157,7 @@ export const PARTNER_MENU = [
         key: "5.3",
         label: "Vé",
       },
-     
+
       {
         key: "5.4",
         label: "Khách hàng",

@@ -10,13 +10,13 @@ const StatisticsBusiness = () => {
     <div className='statistics-business'>
       <Row gutter={50}>
         <Col lg={12} md={12} sm={24} xs={24}>
-          <div className='box-col'>
+          <div className='statistics-box-col'>
             <SoTienThuDuocTheoThang />
             <ThongKeSoDon/>
           </div>
         </Col>
         <Col lg={12} md={12} sm={24} xs={24}>
-          <div className='box-col'>
+          <div className='statistics-box-col'>
             <Top5DoiTacCoDoanhThuCaoNhat />
             <TicketRevenueChart height={500}/>
           </div>

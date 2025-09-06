@@ -1,4 +1,4 @@
-import PieChartCustom from "../PieChartCustom";
+import PieChartCustom from "@Components/chart/PieChartCustom";
 import { dataPie, dataPie1, dataPie2 } from "./dataTest";
 import { formatCurrency } from "@/utils/number";
 

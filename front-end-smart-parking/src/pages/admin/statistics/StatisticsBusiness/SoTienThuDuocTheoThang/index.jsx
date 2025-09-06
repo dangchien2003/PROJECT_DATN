@@ -1,4 +1,4 @@
-import BarChartCustom from '@/components/BarChartCustom';
+import BarChartCustom from '@/components/chart/BarChartCustom';
 import './style.css'
 import dayjs from 'dayjs'
 
