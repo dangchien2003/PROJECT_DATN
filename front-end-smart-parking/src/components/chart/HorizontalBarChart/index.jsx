@@ -9,7 +9,7 @@ const HorizontalBarChart = ({
   const options = {
     grid: {
       left: "0%",
-      right: "10px",
+      right: "20px",
       top: "10px",
       bottom: "0%"
     },

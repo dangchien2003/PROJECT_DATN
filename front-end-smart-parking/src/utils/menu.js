@@ -90,15 +90,19 @@ export const ADMIN_MENU = [
       },
       {
         key: "6.3",
-        label: "Địa điểm",
+        label: <Link to={"/admin/statistics/location"}>Địa điểm</Link>,
       },
       {
         key: "6.4",
-        label: "Thẻ",
+        label: <Link to={"/admin/statistics/card"}>Thẻ</Link>,
       },
       {
         key: "6.5",
-        label: "Tài khoản",
+        label: <Link to={"/admin/statistics/partner"}>Đối tác</Link>,
+      },
+      {
+        key: "6.6",
+        label: <Link to={"/admin/statistics/customer"}>Khách hàng</Link>,
       },
     ],
   },
