@@ -43,6 +43,7 @@ import DetailLocationPublic from "./pages/Public/DetailLocation";
 import DetailTicketPublic from "./pages/Public/DetailTicket";
 import Introduce from "./pages/Public/Introduce";
 import ChangePassword from "./pages/common/ChangePassword";
+import StatisticsBusiness from "./pages/admin/statistics/StatisticsBusiness";
 
 const router = createBrowserRouter([
   {
@@ -93,6 +94,8 @@ const router = createBrowserRouter([
       { path: "location/detail/:tab/:id", element: <DetailLocation /> },
       { path: "location/wait-approve", element: <ListLocationWaitApprove /> },
       { path: "location/map/all", element: <MapAllLocation /> },
+
+      { path: "statistics/business", element: <StatisticsBusiness /> },
     ],
   },
   {

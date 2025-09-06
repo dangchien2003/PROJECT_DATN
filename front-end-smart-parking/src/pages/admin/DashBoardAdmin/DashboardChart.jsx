@@ -44,8 +44,8 @@ const DashboardChart = () => {
         </Col>
         <Col sm={24} md={24} lg={12}>
           <PieChartCustom
-            data={dataPie.khungGioSuDung}
-            nameChart={"Tỉ lệ sử dụng ở các khung giờ"}
+            data={dataPie.soTienTheoMucDich}
+            nameChart={"Số tiền theo mục đích"}
             height={400}
           />
         </Col>
