@@ -30,22 +30,17 @@ const HorizontalBarChart = ({
         show: false
       },
       axisLabel: {
-        // Giới hạn độ dài text
-        formatter: function (value) {
-          const maxLength = 15; // Điều chỉnh số ký tự tối đa
-          if (value.length > maxLength) {
-            return value.substring(0, maxLength) + '...';
-          }
-          return value;
-        },
-        // Thêm style cho label
         textStyle: {
           fontSize: 12,
           color: '#666'
-        }
-      }
+        },
+        margin: 130,
+        align: 'left',
+        width: 130,
+        overflow: 'truncate',
+        ellipsis: '...'
+      },
     },
-    // Thêm tooltip cho axis labels
     tooltip: {
       trigger: 'axis',
       axisPointer: {
