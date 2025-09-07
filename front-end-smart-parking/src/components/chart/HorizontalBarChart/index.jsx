@@ -1,3 +1,4 @@
+import { formatCurrency } from "@/utils/number";
 import ReactECharts from "echarts-for-react";
 
 const HorizontalBarChart = ({
@@ -9,7 +10,7 @@ const HorizontalBarChart = ({
   const options = {
     grid: {
       left: "0%",
-      right: "20px",
+      right: "40px",
       top: "10px",
       bottom: "0%"
     },
@@ -51,7 +52,7 @@ const HorizontalBarChart = ({
         const fullName = data.categories[dataIndex];
         const value = params[0].value;
         return `<div style="font-weight: bold; margin-bottom: 4px;">${fullName}</div>
-                <div><span style="font-weight: bold;">${value}</span></div>`;
+                <div><span style="font-weight: bold;">${formatCurrency(value)}</span></div>`;
       }
     },
     series: [
