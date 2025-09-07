@@ -151,20 +151,19 @@ export const PARTNER_MENU = [
     children: [
       {
         key: "5.1",
-        label: "Doanh thu",
+        label: <Link to={"/partner/statistics/business"}>Doanh thu</Link>,
       },
       {
         key: "5.2",
-        label: "Địa điểm",
+        label: <Link to={"/partner/statistics/location"}>Địa điểm</Link>,
       },
       {
         key: "5.3",
-        label: "Vé",
+        label: <Link to={"/partner/statistics/ticket"}>Vé</Link>,
       },
-
       {
         key: "5.4",
-        label: "Khách hàng",
+        label: <Link to={"/partner/statistics/customer"}>Khách hàng</Link>,
       },
     ],
   },

@@ -15,15 +15,15 @@ const BarChartCustom = ({
       },
       formatter: function (params) {
         const param = params[0];
-        return `<div style="font-weight: bold; margin-bottom: 4px;">Tháng ${param.name}</div>
+        return `<div style="font-weight: bold; margin-bottom: 4px;">${param.name}</div>
                 <div>${nameY || 'Giá trị'}: <span style="font-weight: bold; ">${param.value.toLocaleString()}</span></div>`;
       },
     },
     grid: {
-      left: "0%",
+      left: "30px",
       right: "10px",
       top: "20px",
-      bottom: "0%",
+      bottom: "30px",
       containLabel: true
     },
     xAxis: {
@@ -42,7 +42,7 @@ const BarChartCustom = ({
       type: "value",
       name: nameY,
       nameLocation: "middle",
-      nameGap: 50,
+      nameGap: 40,
       nameRotate: 90,
       axisLine: {
         lineStyle: {

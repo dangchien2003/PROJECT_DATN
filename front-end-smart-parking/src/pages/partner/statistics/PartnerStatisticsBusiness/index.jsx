@@ -1,20 +1,10 @@
-import AreaChartCustom from "@/components/AreaChartCustom";
-import DividerCustom from "@/components/DividerCustom";
-import PieChartCustom from "@/components/chart/PieChartCustom";
 import { Col, Row } from "antd";
-import React from "react";
+import SoTienThuDuocTheoThang from "./SoTienThuDuocTheoThang";
+import Top5DiaDiemCoDoanhThuCaoNhat from "./Top5DiaDiemCoDoanhThuCaoNhat";
+import TicketRevenueChart from "./TicketRevenueChart";
+import AreaChartCustom from "@/components/AreaChartCustom";
 
-const DashboardChart = () => {
-  const dataPie = [
-    {
-      value: 1001,
-      name: "cscs",
-    },
-    {
-      value: 100,
-      name: "csc1s",
-    },
-  ];
+const PartnerStatisticsBusiness = () => {
   const dataArea = {
     "x": [
       "01/09/2025",
@@ -82,31 +72,31 @@ const DashboardChart = () => {
     ]
   }
   return (
-    <div>
-      <Row>
-        <Col sm={24} md={24} lg={12}>
-          <PieChartCustom
-            data={dataPie}
-            nameChart={"Vé gia hạn - Không gia hạn"}
-          />
+    <div className='PartnerStatisticsBusiness'>
+      <Row gutter={50}>
+        <Col lg={12} md={12} sm={24} xs={24}>
+          <div className='statistics-box-col'>
+            <SoTienThuDuocTheoThang />
+          </div>
         </Col>
-        <Col sm={24} md={24} lg={12}>
-          <PieChartCustom
-            data={dataPie}
-            nameChart={"Tỉ lệ sử dụng ở các khung giờ"}
-          /></Col>
-      </Row>
-      <DividerCustom style={{ width: "80%" }} />
-      <div
-      >
-        <AreaChartCustom
+        <Col lg={12} md={12} sm={24} xs={24}>
+          <div className='statistics-box-col'>
+            <Top5DiaDiemCoDoanhThuCaoNhat />
+          </div>
+        </Col>
+        <Col lg={24} md={24}>
+          <TicketRevenueChart />
+        </Col>
+        <Col lg={24} md={24}>
+         <AreaChartCustom
           data={dataArea}
           nameChart={"Biến động dòng tiền qua các ngày"}
           height={500}
         />
-      </div>
+        </Col>
+      </Row>
     </div>
   );
 };
 
-export default DashboardChart;
+export default PartnerStatisticsBusiness;

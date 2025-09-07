@@ -49,6 +49,7 @@ import StatisticsLocation from "./pages/admin/statistics/StatisticsLocation";
 import StatisticsCard from "./pages/admin/statistics/StatisticsCard";
 import StatisticsPartner from "./pages/admin/statistics/StatisticsPartner";
 import StatisticsCustomer from "./pages/admin/statistics/StatisticsCustomer";
+import PartnerStatisticsBusiness from "./pages/partner/statistics/PartnerStatisticsBusiness";
 
 const router = createBrowserRouter([
   {
@@ -125,6 +126,9 @@ const router = createBrowserRouter([
       { path: "ticket/edit/:id", element: <AddTicket waitRelease={false} /> },
       { path: "ticket/list", element: <ListTicketPartner /> },
       { path: "ticket/detail/:isWaitRelease/:id", element: <DetailTicketPartner /> },
+
+      
+      { path: "statistics/business", element: <PartnerStatisticsBusiness /> },
     ]
   },
   {
