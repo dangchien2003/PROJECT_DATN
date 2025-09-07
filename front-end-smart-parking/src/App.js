@@ -47,6 +47,7 @@ import StatisticsBusiness from "./pages/admin/statistics/StatisticsBusiness";
 import StatisticTicket from "./pages/admin/statistics/StatisticTicket";
 import StatisticsLocation from "./pages/admin/statistics/StatisticsLocation";
 import StatisticsCard from "./pages/admin/statistics/StatisticsCard";
+import StatisticsPartner from "./pages/admin/statistics/StatisticsPartner";
 
 const router = createBrowserRouter([
   {
@@ -102,7 +103,7 @@ const router = createBrowserRouter([
       { path: "statistics/ticket", element: <StatisticTicket /> },
       { path: "statistics/location", element: <StatisticsLocation /> },
       { path: "statistics/card", element: <StatisticsCard /> },
-      { path: "statistics/partner", element: <StatisticsLocation /> },
+      { path: "statistics/partner", element: <StatisticsPartner /> },
       { path: "statistics/customer", element: <StatisticsLocation /> },
     ],
   },
