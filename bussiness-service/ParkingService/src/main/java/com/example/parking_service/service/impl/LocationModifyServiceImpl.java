@@ -19,7 +19,6 @@ import com.example.parking_service.enums.LocationStatus;
 import com.example.parking_service.enums.ModuleName;
 import com.example.parking_service.mapper.LocationMapper;
 import com.example.parking_service.mapper.LocationModifyMapper;
-import com.example.parking_service.mapper.LocationWaitReleaseMapper;
 import com.example.parking_service.repository.LocationModifyRepository;
 import com.example.parking_service.repository.LocationRepository;
 import com.example.parking_service.service.LocationModifyService;
@@ -45,11 +44,9 @@ import java.util.List;
 public class LocationModifyServiceImpl implements LocationModifyService {
     LocationModifyRepository locationModifyRepository;
     LocationRepository locationRepository;
-    //    LocationWaitReleaseRepository locationWaitReleaseRepository;
     SchedulerService schedulerService;
     LocationModifyMapper locationModifyMapper;
     LocationMapper locationMapper;
-    LocationWaitReleaseMapper locationWaitReleaseMapper;
     ObjectMapper objectMapper;
 
     @Override

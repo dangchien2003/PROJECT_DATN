@@ -14,5 +14,5 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StatisticalPieAtHomeByAdminResponse {
     List<ItemValuePie> ve;
-    List<ItemValuePie> khungGioSuDUng;
+    List<ItemValuePie> soTienTheoMucDich;
 }

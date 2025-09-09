@@ -22,11 +22,19 @@ public class NotifyServiceImpl implements NotifyService {
 
     @Override
     public void sendEmail(SendEmail data, String topic) {
-        kafkaSendEmail.send(topic, data);
+        try {
+            kafkaSendEmail.send(topic, data);
+        } catch (Exception e) {
+            log.error("send kafka fail");
+        }
     }
 
     @Override
     public void pushNotify(PushNotifyRequest data) {
-        kafkaPushNotify.send("pushNotify", data);
+        try {
+            kafkaPushNotify.send("pushNotify", data);
+        } catch (Exception e) {
+            log.error("send kafka fail");
+        }
     }
 }

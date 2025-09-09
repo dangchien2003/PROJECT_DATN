@@ -72,7 +72,6 @@ public class LocationController {
     }
 
     @GetMapping("customer/detail")
-    @PreAuthorize("hasAnyAuthority('CUSTOMER')")
     ApiResponse<Object> customerDetail(@RequestParam("id") Long id) {
         return locationService.customerDetail(id);
     }

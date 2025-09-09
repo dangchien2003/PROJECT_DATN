@@ -209,7 +209,7 @@ public class LocationServiceImpl implements LocationService {
         } else if (request.getTab().equals(2)) {
             status = LocationStatus.TAM_DUNG_HOAT_DONG.getValue();
         } else if (request.getTab().equals(3)) {
-            status = LocationModifyStatus.CHO_DUYET.getValue();
+            modifyStatus = LocationModifyStatus.CHO_DUYET.getValue();
         } else if (request.getTab().equals(4)) {
             modifyStatus = LocationModifyStatus.TU_CHOI_PHE_DUYET.getValue();
         } else if (request.getTab().equals(5)) {

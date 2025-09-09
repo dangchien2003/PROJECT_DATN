@@ -36,6 +36,11 @@ spring:
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: 0                    # Không cần broker xác nhận
+      retries: 0                 # Không retry
+      properties:
+        max.block.ms: 1000       # Tối đa chờ 1 giây khi thiếu metadata
+        request.timeout.ms: 2000 # Timeout request tới broker
   cache:
     type: redis
   data:
@@ -63,3 +68,10 @@ vnPay:
   secret-key: ${VNPAY-SECRET_KEY:DFI9X55CGVDGQFRX08ZRGSNJPEZZG4LL}
   tmnCode: ${VNPAY-VNP_TMN_CODE:7XG1D3QU}
 DOMAIN_FE: ${DOMAIN_FE:http://localhost:3000}
+logging:
+  level:
+    org:
+      apache:
+        kafka: ERROR
+      springframework:
+        kafka: ERROR

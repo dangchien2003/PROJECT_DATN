@@ -200,9 +200,16 @@ public class AccountServiceImpl implements AccountService {
 
     Account commonCreateAccount(CreateAccountRequest request, boolean isAdmin) {
         // kiểm tra sự tồn tại email
-        List<Account> resultCheckDuplicate = accountRepository.findAllByEmailOrPhoneNumber(request.getEmail(), request.getPhoneNumber());
+        List<Account> resultCheckDuplicate = null;
+        if (request.getEmail() != null && request.getPhoneNumber() != null) {
+            resultCheckDuplicate = accountRepository.findAllByEmailOrPhoneNumber(request.getEmail(), request.getPhoneNumber());
+        } else if (request.getEmail() != null) {
+            resultCheckDuplicate = accountRepository.findAllByEmail(request.getEmail());
+        } else {
+            resultCheckDuplicate = accountRepository.findAllByPhoneNumber(request.getPhoneNumber());
+        }
         if (!resultCheckDuplicate.isEmpty()) {
-            if (resultCheckDuplicate.getFirst().getEmail().equals(request.getEmail())) {
+            if (resultCheckDuplicate.getFirst().getEmail().equalsIgnoreCase(request.getEmail())) {
                 throw new AppException(ErrorCode.DATA_EXISTED.withMessage("Email đã tồn tại trong hệ thống"));
             } else {
                 throw new AppException(ErrorCode.DATA_EXISTED.withMessage("Số điện thoại đã tồn tại trong hệ thống"));
@@ -333,7 +340,7 @@ public class AccountServiceImpl implements AccountService {
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND.withMessage("Tài khoản không xác định")));
         // kiểm tra khớp mật khẩu cũ
-        if (!account.getPassword().equals(request.getOldPassword())) {
+        if (!passwordEncoder.matches(request.getOldPassword(), account.getPassword())) {
             throw new AppException(ErrorCode.INVALID_DATA.withMessage("Mật khẩu không khớp"));
         }
         account.setPassword(request.getNewPassword());

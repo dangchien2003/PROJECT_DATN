@@ -9,8 +9,6 @@ import com.example.common.utils.DataUtils;
 import com.example.common.utils.RandomUtils;
 import com.example.common.utils.RegexUtils;
 import com.example.common.utils.TimeUtil;
-import com.example.parking_service.client.GoogleProfileClient;
-import com.example.parking_service.client.GoogleTokenClient;
 import com.example.parking_service.dto.other.DataForget;
 import com.example.parking_service.dto.other.DataOtp;
 import com.example.parking_service.dto.other.SubjectAccessToken;
@@ -20,6 +18,8 @@ import com.example.parking_service.dto.response.GoogleAccessTokenResponse;
 import com.example.parking_service.dto.response.GoogleUserProfileResponse;
 import com.example.parking_service.entity.Account;
 import com.example.parking_service.enums.*;
+import com.example.parking_service.httpClient.GoogleProfileClient;
+import com.example.parking_service.httpClient.GoogleTokenClient;
 import com.example.parking_service.repository.AccountRepository;
 import com.example.parking_service.service.AuthenticationService;
 import com.example.parking_service.service.CacheService;
@@ -130,7 +130,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         Account account = accountRepository.findById(request.getId())
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
         String newPassword = RandomUtils.generatePassword(10);
-        account.setPassword(newPassword);
+        account.setPassword(passwordEncoder.encode(newPassword));
         account.setPermitChangePassword(PermitChangePassword.CHUA_THAY_DOI);
         DataUtils.setDataAction(account, ip, false);
         accountRepository.save(account);
@@ -417,9 +417,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
         Account account = null;
         if (Objects.equals(request.getType(), AuthenType.GOOGLE)) {
-            account = this.authByGoogle(request);
-            if (account != null && !account.getCategory().equals(AccountCategory.KHACH_HANG.getValue())) {
-                account = null;
+            try {
+                account = this.authByGoogle(request);
+            } catch (Exception e) {
+                throw new AppException(ErrorCode.INVALID_DATA.withMessage("Đăng nhập thất bại"));
             }
         } else if (Objects.equals(request.getType(), AuthenType.USERNAME_PASSWORD)) {
             account = this.authByUsernamePassword(request);

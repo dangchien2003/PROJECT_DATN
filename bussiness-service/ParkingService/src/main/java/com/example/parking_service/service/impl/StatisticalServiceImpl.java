@@ -248,7 +248,7 @@ public class StatisticalServiceImpl implements StatisticalService {
                 .atTime(LocalTime.MAX);
 
         // lấy dữ liệu
-        Long soVeBanDuocThangNay = paymentRepository.laySoTienNapThanhCong(startOfMonth, endOfMonth, PaymentType.NAP_TIEN);
+        Long soVeBanDuocThangNay = paymentRepository.laySoTienThanhCongTheoType(startOfMonth, endOfMonth, PaymentType.NAP_TIEN);
         soVeBanDuocThangNay = soVeBanDuocThangNay == null ? 0 : soVeBanDuocThangNay;
         return List.of(new ItemValueCard(soVeBanDuocThangNay, null));
     }
@@ -276,7 +276,7 @@ public class StatisticalServiceImpl implements StatisticalService {
 
         StatisticalPieAtHomeByAdminResponse response = StatisticalPieAtHomeByAdminResponse.builder()
                 .ve(this.thongKeVeGiaHanKhongGiaHan())
-                .khungGioSuDUng(this.thongKeVeGiaHanKhongGiaHan())
+                .soTienTheoMucDich(this.thongKeSoTienSuDung())
                 .build();
         return ApiResponse.builder()
                 .result(response)
@@ -299,19 +299,20 @@ public class StatisticalServiceImpl implements StatisticalService {
         return resultVe;
     }
 
-    List<ItemValuePie> thongKeKhungGioSuDung() {
+    List<ItemValuePie> thongKeSoTienSuDung() {
         // tháng hiện tại
         LocalDate now = LocalDate.now();
         LocalDateTime startOfMonth = now.withDayOfMonth(1).atStartOfDay();
         LocalDateTime endOfMonth = now
                 .with(TemporalAdjusters.lastDayOfMonth())
                 .atTime(LocalTime.MAX);
-
-        Long veGiaHan = ticketPurchaseRepository.demSoLuongVeGiaHan(startOfMonth, endOfMonth);
-        Long veKhongGiaHan = ticketPurchaseRepository.demSoLuongVeKhongGiaHan(startOfMonth, endOfMonth);
+        Long muaVe = paymentRepository.laySoTienThanhCongTheoType(startOfMonth, endOfMonth, PaymentType.MUA_VE);
+        Long giaHanVe = paymentRepository.laySoTienThanhCongTheoType(startOfMonth, endOfMonth, PaymentType.GIA_HAN);
+        Long napTien = paymentRepository.laySoTienThanhCongTheoType(startOfMonth, endOfMonth, PaymentType.NAP_TIEN);
         List<ItemValuePie> resultVe = new ArrayList<>();
-        resultVe.add(new ItemValuePie(veGiaHan, "Gia hạn"));
-        resultVe.add(new ItemValuePie(veKhongGiaHan, "Không gia hạn"));
+        resultVe.add(new ItemValuePie(muaVe == null ? 0 : muaVe, "Mua vé"));
+        resultVe.add(new ItemValuePie(giaHanVe == null ? 0 : giaHanVe, "Gia hạn"));
+        resultVe.add(new ItemValuePie(napTien == null ? 0 : napTien, "Nạp tiền"));
         return resultVe;
     }
 

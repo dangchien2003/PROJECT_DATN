@@ -1,4 +1,4 @@
-package com.example.parking_service.client;
+package com.example.parking_service.httpClient;
 
 import com.example.parking_service.dto.request.GoogleAccessTokenRequest;
 import com.example.parking_service.dto.response.GoogleAccessTokenResponse;

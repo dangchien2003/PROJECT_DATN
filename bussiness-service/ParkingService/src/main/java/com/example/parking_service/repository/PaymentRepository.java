@@ -42,7 +42,7 @@ public interface PaymentRepository extends JpaRepository<Payment, String> {
             SELECT sum(p.total) FROM Payment p
             where p.status = 2 and p.createdAt BETWEEN :start AND :end and p.type = :type
             """)
-    Long laySoTienNapThanhCong(LocalDateTime start, LocalDateTime end, Integer type);
+    Long laySoTienThanhCongTheoType(LocalDateTime start, LocalDateTime end, Integer type);
 
     @Query("""
                 SELECT
