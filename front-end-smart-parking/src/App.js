@@ -53,6 +53,7 @@ import PartnerStatisticsBusiness from "./pages/partner/statistics/PartnerStatist
 import PartnerStatisticsTicket from "./pages/partner/statistics/PartnerStatisticsTicket";
 import PartnerStatisticsLocation from "./pages/partner/statistics/PartnerStatisticsLocation";
 import PartnerStatisticsCustomer from "./pages/partner/statistics/PartnerStatisticsCustomer";
+import Home from "./pages/customer/Home";
 
 const router = createBrowserRouter([
   {
@@ -73,6 +74,7 @@ const router = createBrowserRouter([
       { path: "/deposit", element: <Deposit /> },
       { path: "/account/transaction", element: <TransactionHistory /> },
       { path: "/account/change-password", element: <ChangePassword /> },
+      { path: "/home", element: <Home /> },
     ]
   },
   { path: "authen", element: <Authen /> },

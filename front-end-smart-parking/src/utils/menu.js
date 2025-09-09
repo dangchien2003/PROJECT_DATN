@@ -173,7 +173,7 @@ export const CUSTOMER_MENU = [
   {
     key: "1",
     icon: <HomeOutlined style={{ fontSize: 20 }} />,
-    label: <Link to={"/admin"}>Tổng quan</Link>,
+    label: <Link to={"/home"}>Tổng quan</Link>,
   },
   {
     key: "2",
