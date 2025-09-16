@@ -3,8 +3,16 @@ import SoTienThuDuocTheoThang from "./SoTienThuDuocTheoThang";
 import Top5DiaDiemCoDoanhThuCaoNhat from "./Top5DiaDiemCoDoanhThuCaoNhat";
 import TicketRevenueChart from "./TicketRevenueChart";
 import AreaChartCustom from "@/components/AreaChartCustom";
+import { useState } from "react";
+import MonthYearSelect from "@/components/MonthYearSelect";
 
 const PartnerStatisticsBusiness = () => {
+  const [month, setMonth] = useState();
+  const [year, setYear] = useState();
+  const onChangeTime = ({year, month}) => {
+    setYear(year);
+    setMonth(month);
+  }
   const dataArea = {
     "x": [
       "01/09/2025",
@@ -73,24 +81,25 @@ const PartnerStatisticsBusiness = () => {
   }
   return (
     <div className='PartnerStatisticsBusiness'>
-      <Row gutter={50}>
+      <MonthYearSelect onChange={onChangeTime}/>
+      <Row gutter={50} style={{marginTop: 40}}>
         <Col lg={12} md={12} sm={24} xs={24}>
           <div className='statistics-box-col'>
-            <SoTienThuDuocTheoThang />
+            <SoTienThuDuocTheoThang year={year}/>
           </div>
         </Col>
         <Col lg={12} md={12} sm={24} xs={24}>
           <div className='statistics-box-col'>
-            <Top5DiaDiemCoDoanhThuCaoNhat />
+            <Top5DiaDiemCoDoanhThuCaoNhat year={year} month={month}/>
           </div>
         </Col>
         <Col lg={24} md={24}>
-          <TicketRevenueChart />
+          <TicketRevenueChart year={year} month={month}/>
         </Col>
         <Col lg={24} md={24}>
          <AreaChartCustom
           data={dataArea}
-          nameChart={"Biến động dòng tiền qua các ngày"}
+          nameChart={`Biến động dòng tiền qua các ngày - tháng ${month}/${year}`}
           height={500}
         />
         </Col>

@@ -1,6 +1,7 @@
 import HorizontalBarChart from "@/components/chart/HorizontalBarChart";
 
-const Top10VeCoLuotMuaCaoNhat = () => { const categories = [
+const Top10VeCoLuotMuaCaoNhat = ({ month, year }) => {
+  const categories = [
     "Vé hoàng gia - Đại học Công Nghệ Đông Á",
     "Eaon mall hà đông",
     "Cao tốc Bắc Kạn – Cao Bằng",
@@ -18,7 +19,7 @@ const Top10VeCoLuotMuaCaoNhat = () => { const categories = [
   }
   return (
     <div className='Top10VeCoLuotMuaCaoNhat'>
-      <HorizontalBarChart nameChart={"Top 10 vé có lượt mua cao nhất"} data={data} nameX={"Số đơn"} height={400}/>
+      <HorizontalBarChart nameChart={`Top 10 vé có lượt mua cao nhất - tháng ${month}/${year}`} data={data} nameX={"Số đơn"} height={400} />
     </div>
   );
 };

@@ -9,6 +9,7 @@ import { toastError } from '@/utils/toast';
 import noAvatar from '@image/no_avatar2.png'
 import { ACCOUNT_CATEGORY } from '@/utils/constants';
 import { useSelector } from 'react-redux';
+import { formatCurrency } from '@/utils/number';
 
 const AccountInfo = () => {
   const [info, setInfo] = useState({});
@@ -54,7 +55,7 @@ const AccountInfo = () => {
             Số dư:
           </div>
           <div className='value'>
-            {remaining}<sup>Đ</sup>
+            {formatCurrency(remaining)}<sup>Đ</sup>
           </div>
         </div>}
       </div>

@@ -7,7 +7,7 @@ const data = [
   { location: "Đại học Công Nghệ Đông Á", tickets: 80, revenue: 1200 },
   { location: "Đại học Công Nghệ Đông Á", tickets: 70, revenue: 900 }
 ];
-const TicketRevenueChart = ({ height = 420, nameChart }) => {
+const TicketRevenueChart = ({ height = 420, year, month }) => {
   const categories = data.map(item => item.location);
   const tickets = data.map(item => item.tickets);
   const revenue = data.map(item => item.revenue);
@@ -128,7 +128,7 @@ const TicketRevenueChart = ({ height = 420, nameChart }) => {
         color: "#666666",
       }}
     >
-      {nameChart}
+      Doanh thu địa điểm - tháng {month}/{year}
     </span>
     <ReactECharts option={options} style={{ height }} />
   </div>;

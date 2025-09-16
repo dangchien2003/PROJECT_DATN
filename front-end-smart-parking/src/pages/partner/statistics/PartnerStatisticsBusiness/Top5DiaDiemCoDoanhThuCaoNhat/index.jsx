@@ -1,7 +1,7 @@
 import HorizontalBarChart from '@/components/chart/HorizontalBarChart';
 import './style.css'
 
-const Top5DiaDiemCoDoanhThuCaoNhat = () => {
+const Top5DiaDiemCoDoanhThuCaoNhat = ({year, month}) => {
   const categories = [
     "Đại học Công Nghệ Đông Á",
     "Eaon mall hà đông",
@@ -20,7 +20,7 @@ const Top5DiaDiemCoDoanhThuCaoNhat = () => {
   }
   return (
     <div className='Top5DiaDiemCoDoanhThuCaoNhat'>
-      <HorizontalBarChart nameChart={"Top 5 địa điểm có doanh thu cao nhất tháng 5"} data={data} nameX={"Doanh thu"}/>
+      <HorizontalBarChart nameChart={`Top 5 địa điểm có doanh thu cao nhất - tháng ${month}/${year}`} data={data} nameX={"Doanh thu"}/>
     </div>
   );
 };

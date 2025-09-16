@@ -6,7 +6,7 @@ const ThongKeDiaDiemCoNhieuVeHoTroNhat = () => {
     values: [10, 11, 100, 10, 11, 100, 10, 11, 100]
   }
   return <div>
-    <HorizontalBarChart nameChart={"Top 10 địa điểm có nhiều vé hỗ trợ nhất"} nameX={"Số vé"} data={data} />
+    <HorizontalBarChart nameChart={`Top 10 địa điểm có nhiều vé hỗ trợ nhất`} nameX={"Số vé"} data={data} />
   </div>;
 };
 

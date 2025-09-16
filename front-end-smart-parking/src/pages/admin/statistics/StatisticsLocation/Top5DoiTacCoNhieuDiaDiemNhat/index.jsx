@@ -7,7 +7,7 @@ const Top5DoiTacCoNhieuDiaDiemNhat = () => {
   }
   return (
     <div className='Top5DoiTacCoNhieuDiaDiemNhat'>
-      <HorizontalBarChart nameChart={"Top 5 đối tác có nhiều địa điểm nhất"} nameX={"Số địa điểm"} data={data}/>
+      <HorizontalBarChart nameChart={`Top 5 đối tác có nhiều địa điểm nhất`} nameX={"Số địa điểm"} data={data}/>
     </div>
   );
 };

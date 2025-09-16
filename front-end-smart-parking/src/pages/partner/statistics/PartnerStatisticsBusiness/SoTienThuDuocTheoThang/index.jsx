@@ -1,11 +1,10 @@
 import BarChartCustom from '@/components/chart/BarChartCustom';
 import './style.css'
-import dayjs from 'dayjs'
 
-const SoTienThuDuocTheoThang = () => {
+const SoTienThuDuocTheoThang = ({year}) => {
   return (
     <div className='SoTienThuDuocTheoThang'>
-      <BarChartCustom nameChart={"Doanh thu năm " + dayjs().year()} nameX={"Tháng"} nameY={"Doanh thu"}/>
+      <BarChartCustom nameChart={"Doanh thu năm " + year} nameX={"Tháng"} nameY={"Doanh thu"}/>
     </div>
   );
 };

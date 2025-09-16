@@ -1,6 +1,6 @@
 import HorizontalBarChart from "@/components/chart/HorizontalBarChart";
 
-const Top5DiaDiemCoNhieuViTriNhat = () => {
+const Top5DiaDiemCoNhieuViTriNhat = ({month, year}) => {
   const data = {
     categories: ["Đại học công nghệ đông á", "EAON MALL hà đông", "Đại học công nghệ đông á", "EAON MALL hà đông", "Đại học công nghệ đông á"],
     values: [50, 40, 30, 20, 15]

@@ -25,7 +25,9 @@ const Home = () => {
   const dataSoTienChiTieuTheoLoai = [
     { name: "Mua vé", value: 50000 },
     { name: "Gia hạn", value: 10000 },
+    { name: "Nạp tiền", value: 10000 },
   ]
+  
   const dataArea = {
     "x": [
       "01/09/2025",
@@ -115,10 +117,10 @@ const Home = () => {
         </Row>
         <Row style={{ paddingTop: 50 }} gutter={50}>
           <Col lg={12} md={12} sm={24} xs={24}>
-            <PieChartCustom nameChart={"Tỉ lệ đơn mua"} data={dataSoDonMuaDonMua} />
+            <PieChartCustom nameChart={"Tỉ lệ đơn mua trong tháng"} data={dataSoDonMuaDonMua} />
           </Col>
           <Col lg={12} md={12} sm={24} xs={24}>
-            <PieChartCustom nameChart={"Số tiền chi tiêu theo loại"} data={dataSoTienChiTieuTheoLoai} />
+            <PieChartCustom nameChart={"Số tiền ra vào trong tháng"} data={dataSoTienChiTieuTheoLoai} />
           </Col>
         </Row>
         <Row style={{ paddingTop: 50 }} gutter={50}>

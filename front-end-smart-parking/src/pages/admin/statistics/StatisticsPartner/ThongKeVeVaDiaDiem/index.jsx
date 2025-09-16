@@ -1,6 +1,6 @@
 import GroupedBarChart from "@/components/chart/GroupedBarChart";
 
-const ThongKeVeVaDiaDiem = () => {
+const ThongKeVeVaDiaDiem = ({month, year}) => {
   const data = {
   categories: [
     '1Cao tốc Bắc Kan - Cao Bằng ',
@@ -17,7 +17,7 @@ const ThongKeVeVaDiaDiem = () => {
 };
   return (
     <div className='ThongKeVeVaDiaDiem'>
-      <GroupedBarChart nameChart={"Số lượng vé và địa điểm hoạt động của đối tác"} seriesNames={["Địa điểm", "Vé"]} data={data} height={500}/>
+      <GroupedBarChart nameChart={`Số lượng vé và địa điểm hoạt động của đối tác- tháng ${month}/${year}`} seriesNames={["Địa điểm", "Vé"]} data={data} height={500}/>
     </div>
   );
 };

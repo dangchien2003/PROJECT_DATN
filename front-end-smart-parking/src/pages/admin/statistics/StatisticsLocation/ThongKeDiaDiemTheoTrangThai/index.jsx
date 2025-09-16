@@ -1,6 +1,6 @@
 import PieChartCustom from "@/components/chart/PieChartCustom";
 
-const ThongKeDiaDiemTheoTrangThai = () => {
+const ThongKeDiaDiemTheoTrangThai = ({month, year}) => {
   const data = [
     {
       name: "Chờ duyệt",
@@ -25,7 +25,7 @@ const ThongKeDiaDiemTheoTrangThai = () => {
   ]
   return (
     <div className='ThongKeDiaDiemTheoTrangThai'>
-      <PieChartCustom nameChart={"Số địa điểm theo trạng thái"} height={400} data={data} />
+      <PieChartCustom nameChart={`Số địa điểm theo trạng thái - tháng ${month}/${year}`} height={400} data={data} />
     </div>
   );
 };

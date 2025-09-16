@@ -3,21 +3,30 @@ import SoLuotMuaTheoLoaiVe from "./SoLuotMuaTheoLoaiVe";
 import SoLuotThayDoiThongTin from "./SoLuotThayDoiThongTin";
 import SoVeTheoLoai from "./SoVeTheoLoai";
 import Top10VeCoLuotMuaCaoNhat from "./Top10VeCoLuotMuaCaoNhat";
+import MonthYearSelect from "@/components/MonthYearSelect";
+import { useState } from "react";
 
 const PartnerStatisticsTicket = () => {
+  const [month, setMonth] = useState();
+  const [year, setYear] = useState();
+  const onChangeTime = ({year, month}) => {
+    setYear(year);
+    setMonth(month);
+  }
   return (
     <div className='PartnerStatisticsTicket'>
-       <Row gutter={50}>
+      <MonthYearSelect onChange={onChangeTime}/>
+       <Row gutter={50} style={{marginTop: 40}}>
         <Col lg={12} md={12} sm={24} xs={24}>
           <div className='statistics-box-col'>
-            <Top10VeCoLuotMuaCaoNhat/>
+            <Top10VeCoLuotMuaCaoNhat year={year} month={month}/>
             <SoVeTheoLoai/>
           </div>
         </Col>
         <Col lg={12} md={12} sm={24} xs={24}>
           <div className='statistics-box-col'>
-            <SoLuotThayDoiThongTin/>
-            <SoLuotMuaTheoLoaiVe/>
+            <SoLuotThayDoiThongTin year={year} month={month}/>
+            <SoLuotMuaTheoLoaiVe year={year} month={month}/>
           </div>
         </Col>
       </Row>
