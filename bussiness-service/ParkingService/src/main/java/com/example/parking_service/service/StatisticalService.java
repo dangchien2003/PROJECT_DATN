@@ -25,4 +25,6 @@ public interface StatisticalService {
     ApiResponse<Object> getStatisticalPieAtHomeByAdmin();
 
     ApiResponse<Object> getStatisticalAreaAtHomeByAdmin();
+
+    Object statisticQuery(String queryString);
 }

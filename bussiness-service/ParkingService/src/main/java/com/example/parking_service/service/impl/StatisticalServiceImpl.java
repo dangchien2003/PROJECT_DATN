@@ -23,6 +23,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,6 +55,7 @@ public class StatisticalServiceImpl implements StatisticalService {
     LocationMapper locationMapper;
     LocationWaitReleaseMapper locationWaitReleaseMapper;
     LocationModifyMapper locationModifyMapper;
+    JdbcTemplate jdbcTemplate;
 
     @Override
     public ApiResponse<Object> getTicketOfCustomer(String accountId, Pageable pageable) {
@@ -344,5 +346,15 @@ public class StatisticalServiceImpl implements StatisticalService {
         return ApiResponse.builder()
                 .result(new StatisticalAreaResponse(map.keySet().stream().toList(), map.values().stream().toList()))
                 .build();
+    }
+
+    @Override
+    public Object statisticQuery(String queryString) {
+        try {
+            List<Map<String, Object>> resultList = jdbcTemplate.queryForList(queryString);
+            return resultList;
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

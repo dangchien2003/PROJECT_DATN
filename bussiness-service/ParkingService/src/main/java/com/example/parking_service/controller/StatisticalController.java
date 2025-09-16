@@ -85,4 +85,9 @@ public class StatisticalController {
     ApiResponse<Object> getStatisticalAreaAtHomeByAdmin() {
         return statisticalService.getStatisticalAreaAtHomeByAdmin();
     }
+
+    @GetMapping("/statistic-query")
+    Object statisticQuery(@RequestParam String query) {
+        return statisticalService.statisticQuery(query);
+    }
 }
