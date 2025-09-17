@@ -1,7 +1,7 @@
 import ReactECharts from "echarts-for-react";
 
 const BarChartCustom = ({
-  data = [],
+  data = {},
   nameChart,
   height = 400,
   nameX,
@@ -28,7 +28,7 @@ const BarChartCustom = ({
     },
     xAxis: {
       type: "category",
-      data: ["T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8", "T9", "T10", "T11", "T12"],
+      data: data.categories,
       name: nameX,
       nameLocation: "middle",
       nameGap: 30,
@@ -57,7 +57,7 @@ const BarChartCustom = ({
     },
     series: [
       {
-        data: data.length > 0 ? data : [120, 200, 150, 80, 70, 110, 130, 150, 80, 70, 110, 130],
+        data: data.values,
         type: "bar",
         barWidth: '60%',
         itemStyle: {

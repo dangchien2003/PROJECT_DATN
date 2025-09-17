@@ -69,4 +69,8 @@ export async function getStatisticalAreaAtHomeByAdmin() {
   return await httpClient.get(PARKING_SERVICE.statistical.getStatisticalAreaAtHomeByAdmin, {})
 }
 
+export async function getDataStatistic(query) {
+  query = query.replace(/\s+/g, ' ').trim();
+  return await httpClient.get(PARKING_SERVICE.statistical.statisticQuery, {params: {query}})
+}
 
