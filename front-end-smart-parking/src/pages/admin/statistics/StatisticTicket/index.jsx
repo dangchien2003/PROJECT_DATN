@@ -2,7 +2,7 @@ import { Col, Row } from "antd";
 import Top10VeCoLuotMuaCaoNhat from "./Top10VeCoLuotMuaCaoNhat";
 import SoLuotMuaVeTheoLoai from "./SoLuotMuaVeTheoLoai";
 import SoVeDangHoatDongTheoLoai from "./SoVeDangHoatDongTheoLoai";
-import SoVeChinhSua from "./SoVeChinhSua";
+import SoLuotChinhSua from "./SoLuotChinhSua";
 import { useState } from "react";
 import MonthYearSelect from "@/components/MonthYearSelect";
 
@@ -25,7 +25,7 @@ const StatisticTicket = () => {
         </Col>
         <Col lg={12} md={12} sm={24} xs={24}>
           <div className='statistics-box-col'>
-            <SoVeChinhSua year={year} month={month}/>
+            <SoLuotChinhSua year={year} month={month}/>
             <SoVeDangHoatDongTheoLoai year={year} month={month}/>
           </div>
         </Col>
