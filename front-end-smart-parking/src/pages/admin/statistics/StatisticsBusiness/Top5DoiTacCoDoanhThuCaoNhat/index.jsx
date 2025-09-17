@@ -71,6 +71,7 @@ LIMIT 5;
       });
       setData(result);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
   }, [year, month]);
   return (
     <div className='Top5DoiTacCoDoanhThuCaoNhat'>

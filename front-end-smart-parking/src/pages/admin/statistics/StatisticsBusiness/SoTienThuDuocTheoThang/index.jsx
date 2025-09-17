@@ -48,6 +48,7 @@ ORDER BY
       });
       setData(result);
     });
+  // eslint-disable-next-line react-hooks/exhaustive-deps 
   }, [year]);
   return (
     <div className='SoTienThuDuocTheoThang'>

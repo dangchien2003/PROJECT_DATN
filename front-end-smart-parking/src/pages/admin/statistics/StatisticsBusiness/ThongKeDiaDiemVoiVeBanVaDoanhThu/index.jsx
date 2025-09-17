@@ -59,7 +59,6 @@ ORDER BY
       return;
     }
     getDataStatistic(query).then(response => {
-      console.log()
       const result = { categories: [], barData: [], lineData: [] };
       response.data?.forEach(item => {
         result.categories.push(item.ten_doi_tac);
@@ -68,13 +67,12 @@ ORDER BY
       });
       setData(result);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
   }, [year, month]);
   const description = {
     nameBar: "Số vé bán",
     nameLine: "Doanh thu"
   }
-  console.log(data);
-  console.log(description)
   return (
     <div className='ThongKeDiaDiemVoiVeBanVaDoanhThu'>
       <CombinedBarLineChart height={500} year={year} month={month} data={data}
