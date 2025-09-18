@@ -25,7 +25,7 @@ const StatisticsLocation = () => {
         </Col>
         <Col lg={12} md={12} sm={24} xs={24}>
           <div className="statistics-box-col">
-            <ThongKeDiaDiemTheoTrangThai year={year} month={month}/>
+            <ThongKeDiaDiemTheoTrangThai/>
             <Top5DiaDiemCoNhieuViTriNhat year={year} month={month}/>
           </div>
         </Col>
