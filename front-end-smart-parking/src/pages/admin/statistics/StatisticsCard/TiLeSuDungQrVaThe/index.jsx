@@ -7,7 +7,7 @@ const TiLeSuDungQrVaThe = ({month, year}) => {
   ]
   return (
     <div className='TiLeSuDungQrVaThe'>
-      <PieChartCustom nameChart={`Tỉ lệ sử dụng thẻ và và QR - tháng ${month}/${year}`} data={data} />
+      <PieChartCustom nameChart={`Tỉ lệ sử dụng thẻ và QR - tháng ${month}/${year}`} data={data} />
     </div>
   );
 };

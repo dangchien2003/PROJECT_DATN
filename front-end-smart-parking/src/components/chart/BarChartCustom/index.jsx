@@ -1,3 +1,4 @@
+import { formatCurrency } from "@/utils/number";
 import ReactECharts from "echarts-for-react";
 
 const BarChartCustom = ({
@@ -53,6 +54,11 @@ const BarChartCustom = ({
         lineStyle: {
           color: '#f0f0f0'
         }
+      },
+      axisLabel: {
+        formatter: function (value) {
+          return formatCurrency(value);
+        }
       }
     },
     series: [
@@ -68,7 +74,9 @@ const BarChartCustom = ({
         label: {
           show: true,
           position: 'top',
-          formatter: '{c}',
+          formatter: function (params) {
+            return formatCurrency(params.value);
+          },
           textStyle: {
             color: '#333',
             fontSize: 12,

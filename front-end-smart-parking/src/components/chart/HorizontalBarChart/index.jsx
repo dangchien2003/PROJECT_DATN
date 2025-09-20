@@ -17,7 +17,9 @@ const HorizontalBarChart = ({
     xAxis: {
       type: "value",
       axisLabel: {
-        formatter: "{value}"
+        formatter: function (value) {
+          return formatCurrency(value);
+        }
       },
       name: nameX,
       nameLocation: "middle",
@@ -62,7 +64,9 @@ const HorizontalBarChart = ({
         label: {
           show: true,
           position: "right",
-          formatter: "{c}"
+          formatter: function (params) {
+            return formatCurrency(params.value);
+          }
         },
         itemStyle: {
           color: "#ff6b6b",
