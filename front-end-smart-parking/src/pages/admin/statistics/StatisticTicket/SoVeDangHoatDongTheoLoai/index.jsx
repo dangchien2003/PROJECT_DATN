@@ -3,7 +3,6 @@ import { getDataStatistic } from "@/service/statisticalService";
 import { useEffect, useState } from "react";
 
 const SoVeDangHoatDongTheoLoai = () => {
-  // const data = [{ name: "Vé giờ", value: 124 }, { name: "Vé ngày", value: 500 }, { name: "Vé tuần", value: 100 }, { name: "Vé tháng", value: 50 }]
   const query = `SELECT
     'Vé Khung Giờ' AS loai_ve,
     COUNT(*) AS so_luong_ve
