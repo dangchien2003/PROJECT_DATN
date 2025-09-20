@@ -105,6 +105,7 @@ export const PARKING_SERVICE = {
     getStatisticalCardAtHomeByAdmin: "statistical/card-at-home-admin",
     getStatisticalPieAtHomeByAdmin: "statistical/pie-at-home-admin",
     getStatisticalAreaAtHomeByAdmin: "statistical/area-at-home-admin",
+    thongKeDoanhThuThangTheoDoiTac: "statistical/thong-ke-doanh-thu-thang-theo-doi-tac",
     statisticQuery: "statistical/statistic-query",
   }
 }

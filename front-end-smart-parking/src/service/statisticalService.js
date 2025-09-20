@@ -74,3 +74,8 @@ export async function getDataStatistic(query) {
   return await httpClient.get(PARKING_SERVICE.statistical.statisticQuery, {params: {query}})
 }
 
+export async function thongKeDoanhThuThangTheoDoiTac(thang, nam) {
+  return await httpClient.get(PARKING_SERVICE.statistical.thongKeDoanhThuThangTheoDoiTac, {params: {thang, nam}})
+}
+
+

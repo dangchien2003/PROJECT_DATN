@@ -2,7 +2,6 @@ import { formatCurrency } from "@/utils/number";
 import ReactECharts from "echarts-for-react";
 
 const HorizontalBarChart = ({
-  Wapper,
   data = {},
   height = 400,
   nameChart,

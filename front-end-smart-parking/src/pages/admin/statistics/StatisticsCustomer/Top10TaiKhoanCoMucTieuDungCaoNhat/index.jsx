@@ -1,6 +1,5 @@
 import HorizontalBarChart from "@/components/chart/HorizontalBarChart";
 import { getDataStatistic } from "@/service/statisticalService";
-import { formatCurrency } from "@/utils/number";
 import { useEffect, useState } from "react";
 
 const Top10TaiKhoanCoMucTieuDungCaoNhat = ({ month, year }) => {
