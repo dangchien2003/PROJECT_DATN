@@ -10,8 +10,9 @@ import { checkRequireInput, validateInput } from "@/utils/validateAction";
 import { useMessageError } from "@/hook/validate";
 import { useRequireField } from "@/hook/useRequireField";
 import { createAccountByAdmin } from "@/service/accountService";
-import { ACCOUNT_CATEGORY } from "@/utils/constants";
+import { ACCOUNT_CATEGORY, MENU_ADMIN_ID } from "@/utils/constants";
 import { toastError, toastSuccess } from "@/utils/toast";
+import { useSelectMenu } from "@/hook/useSelectMenu";
 
 const indexKeyAccount = ["fullName", "email", "phoneNumber", "gender", "status"];
 const indexKeyPartner = ["partnerFullName", "partnerEmail"];
@@ -28,7 +29,13 @@ const CreateAccount = () => {
   const requireKeys = useSelector(state => state.requireField);
   const {pushMessage, deleteManyKey, reset} = useMessageError();
   const {pushRequireField, deleteRequireField, resetRequireField} = useRequireField();
-
+  const { select } = useSelectMenu();
+  
+  useEffect(() => {
+    select(MENU_ADMIN_ID.TAI_KHOAN_TAO_TAI_KHOAN);
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
+  }, []);
+  
   useEffect(() => {
     reset();
     resetRequireField();

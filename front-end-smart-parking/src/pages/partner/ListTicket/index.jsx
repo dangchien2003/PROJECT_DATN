@@ -1,14 +1,22 @@
 import Search from "./Search";
 import TabStatus from "./TabStatus";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./style.css";
 import DividerCustom from "@/components/DividerCustom";
 import { updateObjectValue } from "@/utils/object";
 import TableListTicketPartner from "@/components/TableListTicketPartner";
 import { useDispatch, useSelector } from "react-redux";
 import { setSearching } from "@/store/startSearchSlice";
+import { useSelectMenu } from "@/hook/useSelectMenu";
+import { MENU_PARTNER_ID } from "@/utils/constants";
 
 const ListTicket = () => {
+  const { select } = useSelectMenu();
+
+  useEffect(() => {
+    select(MENU_PARTNER_ID.QUAN_LY_VE_DANH_SACH);
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
+  }, []);
   const {isSearching} = useSelector(state => state.startSearch)
   const dispatch = useDispatch();
 

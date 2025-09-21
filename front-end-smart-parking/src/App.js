@@ -42,6 +42,18 @@ import ChooseTicket from "./pages/Public/ChooseTicket";
 import DetailLocationPublic from "./pages/Public/DetailLocation";
 import DetailTicketPublic from "./pages/Public/DetailTicket";
 import Introduce from "./pages/Public/Introduce";
+import ChangePassword from "./pages/common/ChangePassword";
+import StatisticsBusiness from "./pages/admin/statistics/StatisticsBusiness";
+import StatisticTicket from "./pages/admin/statistics/StatisticTicket";
+import StatisticsLocation from "./pages/admin/statistics/StatisticsLocation";
+import StatisticsCard from "./pages/admin/statistics/StatisticsCard";
+import StatisticsPartner from "./pages/admin/statistics/StatisticsPartner";
+import StatisticsCustomer from "./pages/admin/statistics/StatisticsCustomer";
+import PartnerStatisticsBusiness from "./pages/partner/statistics/PartnerStatisticsBusiness";
+import PartnerStatisticsTicket from "./pages/partner/statistics/PartnerStatisticsTicket";
+import PartnerStatisticsLocation from "./pages/partner/statistics/PartnerStatisticsLocation";
+import PartnerStatisticsCustomer from "./pages/partner/statistics/PartnerStatisticsCustomer";
+import Home from "./pages/customer/Home";
 
 const router = createBrowserRouter([
   {
@@ -61,10 +73,13 @@ const router = createBrowserRouter([
       { path: "/card", element: <CardManager /> },
       { path: "/deposit", element: <Deposit /> },
       { path: "/account/transaction", element: <TransactionHistory /> },
+      { path: "/account/change-password", element: <ChangePassword /> },
+      { path: "/home", element: <Home /> },
     ]
   },
   { path: "authen", element: <Authen /> },
   { path: "register", element: <Authen /> },
+  { path: "confirm-regis", element: <Authen /> },
   { path: "forget", element: <Authen /> },
   {
     path: "/admin",
@@ -76,6 +91,7 @@ const router = createBrowserRouter([
       { path: "account/partner/:id", element: <PartnerInfo /> },
       { path: "account/customer/:id", element: <AccountCustomerInfo /> },
       { path: "account/create", element: <CreateAccount /> },
+       { path: "account/change-password", element: <ChangePassword /> },
       { path: "account/*", element: <AccountCustomerList /> },
 
       { path: "ticket", element: <ListTicket /> },
@@ -90,6 +106,13 @@ const router = createBrowserRouter([
       { path: "location/detail/:tab/:id", element: <DetailLocation /> },
       { path: "location/wait-approve", element: <ListLocationWaitApprove /> },
       { path: "location/map/all", element: <MapAllLocation /> },
+
+      { path: "statistics/business", element: <StatisticsBusiness /> },
+      { path: "statistics/ticket", element: <StatisticTicket /> },
+      { path: "statistics/location", element: <StatisticsLocation /> },
+      { path: "statistics/card", element: <StatisticsCard /> },
+      { path: "statistics/partner", element: <StatisticsPartner /> },
+      { path: "statistics/customer", element: <StatisticsCustomer /> },
     ],
   },
   {
@@ -104,11 +127,18 @@ const router = createBrowserRouter([
       { path: "location/detail/:tab/:id", element: <DetailLocationPartner /> },
       { path: "account/partner/:id", element: <PartnerInfo /> },
       { path: "account/customer/:id", element: <AccountCustomerInfo /> },
+       { path: "account/change-password", element: <ChangePassword /> },
 
       { path: "ticket/add", element: <AddTicket waitRelease={false} /> },
       { path: "ticket/edit/:id", element: <AddTicket waitRelease={false} /> },
       { path: "ticket/list", element: <ListTicketPartner /> },
       { path: "ticket/detail/:isWaitRelease/:id", element: <DetailTicketPartner /> },
+
+      
+      { path: "statistics/business", element: <PartnerStatisticsBusiness /> },
+      { path: "statistics/ticket", element: <PartnerStatisticsTicket /> },
+      { path: "statistics/location", element: <PartnerStatisticsLocation /> },
+      { path: "statistics/customer", element: <PartnerStatisticsCustomer /> },
     ]
   },
   {

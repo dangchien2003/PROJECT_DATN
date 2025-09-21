@@ -9,10 +9,14 @@ import { customerSearch } from '@/service/ticketService';
 import { Empty } from 'antd';
 
 const Recommend = ({ location }) => {
+  console.log(location)
   const [loadding, setLoading] = useState(false);
   const [data, setData] = useState([]);
 
   const loadData = () => {
+    if(!location?.locationId) {
+      return;
+    }
     setData([]);
     setLoading(true);
     const dataSearch = {

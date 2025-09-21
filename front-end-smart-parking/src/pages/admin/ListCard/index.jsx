@@ -1,14 +1,23 @@
 import Search from "./Search";
 import TabStatus from "./TabStatus";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./style.css";
 import DividerCustom from "@/components/DividerCustom";
 import { updateObjectValue } from "@/utils/object";
 import TableListCard from "@/components/TableListCard";
 import { useDispatch, useSelector } from "react-redux";
 import { setSearching } from "@/store/startSearchSlice";
+import { useSelectMenu } from "@/hook/useSelectMenu";
+import { MENU_ADMIN_ID } from "@/utils/constants";
 
-const ListCard = () => {
+const ListCard = () => {  
+  const { select } = useSelectMenu();
+  
+  useEffect(() => {
+    select(MENU_ADMIN_ID.THE_DANH_SACH);
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
+  }, []);
+
   const { isSearching } = useSelector(state => state.startSearch)
   const dispatch = useDispatch();
   const [dataSearch] = useState({

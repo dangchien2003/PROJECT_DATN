@@ -56,5 +56,26 @@ export async function getLocationWaitApproveOfPartner(partnerId, page, size) {
 }
 
 
+export async function getStatisticalCardAtHomeByAdmin() {
+  return await httpClient.get(PARKING_SERVICE.statistical.getStatisticalCardAtHomeByAdmin, {})
+}
+
+export async function getStatisticalPieAtHomeByAdmin() {
+  return await httpClient.get(PARKING_SERVICE.statistical.getStatisticalPieAtHomeByAdmin, {})
+}
+
+
+export async function getStatisticalAreaAtHomeByAdmin() {
+  return await httpClient.get(PARKING_SERVICE.statistical.getStatisticalAreaAtHomeByAdmin, {})
+}
+
+export async function getDataStatistic(query) {
+  query = query.replace(/\s+/g, ' ').trim();
+  return await httpClient.get(PARKING_SERVICE.statistical.statisticQuery, {params: {query}})
+}
+
+export async function thongKeDoanhThuThangTheoDoiTac(thang, nam) {
+  return await httpClient.get(PARKING_SERVICE.statistical.thongKeDoanhThuThangTheoDoiTac, {params: {thang, nam}})
+}
 
 

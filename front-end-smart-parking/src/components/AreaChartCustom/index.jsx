@@ -1,22 +1,68 @@
-import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
+import { formatCurrency } from "@/utils/number";
+import ReactECharts from "echarts-for-react";
 
-const AreaChartCustom = ({ data, nameChart, width }) => {
+
+const AreaChartCustom = ({ data, nameChart, height, nameX, nameY }) => {
+  const options = {
+    grid: {
+      left: 50,
+      right: 0,
+      top: 20,
+      bottom: 50,
+      containLabel: true
+    },
+    tooltip: {
+      trigger: "axis",
+      formatter: (params) => {
+        const { name, value } = params[0];
+        return `
+        <div style="padding:6px 10px;">
+          <strong>${name}</strong><br/>
+          Giá trị: ${formatCurrency(value)}
+        </div>
+      `;
+      },
+      axisPointer: {
+        type: "cross"
+      }
+    },
+    xAxis: {
+      type: "category",
+      boundaryGap: false,
+      name: nameX,
+      nameLocation: "middle",
+      nameGap: 50,
+      nameTextStyle: {
+        fontSize: 14,
+        color: "#666"
+      },
+      data: data.x
+    },
+    yAxis: {
+      type: "value",
+      name: nameY,
+      nameLocation: "middle",
+      nameGap: 50,
+      nameTextStyle: {
+        fontSize: 14,
+        color: "#666"
+      }
+    },
+    series: [
+      {
+        data: data.y,
+        type: "line",
+        smooth: true,
+        areaStyle: {}
+      }
+    ]
+  };
   return (
     <div
       style={{
-        display: "inline-block",
         paddingTop: 24,
         borderTop: "1px solid #B9B7B7",
         position: "relative",
-        width: width,
       }}
     >
       <span
@@ -32,18 +78,7 @@ const AreaChartCustom = ({ data, nameChart, width }) => {
       >
         {nameChart}
       </span>
-      <ResponsiveContainer width="100%" height={400}>
-        <AreaChart
-          data={data}
-          margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
-          <YAxis />
-          <Tooltip />
-          <Area type="monotone" dataKey="uv" stroke="#8884d8" fill="#8884d8" />
-        </AreaChart>
-      </ResponsiveContainer>
+      <ReactECharts option={options} style={{ height }} />
     </div>
   );
 };

@@ -3,7 +3,7 @@ import DateTimePickerWithSortLabelDash from "@/components/DateTimePickerWithSort
 import SelectBoxLabelDash from "@/components/SelectBoxLabelDash";
 import { useRequireField } from "@/hook/useRequireField";
 import { useMessageError } from "@/hook/validate";
-import { VEHICLE } from "@/utils/constants";
+import { MENU_PARTNER_ID, VEHICLE } from "@/utils/constants";
 import { changeInput } from "@/utils/handleChange";
 import { convertObjectToDataSelectBox } from "@/utils/object";
 import { useEffect, useState } from "react"
@@ -19,10 +19,17 @@ import { detail } from "@/service/ticketService";
 import { getDataApi } from "@/utils/api";
 import { toastError } from "@/utils/toast";
 import { useLoading } from "@/hook/loading";
+import { useSelectMenu } from "@/hook/useSelectMenu";
 
 let requireKeys = ["name", "description", "vehicle", "timeAppliedEdit", "priceTimeSlot", "priceDaySlot", "priceWeekSlot", "priceMonthSlot"]
 const indexKeys = ["name", "description", "vehicle", "timeAppliedEdit", "priceTimeSlot", "priceDaySlot", "priceWeekSlot", "priceMonthSlot"]
 const AddTicket = () => {
+  const { select } = useSelectMenu();
+
+  useEffect(() => {
+    select(MENU_PARTNER_ID.QUAN_LY_VE_TAO_MOI);
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
+  }, []);
   const { setRequireField } = useRequireField();
   const { reset, pushMessage, deleteKey, deleteManyKey } = useMessageError()
   const [timeSlotChecked, setTimeSlotChecked] = useState(true);

@@ -1,16 +1,18 @@
 import LogoParking from "@/components/Logo"
 import MenuAccount from "@/components/MenuAccount"
 import Notifitation from "@/components/Notification"
+import useResponsiveKey from "@/hook/useReponsive"
+import { getAvatar } from "@/service/localStorageService"
 import { CUSTOMER_MENU } from "@/utils/menu"
+import noAvatar from '@image/no_avatar2.png'
 import { Menu } from "antd"
 import Sider from "antd/es/layout/Sider"
 import { useEffect, useState } from "react"
 import { AiOutlineMenuFold, AiOutlineMenuUnfold } from "react-icons/ai"
+import { useSelector } from "react-redux"
+import { useLocation } from "react-router-dom"
 import MenuCustom from "./Menu"
 import Remaining from "./Remaining"
-import { useLocation } from "react-router-dom"
-import { useSelector } from "react-redux"
-import useResponsiveKey from "@/hook/useReponsive"
 
 const Header = () => {
   const location = useLocation();
@@ -19,6 +21,8 @@ const Header = () => {
   const selecting = useSelector(state => state.menuSelect);
   const authened = useSelector(state => state.authen);
   const { key } = useResponsiveKey();
+  const avatar = getAvatar();
+
   useEffect(() => {
     const updateHeight = () => {
       const contentElement = document.getElementById("content-page");
@@ -87,9 +91,7 @@ const Header = () => {
             <div class="account">
               {key !== 'xs' && <Remaining />}
               <MenuAccount
-                linkAvatar={
-                  "https://imgcdn.stablediffusionweb.com/2024/3/24/17ee935b-c63a-4374-8fc3-91b2559e02f2.jpg"
-                }
+                linkAvatar={ avatar || noAvatar}
               />
             </div>
           </>}

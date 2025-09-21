@@ -28,6 +28,12 @@ export async function registrationAccount(data) {
   })
 }
 
+export async function confirmRegisAccount(code) {
+  return await httpClient.post(PARKING_SERVICE.authen.confirmRegis, {code}, {
+    skipAuth: true,
+  })
+}
+
 export async function forgetAccount(username) {
   return await httpClient.post(PARKING_SERVICE.authen.forget, {username}, {
     skipAuth: true

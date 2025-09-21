@@ -13,6 +13,8 @@ export const PARKING_SERVICE = {
     infoAccount: "account/info",
     changeStatus: "account/change-status",
     changeInfo: "account/change-info",
+    changePassword: "account/change-password",
+    changeInfoPartner: "account/change-info-partner",
   },
   location: {
     modify: "location/modify",
@@ -58,6 +60,7 @@ export const PARKING_SERVICE = {
     checkAccess: "auth/check-token", 
     refreshToken: "auth/refresh", 
     registration: "auth/registration",
+    confirmRegis: "auth/confirm-regis",
     forget: "auth/forget",
     confirmForget: "auth/forget/confirm",
   },
@@ -100,6 +103,11 @@ export const PARKING_SERVICE = {
     getLocationOfPartner: "statistical/location-of-partner",
     getLocationWaitReleaseOfPartner: "statistical/location-wait-release-of-partner",
     getLocationWaitApproveOfPartner: "statistical/location-wait-approve-of-partner",
+    getStatisticalCardAtHomeByAdmin: "statistical/card-at-home-admin",
+    getStatisticalPieAtHomeByAdmin: "statistical/pie-at-home-admin",
+    getStatisticalAreaAtHomeByAdmin: "statistical/area-at-home-admin",
+    thongKeDoanhThuThangTheoDoiTac: "statistical/thong-ke-doanh-thu-thang-theo-doi-tac",
+    statisticQuery: "statistical/statistic-query",
   }
 }
 

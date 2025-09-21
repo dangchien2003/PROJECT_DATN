@@ -10,9 +10,12 @@ import "./style.css";
 import { ToastContainer } from "react-toastify";
 import LogoParking from "../Logo";
 import WebSocket from "@/configs/websocket";
+import { useSelector } from "react-redux";
 const { Header, Sider, Content } = Layout;
 
 const PartnerLayout = () => {
+  const selecting = useSelector(state => state.menuSelect);
+  const [openKeys, setOpenKeys] = useState([]);
   const [collapsed, setCollapsed] = useState(false);
   const {
     token: { colorBgContainer, borderRadiusLG },
@@ -23,6 +26,21 @@ const PartnerLayout = () => {
     // WebSocket.connect();
     return () => WebSocket.disconnect();
   }, []);
+  const handleOpenChange = (keys) => {
+    // AntD sẽ trả về toàn bộ keys đang mở
+    setOpenKeys(keys);
+  };
+
+  useEffect(() => {
+    if (selecting) {
+      const parentKey = selecting.includes(".")
+        ? selecting.split(".")[0]
+        : selecting;
+      setOpenKeys(prev =>
+        prev.includes(parentKey) ? prev : [...prev, parentKey]
+      );
+    }
+  }, [selecting])
   return (
     <Layout style={{ minHeight: "100vh" }}>
       <ToastContainer />
@@ -33,6 +51,9 @@ const PartnerLayout = () => {
           mode="inline"
           defaultSelectedKeys={["1"]}
           items={PARTNER_MENU}
+          selectedKeys={selecting ? selecting : null}
+          openKeys={openKeys}
+          onOpenChange={handleOpenChange}
         />
       </Sider>
       <Layout>

@@ -3,7 +3,7 @@ import TableActionHistoryCard from "@/components/TableActionHistoryCard";
 import { useLoading } from "@/hook/loading";
 import { detailCardByadmin } from "@/service/cardService";
 import { getDataApi } from "@/utils/api";
-import { CARD_STATUS_2 } from "@/utils/constants";
+import { CARD_STATUS_2, MENU_ADMIN_ID } from "@/utils/constants";
 import { toastError } from "@/utils/toast";
 import { Col, Row, Typography } from "antd";
 import { useEffect, useState } from "react";
@@ -11,11 +11,22 @@ import { useParams } from "react-router-dom";
 import CardAction from "./CardAction";
 import HistoryRequestAdditionalCardOfCustomer from "./HistoryRequestAdditionalCardOfCustomer";
 import "./style.css";
+import { useSelectMenu } from "@/hook/useSelectMenu";
 const { Title } = Typography;
 
 
-const CardDetail = () => {
+const CardDetail = () => {  
   const { waiting, id } = useParams();
+  const { select } = useSelectMenu();
+  
+  useEffect(() => {
+    if(waiting === "1") {
+      select(MENU_ADMIN_ID.THE_YEU_CAU_THEM);
+    } else {
+      select(MENU_ADMIN_ID.THE_DANH_SACH);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
+  }, []);
   const { showLoad, hideLoad } = useLoading();
   const [data, setData] = useState();
   useEffect(() => {

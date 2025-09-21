@@ -1,20 +1,22 @@
-import { Button, Checkbox, Divider } from "antd"
+import { clientId, googleAuthUrl, redirectUriForSignIn } from "@/configs/googleAuthConfig"
+import { useLoading } from "@/hook/loading"
+import { useMessageError } from "@/hook/validate"
+import { login } from "@/service/authenticationService"
+import { cancelRememberUser, getRememberUser, setAccessToken, setRememberUser } from "@/service/cookieService"
+import { getCodeVerifierToLocalStorage, setAccountFullName, setAccountId, setActor, setAvatar, setCodeVerifierToLocalStorage, setPartnerFullName, setRefreshToken } from "@/service/localStorageService"
+import { authened } from "@/store/authenSlice"
+import { getDataApi } from "@/utils/api"
+import { TYPE_AUTHEN } from "@/utils/constants"
+import { isNullOrUndefined } from "@/utils/data"
+import { changeInput } from "@/utils/handleChange"
+import { cleanUrl, generateCodeChallenge, generateCodeVerifier, getAuthorizationCode } from "@/utils/pkceUtils"
+import { checkRequireInput, validateInput } from "@/utils/validateAction"
 import logoGoogle from '@image/logo-google.png'
+import { Button, Checkbox, Divider } from "antd"
+import { useEffect, useState } from "react"
+import { useDispatch, useSelector } from "react-redux"
 import { Link, useNavigate, useSearchParams } from "react-router-dom"
 import InputAuthen from "./InputAuthen"
-import { changeInput } from "@/utils/handleChange"
-import { useMessageError } from "@/hook/validate"
-import { useEffect, useState } from "react"
-import { checkRequireInput, validateInput } from "@/utils/validateAction"
-import { useDispatch, useSelector } from "react-redux"
-import { TYPE_AUTHEN } from "@/utils/constants"
-import { login } from "@/service/authenticationService"
-import { getDataApi } from "@/utils/api"
-import { useLoading } from "@/hook/loading"
-import { cancelRememberUser, getRememberUser, setAccessToken, setRememberUser } from "@/service/cookieService"
-import { setAccountFullName, setAccountId, setActor, setPartnerFullName, setRefreshToken } from "@/service/localStorageService"
-import { isNullOrUndefined } from "@/utils/data"
-import { authened } from "@/store/authenSlice"
 
 const keyAuthenError = "password"
 const FormLogin = ({ data }) => {
@@ -32,16 +34,46 @@ const FormLogin = ({ data }) => {
   useEffect(() => {
     reset();
     const email = params.get("email");
-    if( email !== null) {
+    if (email !== null) {
       data.username = email;
     } else {
       const userRemember = getRememberUser();
-      if(!isNullOrUndefined(userRemember)) {
+      if (!isNullOrUndefined(userRemember)) {
         setRemember(true);
         data.username = userRemember;
       }
     }
-    
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
+  }, [])
+
+  // xử lý đăng nhập bằng google
+  useEffect(() => {
+    const loginByGooogle = async () => {
+      const authorizationCode = getAuthorizationCode()
+      const codeVerifier = getCodeVerifierToLocalStorage()
+      const codeOk = authorizationCode && codeVerifier
+      if (!codeOk) {
+        return
+      }
+      const payload = {
+        type: TYPE_AUTHEN.GOOGLE,
+        codeVerifier,
+        authorizationCode
+      }
+      showLoad({ type: 2 })
+      try {
+        const response = await login(payload);
+        processLoginSuccess(response, {});
+      } catch (error) {
+        const response = getDataApi(error);
+        pushMessage(keyAuthenError, response.message);
+        setAuthenError(true);
+      } finally {
+        cleanUrl();
+        hideLoad();
+      }
+    }
+    loginByGooogle()
     // eslint-disable-next-line react-hooks/exhaustive-deps 
   }, [])
 
@@ -54,28 +86,7 @@ const FormLogin = ({ data }) => {
     }
     showLoad({ type: 2 })
     login(dataAuthen).then((response) => {
-      dispatch(authened(true));
-      const result = getDataApi(response);
-      setAccessToken(result?.accessToken);
-      setRefreshToken(result?.refreshToken);
-      setAccountFullName(result?.fullName);
-      setPartnerFullName(result?.partnerFullName);
-      setAccountId(result?.id);
-      setActor(result?.actor)
-      if(remember) {
-        setRememberUser(dataAuthen.username);
-      } else {
-        cancelRememberUser();
-      }
-      if(result?.actor === "partner") {
-        navigate("/partner");
-      } else if (result?.actor === "admin") {
-        navigate("/admin");
-      } else if (result?.actor === "customer") {
-        navigate("/list/ticket")
-      } else {
-        navigate("/404")
-      }
+      processLoginSuccess(response, dataAuthen);
     })
       .catch((e) => {
         const error = getDataApi(e);
@@ -86,6 +97,32 @@ const FormLogin = ({ data }) => {
         hideLoad();
         setClickLogin(false);
       })
+  }
+
+  const processLoginSuccess = (response, dataAuthen) => {
+    dispatch(authened(true));
+    const result = getDataApi(response);
+    setAccessToken(result?.accessToken);
+    setRefreshToken(result?.refreshToken);
+    setAccountFullName(result?.fullName);
+    setPartnerFullName(result?.partnerFullName);
+    setAccountId(result?.id);
+    setActor(result?.actor)
+    setAvatar(result?.avatar ? result.avatar : "")
+    if (remember) {
+      setRememberUser(dataAuthen.username);
+    } else {
+      cancelRememberUser();
+    }
+    if (result?.actor === "partner") {
+      navigate("/partner");
+    } else if (result?.actor === "admin") {
+      navigate("/admin");
+    } else if (result?.actor === "customer") {
+      navigate("/home")
+    } else {
+      navigate("/404")
+    }
   }
 
   useEffect(() => {
@@ -104,7 +141,7 @@ const FormLogin = ({ data }) => {
 
   const handleChangeInput = (key, value) => {
     changeInput(data, key, value);
-    if(authenError) {
+    if (authenError) {
       deleteKey(keyAuthenError);
       setAuthenError(false);
     }
@@ -112,7 +149,7 @@ const FormLogin = ({ data }) => {
 
   const handleLoginUsernamePassword = () => {
     data.type = TYPE_AUTHEN.USERNAME_PASSWORD;
-    if(authenError) {
+    if (authenError) {
       pushMessage(keyAuthenError, "Vui lòng điền đúng thông tin")
       return;
     }
@@ -122,6 +159,16 @@ const FormLogin = ({ data }) => {
 
   const handleChangeRemember = (e) => {
     setRemember(e.target.checked)
+  }
+
+  const handleLoginByGoogle = async () => {
+    const scope = encodeURIComponent('email profile')
+    const codeVerifier = generateCodeVerifier()
+    const codeChallenge = await generateCodeChallenge(codeVerifier)
+    setCodeVerifierToLocalStorage(codeVerifier)
+
+    const authUrl = `${googleAuthUrl}?response_type=code&redirect_uri=${redirectUriForSignIn}&scope=${scope}&code_challenge=${codeChallenge}&client_id=${clientId}&code_challenge_method=S256`
+    window.location.href = authUrl
   }
   return (
     <div>
@@ -150,7 +197,7 @@ const FormLogin = ({ data }) => {
         <div className="action-login">
           <Button type="primary" className="btn login" onClick={handleLoginUsernamePassword}>Đăng nhập</Button>
           <Divider className="divider">HOẶC</Divider>
-          <Button type="primary" className="btn google-login">
+          <Button type="primary" className="btn google-login" onClick={handleLoginByGoogle}>
             <div>
               <img className="google-icon" src={logoGoogle} alt="Google logo" />
               <span>Đăng nhập bằng google</span>

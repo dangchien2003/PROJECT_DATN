@@ -8,9 +8,13 @@ const Menu = () => {
   return (
     <div className="middle-box">
       <div className="menu">
-        {authened ? <><div className={selecting === MENU_CUSTOMER_ID.TONG_QUAN ? "menu-item br3 select-item" : "menu-item br3"}>
-          Tổng quan
-        </div>
+        {authened ? <>
+
+          <Link className="no-style cw" to={"/home"}>
+            <div className={selecting === MENU_CUSTOMER_ID.TONG_QUAN ? "menu-item br3 select-item" : "menu-item br3"}>
+              Tổng quan
+            </div>
+          </Link>
           <Link className="no-style cw" to={"/deposit"}>
             <div className={selecting === MENU_CUSTOMER_ID.NAP_TIEN ? "menu-item br3 select-item" : "menu-item br3"} >
               Nạp tiền

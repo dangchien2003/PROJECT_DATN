@@ -8,9 +8,17 @@ import { useLoading } from "@/hook/loading";
 import { getDataApi } from "@/utils/api";
 import { toastError } from "@/utils/toast";
 import { isNullOrUndefined } from "@/utils/data";
+import { useSelectMenu } from "@/hook/useSelectMenu";
+import { MENU_PARTNER_ID } from "@/utils/constants";
 const { Title } = Typography;
 
 const DetailLocation = () => {
+  const { select } = useSelectMenu();
+
+  useEffect(() => {
+    select(MENU_PARTNER_ID.QUAN_LY_DIA_DIEM_DANH_SACH);
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
+  }, []);
   const {tab, id} = useParams();
   const [styleParent, setStyleParent] = useState({})
   const [widthPage, setWidthPage] = useState(window.innerWidth)

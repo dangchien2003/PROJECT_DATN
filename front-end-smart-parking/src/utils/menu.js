@@ -82,15 +82,27 @@ export const ADMIN_MENU = [
     children: [
       {
         key: "6.1",
-        label: "Doanh thu",
+        label: <Link to={"/admin/statistics/business"}>Doanh thu</Link>,
       },
       {
         key: "6.2",
-        label: "Vé",
+        label: <Link to={"/admin/statistics/ticket"}>Vé</Link>,
       },
       {
         key: "6.3",
-        label: "Phương tiện",
+        label: <Link to={"/admin/statistics/location"}>Địa điểm</Link>,
+      },
+      {
+        key: "6.4",
+        label: <Link to={"/admin/statistics/card"}>Thẻ</Link>,
+      },
+      {
+        key: "6.5",
+        label: <Link to={"/admin/statistics/partner"}>Đối tác</Link>,
+      },
+      {
+        key: "6.6",
+        label: <Link to={"/admin/statistics/customer"}>Khách hàng</Link>,
       },
     ],
   },
@@ -139,20 +151,19 @@ export const PARTNER_MENU = [
     children: [
       {
         key: "5.1",
-        label: "Doanh thu",
+        label: <Link to={"/partner/statistics/business"}>Doanh thu</Link>,
       },
       {
         key: "5.2",
-        label: "Địa điểm",
+        label: <Link to={"/partner/statistics/location"}>Địa điểm</Link>,
       },
       {
         key: "5.3",
-        label: "Vé",
+        label: <Link to={"/partner/statistics/ticket"}>Vé</Link>,
       },
-     
       {
         key: "5.4",
-        label: "Khách hàng",
+        label: <Link to={"/partner/statistics/customer"}>Khách hàng</Link>,
       },
     ],
   },
@@ -162,7 +173,7 @@ export const CUSTOMER_MENU = [
   {
     key: "1",
     icon: <HomeOutlined style={{ fontSize: 20 }} />,
-    label: <Link to={"/admin"}>Tổng quan</Link>,
+    label: <Link to={"/home"}>Tổng quan</Link>,
   },
   {
     key: "2",

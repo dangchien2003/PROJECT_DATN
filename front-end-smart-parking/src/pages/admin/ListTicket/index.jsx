@@ -9,8 +9,17 @@ import { useRequireField } from "@/hook/useRequireField";
 import { useMessageError } from "@/hook/validate";
 import { changeInput } from "@/utils/handleChange";
 import { setSearching } from "@/store/startSearchSlice";
+import { useSelectMenu } from "@/hook/useSelectMenu";
+import { MENU_ADMIN_ID } from "@/utils/constants";
 
-const ListTicket = () => {
+const ListTicket = () => {  
+  const { select } = useSelectMenu();
+  
+  useEffect(() => {
+    select(MENU_ADMIN_ID.VE_DANH_SACH);
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
+  }, []);
+
   const { resetRequireField } = useRequireField();
   const { reset } = useMessageError();
   const dispatch = useDispatch();
