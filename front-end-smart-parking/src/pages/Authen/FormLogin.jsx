@@ -119,7 +119,7 @@ const FormLogin = ({ data }) => {
     } else if (result?.actor === "admin") {
       navigate("/admin");
     } else if (result?.actor === "customer") {
-      navigate("/list/ticket")
+      navigate("/home")
     } else {
       navigate("/404")
     }

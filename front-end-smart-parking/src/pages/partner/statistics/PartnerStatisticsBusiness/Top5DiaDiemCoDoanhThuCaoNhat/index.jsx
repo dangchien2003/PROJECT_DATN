@@ -67,7 +67,6 @@ LIMIT 5;
         return;
       }
       getDataStatistic(query).then(response => {
-        console.log(response)
         const result = { categories: [], values: [] }
         response.data?.forEach(item => {
           result.categories.push(item.location_name);

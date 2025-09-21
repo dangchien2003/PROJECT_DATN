@@ -2,134 +2,115 @@ import CardDashboard from "@/components/CardDashboard";
 import ChildContent from "@/components/layout/Customer/ChildContent";
 import { useSelectMenu } from "@/hook/useSelectMenu";
 import { MENU_CUSTOMER_ID } from "@/utils/constants";
-import { Col, Flex, Row } from "antd";
-import { useEffect } from "react";
-import ticket2 from '@image/ticket2.png'
-import location from '@image/location2.png'
-import spending from '@image/spending.png'
-import PieChartCustom from "@/components/chart/PieChartCustom";
-import AreaChartCustom from "@/components/AreaChartCustom";
+import location from '@image/location2.png';
+import spending from '@image/spending.png';
+import ticket2 from '@image/ticket2.png';
+import { Col, Flex, Row, Segmented } from "antd";
+import dayjs from 'dayjs';
+import { useEffect, useRef, useState } from "react";
+import BienDong30Ngay from "./BienDong30Ngay";
+import ChiTieuTrongThang from "./ChiTieuTrongThang";
+import './style.css';
+import TiLeDonMuaTrongThang from "./TiLeDonMuaTrongThang";
+import { getAccountId } from "@/service/localStorageService";
+import { getDataStatistic } from "@/service/statisticalService";
+import { formatCurrency } from "@/utils/number";
 
 const Home = () => {
+  const now = useRef(dayjs());
   const { select } = useSelectMenu();
-
+  const [tab, setTab] = useState("Tháng này");
+  const [month, setMonth] = useState(now.current.month() + 1);
+  const [year, setYear] = useState(now.current.year());
   useEffect(() => {
     select(MENU_CUSTOMER_ID.TONG_QUAN);
     // eslint-disable-next-line react-hooks/exhaustive-deps 
   }, []);
-
-  const dataSoDonMuaDonMua = [
-    { name: "Mua hộ", value: 10 },
-    { name: "Cá nhân", value: 50 },
-  ]
-  const dataSoTienChiTieuTheoLoai = [
-    { name: "Mua vé", value: 50000 },
-    { name: "Gia hạn", value: 10000 },
-    { name: "Nạp tiền", value: 10000 },
-  ]
-  
-  const dataArea = {
-    "x": [
-      "01/09/2025",
-      "02/09/2025",
-      "03/09/2025",
-      "04/09/2025",
-      "05/09/2025",
-      "06/09/2025",
-      "07/09/2025",
-      "08/09/2025",
-      "09/09/2025",
-      "10/09/2025",
-      "11/09/2025",
-      "12/09/2025",
-      "13/09/2025",
-      "14/09/2025",
-      "15/09/2025",
-      "16/09/2025",
-      "17/09/2025",
-      "18/09/2025",
-      "19/09/2025",
-      "20/09/2025",
-      "21/09/2025",
-      "22/09/2025",
-      "23/09/2025",
-      "24/09/2025",
-      "25/09/2025",
-      "26/09/2025",
-      "27/09/2025",
-      "28/09/2025",
-      "29/09/2025",
-      "30/09/2025"
-    ],
-    "y": [
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      5000,
-      0,
-      0
-    ]
+  const onChangeMonth = (value) => {
+    if (value === "Tháng trước") {
+      const newDate = now.current.subtract(1, "month");
+      setMonth(newDate.month() + 1);
+      setYear(newDate.year());
+    } else {
+      setMonth(now.current.month() + 1);
+      setYear(now.current.year());
+    }
+    setTab(value);
   }
+  // thống kê card
+  const [soVeMuaTrongThang, setSoVeMuaTrongThang] = useState(0);
+  const [soDiaDiemGheQua, setSoDiaDiemGheQua] = useState(0);
+  const [chiTieuTrongThang, setChiTieuTrongThang] = useState(0);
+  const accountId = getAccountId();
+  useEffect(() => {
+    const query = `
+      select sum(quality_ticket) as data from order_parking
+      where payment_by = '${accountId}'
+      and YEAR(created_at) = ${year}
+      and month(created_at) = ${month}
+      and status = 2
+      UNION ALL
+      select count(DISTINCT location_id) as data from ticket_in_out
+      where created_by = '${accountId}'
+        and YEAR(created_at) = ${year}
+        and month(created_at) = ${month}
+      UNION ALL
+      select sum(total) as data from payment
+      where payment_by = '${accountId}'
+        and YEAR(created_at) = ${year}
+        and month(created_at) = ${month}
+      and status = 2 and fluctuation = 2`
+    getDataStatistic(query).then(response => {
+      setSoVeMuaTrongThang(response.data?.[0].data);
+      setSoDiaDiemGheQua(response.data?.[1].data);
+      setChiTieuTrongThang(formatCurrency(response.data?.[2].data) || 0);
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps 
+  }, [month, year])
   return (
     <div className='Home'>
       <ChildContent>
-        <h2 className='page-name'>Tổng quan/thống kê</h2>
+        <Flex justify="space-between">
+          <h2 className='page-name'>Tổng quan/thống kê</h2>
+          <Flex align="center">
+            <div>
+              <Segmented
+                options={["Tháng trước", "Tháng này"]}
+                value={tab}
+                onChange={onChangeMonth}
+                className="custom-segmented"
+              />
+            </div>
+          </Flex>
+        </Flex>
         <Row style={{ paddingTop: 20 }} gutter={24}>
           <Col lg={8} md={12} sm={12} xs={24}>
             <Flex justify="center">
-              <CardDashboard label={"Số vé mua trong tháng"} value="50" icon={<img src={ticket2} style={{ width: 40 }} alt="Vé đã bán" />} />
+              <CardDashboard label={"Số vé mua trong tháng"} value={soVeMuaTrongThang} icon={<img src={ticket2} style={{ width: 40 }} alt="ticket" />} />
             </Flex>
           </Col>
           <Col lg={8} md={12} sm={12} xs={24}>
             <Flex justify="center">
-              <CardDashboard label={"Số địa điểm đã ghé qua"} value="10" borderColor="#FF8042" icon={<img src={location} style={{ width: 40 }} alt="Vé đã bán" />} />
+              <CardDashboard label={"Số địa điểm đã ghé qua"} value={soDiaDiemGheQua} borderColor="#FF8042" icon={<img src={location} style={{ width: 40 }} alt="location" />} />
             </Flex>
           </Col>
           <Col lg={8} md={16} sm={16} xs={24}>
             <Flex justify="center">
-              <CardDashboard label={"Chi tiêu trong tháng"} value="50" borderColor="#00C49F" icon={<img src={spending} style={{ width: 40 }} alt="Vé đã bán" />} />
+              <CardDashboard label={"Chi tiêu trong tháng"} value={chiTieuTrongThang} borderColor="#00C49F" icon={<img src={spending} style={{ width: 40 }} alt="ví" />} />
             </Flex>
           </Col>
         </Row>
         <Row style={{ paddingTop: 50 }} gutter={50}>
           <Col lg={12} md={12} sm={24} xs={24}>
-            <PieChartCustom nameChart={"Tỉ lệ đơn mua trong tháng"} data={dataSoDonMuaDonMua} />
+            <TiLeDonMuaTrongThang month={month} year={year} />
           </Col>
           <Col lg={12} md={12} sm={24} xs={24}>
-            <PieChartCustom nameChart={"Số tiền ra vào trong tháng"} data={dataSoTienChiTieuTheoLoai} />
+            <ChiTieuTrongThang month={month} year={year} />
           </Col>
         </Row>
         <Row style={{ paddingTop: 50 }} gutter={50}>
           <Col lg={24} md={24} sm={24} xs={24}>
-            <AreaChartCustom
-              data={dataArea}
-              nameChart={"Biến động 30 ngày gần nhất"}
-              height={500}
-            />
+            <BienDong30Ngay />
           </Col>
         </Row>
       </ChildContent>
