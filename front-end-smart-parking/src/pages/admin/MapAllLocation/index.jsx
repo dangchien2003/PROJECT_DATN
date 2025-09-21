@@ -1,12 +1,21 @@
 import Map from "@/components/Map"
 import { useLoading } from "@/hook/loading"
+import { useSelectMenu } from "@/hook/useSelectMenu"
 import { getMapLocation } from "@/service/locationService"
 import { getDataApi } from "@/utils/api"
+import { MENU_ADMIN_ID } from "@/utils/constants"
 import { convertDataMap } from "@/utils/data"
 import { toastError } from "@/utils/toast"
 import { useEffect, useState } from "react"
 
-const MapAllLocation = () => {
+const MapAllLocation = () => {  
+  const { select } = useSelectMenu();
+  
+  useEffect(() => {
+    select(MENU_ADMIN_ID.DIA_DIEM_BAN_DO);
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
+  }, []);
+
   const [page, setPage] = useState(0);
   const { hideLoad, showLoad } = useLoading();
   const [data, setData] = useState([]);

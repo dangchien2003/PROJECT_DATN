@@ -3,9 +3,17 @@ import SoLuongTaiKhoanDuocTao from "./SoLuongTaiKhoanDuocTao";
 import ThongKeTheoTrangThai from "./ThongKeTheoTrangThai";
 import ThongKeVeVaDiaDiem from "./ThongKeVeVaDiaDiem";
 import MonthYearSelect from "@/components/MonthYearSelect";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSelectMenu } from "@/hook/useSelectMenu";
+import { MENU_ADMIN_ID } from "@/utils/constants";
 
 const StatisticsPartner = () => {
+  const { select } = useSelectMenu();
+
+  useEffect(() => {
+    select(MENU_ADMIN_ID.THONG_KE_DOI_TAC);
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
+  }, []);
   const [month, setMonth] = useState();
   const [year, setYear] = useState();
   const onChangeTime = ({year, month}) => {

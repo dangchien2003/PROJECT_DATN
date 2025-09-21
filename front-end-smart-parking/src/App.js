@@ -91,6 +91,7 @@ const router = createBrowserRouter([
       { path: "account/partner/:id", element: <PartnerInfo /> },
       { path: "account/customer/:id", element: <AccountCustomerInfo /> },
       { path: "account/create", element: <CreateAccount /> },
+       { path: "account/change-password", element: <ChangePassword /> },
       { path: "account/*", element: <AccountCustomerList /> },
 
       { path: "ticket", element: <ListTicket /> },
@@ -126,6 +127,7 @@ const router = createBrowserRouter([
       { path: "location/detail/:tab/:id", element: <DetailLocationPartner /> },
       { path: "account/partner/:id", element: <PartnerInfo /> },
       { path: "account/customer/:id", element: <AccountCustomerInfo /> },
+       { path: "account/change-password", element: <ChangePassword /> },
 
       { path: "ticket/add", element: <AddTicket waitRelease={false} /> },
       { path: "ticket/edit/:id", element: <AddTicket waitRelease={false} /> },

@@ -19,10 +19,18 @@ import { locationDetail } from "@/service/locationService";
 import { getDataApi } from "@/utils/api";
 import { toastError } from "@/utils/toast";
 import dayjs from "dayjs"
+import { useSelectMenu } from "@/hook/useSelectMenu";
+import { MENU_PARTNER_ID } from "@/utils/constants";
 
 const requireKeys = ["name", "address", "coordinatesX", "coordinatesY", "timeAppliedEdit", "description"]
 const indexKeys = ["name", "address", "coordinatesX", "coordinatesY", "timeAppliedEdit", "description"]
 const AddLocation = ({ isModify = false }) => {
+  const { select } = useSelectMenu();
+
+  useEffect(() => {
+    select(MENU_PARTNER_ID.QUAN_LY_DIA_DIEM_THEM);
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
+  }, []);
   const [dataModify, setDataModify] = useState({
     locationId: null,
     name: null,
@@ -98,7 +106,7 @@ const AddLocation = ({ isModify = false }) => {
       setDisableCoordinates(false);
       updateObjectValue(dataModify, "coordinatesX", null);
       updateObjectValue(dataModify, "coordinatesY", null);
-      
+
     }
     if (dataModify) {
       updateObjectValue(dataModify, key, value);
@@ -107,14 +115,14 @@ const AddLocation = ({ isModify = false }) => {
 
   // const handleClickEveryTime = (_, value) => {
   //   setOpenEveryTime(true);
-    // if (value) {
-    //   // Nếu mở mọi lúc thì set giờ về 00:00:00
-    //   updateObjectValue(dataModify, "openTime", "00:00:00");
-    //   updateObjectValue(dataModify, "closeTime", "00:00:00");
-    // } else {
-    //   updateObjectValue(dataModify, "openTime", null);
-    //   updateObjectValue(dataModify, "closeTime", null);
-    // }
+  // if (value) {
+  //   // Nếu mở mọi lúc thì set giờ về 00:00:00
+  //   updateObjectValue(dataModify, "openTime", "00:00:00");
+  //   updateObjectValue(dataModify, "closeTime", "00:00:00");
+  // } else {
+  //   updateObjectValue(dataModify, "openTime", null);
+  //   updateObjectValue(dataModify, "closeTime", null);
+  // }
   // }
 
   return (
@@ -247,7 +255,7 @@ const AddLocation = ({ isModify = false }) => {
         defaultValue={dataModify?.description}
         callbackChangeValue={handleChange}
       />
-      <Action isModify={isModify} data={dataModify} requireKeys={requireKeys} indexKey={indexKeys}/>
+      <Action isModify={isModify} data={dataModify} requireKeys={requireKeys} indexKey={indexKeys} />
     </div>
   );
 };

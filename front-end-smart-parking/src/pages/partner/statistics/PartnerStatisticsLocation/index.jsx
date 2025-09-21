@@ -3,10 +3,18 @@ import SoLuotThayDoiThongTin from "./SoLuotThayDoiThongTin";
 import ThongKeDiaDiemTheoTrangThai from "./ThongKeDiaDiemTheoTrangThai";
 import ThongKeLuotRaVaoTheoDiaDiemTrongThang from "./ThongKeLuotRaVaoTheoDiaDiemTrongThang";
 import ThongKeDiaDiemCoNhieuVeHoTroNhat from "./ThongKeDiaDiemCoNhieuVeHoTroNhat";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import MonthYearSelect from "@/components/MonthYearSelect";
+import { useSelectMenu } from "@/hook/useSelectMenu";
+import { MENU_PARTNER_ID } from "@/utils/constants";
 
 const PartnerStatisticsLocation = () => {
+  const { select } = useSelectMenu();
+
+  useEffect(() => {
+    select(MENU_PARTNER_ID.BAO_CAO_THONG_KE_DIA_DIEM);
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
+  }, []);
   const [month, setMonth] = useState();
   const [year, setYear] = useState();
   const onChangeTime = ({year, month}) => {

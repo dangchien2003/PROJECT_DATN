@@ -8,8 +8,16 @@ import Top5DiaDiemCoDoanhThuCaoNhat from "./Top5DiaDiemCoDoanhThuCaoNhat";
 import { thongKeDoanhThuThangTheoDoiTac } from "@/service/statisticalService";
 import { getDataApi } from "@/utils/api";
 import { toastError } from "@/utils/toast";
+import { useSelectMenu } from "@/hook/useSelectMenu";
+import { MENU_PARTNER_ID } from "@/utils/constants";
 
 const PartnerStatisticsBusiness = () => {
+  const { select } = useSelectMenu();
+
+  useEffect(() => {
+    select(MENU_PARTNER_ID.BAO_CAO_THONG_KE_DOANH_THU);
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
+  }, []);
   const [month, setMonth] = useState();
   const [year, setYear] = useState();
   const onChangeTime = ({ year, month }) => {

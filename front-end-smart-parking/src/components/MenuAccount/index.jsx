@@ -39,6 +39,7 @@ const MenuAccount = ({ linkAvatar }) => {
   const onClose = () => {
     setOpenAccountInfo(false);
   };
+  const linkChangePassword = actor !== "customer" ? `/${actor}/account/change-password` : "/account/change-password"
 
   const itemsBase = [
     {
@@ -59,7 +60,7 @@ const MenuAccount = ({ linkAvatar }) => {
     },
     {
       key: "3",
-      label: <Link to="/account/change-password">Đổi mật khẩu</Link>,
+      label: <Link to={linkChangePassword}>Đổi mật khẩu</Link>,
     },
     {
       key: "4",
@@ -79,17 +80,24 @@ const MenuAccount = ({ linkAvatar }) => {
   ];
 
   useEffect(() => {
-    if(actor === "admin" || actor === "partner" || key !== "xs") {
-      setItemsMenu(itemsBase.filter(item => item.key !== "0" && item.key !== "1"))
+    let itemMenu = null;
+    // loại bỏ số dư
+    if (key !== "xs") {
+      itemMenu = itemsBase.filter(item => item.key !== "0" && item.key !== "1");
     } else {
-      setItemsMenu(itemsBase)
+      itemMenu = itemsBase;
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps 
+    // loại bỏ quản lý giao dịch 
+    if (actor === "admin" || actor === "partner") {
+      itemMenu = itemMenu.filter(item => item.key !== "4");
+    }
+    setItemsMenu(itemMenu)
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
   }, [key, loadingRemaining]);
 
   useEffect(() => {
     // không call khi tk là admin hoặc partner
-    if(actor === "admin" || actor === "partner") return;
+    if (actor === "admin" || actor === "partner") return;
 
     setLoadingRemaining(true);
     getBalance().then((response) => {

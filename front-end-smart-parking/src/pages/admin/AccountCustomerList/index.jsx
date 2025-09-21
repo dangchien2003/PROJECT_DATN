@@ -1,9 +1,18 @@
 import Search from "./Search";
 import DividerCustom from "@/components/DividerCustom";
 import TableCustomListAccountCustomer from "@/components/TableCustomListAccountCustomer";
-import { useState } from "react";
+import { useSelectMenu } from "@/hook/useSelectMenu";
+import { MENU_ADMIN_ID } from "@/utils/constants";
+import { useEffect, useState } from "react";
 
 const AccountCustomerList = () => {
+  const { select } = useSelectMenu();
+  
+  useEffect(() => {
+    select(MENU_ADMIN_ID.TAI_KHOAN_KHACH_HANG);
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
+  }, []);
+
   const [dataSearch] = useState({
     fullName: null,
     email: null,

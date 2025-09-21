@@ -1,22 +1,34 @@
-import { useParams } from "react-router-dom"
-import "./style.css"
-import BoxInfo from "./BoxInfo";
+import { useLoading } from "@/hook/loading";
+import { useSelectMenu } from "@/hook/useSelectMenu";
+import { locationDetail, modifyDetail } from "@/service/locationService";
+import { getDataApi } from "@/utils/api";
+import { MENU_ADMIN_ID } from "@/utils/constants";
+import { toastError } from "@/utils/toast";
 import { Typography } from "antd";
 import { useEffect, useState } from "react";
-import { useLoading } from "@/hook/loading";
-import { toastError } from "@/utils/toast";
-import { getDataApi } from "@/utils/api";
-import { locationDetail, modifyDetail } from "@/service/locationService";
+import { useParams } from "react-router-dom";
+import BoxInfo from "./BoxInfo";
+import "./style.css";
 const { Title } = Typography;
 
 const DetailLocation = () => {
   const { tab, id } = useParams();
+  const tabNumber = Number(tab);
+  const { select } = useSelectMenu();
+
+  useEffect(() => {
+    if ([1, 2, 6].includes(tabNumber)) {
+      select(MENU_ADMIN_ID.DIA_DIEM_DANH_SACH);
+    } else {
+      select(MENU_ADMIN_ID.DIA_DIEM_CHO_DUYET);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
+  }, []);
   const [styleParent, setStyleParent] = useState({})
   const [widthPage, setWidthPage] = useState(window.innerWidth)
   const [dataModify, setDataModify] = useState(null)
   const [dataRoot, setDataRoot] = useState(null)
   const { showLoad, hideLoad } = useLoading();
-  const tabNumber = Number(tab);
   // hàm lấy dữ liệu 
   const getDataRoot = (id) => {
     locationDetail(id).then((response) => {
@@ -64,7 +76,7 @@ const DetailLocation = () => {
     if (dataModify?.locationId) {
       getDataRoot(dataModify.locationId);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps 
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
   }, [dataModify])
 
   // responsive

@@ -14,6 +14,7 @@ export const PARKING_SERVICE = {
     changeStatus: "account/change-status",
     changeInfo: "account/change-info",
     changePassword: "account/change-password",
+    changeInfoPartner: "account/change-info-partner",
   },
   location: {
     modify: "location/modify",

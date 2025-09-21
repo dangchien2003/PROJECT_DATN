@@ -1,9 +1,9 @@
-import { Tabs } from "antd";
-import Search from "./Search";
-import { useState } from "react";
-import TableCustomListRequestCreateTicket from "@/components/TableCustomListRequestCreateTicket";
 import DividerCustom from "@/components/DividerCustom";
+import TableCustomListRequestCreateTicket from "@/components/TableCustomListRequestCreateTicket";
 import TableCustomListRequestEditTicket from "@/components/TableCustomListRequestEditTicket";
+import { Tabs } from "antd";
+import { useState } from "react";
+import Search from "./Search";
 
 const items = [
   {

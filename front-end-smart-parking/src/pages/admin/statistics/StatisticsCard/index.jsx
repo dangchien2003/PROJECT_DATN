@@ -3,9 +3,17 @@ import ThongKeTheoTrangThai from "./ThongKeTheoTrangThai";
 import TiLeSuDungQrVaThe from "./TiLeSuDungQrVaThe";
 import SoLuongXuLy from "./SoLuongXuLy";
 import MonthYearSelect from "@/components/MonthYearSelect";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSelectMenu } from "@/hook/useSelectMenu";
+import { MENU_ADMIN_ID } from "@/utils/constants";
 
 const StatisticsCard = () => {
+  const { select } = useSelectMenu();
+
+  useEffect(() => {
+    select(MENU_ADMIN_ID.THONG_KE_THE);
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
+  }, []);
   const [month, setMonth] = useState();
   const [year, setYear] = useState();
   const onChangeTime = ({year, month}) => {

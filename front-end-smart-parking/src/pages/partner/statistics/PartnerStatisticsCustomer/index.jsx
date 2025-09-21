@@ -1,10 +1,18 @@
 import { Col, Row } from "antd";
 import LoaiKhachHang from "./LoaiKhachHang";
 import Top10KhachHangChiTieuNhieuNhat from "./Top10KhachHangChiTieuNhieuNhat";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import MonthYearSelect from "@/components/MonthYearSelect";
+import { useSelectMenu } from "@/hook/useSelectMenu";
+import { MENU_PARTNER_ID } from "@/utils/constants";
 
 const PartnerStatisticsCustomer = () => {
+  const { select } = useSelectMenu();
+
+  useEffect(() => {
+    select(MENU_PARTNER_ID.BAO_CAO_THONG_KE_KHACH_HANG);
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
+  }, []);
   const [month, setMonth] = useState();
   const [year, setYear] = useState();
   const onChangeTime = ({year, month}) => {

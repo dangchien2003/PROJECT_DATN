@@ -4,9 +4,17 @@ import SoLuotThayDoiThongTin from "./SoLuotThayDoiThongTin";
 import SoVeTheoLoai from "./SoVeTheoLoai";
 import Top10VeCoLuotMuaCaoNhat from "./Top10VeCoLuotMuaCaoNhat";
 import MonthYearSelect from "@/components/MonthYearSelect";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSelectMenu } from "@/hook/useSelectMenu";
+import { MENU_PARTNER_ID } from "@/utils/constants";
 
 const PartnerStatisticsTicket = () => {
+  const { select } = useSelectMenu();
+
+  useEffect(() => {
+    select(MENU_PARTNER_ID.BAO_CAO_THONG_KE_VE);
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
+  }, []);
   const [month, setMonth] = useState();
   const [year, setYear] = useState();
   const onChangeTime = ({year, month}) => {

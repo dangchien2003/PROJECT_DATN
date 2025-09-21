@@ -1,13 +1,21 @@
 import MonthYearSelect from '@/components/MonthYearSelect';
 import { Col, Row } from 'antd';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import SoTienThuDuocTheoThang from './SoTienThuDuocTheoThang';
 import './style.css';
 import ThongKeDiaDiemVoiVeBanVaDoanhThu from './ThongKeDiaDiemVoiVeBanVaDoanhThu';
 import ThongKeSoDon from './ThongKeSoDon';
 import Top5DoiTacCoDoanhThuCaoNhat from './Top5DoiTacCoDoanhThuCaoNhat';
+import { useSelectMenu } from '@/hook/useSelectMenu';
+import { MENU_ADMIN_ID } from '@/utils/constants';
 
 const StatisticsBusiness = () => {
+  const { select } = useSelectMenu();
+
+  useEffect(() => {
+    select(MENU_ADMIN_ID.THONG_KE_DOANH_THU);
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
+  }, []);
   const [month, setMonth] = useState();
   const [year, setYear] = useState();
   const onChangeTime = ({ year, month }) => {

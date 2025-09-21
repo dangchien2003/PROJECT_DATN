@@ -15,7 +15,8 @@ const SelectBoxLabelDash = ({
   regex,
   itemKey,
   prefix,
-  require
+  require,
+  disable
 }) => {
   const [value, setValue] = useState(
     selectIndex ? data[selectIndex] : defaultValue
@@ -97,6 +98,7 @@ const SelectBoxLabelDash = ({
         allowClear
         placeholder={placeholder}
         options={data}
+        disabled={disable}
       />
       <InputError itemKey={itemKey}/>
     </div>

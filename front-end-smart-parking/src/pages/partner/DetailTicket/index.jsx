@@ -8,9 +8,17 @@ import { detail, detailWaitRelease } from "@/service/ticketService";
 import { getDataApi } from "@/utils/api";
 import { isNullOrUndefined } from "@/utils/data";
 import { toastError } from "@/utils/toast";
+import { useSelectMenu } from "@/hook/useSelectMenu";
+import { MENU_PARTNER_ID } from "@/utils/constants";
 const { Title } = Typography;
 
 const DetailTicket = () => {
+  const { select } = useSelectMenu();
+
+  useEffect(() => {
+    select(MENU_PARTNER_ID.QUAN_LY_VE_DANH_SACH);
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
+  }, []);
   const [styleParent, setStyleParent] = useState({});
   const [widthPage, setWidthPage] = useState(window.innerWidth);
   const [dataRelease, setDataRelease] = useState(null);

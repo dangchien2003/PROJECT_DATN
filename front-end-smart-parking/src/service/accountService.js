@@ -51,3 +51,7 @@ export async function changeInfo(key, newInfo) {
 export async function changePassword(oldPassword, newPassword) {
   return await httpClient.patch(PARKING_SERVICE.account.changePassword , {oldPassword, newPassword}, {})
 }
+
+export async function changeInfoPartner(data) {
+  return await httpClient.post(PARKING_SERVICE.account.    changeInfoPartner, data, {})
+}

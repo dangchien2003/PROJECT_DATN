@@ -8,8 +8,17 @@ import TableListLocation from "@/components/TableListLocation";
 import { useRequireField } from "@/hook/useRequireField";
 import { useDispatch, useSelector } from "react-redux";
 import { setSearching } from "@/store/startSearchSlice";
+import { useSelectMenu } from "@/hook/useSelectMenu";
+import { MENU_ADMIN_ID } from "@/utils/constants";
 
-const ListLocation = () => {
+const ListLocation = () => {  
+  const { select } = useSelectMenu();
+  
+  useEffect(() => {
+    select(MENU_ADMIN_ID.DIA_DIEM_DANH_SACH);
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
+  }, []);
+
   const {resetRequireField} = useRequireField()
   const {isSearching} = useSelector(state => state.startSearch)
   const dispatch = useDispatch();
