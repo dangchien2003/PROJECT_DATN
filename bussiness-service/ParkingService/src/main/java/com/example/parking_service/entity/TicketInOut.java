@@ -27,8 +27,7 @@ public class TicketInOut extends BaseEntity {
 
     @Column(nullable = false)
     String ticketPurchasedId;
-
-    @Column(nullable = false)
+    
     String numberCard;
 
     LocalDateTime checkinAt;

@@ -11,7 +11,6 @@ import com.example.parking_service.enums.PaymentType;
 import com.example.parking_service.enums.TicketStatus;
 import com.example.parking_service.mapper.LocationMapper;
 import com.example.parking_service.mapper.LocationModifyMapper;
-import com.example.parking_service.mapper.LocationWaitReleaseMapper;
 import com.example.parking_service.mapper.PaymentMapper;
 import com.example.parking_service.repository.*;
 import com.example.parking_service.service.StatisticalService;
@@ -47,13 +46,10 @@ public class StatisticalServiceImpl implements StatisticalService {
     PaymentRepository paymentRepository;
     AccountRepository accountRepository;
     TicketRepository ticketRepository;
-    TicketLocationRepository ticketLocationRepository;
     OrderRepository orderRepository;
     LocationRepository locationRepository;
-    //    LocationWaitReleaseRepository locationWaitReleaseRepository;
     PaymentMapper paymentMapper;
     LocationMapper locationMapper;
-    LocationWaitReleaseMapper locationWaitReleaseMapper;
     LocationModifyMapper locationModifyMapper;
     JdbcTemplate jdbcTemplate;
 
@@ -354,7 +350,36 @@ public class StatisticalServiceImpl implements StatisticalService {
             List<Map<String, Object>> resultList = jdbcTemplate.queryForList(queryString);
             return resultList;
         } catch (Exception e) {
-            return null;
+            return new ArrayList<>();
         }
+    }
+
+    @Override
+    public ApiResponse<Object> thongKeDoanhThuThangTheoDoiTac(Integer thang, Integer nam, String partnerId) {
+        // tháng hiện tại
+        LocalDate startOfMonthDate = LocalDate.of(nam, thang, 1);
+        LocalDate endOfMonthDate = startOfMonthDate.with(TemporalAdjusters.lastDayOfMonth());
+
+        LocalDateTime startOfMonth = startOfMonthDate.atStartOfDay();
+        LocalDateTime endOfMonth = endOfMonthDate
+                .atTime(LocalTime.MAX);
+        List<Integer> typeList = List.of(PaymentType.MUA_VE, PaymentType.GIA_HAN);
+        // lấy dữ liệu db
+        List<DoanhThuMotNgay> result = paymentRepository.thongKeDoanhThuThangTheoDoiTac(startOfMonth, endOfMonth, partnerId, typeList);
+        // tạo TreeMap chứa tất cả ngày trong tháng, mặc định = 0
+        Map<String, Object> map = new TreeMap<>();
+        LocalDate cursor = startOfMonthDate;
+        while (!cursor.isAfter(endOfMonthDate)) {
+            map.put(cursor.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), 0L); // mặc định = 0
+            cursor = cursor.plusDays(1);
+        }
+        // map dữ liệu vào template
+        for (DoanhThuMotNgay dto : result) {
+            map.put(dto.getNgay().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), dto.getDoanhThu());
+        }
+
+        return ApiResponse.builder()
+                .result(new StatisticalAreaResponse(map.keySet().stream().toList(), map.values().stream().toList()))
+                .build();
     }
 }

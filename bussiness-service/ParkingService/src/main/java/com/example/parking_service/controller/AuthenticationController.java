@@ -24,8 +24,10 @@ public class AuthenticationController {
     @PostMapping("sign-in")
     ApiResponse<Object> authentication(
             @RequestHeader("User-Agent") String userAgent,
-            @Valid @RequestBody AuthenticationRequest request) {
-        return authenticationService.login(request, userAgent);
+            @Valid @RequestBody AuthenticationRequest request,
+            HttpServletRequest http) {
+        String domain = http.getHeader("from-domain");
+        return authenticationService.login(request, userAgent, domain);
     }
 
     @PostMapping("/check-token")
@@ -43,7 +45,8 @@ public class AuthenticationController {
     @PostMapping("/registration")
     ApiResponse<Object> registrationAccount(@RequestBody RegistrationAccount request, HttpServletRequest http) {
         String ip = HttpUtils.getClientIp(http);
-        return authenticationService.registrationAccount(request, ip);
+        String domain = http.getHeader("from-domain");
+        return authenticationService.registrationAccount(request, ip, domain);
     }
 
     @PostMapping("/confirm-regis")

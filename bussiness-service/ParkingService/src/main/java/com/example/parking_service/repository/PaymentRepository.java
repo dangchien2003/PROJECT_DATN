@@ -58,4 +58,21 @@ public interface PaymentRepository extends JpaRepository<Payment, String> {
             """)
     List<DoanhThuMotNgay> thongKeDoanhThuThang(LocalDateTime start, LocalDateTime end, List<Integer> types);
 
+    @Query("""
+                SELECT
+                    new com.example.parking_service.dto.response.DoanhThuMotNgay(
+                    FUNCTION('date', p.createdAt),
+                    COALESCE(SUM(p.total), 0)
+                    )
+                FROM OrderParking op
+                LEFT join Payment p on op.orderId = p.objectId
+                LEFT join Ticket t on t.ticketId = op.ticketId
+                WHERE p.type IN :types
+                  AND t.partnerId = :partnerId
+                  AND p.status = 2
+                  AND p.createdAt BETWEEN :start AND :end
+                GROUP BY FUNCTION('date', p.createdAt)
+            """)
+    List<DoanhThuMotNgay> thongKeDoanhThuThangTheoDoiTac(LocalDateTime start, LocalDateTime end, String partnerId, List<Integer> types);
+
 }

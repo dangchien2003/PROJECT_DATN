@@ -8,13 +8,13 @@ import com.nimbusds.jwt.SignedJWT;
 import java.text.ParseException;
 
 public interface AuthenticationService {
-    ApiResponse<Object> login(AuthenticationRequest request, String userAgent);
+    ApiResponse<Object> login(AuthenticationRequest request, String userAgent, String domain);
 
     ApiResponse<Object> checkToken(CheckTokenRequest request) throws JOSEException;
 
     ApiResponse<Object> refreshToken(RefreshTokenRequest request, String userAgent);
 
-    ApiResponse<Object> registrationAccount(RegistrationAccount request, String ip);
+    ApiResponse<Object> registrationAccount(RegistrationAccount request, String ip, String domain);
 
     ApiResponse<Object> confirmRegis(String code, String ip);
 

@@ -67,7 +67,8 @@ public interface AccountRepository extends JpaRepository<Account, String> {
 
     Optional<Account> findByIdAndStatus(String id, Integer category);
 
-    Optional<Account> findByPartnerFullNameIgnoreCase(String partnerName);
+    @Query(value = "select a from Account a where a.partnerFullName = :partnerName and (:accountId is null or a.id <> :accountId)")
+    Optional<Account> findByPartnerFullNameIgnoreCase(String partnerName, String accountId);
 
     @Query("""
                         SELECT a.id from Account a

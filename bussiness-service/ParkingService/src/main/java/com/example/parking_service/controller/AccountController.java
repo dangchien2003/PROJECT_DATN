@@ -32,6 +32,12 @@ public class AccountController {
         return accountService.createAccount(request, "admin");
     }
 
+    @PostMapping("/change-info-partner")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    ApiResponse<Object> changeInfoPartner(@Valid @RequestBody EditInfoPartnerRequest request) {
+        return accountService.changeInfoPartner(request);
+    }
+
     @PostMapping("/search/customer")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     ApiResponse<Object> searchCustomer(@RequestBody SearchListAccountRequest request, Pageable pageable) {

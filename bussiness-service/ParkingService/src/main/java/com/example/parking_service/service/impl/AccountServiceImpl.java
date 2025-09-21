@@ -11,10 +11,7 @@ import com.example.common.utils.ENumUtils;
 import com.example.common.utils.RandomUtils;
 import com.example.common.utils.RegexUtils;
 import com.example.common.utils.context.UserContextHolder;
-import com.example.parking_service.dto.request.ChangePasswordRequest;
-import com.example.parking_service.dto.request.ChangeStatusAccountRequest;
-import com.example.parking_service.dto.request.CreateAccountRequest;
-import com.example.parking_service.dto.request.SearchListAccountRequest;
+import com.example.parking_service.dto.request.*;
 import com.example.parking_service.dto.response.AccountResponse;
 import com.example.parking_service.dto.response.ClientInfoAccountResponse;
 import com.example.parking_service.entity.Account;
@@ -189,7 +186,7 @@ public class AccountServiceImpl implements AccountService {
         }
         // kiểm tra tên đối tác
         if (!DataUtils.isNullOrEmpty(entity.getPartnerFullName())) {
-            Optional<Account> nameExist = accountRepository.findByPartnerFullNameIgnoreCase(entity.getPartnerFullName());
+            Optional<Account> nameExist = accountRepository.findByPartnerFullNameIgnoreCase(entity.getPartnerFullName(), entity.getId());
             if (nameExist.isPresent()) {
                 throw new AppException(ErrorCode.DATA_EXISTED.withMessage("Đối tác \"" + entity.getPartnerFullName() + "\" đã tồn tại, vui lòng thay đổi tên và thử lại"));
             }
@@ -481,5 +478,19 @@ public class AccountServiceImpl implements AccountService {
         return ApiResponse.builder().build();
     }
 
-
+    @Override
+    public ApiResponse<Object> changeInfoPartner(EditInfoPartnerRequest request) {
+        String actionBy = UserContextHolder.getContext().getUid();
+        Account entity = accountRepository.findById(request.getId())
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
+        entity.setPartnerFullName(request.getPartnerFullName());
+        entity.setRepresentativeFullName(request.getRepresentativeFullName());
+        entity.setPartnerPhoneNumber(request.getPartnerPhoneNumber());
+        entity.setPartnerEmail(request.getPartnerEmail());
+        entity.setPartnerAddress(request.getPartnerAddress());
+        processPartner(entity);
+        DataUtils.setDataAction(entity, actionBy, false);
+        accountRepository.save(entity);
+        return ApiResponse.builder().build();
+    }
 }

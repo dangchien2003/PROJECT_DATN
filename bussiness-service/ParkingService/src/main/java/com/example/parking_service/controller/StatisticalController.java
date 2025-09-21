@@ -1,6 +1,7 @@
 package com.example.parking_service.controller;
 
 import com.example.common.dto.response.ApiResponse;
+import com.example.common.utils.context.UserContextHolder;
 import com.example.parking_service.service.StatisticalService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -89,5 +90,13 @@ public class StatisticalController {
     @GetMapping("/statistic-query")
     Object statisticQuery(@RequestParam String query) {
         return statisticalService.statisticQuery(query);
+    }
+
+    @GetMapping("/thong-ke-doanh-thu-thang-theo-doi-tac")
+    @PreAuthorize("hasAnyAuthority('PARTNER')")
+    ApiResponse<Object> thongKeDoanhThuThangTheoDoiTac(@RequestParam Integer nam,
+                                                       @RequestParam Integer thang) {
+        String partnerId = UserContextHolder.getContext().getUid();
+        return statisticalService.thongKeDoanhThuThangTheoDoiTac(thang, nam, partnerId);
     }
 }

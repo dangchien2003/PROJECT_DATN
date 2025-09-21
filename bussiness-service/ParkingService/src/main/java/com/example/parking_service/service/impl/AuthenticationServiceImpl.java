@@ -64,8 +64,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     PasswordEncoder passwordEncoder;
 
 
-    String redirectUriForRegister = "http://localhost:3000/register";
-    String redirectUriForAuth = "http://localhost:3000/authen";
+    String redirectUriForRegister = "/register";
+    String redirectUriForAuth = "/authen";
 
     @NonFinal
     @Value("${DOMAIN_FE}")
@@ -198,7 +198,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public ApiResponse<Object> registrationAccount(RegistrationAccount request, String ip) {
+    public ApiResponse<Object> registrationAccount(RegistrationAccount request, String ip, String domain) {
         if (request.getType() == null) {
             throw new AppException(ErrorCode.INVALID_DATA);
         }
@@ -239,7 +239,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             GoogleUserProfileResponse googleUserProfileResponse;
             try {
                 googleUserProfileResponse =
-                        getInfoGoogleAccount(request.getAuthorizationCode(), request.getCodeVerifier(), redirectUriForRegister);
+                        getInfoGoogleAccount(request.getAuthorizationCode(), request.getCodeVerifier(), domain + redirectUriForRegister);
             } catch (Exception e) {
                 throw new AppException(ErrorCode.INVALID_DATA.withMessage("Đăng ký thất bại"));
             }
@@ -410,7 +410,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public ApiResponse<Object> login(AuthenticationRequest request, String userAgent) {
+    public ApiResponse<Object> login(AuthenticationRequest request, String userAgent, String domain) {
         // lỗi khi không call từ trình duyệt
         if (checkUserAgent && !userUtils.isValidUserAgent(userAgent)) {
             throw new AppException(ErrorCode.INVALID_DATA);
@@ -418,7 +418,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         Account account = null;
         if (Objects.equals(request.getType(), AuthenType.GOOGLE)) {
             try {
-                account = this.authByGoogle(request);
+                account = this.authByGoogle(request, domain);
             } catch (Exception e) {
                 throw new AppException(ErrorCode.INVALID_DATA.withMessage("Đăng nhập thất bại"));
             }
@@ -486,14 +486,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return passwordEncoder.matches(passwordInput, correctPassword);
     }
 
-    Account authByGoogle(AuthenticationRequest request) {
+    Account authByGoogle(AuthenticationRequest request, String domain) {
         // validate
         if (DataUtils.isNullOrEmpty(request.getAuthorizationCode())
                 || DataUtils.isNullOrEmpty(request.getCodeVerifier())) {
             throw new AppException(ErrorCode.INVALID_DATA);
         }
         // lấy thông tin tài khoản google
-        GoogleUserProfileResponse googleUserProfileResponse = this.getInfoGoogleAccount(request.getAuthorizationCode(), request.getCodeVerifier(), redirectUriForAuth);
+        GoogleUserProfileResponse googleUserProfileResponse = this.getInfoGoogleAccount(request.getAuthorizationCode(), request.getCodeVerifier(), domain + redirectUriForAuth);
         // kiểm tra thông tin tài khoản
         Optional<Account> accountOptional = accountRepository.findByEmail(googleUserProfileResponse.getEmail());
         return accountOptional.orElse(null);

@@ -27,4 +27,6 @@ public interface StatisticalService {
     ApiResponse<Object> getStatisticalAreaAtHomeByAdmin();
 
     Object statisticQuery(String queryString);
+
+    ApiResponse<Object> thongKeDoanhThuThangTheoDoiTac(Integer thang, Integer nam, String partnerId);
 }
