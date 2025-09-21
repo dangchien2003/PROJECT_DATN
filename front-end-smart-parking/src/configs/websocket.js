@@ -1,5 +1,4 @@
 // services/WebSocketService.js
-import { getAccessToken } from '@/service/cookieService';
 import { getAccountId } from '@/service/localStorageService';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';

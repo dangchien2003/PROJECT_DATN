@@ -33,7 +33,8 @@ export const processRefreshToken = async () => {
 const httpClient = axios.create({
   baseURL: `${API_BASE_URL}`,
   headers: {
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
+    'from-domain': window.location.origin
   },
   timeout: 60000
 })
