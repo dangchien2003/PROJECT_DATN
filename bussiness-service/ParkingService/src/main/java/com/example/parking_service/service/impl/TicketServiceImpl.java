@@ -580,7 +580,7 @@ public class TicketServiceImpl implements TicketService {
         // lệnh sẽ chạy khi tới thời điểm
         Runnable runnable = () -> {
             try {
-                executeApplyLocation(ticketWaitRelease, actionBy);
+                executeApplyTicket(ticketWaitRelease, actionBy);
             } catch (Exception e) {
                 log.error("Error: ", e);
             }
@@ -593,7 +593,7 @@ public class TicketServiceImpl implements TicketService {
         schedulerService.addTask(scheduledJob);
     }
 
-    public void executeApplyLocation(TicketWaitRelease ticketWaitRelease, String actionBy) throws JsonProcessingException {
+    public void executeApplyTicket(TicketWaitRelease ticketWaitRelease, String actionBy) throws JsonProcessingException {
         String beforeUpdate = objectMapper.writeValueAsString(ticketWaitRelease);
         // thay đổi entity release
         ticketWaitRelease.setStatus(TicketStatus.DANG_PHAT_HANH);

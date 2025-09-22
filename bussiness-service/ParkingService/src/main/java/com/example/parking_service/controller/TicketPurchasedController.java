@@ -1,7 +1,9 @@
 package com.example.parking_service.controller;
 
 import com.example.common.dto.response.ApiResponse;
+import com.example.common.utils.context.UserContextHolder;
 import com.example.parking_service.dto.request.CustomerSearchTicketPurchasedRequest;
+import com.example.parking_service.dto.request.PartnerSearchHistoryBuyTicketPurchasedRequest;
 import com.example.parking_service.service.TicketPurchasedService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -57,5 +59,15 @@ public class TicketPurchasedController {
     @PreAuthorize("hasAnyAuthority('CUSTOMER')")
     ApiResponse<Object> history(@PathVariable("id") String id, Pageable pageable) {
         return ticketPurchasedService.history(id, pageable);
+    }
+
+    @PostMapping("history-buy-ticket")
+    @PreAuthorize("hasAnyAuthority('PARTNER', 'ADMIN')")
+    ApiResponse<Object> historyBuyTicket(@RequestBody PartnerSearchHistoryBuyTicketPurchasedRequest request, Pageable pageable) {
+        String partnerId = null;
+        if (UserContextHolder.getContext().getRoles().contains("PARTNER")) {
+            partnerId = UserContextHolder.getContext().getUid();
+        }
+        return ticketPurchasedService.historyBuyTicket(request, partnerId, pageable);
     }
 }

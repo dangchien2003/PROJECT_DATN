@@ -2,6 +2,7 @@ package com.example.parking_service.service.impl;
 
 import com.example.common.dto.response.ApiResponse;
 import com.example.common.dto.response.PageResponse;
+import com.example.common.entity.BaseEntity_;
 import com.example.common.exception.AppException;
 import com.example.common.exception.ErrorCode;
 import com.example.common.utils.DataUtils;
@@ -9,6 +10,7 @@ import com.example.common.utils.context.UserContextHolder;
 import com.example.parking_service.Specification.TicketPurchasedSpecification;
 import com.example.parking_service.dto.other.TicketQr;
 import com.example.parking_service.dto.request.CustomerSearchTicketPurchasedRequest;
+import com.example.parking_service.dto.request.PartnerSearchHistoryBuyTicketPurchasedRequest;
 import com.example.parking_service.dto.response.*;
 import com.example.parking_service.entity.*;
 import com.example.parking_service.enums.CheckinStatus;
@@ -262,6 +264,44 @@ public class TicketPurchasedServiceImpl implements TicketPurchasedService {
         ).toList();
         return ApiResponse.builder()
                 .result(new PageResponse<>(result, page.getTotalPages(), page.getTotalElements()))
+                .build();
+    }
+
+    @Override
+    public ApiResponse<Object> historyBuyTicket(PartnerSearchHistoryBuyTicketPurchasedRequest request, String partnerId, Pageable pageable) {
+        Pageable pageQuery = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
+                Sort.by(Sort.Direction.DESC, BaseEntity_.CREATED_AT));
+        LocalDateTime fromBuyDate = null;
+        LocalDateTime toBuyDate = null;
+        LocalDateTime fromUseDate = null;
+        LocalDateTime toUseDate = null;
+        // xử lý ngày mua
+        if (!DataUtils.isNullOrEmpty(request.getBuyDate())) {
+            fromBuyDate = request.getBuyDate().getFirst()
+                    .toLocalDate().atStartOfDay();
+            // cuối ngày
+            toBuyDate = request.getBuyDate().getLast()
+                    .toLocalDate().atStartOfDay().plusHours(24)
+                    .minus(1, ChronoUnit.MILLIS);
+        }
+        if (!DataUtils.isNullOrEmpty(request.getUseDate())) {
+            fromUseDate = request.getUseDate().getFirst()
+                    .toLocalDate().atStartOfDay();
+            // cuối ngày
+            toUseDate = request.getUseDate().getLast()
+                    .toLocalDate().atStartOfDay().plusHours(24)
+                    .minus(1, ChronoUnit.MILLIS);
+        }
+        Page<PartnerSearchHistoryBuyTicketPurchasedResponse> dataPage = ticketPurchaseRepository.historyBuyTicket(
+                partnerId,
+                request.getTicketId(),
+                request.getStatus(),
+                LocalDateTime.now(),
+                fromBuyDate, toBuyDate,
+                fromUseDate, toUseDate,
+                pageQuery);
+        return ApiResponse.builder()
+                .result(new PageResponse<>(dataPage.getContent(), dataPage.getTotalPages(), dataPage.getTotalElements()))
                 .build();
     }
 

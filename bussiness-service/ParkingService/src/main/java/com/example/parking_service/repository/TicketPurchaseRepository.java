@@ -1,5 +1,6 @@
 package com.example.parking_service.repository;
 
+import com.example.parking_service.dto.response.PartnerSearchHistoryBuyTicketPurchasedResponse;
 import com.example.parking_service.dto.response.TicketPurchasedResponse;
 import com.example.parking_service.dto.response.TimeUseTicketPurchased;
 import com.example.parking_service.entity.TicketPurchased;
@@ -54,4 +55,47 @@ public interface TicketPurchaseRepository extends JpaRepository<TicketPurchased,
 
     @Query("SELECT count(t) FROM TicketPurchased t where t.extendCount is null and t.createdAt between :start and :end ")
     Long demSoLuongVeKhongGiaHan(LocalDateTime start, LocalDateTime end);
+
+    @Query("""
+            select new com.example.parking_service.dto.response.PartnerSearchHistoryBuyTicketPurchasedResponse(
+            tkp.id,
+            nm.fullName,
+            csh.fullName,
+             CASE
+                 WHEN tkp.status = 0 AND tkp.startsValidity > :now
+                     THEN 1
+                 WHEN tkp.status = 0 AND tkp.startsValidity <= :now AND tkp.expires > :now
+                     THEN 2
+                 WHEN tkp.status <> 0 OR tkp.expires <= :now
+                     THEN 3
+                 ELSE 0
+             END,
+              tkp.startsValidity,
+              tkp.expires,
+              tkp.usedTimes
+            ) from TicketPurchased tkp
+            join Ticket t on t.ticketId = tkp.ticketId
+            join Account csh on csh.id = tkp.accountId
+            join Account nm on nm.id = tkp.createdBy
+            where tkp.ticketId = :ticketId
+            and (:partnerId is null or t.partnerId = :partnerId)
+            and (:status is null
+                or (:status = 1 and tkp.status = 0 and tkp.startsValidity > :now)
+                or (:status = 2 and tkp.status = 0 and tkp.startsValidity <= :now and tkp.expires > :now)
+                or (:status = 3 and (tkp.status <> 0 or tkp.expires <= :now))
+            )
+            and (:fromBuyDate is null or tkp.createdAt between :fromBuyDate and :toBuyDate)
+            and (:fromUseDate is null or (tkp.startsValidity >= :fromUseDate and tkp.expires <= :toUseDate))
+                        """)
+    Page<PartnerSearchHistoryBuyTicketPurchasedResponse> historyBuyTicket(
+            String partnerId,
+            Long ticketId,
+            Integer status,
+            LocalDateTime now,
+            LocalDateTime fromBuyDate,
+            LocalDateTime toBuyDate,
+            LocalDateTime fromUseDate,
+            LocalDateTime toUseDate,
+            Pageable pageable
+    );
 }
