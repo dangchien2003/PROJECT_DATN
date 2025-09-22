@@ -36,3 +36,9 @@ export async function getHistoryInOut(id) {
   return await httpClient.get(replaceParamsUrl(PARKING_SERVICE.ticketPurchased.historyInOut, {id}), {
   })
 }
+
+export async function historyBuyTicket(dataSearch, page, size) {
+  return await httpClient.post(PARKING_SERVICE.ticketPurchased.historyBuyTicket, dataSearch, {
+    params: {page, size}
+  })
+}
