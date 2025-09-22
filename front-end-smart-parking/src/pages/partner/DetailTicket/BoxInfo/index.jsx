@@ -3,7 +3,7 @@ import BoxTextField from "@/components/BoxTextField"
 import { TICKET_STATUS, VEHICLE } from "@/utils/constants"
 import { formatTimestamp } from "@/utils/time"
 import OtherInfoModify from "./OtherInfoModify"
-import { Button} from "antd"
+import { Button, Flex} from "antd"
 import { MdOutlineCancel } from "react-icons/md"
 import { formatCurrency } from "@/utils/number"
 import { Typography } from "antd";
@@ -19,6 +19,7 @@ import { isNullOrUndefined } from "@/utils/data"
 import { FaEdit } from "react-icons/fa"
 import { useNavigate } from "react-router-dom"
 import LocationUseTicket from "@/components/LocationUseTicket"
+import HistoryTicketSold from "@/components/HistoryTicketSold"
 const { Title } = Typography;
 
 const BoxPrice = ({ checked, price, label }) => {
@@ -131,7 +132,10 @@ const BoxInfo = ({ data, isWaitRelease, widthPage, existWaitReleaseInput }) => {
   return (
     <div>
       {data !== null && <div style={styleParent} >
-        <Title style={{ padding: "0 8px" }} level={5}>{isWaitRelease ? "Thông tin chỉnh sửa" : "Thông tin gốc"}</Title>
+        <Flex justify="space-between">
+          <Title style={{ padding: "0 8px" }} level={5}>{isWaitRelease ? "Thông tin chỉnh sửa" : "Thông tin gốc"}</Title>
+          {!isWaitRelease && <HistoryTicketSold id={data.ticketId}/>}
+        </Flex>
         {/* Thông tin chính */}
         <div className="box-ticket-detail">
           <BoxTextField label="Tên vé" value={data?.name} disabled={true} colorGray={false} key={"tv"} />
