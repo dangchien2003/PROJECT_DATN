@@ -47,6 +47,8 @@ public class TicketPurchased extends BaseEntity {
     Integer extendCount;
 
     Integer status;
+    
+    String cancelBy;
 
     String reason;
 

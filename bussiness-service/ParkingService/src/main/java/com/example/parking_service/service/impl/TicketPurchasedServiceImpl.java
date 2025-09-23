@@ -9,6 +9,7 @@ import com.example.common.utils.DataUtils;
 import com.example.common.utils.context.UserContextHolder;
 import com.example.parking_service.Specification.TicketPurchasedSpecification;
 import com.example.parking_service.dto.other.TicketQr;
+import com.example.parking_service.dto.request.CancelTicketPurchasedRequest;
 import com.example.parking_service.dto.request.CustomerSearchTicketPurchasedRequest;
 import com.example.parking_service.dto.request.PartnerSearchHistoryBuyTicketPurchasedRequest;
 import com.example.parking_service.dto.response.*;
@@ -327,6 +328,57 @@ public class TicketPurchasedServiceImpl implements TicketPurchasedService {
             ticketPurchaseRepository.saveAll(entityList);
         }
         log.info("Đã huỷ %d vé hết hạn".formatted(entityList.size()));
+    }
+
+    @Override
+    public ApiResponse<Object> cancelTicket(CancelTicketPurchasedRequest request, String partnerId) {
+        String actionBy = UserContextHolder.getContext().getUid();
+        TicketPurchased ticketPurchased = ticketPurchaseRepository.findTicket(request.getId(), partnerId)
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
+        ticketPurchased.setStatus(TicketPurchasedStatus.BI_DINH_CHI);
+        ticketPurchased.setCancelBy(actionBy);
+        ticketPurchased.setReason(request.getReason());
+        DataUtils.setDataAction(ticketPurchased, actionBy, false);
+        ticketPurchaseRepository.save(ticketPurchased);
+        return ApiResponse.builder().build();
+    }
+
+    @Override
+    public ApiResponse<Object> adminDetail(String id, String partnerId) {
+        TicketPurchased ticketPurchased = ticketPurchaseRepository.findByIdByAdmin(id, partnerId)
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND.withMessage("Không tìm thấy thông tin vé")));
+        CusTicketPurchasedDetailResponse response = ticketPurchasedMapper.toCusTicketPurchasedDetailResponse(ticketPurchased);
+        // tên vé
+        List<TicketNameDTO> ticketNameDTOS = ticketRepository.findDTOByTicketIdIn(List.of(ticketPurchased.getTicketId()));
+        if (!ticketNameDTOS.isEmpty()) {
+            response.setTicketName(ticketNameDTOS.getFirst().getName());
+        }
+        // lấy thông tin địa điểm
+        List<LocationNameDTO> locationNameDTOS = locationRepository.getNameDto(List.of(ticketPurchased.getLocationId()));
+        if (!locationNameDTOS.isEmpty()) {
+            response.setLocationName(locationNameDTOS.getFirst().getName());
+            response.setLocationAddress(locationNameDTOS.getFirst().getAddress());
+        }
+        return ApiResponse.builder()
+                .result(response)
+                .build();
+    }
+
+    @Override
+    public ApiResponse<Object> adminHistory(String ticketPurchasedId, String partnerId, Pageable pageable) {
+        Pageable pageQuery = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
+                Sort.by(Sort.Direction.DESC, "tio." + TicketInOut_.CHECKIN_AT));
+        Page<TicketInOut> page = ticketInOutRepository.findHistoryByAdmin(ticketPurchasedId, partnerId, pageQuery);
+        List<TicketInOutResponse> result = page.map(item -> TicketInOutResponse.builder()
+                .id(item.getId())
+                .checkinAt(item.getCheckinAt())
+                .checkoutAt(item.getCheckoutAt())
+                .status(getStatusCheckIn(item))
+                .build()
+        ).toList();
+        return ApiResponse.builder()
+                .result(new PageResponse<>(result, page.getTotalPages(), page.getTotalElements()))
+                .build();
     }
 
     public void processBuyTicketSuccess(OrderParking order) throws JsonProcessingException {

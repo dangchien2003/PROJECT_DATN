@@ -24,6 +24,14 @@ public interface TicketPurchaseRepository extends JpaRepository<TicketPurchased,
 
     Optional<TicketPurchased> findByIdAndAccountId(String id, String accountId);
 
+    @Query("""
+            select tp from TicketPurchased tp
+              left join Ticket t on t.ticketId = tp.ticketId
+              where tp.id = :id
+              and (:partnerId is null or t.partnerId = :partnerId)
+            """)
+    Optional<TicketPurchased> findByIdByAdmin(String id, String partnerId);
+
     boolean existsByIdAndAccountId(String id, String accountId);
 
     List<TicketPurchased> findByExpiresLessThanEqualAndUseStatusAndStatusIn(LocalDateTime endTimeScan, Integer useStatus, List<Integer> statusScan);
@@ -62,11 +70,11 @@ public interface TicketPurchaseRepository extends JpaRepository<TicketPurchased,
             nm.fullName,
             csh.fullName,
              CASE
-                 WHEN tkp.status = 0 AND tkp.startsValidity > :now
+                 WHEN tkp.status in (0, 2) AND tkp.startsValidity > :now
                      THEN 1
-                 WHEN tkp.status = 0 AND tkp.startsValidity <= :now AND tkp.expires > :now
+                 WHEN tkp.status in (0, 2) AND tkp.startsValidity <= :now AND tkp.expires > :now
                      THEN 2
-                 WHEN tkp.status <> 0 OR tkp.expires <= :now
+                 WHEN tkp.status not in (0, 2) OR tkp.expires <= :now
                      THEN 3
                  ELSE 0
              END,
@@ -80,9 +88,9 @@ public interface TicketPurchaseRepository extends JpaRepository<TicketPurchased,
             where tkp.ticketId = :ticketId
             and (:partnerId is null or t.partnerId = :partnerId)
             and (:status is null
-                or (:status = 1 and tkp.status = 0 and tkp.startsValidity > :now)
-                or (:status = 2 and tkp.status = 0 and tkp.startsValidity <= :now and tkp.expires > :now)
-                or (:status = 3 and (tkp.status <> 0 or tkp.expires <= :now))
+                or (:status = 1 and tkp.status in (0, 2) and tkp.startsValidity > :now)
+                or (:status = 2 and tkp.status in (0, 2) and tkp.startsValidity <= :now and tkp.expires > :now)
+                or (:status = 3 and (tkp.status not in (0, 2) or tkp.expires <= :now))
             )
             and (:fromBuyDate is null or tkp.createdAt between :fromBuyDate and :toBuyDate)
             and (:fromUseDate is null or (tkp.startsValidity >= :fromUseDate and tkp.expires <= :toUseDate))
@@ -98,4 +106,12 @@ public interface TicketPurchaseRepository extends JpaRepository<TicketPurchased,
             LocalDateTime toUseDate,
             Pageable pageable
     );
+
+    @Query("""
+            select tp from TicketPurchased tp
+            left join Ticket t on t.ticketId = tp.ticketId
+            where tp.status in (0, 2) and tp.id = :id
+            and (:partnerId is null or t.partnerId = :partnerId)
+            """)
+    Optional<TicketPurchased> findTicket(String id, String partnerId);
 }

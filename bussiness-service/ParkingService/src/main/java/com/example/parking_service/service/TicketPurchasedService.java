@@ -1,6 +1,7 @@
 package com.example.parking_service.service;
 
 import com.example.common.dto.response.ApiResponse;
+import com.example.parking_service.dto.request.CancelTicketPurchasedRequest;
 import com.example.parking_service.dto.request.CustomerSearchTicketPurchasedRequest;
 import com.example.parking_service.dto.request.PartnerSearchHistoryBuyTicketPurchasedRequest;
 import com.example.parking_service.entity.OrderParking;
@@ -29,4 +30,10 @@ public interface TicketPurchasedService {
     void cancelTicketExpired();
 
     void processBuyTicketSuccess(OrderParking order) throws JsonProcessingException;
+
+    ApiResponse<Object> cancelTicket(CancelTicketPurchasedRequest request, String partnerId);
+
+    ApiResponse<Object> adminDetail(String id, String partnerId);
+
+    ApiResponse<Object> adminHistory(String id, String partnerId, Pageable pageable);
 }
