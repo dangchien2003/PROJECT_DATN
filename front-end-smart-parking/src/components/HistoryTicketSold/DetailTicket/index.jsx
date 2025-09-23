@@ -15,7 +15,6 @@ import { FaEye } from 'react-icons/fa6';
 import { GoDotFill } from "react-icons/go";
 import { IoTicket } from 'react-icons/io5';
 import History from './History';
-import MoreView from './MoreView';
 import './style.css';
 
 const ticketPurchasedStatus = convertDataSelectboxToObject(convertObjectToDataSelectBox(TICKET_PURCHASED_STATUS));
@@ -83,10 +82,6 @@ const DetailTicket = ({id}) => {
     setUsedRatio(Math.min(Math.max(percentage, 0), 100))
   }
 
-  const handleChangeDisableSuccess = (status) => {
-    setDetail(pre => ({ ...pre, status }))
-  }
-
   const handleRefreshQrSuccess = () => {
     setDetail(pre => ({ ...pre, createdQrCodeCount: pre.createdQrCodeCount + 1 }));
   }
@@ -115,9 +110,6 @@ const DetailTicket = ({id}) => {
                             <div className='error'>{detail?.reason}</div>
                           </div>
                         </Flex>
-                        <div>
-                          {(detail?.status === TICKET_PURCHASED_STATUS.BINH_THUONG.value || detail?.status === TICKET_PURCHASED_STATUS.TAM_DINH_CHI.value) && <MoreView ticketId={detail.id} disableInp={detail?.status === TICKET_PURCHASED_STATUS.TAM_DINH_CHI.value} onChangeSuccess={handleChangeDisableSuccess} />}
-                        </div>
                       </Flex>
                     </div>
                     <div className='detail-item'>
