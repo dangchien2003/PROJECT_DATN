@@ -171,13 +171,11 @@ public interface LocationModifyRepository extends JpaRepository<LocationModify, 
 
     // realease
     @Query(value = "SELECT lwr FROM LocationModify lwr where " +
-            "((:locationId IS NULL OR lwr.locationId = :locationId) " +
-            "OR (:modifyId IS NULL OR lwr.modifyId = :modifyId)) " +
+            " lwr.locationId = :locationId " +
             "AND lwr.isDel = :isDel AND lwr.released  = :release"
     )
     List<LocationModify> findRecord(
             @Param("locationId") Long locationId,
-            @Param("modifyId") Long modifyId,
             @Param("isDel") Integer isDel,
             @Param("release") Integer release
     );

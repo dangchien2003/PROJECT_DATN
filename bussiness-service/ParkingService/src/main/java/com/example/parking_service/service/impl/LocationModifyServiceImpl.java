@@ -34,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -79,14 +80,16 @@ public class LocationModifyServiceImpl implements LocationModifyService {
             throw new AppException(ErrorCode.INVALID_DATA.withMessage("Yêu cầu đã vượt quá thời điểm được duyệt"));
         }
         if (Boolean.TRUE.equals(request.getApprove())) {
+            List<LocationModify> locationWaitReleases = new ArrayList<>();
             // xử lý khi duyệt
-            // xoá các bản ghi chờ áp dụng và update bản ghi duyệt thành chờ áp dụng mới
-            List<LocationModify> locationWaitReleases = locationModifyRepository.findRecord(
-                    modifyEntity.getLocationId(),
-                    modifyEntity.getModifyId(),
-                    IsDel.DELETE_NOT_YET.getValue(),
-                    Release.RELEASE_NOT_YET.getValue()
-            );
+            if (modifyEntity.getLocationId() != null) {
+                // xoá các bản ghi chờ áp dụng và update bản ghi duyệt thành chờ áp dụng mới
+                locationWaitReleases = locationModifyRepository.findRecord(
+                        modifyEntity.getLocationId(),
+                        IsDel.DELETE_NOT_YET.getValue(),
+                        Release.RELEASE_NOT_YET.getValue()
+                );
+            }
             if (!locationWaitReleases.isEmpty()) {
                 // xoá các bản ghi tồn tại
                 locationWaitReleases.forEach(item -> {
@@ -156,7 +159,6 @@ public class LocationModifyServiceImpl implements LocationModifyService {
             entityModify.setOpenDate(entityModify.getTimeAppliedEdit());
             entityModify.setStatus(LocationStatus.CHO_DUYET.getValue());
             entityModify.setModifyCount(0);
-            entityModify.setCapacity(11L);
             DataUtils.setDataAction(entityModify, actionBy, true);
         } else {
             validateActionRecordByOwner(location.getPartnerId(), actionBy);
