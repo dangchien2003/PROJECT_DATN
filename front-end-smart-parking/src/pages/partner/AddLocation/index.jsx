@@ -1,7 +1,6 @@
 import CoordinateInput from "@/components/CoordinateInput";
 import DatePickerLabelDash from "@/components/DatePickerLabelDash";
 import TextFieldLabelDash from "@/components/TextFieldLabelDash";
-// import TimeInput from "@/components/TimeInput";
 import AvatarAndVideo from "./AvatarAndVideo";
 import CheckboxWithDash from "@/components/CheckboxWithDash";
 import DateTimePickerWithSortLabelDash from "@/components/DateTimePickerWithSortLabelDash";
@@ -46,7 +45,8 @@ const AddLocation = ({ isModify = false }) => {
     modifyDescription: null,
     description: null,
     videoTutorial: null,
-    avatar: null
+    avatar: null,
+    capacity: 0
   })
   const [disableCoordinates, setDisableCoordinates] = useState(false)
   // const [openEveryTime, setOpenEveryTime] = useState(false)
@@ -195,7 +195,7 @@ const AddLocation = ({ isModify = false }) => {
           defaultValue={openEveryTime ? "00:00:00" : dataModify?.closeTime}
           disable={openEveryTime}
         /> */}
-        {/* <TextFieldLabelDash
+        <TextFieldLabelDash
           label={"Sức chứa"}
           placeholder={"Nhập sức chứa"}
           key={"succhua"}
@@ -203,7 +203,7 @@ const AddLocation = ({ isModify = false }) => {
           defaultValue={dataModify?.capacity}
           itemKey={"capacity"}
           callbackChangeValue={handleChange}
-        /> */}
+        />
         <DateTimePickerWithSortLabelDash
           label="Thời điểm áp dụng"
           sort={false}

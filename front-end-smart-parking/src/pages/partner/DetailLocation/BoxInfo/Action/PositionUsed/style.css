@@ -1,0 +1,13 @@
+.position-used {
+  height: 500px;
+  margin-bottom: 16px;
+}
+
+.position-used .ant-tabs-nav {
+  max-width: 100%;
+}
+
+.position-used .custom-tab {
+  width: 100px;
+  text-align: center;
+}

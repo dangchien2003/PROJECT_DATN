@@ -126,10 +126,10 @@ const TableListTicketPartner = ({ dataSearch }) => {
       );
       item.pricePrint = (
         <div>
-          {item.timeSlot && <div key="time">1 giờ: {formatCurrency(item.price.time?.price)} đ</div>}
-          {item.daySlot && <div key="day">1 ngày: {formatCurrency(item.price.day?.price)} đ</div>}
-          {item.weekSlot && <div key="week">1 tuần: {formatCurrency(item.price.week?.price)} đ</div>}
-          {item.monthSlot && <div key="month">1 tháng: {formatCurrency(item.price.month?.price)} đ</div>}
+          {item.priceTimeSlot && <div key="time">1 giờ: {formatCurrency(item.priceTimeSlot)} đ</div>}
+          {item.priceDaySlot && <div key="day">1 ngày: {formatCurrency(item.priceDaySlot)} đ</div>}
+          {item.priceWeekSlot && <div key="week">1 tuần: {formatCurrency(item.priceWeekSlot)} đ</div>}
+          {item.priceMonthSlot && <div key="month">1 tháng: {formatCurrency(item.priceMonthSlot)} đ</div>}
         </div>
       );
       item.statusPrint = (
