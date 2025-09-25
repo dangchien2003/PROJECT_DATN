@@ -237,7 +237,7 @@ export const TICKET_STATUS = {
   },
   DA_HUY: {
     value: 3,
-    label: "Đã huỷ",
+    label: "Huỷ",
     color: "danger",
   },
   TU_CHOI: {
@@ -269,6 +269,14 @@ export const LOCATION_STATUS = {
     color: "danger",
   },
 };
+
+export const LOCATION_STATUS_SELECRBOX = [
+  { value: 0, label: "Chờ duyệt" },
+  { value: 1, label: "Đang hoạt động" },
+  { value: 3, label: "Tạm dừng hoạt động" },
+  { value: 4, label: "Ngừng hoạt động" },
+  { value: 5, label: "Bị từ chối" }
+]
 
 export const LOCALTION_MODIFY_STATUS = {
   CHO_DUYET: {

@@ -1,31 +1,35 @@
+import CheckboxWithDash from "@/components/CheckboxWithDash";
 import CoordinateInput from "@/components/CoordinateInput";
 import DatePickerLabelDash from "@/components/DatePickerLabelDash";
-import TextFieldLabelDash from "@/components/TextFieldLabelDash";
-import AvatarAndVideo from "./AvatarAndVideo";
-import CheckboxWithDash from "@/components/CheckboxWithDash";
 import DateTimePickerWithSortLabelDash from "@/components/DateTimePickerWithSortLabelDash";
-import Action from "./Action";
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { useLoading } from "@/hook/loading";
-import { updateObjectValue } from "@/utils/object";
-import { extractGoogleMapCoords } from "@/utils/extract";
-import { useMessageError } from "@/hook/validate";
-import { useRequireField } from "@/hook/useRequireField";
-import { changeInput } from "@/utils/handleChange";
 import QuillEditorInput from "@/components/QuillEditorInput";
+import SelectBoxLabelDash from "@/components/SelectBoxLabelDash";
+import TextFieldLabelDash from "@/components/TextFieldLabelDash";
+import { useLoading } from "@/hook/loading";
+import { useRequireField } from "@/hook/useRequireField";
+import { useSelectMenu } from "@/hook/useSelectMenu";
+import { useMessageError } from "@/hook/validate";
 import { locationDetail } from "@/service/locationService";
 import { getDataApi } from "@/utils/api";
+import { LOCATION_STATUS_SELECRBOX, MENU_PARTNER_ID } from "@/utils/constants";
+import { extractGoogleMapCoords } from "@/utils/extract";
+import { changeInput } from "@/utils/handleChange";
+import { updateObjectValue } from "@/utils/object";
 import { toastError } from "@/utils/toast";
-import dayjs from "dayjs"
-import { useSelectMenu } from "@/hook/useSelectMenu";
-import { MENU_PARTNER_ID } from "@/utils/constants";
+import dayjs from "dayjs";
+import { useEffect, useRef, useState } from "react";
+import { useParams } from "react-router-dom";
+import Action from "./Action";
+import AvatarAndVideo from "./AvatarAndVideo";
 
-const requireKeys = ["name", "address", "coordinatesX", "coordinatesY", "timeAppliedEdit", "description"]
-const indexKeys = ["name", "address", "coordinatesX", "coordinatesY", "timeAppliedEdit", "description"]
+const indexKeys = ["name", "address", "coordinatesX", "coordinatesY", "capacity", "status", "reason", "timeAppliedEdit", "modifyDescription"]
 const AddLocation = ({ isModify = false }) => {
   const { select } = useSelectMenu();
-
+  const status = useRef(null)
+  const [requireKeys, setRequireKeys] = useState([
+    "name", "address", "coordinatesX", "coordinatesY", "capacity", "status", "timeAppliedEdit"
+  ]);
+  const dataSelectBox = useRef(LOCATION_STATUS_SELECRBOX.filter(item => item.value !== 0 && item.value !== 5))
   useEffect(() => {
     select(MENU_PARTNER_ID.QUAN_LY_DIA_DIEM_THEM);
     // eslint-disable-next-line react-hooks/exhaustive-deps 
@@ -46,7 +50,8 @@ const AddLocation = ({ isModify = false }) => {
     description: null,
     videoTutorial: null,
     avatar: null,
-    capacity: 0
+    capacity: null,
+    reason: null
   })
   const [disableCoordinates, setDisableCoordinates] = useState(false)
   // const [openEveryTime, setOpenEveryTime] = useState(false)
@@ -54,6 +59,7 @@ const AddLocation = ({ isModify = false }) => {
   const { id } = useParams()
   const { reset } = useMessageError()
   const { setRequireField } = useRequireField();
+  const { deleteKey } = useMessageError();
   // load dữ liệu khi vào form chỉnh sửa
   useEffect(() => {
     if (id) {
@@ -65,6 +71,7 @@ const AddLocation = ({ isModify = false }) => {
         //   setOpenEveryTime(true)
         // }
         setDataModify(result)
+        status.current = result.status;
       })
         .catch((error) => {
           const dataError = getDataApi(error);
@@ -78,13 +85,27 @@ const AddLocation = ({ isModify = false }) => {
   }, [id])
 
   useEffect(() => {
-    reset()
-    setRequireField(requireKeys)
+    reset();
+    if (isModify) {
+      setRequireKeys(pre => [...pre, "modifyDescription"]);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  useEffect(() => {
+    setRequireField(requireKeys);
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
+  }, [requireKeys])
   const handleChange = (key, value) => {
-    changeInput(dataModify, key, value)
+    if (key === 'status' && isModify && value !== status.current) {
+      if (!requireKeys.includes("reason")) {
+        setRequireKeys(prev => [...prev, "reason"]);
+      }
+    } else if (key === 'status' && isModify && value === status.current) {
+      setRequireKeys(prev => prev.filter(item => item !== "reason"));
+      deleteKey("reason");
+    }
+    changeInput(dataModify, key, value);
   };
 
   const handleChangeValueInputOrder = (key, value, order) => {
@@ -204,6 +225,21 @@ const AddLocation = ({ isModify = false }) => {
           itemKey={"capacity"}
           callbackChangeValue={handleChange}
         />
+        <SelectBoxLabelDash
+          label={"Trạng thái"}
+          data={dataSelectBox.current}
+          defaultValue={dataModify.status}
+          itemKey={"status"}
+          callbackChangeValue={handleChange}
+          placeholder={"Chọn trạng thái"}
+        />
+        {isModify && <TextFieldLabelDash
+          label={"Lý do thay đổi trạng thái"}
+          placeholder={"Nhập lý do"}
+          itemKey={"reason"}
+          callbackChangeValue={handleChange}
+          disable={status.current === dataModify.status}
+        />}
         <DateTimePickerWithSortLabelDash
           label="Thời điểm áp dụng"
           sort={false}
@@ -243,7 +279,6 @@ const AddLocation = ({ isModify = false }) => {
           label={"Nội dung chỉnh sửa"}
           placeholder={"Nhập nội dung chỉnh sửa"}
           key={"ndcs"}
-          defaultValue={dataModify?.modifyDescription}
           itemKey={"modifyDescription"}
           callbackChangeValue={handleChange}
         />
