@@ -53,7 +53,7 @@ public class LocationModify extends BaseEntity {
 
     Integer modifyStatus;
 
-    String reasonChangeStatus;
+    String reason;
 
     String reasonReject;
 

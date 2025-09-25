@@ -30,4 +30,6 @@ public class ModifyTicketRequest {
     Long priceWeekSlot;
     Long priceMonthSlot;
     List<Long> locationUse;
+    Integer status;
+    String reason;
 }

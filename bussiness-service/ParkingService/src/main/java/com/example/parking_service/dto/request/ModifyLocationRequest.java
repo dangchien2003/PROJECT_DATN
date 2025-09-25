@@ -41,4 +41,6 @@ public class ModifyLocationRequest {
     String infoLocation;
     Integer status;
     Integer capacity;
+    String reason;
+    String modifyDescription;
 }

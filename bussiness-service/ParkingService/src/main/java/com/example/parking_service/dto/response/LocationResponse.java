@@ -40,7 +40,7 @@ public class LocationResponse {
 
     Integer modifyStatus;
 
-    String reasonChangeStatus;
+    String reason;
 
     LocalTime openTime;
 

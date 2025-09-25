@@ -15,7 +15,6 @@ import com.example.parking_service.dto.request.ModifyLocationRequest;
 import com.example.parking_service.entity.Location;
 import com.example.parking_service.entity.LocationModify;
 import com.example.parking_service.enums.LocationModifyStatus;
-import com.example.parking_service.enums.LocationStatus;
 import com.example.parking_service.enums.ModuleName;
 import com.example.parking_service.mapper.LocationMapper;
 import com.example.parking_service.mapper.LocationModifyMapper;
@@ -157,7 +156,6 @@ public class LocationModifyServiceImpl implements LocationModifyService {
             // khi tạo mới
             entityModify.setLocationId(null);
             entityModify.setOpenDate(entityModify.getTimeAppliedEdit());
-            entityModify.setStatus(LocationStatus.CHO_DUYET.getValue());
             entityModify.setModifyCount(0);
             DataUtils.setDataAction(entityModify, actionBy, true);
         } else {
@@ -259,7 +257,6 @@ public class LocationModifyServiceImpl implements LocationModifyService {
             // map dữ liệu
             locationMapper.toLocationFromReleaseEntity(location, locationWaitRelease);
             location.setModifyStatus(LocationModifyStatus.DA_AP_DUNG.getValue());
-            location.setStatus(LocationStatus.DA_DUYET_DANG_HOAT_DONG.getValue());
             // thay đổi thời gian tác động
             DataUtils.setDataAction(location, actionBy, DataUtils.isNullOrEmpty(locationWaitRelease.getLocationId()));
             // lưu dữ liệu

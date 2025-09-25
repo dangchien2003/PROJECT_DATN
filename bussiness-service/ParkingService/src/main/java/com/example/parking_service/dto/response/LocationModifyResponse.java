@@ -40,7 +40,7 @@ public class LocationModifyResponse {
 
     Integer modifyStatus;
 
-    String reasonChangeStatus;
+    String reason;
 
     String reasonReject;
 
