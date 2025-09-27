@@ -9,21 +9,19 @@ const Top5DoiTacCoDoanhThuCaoNhat = ({ month, year }) => {
         t.partner_id,
         a.partner_full_name,
         SUM(op.total) as total_revenue
-    FROM
-        order_parking op
-            JOIN
-        ticket t ON op.ticket_id = t.ticket_id
-            JOIN
-        account a ON t.partner_id = a.id
+    FROM payment p
+    join order_parking op on op.order_id = p.object_id
+      JOIN ticket t ON op.ticket_id = t.ticket_id
+      JOIN account a ON t.partner_id = a.id
     WHERE
-        YEAR(op.created_at) = ${year}
-      AND MONTH(op.created_at) = ${month}
-      AND op.status = 2
+        YEAR(p.created_at) = ${year}
+      AND MONTH(p.created_at) = ${month}
+      AND p.status = 2
       AND a.category = 1
+      and p.type = 0
     GROUP BY
         t.partner_id,
         a.partner_full_name
-
     UNION ALL
     SELECT
         t.partner_id,
@@ -31,10 +29,9 @@ const Top5DoiTacCoDoanhThuCaoNhat = ({ month, year }) => {
         SUM(p.total) as total_revenue
     FROM
         payment p
-            JOIN
-        ticket t ON p.object_id = t.ticket_id
-            JOIN
-        account a ON t.partner_id = a.id
+        join ticket_purchased tp on tp.id = p.object_id
+        JOIN ticket t ON tp.ticket_id = t.ticket_id
+        JOIN account a ON t.partner_id = a.id
     WHERE
         YEAR(p.created_at) = ${year}
       AND MONTH(p.created_at) = ${month}

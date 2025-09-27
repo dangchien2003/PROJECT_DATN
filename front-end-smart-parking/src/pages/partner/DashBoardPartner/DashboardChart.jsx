@@ -38,18 +38,18 @@ from result;
         SELECT
             l.location_id,
             l.name AS location_name,
-            SUM(op.total) AS total_parking_revenue
-        FROM
-            order_parking op
+            SUM(p.total) AS total_parking_revenue
+        FROM  payment p
+            join order_parking op on op.order_id = p.object_id and p.type = 0
                 JOIN
             ticket t ON op.ticket_id = t.ticket_id
                 JOIN
             location l ON op.location_id = l.location_id
         WHERE
-            t.partner_id = '${partnerId}'
-          AND YEAR(op.created_at) = ${dayjs().year()}
-          AND MONTH(op.created_at) = ${dayjs().month() + 1}
-          AND op.status = 2
+            t.partner_id = '${partnerId}' and p.type = 0
+          AND YEAR(p.created_at) = ${dayjs().year()}
+          AND MONTH(p.created_at) = ${dayjs().month() + 1}
+          AND p.status = 2
         GROUP BY
             l.location_id,
             l.name
@@ -62,8 +62,9 @@ from result;
             SUM(p.total) AS total_ticket_revenue
         FROM
             payment p
+            join ticket_purchased tp on tp.id = p. object_id 
                 JOIN
-            ticket t ON p.object_id = t.ticket_id
+            ticket t ON tp.ticket_id = t.ticket_id
                 JOIN
             location l ON t.ticket_id = l.location_id
         WHERE

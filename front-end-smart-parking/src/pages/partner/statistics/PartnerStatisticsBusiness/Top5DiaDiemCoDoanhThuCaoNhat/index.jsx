@@ -7,21 +7,21 @@ import { getDataStatistic } from '@/service/statisticalService';
 const Top5DiaDiemCoDoanhThuCaoNhat = ({year, month}) => {
    const partnerId = getAccountId();
     const query = `WITH location_revenue AS (
-    SELECT
-        l.location_id,
-        l.name AS location_name,
-        SUM(op.total) AS total_parking_revenue
-    FROM
-        order_parking op
-            JOIN
-        ticket t ON op.ticket_id = t.ticket_id
-            JOIN
-        location l ON op.location_id = l.location_id
-    WHERE
-        t.partner_id = '${partnerId}'
-      AND YEAR(op.created_at) = ${year}
-      AND MONTH(op.created_at) = ${month}
-      AND op.status = 2
+          SELECT
+            l.location_id,
+            l.name AS location_name,
+            SUM(p.total) AS total_parking_revenue
+        FROM  payment p
+            join order_parking op on op.order_id = p.object_id and p.type = 0
+                JOIN
+            ticket t ON op.ticket_id = t.ticket_id
+                JOIN
+            location l ON op.location_id = l.location_id
+        WHERE
+            t.partner_id = '${partnerId}' and p.type = 0
+      AND YEAR(p.created_at) = ${year}
+      AND MONTH(p.created_at) = ${month}
+      AND p.status = 2
     GROUP BY
         l.location_id,
         l.name
@@ -33,11 +33,12 @@ const Top5DiaDiemCoDoanhThuCaoNhat = ({year, month}) => {
         l.name AS location_name,
         SUM(p.total) AS total_ticket_revenue
     FROM
-        payment p
-            JOIN
-        ticket t ON p.object_id = t.ticket_id
-            JOIN
-        location l ON t.ticket_id = l.location_id
+             payment p
+            join ticket_purchased tp on tp.id = p. object_id 
+                JOIN
+            ticket t ON tp.ticket_id = t.ticket_id
+                JOIN
+            location l ON t.ticket_id = l.location_id
     WHERE
         t.partner_id = '${partnerId}'
       AND YEAR(p.created_at) = ${year}

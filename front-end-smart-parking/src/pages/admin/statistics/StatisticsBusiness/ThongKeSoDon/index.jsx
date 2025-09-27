@@ -17,11 +17,15 @@ GROUP BY
   `
   const [data, setData] = useState();
   useEffect(() => {
+    if (month === undefined || year === undefined) {
+      return;
+    }
     getDataStatistic(query).then(response => {
       const result = [
         { name: "Thành công", value: response.data[0]?.successful_orders },
         { name: "Thất bại", value: response.data[0]?.failed_orders },
       ]
+      console.log(result)
       setData(result);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps 
