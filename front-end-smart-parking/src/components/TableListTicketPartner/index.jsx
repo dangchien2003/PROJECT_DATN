@@ -139,7 +139,7 @@ const TableListTicketPartner = ({ dataSearch }) => {
             <span>
               {
                 <ButtonStatus
-                  label={ticketStatus[item.status].label}
+                  label={ticketStatus[item.status]?.label}
                   color={ticketStatus[item.status]?.color}
                 />
               }

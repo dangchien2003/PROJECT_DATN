@@ -142,7 +142,7 @@ const BoxInfo = ({ data, isWaitRelease, widthPage, existWaitReleaseInput }) => {
           <BoxTextField label="Lần chỉnh sửa" value={data?.modifyCount} disabled={true} colorGray={false} key={"lcs"} />
           <BoxTextField label="Thời gian phát hành" value={formatTimestamp(data?.releasedTime, "DD/MM/YYYY HH:mm")} disabled={true} colorGray={false} key={"tgph"} />
           <BoxTextField label="Phương tiện sử dụng" value={VEHICLE[data?.vehicle] ? VEHICLE[data?.vehicle].name : null} disabled={true} colorGray={false} key={"ptsd"} />
-          <BoxTextField label="Trạng thái" value={ticketStatus[data?.status].label} disabled={true} colorGray={false} key={"tt"} />
+          <BoxTextField label="Trạng thái" value={ticketStatus[data?.status]?.label} disabled={true} colorGray={false} key={"tt"} />
           <BoxTextField label="Lý do thay đổi trạng thái" value={data?.reason} disabled={true} colorGray={false} key={"ldtđtt"} />
           <BoxTextArea label={"Quyền lợi"} value={data.description} rows={5} disabled={true} />
         </div>

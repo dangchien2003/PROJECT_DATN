@@ -19,7 +19,6 @@ payment_revenue AS (
         payment
     WHERE 
         YEAR(created_at) = ${year} 
-        AND fluctuation = 2 
         AND type IN (0, 1)
         AND status = 2
     GROUP BY 
