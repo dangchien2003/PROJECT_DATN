@@ -1,6 +1,7 @@
 package com.example.parking_service.service.impl;
 
 import com.example.common.dto.kafka.SendEmail;
+import com.example.common.dto.request.CheckTokenRequest;
 import com.example.common.dto.response.ApiResponse;
 import com.example.common.enums.TimeUnit;
 import com.example.common.exception.AppException;

@@ -1,4 +1,4 @@
-package com.example.parking_service.dto.request;
+package com.example.common.dto.request;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
