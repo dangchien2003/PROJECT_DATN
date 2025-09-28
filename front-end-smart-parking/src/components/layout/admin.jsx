@@ -23,7 +23,7 @@ const AdminLayout = () => {
 
   // kết nối websocket
   useEffect(() => {
-    // WebSocket.connect();
+    WebSocket.connect();
     return () => WebSocket.disconnect();
   }, []);
   const handleOpenChange = (keys) => {

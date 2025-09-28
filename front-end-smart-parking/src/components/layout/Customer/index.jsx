@@ -2,7 +2,6 @@ import WebSocket from '@/configs/websocket'
 import { useEffect } from 'react'
 import { Outlet } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
-import Footer from './Footer'
 import Header from './Header'
 import './style.css'
 import { getAccessToken } from '@/service/cookieService'
@@ -12,6 +11,7 @@ import { authened } from '@/store/authenSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { toastError } from '@/utils/toast'
 import { processRefreshToken } from '@/configs/axiosConfig'
+import Footer from '../Footer'
 
 const CustomerLayout = () => {
   const dispatch = useDispatch();
@@ -20,7 +20,7 @@ const CustomerLayout = () => {
 
   // kết nối websocket
   useEffect(() => {
-    // WebSocket.connect();
+    WebSocket.connect();
     return () => WebSocket.disconnect();
   }, []);
 

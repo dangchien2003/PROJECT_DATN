@@ -1,3 +1,7 @@
+.intro {
+  font-size: 18px;
+}
+
 .intro h1,
 .intro h2,
 .intro h3,
@@ -80,7 +84,7 @@
 }
 
 .intro .feature-item img {
-  width: 40px;
+  width: 60px;
   margin-bottom: 15px;
 }
 
@@ -88,11 +92,11 @@
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 30px;
+  gap: 50px;
   margin-top: 30px;
 }
 
 .intro .partner-logos img {
-  width: 80px;
-  height: auto;
+  width: auto;
+  height: 100px;
 }
