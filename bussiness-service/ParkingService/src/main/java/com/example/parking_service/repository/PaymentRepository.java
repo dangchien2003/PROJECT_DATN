@@ -1,6 +1,7 @@
 package com.example.parking_service.repository;
 
 import com.example.parking_service.dto.response.DoanhThuMotNgay;
+import com.example.parking_service.dto.response.DoanhThuMotNgayProjection;
 import com.example.parking_service.entity.Payment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -58,21 +59,23 @@ public interface PaymentRepository extends JpaRepository<Payment, String> {
             """)
     List<DoanhThuMotNgay> thongKeDoanhThuThang(LocalDateTime start, LocalDateTime end, List<Integer> types);
 
-    @Query("""
-                SELECT
-                    new com.example.parking_service.dto.response.DoanhThuMotNgay(
-                    FUNCTION('date', p.createdAt),
-                    COALESCE(SUM(p.total), 0)
-                    )
-                FROM OrderParking op
-                LEFT join Payment p on op.orderId = p.objectId
-                LEFT join Ticket t on t.ticketId = op.ticketId
-                WHERE p.type IN :types
-                  AND t.partnerId = :partnerId
-                  AND p.status = 2
-                  AND p.createdAt BETWEEN :start AND :end
-                GROUP BY FUNCTION('date', p.createdAt)
-            """)
-    List<DoanhThuMotNgay> thongKeDoanhThuThangTheoDoiTac(LocalDateTime start, LocalDateTime end, String partnerId, List<Integer> types);
 
+    @Query(value = """
+                SELECT
+                    DATE(p.created_At) as ngay,
+                    COALESCE(SUM(p.total), 0) as doanhThu
+                FROM Payment p
+                LEFT join Order_Parking op on op.order_Id = p.object_Id and p.type = 0
+                LEFT join Ticket_purchased tp on tp.id = p.object_Id and p.type = 1
+                LEFT join Ticket t on (
+                    (p.type = 0 AND t.ticket_Id = op.ticket_Id) OR
+                    (p.type = 1 AND t.ticket_Id = tp.ticket_id)
+                )
+                WHERE p.type IN :types
+                  AND t.partner_Id = :partnerId
+                  AND p.status = 2
+                  AND p.created_At BETWEEN :start AND :end
+                GROUP BY date(p.created_At)
+            """, nativeQuery = true)
+    List<DoanhThuMotNgayProjection> thongKeDoanhThuThangTheoDoiTac(LocalDateTime start, LocalDateTime end, String partnerId, List<Integer> types);
 }

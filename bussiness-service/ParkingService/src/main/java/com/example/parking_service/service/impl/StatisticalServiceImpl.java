@@ -365,7 +365,7 @@ public class StatisticalServiceImpl implements StatisticalService {
                 .atTime(LocalTime.MAX);
         List<Integer> typeList = List.of(PaymentType.MUA_VE, PaymentType.GIA_HAN);
         // lấy dữ liệu db
-        List<DoanhThuMotNgay> result = paymentRepository.thongKeDoanhThuThangTheoDoiTac(startOfMonth, endOfMonth, partnerId, typeList);
+        List<DoanhThuMotNgayProjection> result = paymentRepository.thongKeDoanhThuThangTheoDoiTac(startOfMonth, endOfMonth, partnerId, typeList);
         // tạo TreeMap chứa tất cả ngày trong tháng, mặc định = 0
         Map<String, Object> map = new TreeMap<>();
         LocalDate cursor = startOfMonthDate;
@@ -374,7 +374,7 @@ public class StatisticalServiceImpl implements StatisticalService {
             cursor = cursor.plusDays(1);
         }
         // map dữ liệu vào template
-        for (DoanhThuMotNgay dto : result) {
+        for (DoanhThuMotNgayProjection dto : result) {
             map.put(dto.getNgay().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), dto.getDoanhThu());
         }
 
