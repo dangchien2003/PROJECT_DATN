@@ -1,5 +1,6 @@
 package com.example.parking_service.service.impl;
 
+import com.example.common.dto.kafka.PushNotifyRequest;
 import com.example.common.dto.response.ApiResponse;
 import com.example.common.dto.response.PageResponse;
 import com.example.common.entity.BaseEntity_;
@@ -24,6 +25,7 @@ import com.example.parking_service.repository.TicketInOutRepository;
 import com.example.parking_service.repository.TicketPurchaseRepository;
 import com.example.parking_service.repository.TicketRepository;
 import com.example.parking_service.service.CryptoService;
+import com.example.parking_service.service.NotifyService;
 import com.example.parking_service.service.TicketPurchasedService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -60,6 +62,7 @@ public class TicketPurchasedServiceImpl implements TicketPurchasedService {
     CryptoService cryptoService;
     ObjectMapper objectMapper;
     CryptoService crypto;
+    NotifyService notifyService;
 
     @Override
     public ApiResponse<Object> customerSearch(CustomerSearchTicketPurchasedRequest request, Pageable pageable) {
@@ -340,6 +343,19 @@ public class TicketPurchasedServiceImpl implements TicketPurchasedService {
         ticketPurchased.setReason(request.getReason());
         DataUtils.setDataAction(ticketPurchased, actionBy, false);
         ticketPurchaseRepository.save(ticketPurchased);
+        try {
+            // gửi thông báo
+            PushNotifyRequest pushNotifyRequest1 = PushNotifyRequest.builder()
+                    .to(ticketPurchased.getAccountId())
+                    .title("Huỷ vé")
+                    .content("Vé của bạn đã bị huỷ")
+                    .link(String.format("/ticket/detail/%s", ticketPurchased.getId()))
+                    .actionBy(actionBy)
+                    .build();
+            notifyService.pushNotify(pushNotifyRequest1);
+        } catch (Exception e) {
+            log.error("send notify error", e);
+        }
         return ApiResponse.builder().build();
     }
 
@@ -453,6 +469,55 @@ public class TicketPurchasedServiceImpl implements TicketPurchasedService {
         } else {
             // gia hạn
         }
-        ticketPurchaseRepository.saveAll(ticketPurchasedSave);
+        ticketPurchasedSave = ticketPurchaseRepository.saveAll(ticketPurchasedSave);
+        if (order.getExtendTicketId() == null) {
+            // mua cho bản thân
+            if (order.getOwners() == null) {
+                try {
+                    // gửi thông báo
+                    PushNotifyRequest pushNotifyRequest = PushNotifyRequest.builder()
+                            .to(order.getPaymentBy())
+                            .title("Mua vé thành công")
+                            .content("Chúc mừng! Bạn đã mua thành công vé gửi xe. Nhấn để xem chi tiết")
+                            .link(String.format("/ticket/detail/%s", ticketPurchasedSave.get(0).getId()))
+                            .actionBy(order.getPaymentBy())
+                            .build();
+                    notifyService.pushNotify(pushNotifyRequest);
+                } catch (Exception e) {
+                    log.error("send notify error", e);
+                }
+            } else {
+                try {
+                    // gửi thông báo
+                    PushNotifyRequest pushNotifyRequest = PushNotifyRequest.builder()
+                            .to(order.getPaymentBy())
+                            .title("Mua vé thành công")
+                            .content(String.format("Chúc mừng! Bạn đã mua thành công vé gửi xe cho %s người khác", ticketPurchasedSave.size()))
+                            .link(null)
+                            .actionBy(order.getPaymentBy())
+                            .build();
+                    notifyService.pushNotify(pushNotifyRequest);
+                    ticketPurchasedSave.forEach(item -> {
+                        try {
+                            // gửi thông báo
+                            PushNotifyRequest pushNotifyRequest1 = PushNotifyRequest.builder()
+                                    .to(item.getAccountId())
+                                    .title("Mua vé thành công")
+                                    .content("Chúc mừng! Bạn đã được mua hộ vé gửi xe. Nhấn để xem chi tiết")
+                                    .link(String.format("/ticket/detail/%s", item.getId()))
+                                    .actionBy(order.getPaymentBy())
+                                    .build();
+                            notifyService.pushNotify(pushNotifyRequest1);
+                        } catch (Exception e) {
+                            log.error("send notify error", e);
+                        }
+                    });
+                } catch (Exception e) {
+                    log.error("send notify error", e);
+                }
+            }
+        } else {
+
+        }
     }
 }

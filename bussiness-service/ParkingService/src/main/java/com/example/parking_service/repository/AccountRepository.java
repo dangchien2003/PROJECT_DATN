@@ -102,4 +102,9 @@ public interface AccountRepository extends JpaRepository<Account, String> {
     boolean existsByPhoneNumber(String phoneNumber);
 
     long countByCategory(Integer role);
+
+    @Query("""
+                select a.id from Account a where a.status = 2 and a.category = 0
+            """)
+    List<String> getAdminId();
 }

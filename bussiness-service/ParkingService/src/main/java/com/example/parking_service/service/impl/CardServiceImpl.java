@@ -1,5 +1,7 @@
 package com.example.parking_service.service.impl;
 
+import com.example.common.dto.kafka.PushNotifyRequest;
+import com.example.common.dto.kafka.SendEmail;
 import com.example.common.dto.response.ApiResponse;
 import com.example.common.dto.response.PageResponse;
 import com.example.common.entity.BaseEntity_;
@@ -26,6 +28,7 @@ import com.example.parking_service.repository.AccountRepository;
 import com.example.parking_service.repository.CardRepository;
 import com.example.parking_service.repository.TicketPurchaseRepository;
 import com.example.parking_service.service.CardService;
+import com.example.parking_service.service.NotifyService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -52,6 +55,7 @@ public class CardServiceImpl implements CardService {
     private final TicketPurchaseRepository ticketPurchaseRepository;
     private final AccountRepository accountRepository;
     CardRepository cardRepository;
+    NotifyService notifyService;
     CardMapper cardMapper;
     Random random = new Random();
 
@@ -85,7 +89,21 @@ public class CardServiceImpl implements CardService {
                 .reasonRequest(request.getReason())
                 .build();
         DataUtils.setDataAction(card, accountId, true);
-        cardRepository.save(card);
+        card = cardRepository.save(card);
+        try {
+            List<String> adminIds = accountRepository.getAdminId();
+            // gửi thông báo
+            PushNotifyRequest pushNotifyRequest = PushNotifyRequest.builder()
+                    .toMany(adminIds)
+                    .title("Tiếp nhận yêu cầu cấp thẻ")
+                    .content(String.format("Khách hàng đã gửi yêu cầu cấp thẻ lần thứ %s", newIssuedTimes))
+                    .link(String.format("/admin/card/detail/1/%s", card.getId()))
+                    .actionBy(accountId)
+                    .build();
+            notifyService.pushNotify(pushNotifyRequest);
+        } catch (Exception e) {
+            log.error("send notify error", e);
+        }
         return ApiResponse.builder().build();
     }
 
@@ -234,6 +252,19 @@ public class CardServiceImpl implements CardService {
         card.setReasonReject(request.getReason());
         DataUtils.setDataAction(card, accountId, false);
         cardRepository.save(card);
+        try {
+            // gửi thông báo
+            PushNotifyRequest pushNotifyRequest = PushNotifyRequest.builder()
+                    .to(card.getAccountId())
+                    .title("Kết quả yêu cầu cấp thẻ")
+                    .content("Yêu cầu cấp thẻ của bạn đã bị từ chối")
+                    .link("/card")
+                    .actionBy(card.getAccountId())
+                    .build();
+            notifyService.pushNotify(pushNotifyRequest);
+        } catch (Exception e) {
+            log.error("send notify error", e);
+        }
         return ApiResponse.builder().build();
     }
 
@@ -251,6 +282,19 @@ public class CardServiceImpl implements CardService {
         card.setStatus(CardStatus.CHO_CAP);
         DataUtils.setDataAction(card, accountId, false);
         cardRepository.save(card);
+        try {
+            // gửi thông báo
+            PushNotifyRequest pushNotifyRequest = PushNotifyRequest.builder()
+                    .to(card.getAccountId())
+                    .title("Kết quả yêu cầu cấp thẻ")
+                    .content("Yêu cầu cấp thẻ của bạn đã được duyệt và đang trong quá trình xử lý")
+                    .link("/card")
+                    .actionBy(card.getAccountId())
+                    .build();
+            notifyService.pushNotify(pushNotifyRequest);
+        } catch (Exception e) {
+            log.error("send notify error", e);
+        }
         return ApiResponse.builder().build();
     }
 
@@ -275,6 +319,35 @@ public class CardServiceImpl implements CardService {
         card.setIssuedDate(LocalDate.now());
         DataUtils.setDataAction(card, accountId, false);
         cardRepository.save(card);
+        try {
+            // gửi thông báo
+            PushNotifyRequest pushNotifyRequest = PushNotifyRequest.builder()
+                    .to(card.getAccountId())
+                    .title("Thông báo kích hoạt thẻ")
+                    .content("Thẻ của bạn đã được xử lý. Tiến hành kích hoạt khi nhận thẻ")
+                    .link("/card")
+                    .actionBy(card.getAccountId())
+                    .build();
+            notifyService.pushNotify(pushNotifyRequest);
+        } catch (Exception e) {
+            log.error("send notify error", e);
+        }
+        try {
+            // gửi mail
+            Account account = accountRepository.findById(card.getAccountId()).orElse(new Account());
+            Map<String, Object> dataMail = new HashMap<>();
+            dataMail.put("activationCode", card.getCodeActive());
+            dataMail.put("fullName", account.getFullName());
+            SendEmail sendEmail = SendEmail.builder()
+                    .to(account.getEmail())
+                    .data(dataMail)
+                    .template("activeCard")
+                    .subject("Kích hoạt thẻ")
+                    .build();
+            notifyService.sendEmail(sendEmail, "common");
+        } catch (Exception e) {
+            log.error("send mail error", e);
+        }
         return ApiResponse.builder().build();
     }
 

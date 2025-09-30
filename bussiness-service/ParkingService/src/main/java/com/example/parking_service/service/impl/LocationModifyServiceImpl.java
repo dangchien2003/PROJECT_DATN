@@ -1,5 +1,6 @@
 package com.example.parking_service.service.impl;
 
+import com.example.common.dto.kafka.PushNotifyRequest;
 import com.example.common.dto.response.ApiResponse;
 import com.example.common.enums.IsDel;
 import com.example.common.enums.Release;
@@ -12,15 +13,18 @@ import com.example.parking_service.dto.other.ScheduledJob;
 import com.example.parking_service.dto.other.ScheduledJobId;
 import com.example.parking_service.dto.request.ApproveRequest;
 import com.example.parking_service.dto.request.ModifyLocationRequest;
+import com.example.parking_service.entity.Account;
 import com.example.parking_service.entity.Location;
 import com.example.parking_service.entity.LocationModify;
 import com.example.parking_service.enums.LocationModifyStatus;
 import com.example.parking_service.enums.ModuleName;
 import com.example.parking_service.mapper.LocationMapper;
 import com.example.parking_service.mapper.LocationModifyMapper;
+import com.example.parking_service.repository.AccountRepository;
 import com.example.parking_service.repository.LocationModifyRepository;
 import com.example.parking_service.repository.LocationRepository;
 import com.example.parking_service.service.LocationModifyService;
+import com.example.parking_service.service.NotifyService;
 import com.example.parking_service.service.SchedulerService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -42,12 +46,14 @@ import java.util.List;
 @Transactional
 @Slf4j
 public class LocationModifyServiceImpl implements LocationModifyService {
+    AccountRepository accountRepository;
     LocationModifyRepository locationModifyRepository;
     LocationRepository locationRepository;
     SchedulerService schedulerService;
     LocationModifyMapper locationModifyMapper;
     LocationMapper locationMapper;
     ObjectMapper objectMapper;
+    NotifyService notifyService;
 
     @Override
     public ApiResponse<Object> detailModify(Long id) {
@@ -119,6 +125,21 @@ public class LocationModifyServiceImpl implements LocationModifyService {
         }
         DataUtils.setDataAction(modifyEntity, adminId, false);
         locationModifyRepository.save(modifyEntity);
+        try {
+            // gửi thông báo
+            String actionLocation = modifyEntity.getLocationId() == null ? "thêm mới" : "chỉnh sửa";
+            String adminAction = Boolean.TRUE.equals(request.getApprove()) ? "duyệt" : "không duyệt";
+            PushNotifyRequest pushNotifyRequest = PushNotifyRequest.builder()
+                    .to(modifyEntity.getPartnerId())
+                    .title("Kết quả phê duyệt địa điểm")
+                    .content(String.format("Quản trị viên đã quyết định %s yêu cầu %s địa điểm của bạn", adminAction, actionLocation))
+                    .link(String.format("/partner/location/detail/%s/%s", Boolean.TRUE.equals(request.getApprove()) ? 5 : 4, modifyEntity.getModifyId()))
+                    .actionBy(adminId)
+                    .build();
+            notifyService.pushNotify(pushNotifyRequest);
+        } catch (Exception e) {
+            log.error("send notify error", e);
+        }
         return ApiResponse.builder().build();
     }
 
@@ -181,6 +202,27 @@ public class LocationModifyServiceImpl implements LocationModifyService {
         }
         // save
         entityModify = locationModifyRepository.save(entityModify);
+        try {
+            List<String> adminIds = accountRepository.getAdminId();
+            Account partner = accountRepository.findById(actionBy)
+                    .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
+            // gửi thông báo
+            String action = request.getLocationId() == null ? "thêm mới" : "chỉnh sửa";
+            PushNotifyRequest pushNotifyRequest = PushNotifyRequest.builder()
+                    .toMany(adminIds)
+                    .title(String.format("Tiếp nhận yêu cầu %s địa điểm", action))
+                    .content(String.format("Đối tác %s đã gửi yêu cầu %s địa điểm %s đang chờ bạn kiểm duyệt",
+                            partner.getPartnerFullName(),
+                            action,
+                            request.getUrgentApprovalRequest() == 1 ? "khẩn cấp" : "không khẩn cấp"
+                    ))
+                    .link(String.format("/admin/location/detail/%s/%s", request.getLocationId() == null ? 3 : 4, entityModify.getModifyId()))
+                    .actionBy(actionBy)
+                    .build();
+            notifyService.pushNotify(pushNotifyRequest);
+        } catch (Exception e) {
+            log.error("send notify error", e);
+        }
         return ApiResponse.builder()
                 .result(entityModify.getModifyId())
                 .build();
@@ -235,32 +277,45 @@ public class LocationModifyServiceImpl implements LocationModifyService {
         schedulerService.addTask(scheduledJob);
     }
 
-    public void executeApplyLocation(LocationModify locationWaitRelease, String actionBy) throws JsonProcessingException {
-        String beforeUpdate = objectMapper.writeValueAsString(locationWaitRelease);
+    public void executeApplyLocation(LocationModify locationModify, String actionBy) throws JsonProcessingException {
+        String beforeUpdate = objectMapper.writeValueAsString(locationModify);
         // thay đổi entity release
-        locationWaitRelease.setReleased(Release.RELEASE.getValue());
-        locationWaitRelease.setReleaseAt(LocalDateTime.now());
-        locationWaitRelease.setModifyStatus(LocationModifyStatus.DA_AP_DUNG.getValue());
-        DataUtils.setDataAction(locationWaitRelease, actionBy, false);
+        locationModify.setReleased(Release.RELEASE.getValue());
+        locationModify.setReleaseAt(LocalDateTime.now());
+        locationModify.setModifyStatus(LocationModifyStatus.DA_AP_DUNG.getValue());
+        DataUtils.setDataAction(locationModify, actionBy, false);
         // lưu
-        locationModifyRepository.save(locationWaitRelease);
+        locationModifyRepository.save(locationModify);
 
         try {
             // thay thế bản ghi phát hành
             Location location;
-            if (!DataUtils.isNullOrEmpty(locationWaitRelease.getLocationId())) {
-                location = locationRepository.findById(locationWaitRelease.getLocationId())
-                        .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND.withMessage("Không tìm thấy địa điểm có id: " + locationWaitRelease.getLocationId())));
+            if (!DataUtils.isNullOrEmpty(locationModify.getLocationId())) {
+                location = locationRepository.findById(locationModify.getLocationId())
+                        .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND.withMessage("Không tìm thấy địa điểm có id: " + locationModify.getLocationId())));
             } else {
                 location = new Location();
             }
             // map dữ liệu
-            locationMapper.toLocationFromReleaseEntity(location, locationWaitRelease);
+            locationMapper.toLocationFromReleaseEntity(location, locationModify);
             location.setModifyStatus(LocationModifyStatus.DA_AP_DUNG.getValue());
             // thay đổi thời gian tác động
-            DataUtils.setDataAction(location, actionBy, DataUtils.isNullOrEmpty(locationWaitRelease.getLocationId()));
+            DataUtils.setDataAction(location, actionBy, DataUtils.isNullOrEmpty(locationModify.getLocationId()));
             // lưu dữ liệu
             locationRepository.save(location);
+            try {
+                // gửi thông báo
+                PushNotifyRequest pushNotifyRequest1 = PushNotifyRequest.builder()
+                        .to(location.getPartnerId())
+                        .title("Thay đổi thông tin địa điểm")
+                        .content("Thông tin địa điểm đã được thay đổi")
+                        .link(String.format("/partner/location/detail/5/%s", locationModify.getModifyId()))
+                        .actionBy("SCHEDULER")
+                        .build();
+                notifyService.pushNotify(pushNotifyRequest1);
+            } catch (Exception e) {
+                log.error("send notify error", e);
+            }
         } catch (Exception e) {
             log.error("error: ", e);
             // rollback nếu lỗi

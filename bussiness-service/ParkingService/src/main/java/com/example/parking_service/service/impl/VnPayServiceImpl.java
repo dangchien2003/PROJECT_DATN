@@ -1,5 +1,6 @@
 package com.example.parking_service.service.impl;
 
+import com.example.common.dto.kafka.PushNotifyRequest;
 import com.example.common.dto.response.ApiResponse;
 import com.example.common.exception.AppException;
 import com.example.common.exception.ErrorCode;
@@ -18,6 +19,7 @@ import com.example.parking_service.repository.AccountRepository;
 import com.example.parking_service.repository.DepositRepository;
 import com.example.parking_service.repository.OrderRepository;
 import com.example.parking_service.repository.PaymentRepository;
+import com.example.parking_service.service.NotifyService;
 import com.example.parking_service.service.TicketPurchasedService;
 import com.example.parking_service.service.VnPayService;
 import com.example.parking_service.utils.HttpUtils;
@@ -52,6 +54,7 @@ public class VnPayServiceImpl implements VnPayService {
     OrderRepository orderRepository;
     TicketPurchasedService ticketPurchasedService;
     VnPayClient vnPayClient;
+    NotifyService notifyService;
     @NonFinal
     @Value("${vnPay.tmnCode}")
     String vnpTmnCode;
@@ -219,6 +222,19 @@ public class VnPayServiceImpl implements VnPayService {
                 deposit.setStatus(newDepositStatus);
                 DataUtils.setDataAction(deposit, actionBy, false);
                 depositRepository.save(deposit);
+                try {
+                    // gửi thông báo
+                    PushNotifyRequest pushNotifyRequest1 = PushNotifyRequest.builder()
+                            .to(deposit.getAccountId())
+                            .title("Nạp tiền thành công")
+                            .content(String.format("Tài khoản của bạn đã được cộng thêm %dđ", deposit.getTotal()))
+                            .link("/account/transaction")
+                            .actionBy(deposit.getAccountId())
+                            .build();
+                    notifyService.pushNotify(pushNotifyRequest1);
+                } catch (Exception e) {
+                    log.error("send notify error", e);
+                }
             }
         } catch (Exception e) {
             // cập nhật trạng thái nếu có lỗi

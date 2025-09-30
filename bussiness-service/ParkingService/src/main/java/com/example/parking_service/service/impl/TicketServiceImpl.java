@@ -1,5 +1,6 @@
 package com.example.parking_service.service.impl;
 
+import com.example.common.dto.kafka.PushNotifyRequest;
 import com.example.common.dto.response.ApiResponse;
 import com.example.common.dto.response.PageResponse;
 import com.example.common.enums.IsDel;
@@ -26,6 +27,7 @@ import com.example.parking_service.enums.*;
 import com.example.parking_service.mapper.TicketMapper;
 import com.example.parking_service.mapper.TicketWaitReleaseMapper;
 import com.example.parking_service.repository.*;
+import com.example.parking_service.service.NotifyService;
 import com.example.parking_service.service.SchedulerService;
 import com.example.parking_service.service.TicketService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -64,6 +66,7 @@ public class TicketServiceImpl implements TicketService {
     TicketMapper ticketMapper;
     TicketWaitReleaseMapper ticketWaitReleaseMapper;
     ObjectMapper objectMapper;
+    NotifyService notifyService;
 
     @Override
     public void checkExistWaitRelease(Long ticketId) {
@@ -106,7 +109,20 @@ public class TicketServiceImpl implements TicketService {
             DataUtils.setDataAction(item, actionBy, false);
         }
         ticketLocationRepository.saveAll(ticketLocations);
-
+        try {
+            // gửi thông báo
+            String actionTicket = optionalTicketWaitRelease.getTicketId() == null ? "thêm mới" : "chỉnh sửa";
+            PushNotifyRequest pushNotifyRequest = PushNotifyRequest.builder()
+                    .to(optionalTicketWaitRelease.getPartnerId())
+                    .title("Huỷ áp dụng vé")
+                    .content(String.format("Quản trị viên đã huỷ vé %s trong hàng đợi của bạn", actionTicket))
+                    .link(String.format("/partner/ticket/detail/1/%s", optionalTicketWaitRelease.getId()))
+                    .actionBy(actionBy)
+                    .build();
+            notifyService.pushNotify(pushNotifyRequest);
+        } catch (Exception e) {
+            log.error("send notify error", e);
+        }
         return ApiResponse.builder()
                 .result(ticketMapper.toDataSearchTicketResponse(optionalTicketWaitRelease))
                 .build();
@@ -636,6 +652,19 @@ public class TicketServiceImpl implements TicketService {
                 DataUtils.setDataAction(ticketLocation, "schedule", true);
             }
             ticketLocationRepository.saveAll(ticketLocations);
+            try {
+                // gửi thông báo
+                PushNotifyRequest pushNotifyRequest1 = PushNotifyRequest.builder()
+                        .to(ticketWaitRelease.getPartnerId())
+                        .title("Thay đổi thông tin vé")
+                        .content("Thông tin vé đã được thay đổi")
+                        .link(String.format("/partner/ticket/detail/1/%s", ticketWaitRelease.getId()))
+                        .actionBy("SCHEDULER")
+                        .build();
+                notifyService.pushNotify(pushNotifyRequest1);
+            } catch (Exception e) {
+                log.error("send notify error", e);
+            }
         } catch (Exception e) {
             log.error("error: ", e);
             // rollback nếu lỗi

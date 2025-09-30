@@ -65,14 +65,30 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public ApiResponse<Object> send(PushNotifyRequest request) {
-        Notification notification = notificationMapper.toNotification(request);
-        DataUtils.setDataAction(notification, request.getActionBy(), true);
-        notification = notificationRepository.save(notification);
-        NotificationResponse response = notificationMapper.toNotificationResponse(notification);
-        this.sendToClient(response);
-        return ApiResponse.builder()
-                .result(response)
-                .build();
+        if (DataUtils.isNullOrEmpty(request.getToMany())) {
+            Notification notification = notificationMapper.toNotification(request);
+            DataUtils.setDataAction(notification, request.getActionBy(), true);
+            notification = notificationRepository.save(notification);
+            NotificationResponse response = notificationMapper.toNotificationResponse(notification);
+            this.sendToClient(response);
+            return ApiResponse.builder()
+                    .result(response)
+                    .build();
+        } else {
+            List<Notification> notifications = request.getToMany().stream().map(item -> {
+                Notification notification = notificationMapper.toNotification(request);
+                notification.setAccountId(item);
+                DataUtils.setDataAction(notification, request.getActionBy(), true);
+                return notification;
+            }).toList();
+            notifications = notificationRepository.saveAll(notifications);
+            notifications.forEach(item -> {
+                NotificationResponse response = notificationMapper.toNotificationResponse(item);
+                this.sendToClient(response);
+            });
+            return ApiResponse.builder()
+                    .build();
+        }
     }
 
     @Override
