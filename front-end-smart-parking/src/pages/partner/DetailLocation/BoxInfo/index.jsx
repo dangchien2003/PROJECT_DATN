@@ -2,7 +2,7 @@ import Avatar from "@/components/Avatar"
 import BoxCheckBox from "@/components/BoxCheckBox"
 import BoxTextField from "@/components/BoxTextField"
 import QuillEditor from "@/components/QuillEditor"
-import { LOCATION_STATUS } from "@/utils/constants"
+import { LOCATION_MODIFY_STATUS_SELECTBOX, LOCATION_STATUS } from "@/utils/constants"
 import { extractYouTubeVideoId } from "@/utils/extract"
 import { formatTimestamp } from "@/utils/time"
 import { Button, Flex, Typography } from "antd"
@@ -11,6 +11,7 @@ import { FaEdit } from "react-icons/fa"
 import { Link } from "react-router-dom"
 import Action from "./Action"
 import OtherInfoModify from "./OtherInfoModify"
+import BoxTextArea from "@/components/BoxTextArea"
 const { Title } = Typography;
 
 const BoxInfo = ({
@@ -43,10 +44,10 @@ const BoxInfo = ({
   return (
     <div>
       {data !== null && <div style={styleParent}>
-        <Flex justify="space-between" style={{marginBottom: 8}}>
+        <Flex justify="space-between" style={{ marginBottom: 8 }}>
           <Title style={{ padding: "0 8px" }} level={5}>{isModify ? "Thông tin chỉnh sửa" : "Thông tin gốc"}</Title>
           <div>
-            {!isModify && <Action location={data}/>}
+            {!isModify && <Action location={data} />}
           </div>
         </Flex>
         {/* Thông tin chính */}
@@ -68,6 +69,10 @@ const BoxInfo = ({
           </div>
         </div>
         <div className="box-ticket-detail">
+          <BoxTextField label="Trạng thái yêu cầu" value={LOCATION_MODIFY_STATUS_SELECTBOX.filter(item => item.value === data.modifyStatus)[0]?.label} disabled={true} colorGray={false} key={"modifyStatus"} />
+          {isModify && data.modifyStatus === 1 && <div style={{ width: "100%" }}>
+            <BoxTextArea label={"Lý do từ chối"} value={data?.reasonReject} rows={5} disabled={true} />
+          </div>}
           <BoxTextField label="Tên địa điểm" value={data.name} disabled={true} colorGray={false} key={"tdd"} />
           <BoxTextField label={<span>Toạ độ {data.linkGoogleMap && <a href={data.linkGoogleMap} target="_blank" rel="noreferrer">google map</a>}</span>} value={(data.coordinatesX && data.coordinatesY) ? `${data.coordinatesX} x ${data.coordinatesY}` : null} disabled={true} colorGray={false} key={"tđ"} />
           <BoxTextField label="Lần chỉnh sửa" value={data.modifyCount} disabled={true} colorGray={false} key={"lcs"} />

@@ -1,6 +1,6 @@
 import BoxCheckBox from "@/components/BoxCheckBox"
 import BoxTextField from "@/components/BoxTextField"
-import { LOCATION_STATUS } from "@/utils/constants"
+import { LOCATION_MODIFY_STATUS_SELECTBOX, LOCATION_STATUS } from "@/utils/constants"
 import { formatTimestamp } from "@/utils/time"
 import OtherInfoModify from "./OtherInfoModify"
 import { FaCheck } from "react-icons/fa6"
@@ -171,6 +171,7 @@ const BoxInfo = ({ data, isModify, widthPage, tab }) => {
           </div>
         </div>
         <div className="box-ticket-detail">
+          <BoxTextField label="Trạng thái yêu cầu" value={LOCATION_MODIFY_STATUS_SELECTBOX.filter(item => item.value === data.modifyStatus)[0]?.label} disabled={true} colorGray={false} key={"modifyStatus"} />
           {isModify && data.modifyStatus === 1 && <div style={{ width: "100%" }}>
             <BoxTextArea label={"Lý do từ chối"} value={data?.reasonReject} rows={5} disabled={true} />
           </div>}
