@@ -55,3 +55,10 @@ export async function changePassword(oldPassword, newPassword) {
 export async function changeInfoPartner(data) {
   return await httpClient.post(PARKING_SERVICE.account.changeInfoPartner, data, {})
 }
+
+
+export async function historyCheckingByAdmin(accountId, page, size) {
+  return await httpClient.get(PARKING_SERVICE.checking.historyByAdmin, {params: {
+    accountId, page, size
+  }})
+}

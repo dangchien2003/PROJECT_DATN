@@ -111,6 +111,11 @@ export const PARKING_SERVICE = {
     getStatisticalAreaAtHomeByAdmin: "parking/statistical/area-at-home-admin",
     thongKeDoanhThuThangTheoDoiTac: "parking/statistical/thong-ke-doanh-thu-thang-theo-doi-tac",
     statisticQuery: "parking/statistical/statistic-query",
+  },
+  checking: {
+    historyByAdmin: "parking/checking/getByAccount",
+    detail: "parking/checking/detail",
+    listByTicket: "checking/getByTicket",
   }
 }
 

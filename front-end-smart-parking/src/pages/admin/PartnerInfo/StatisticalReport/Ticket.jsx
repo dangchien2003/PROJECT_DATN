@@ -24,7 +24,7 @@ const Ticket = ({ info }) => {
         <Tabs defaultActiveKey="1" items={items} style={{ minHeight: 400 }} destroyInactiveTabPane/>
       </Col>
       <Col xs={24} sm={24} md={24} lg={8}>
-        <TkTicketOfPartner />
+        <TkTicketOfPartner accountId={info.id}/>
       </Col>
     </Row>
   );
