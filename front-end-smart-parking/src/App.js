@@ -30,6 +30,8 @@ import OrderTicket from "./pages/customer/OrderTicket";
 import Payment from "./pages/customer/Payment";
 import TicketList from "./pages/customer/TicketList";
 import TransactionHistory from "./pages/customer/TransactionHistory";
+import TransactionHistoryAdmin from "./pages/admin/TransactionHistory";
+import TransactionHistoryPartner from "./pages/partner/TransactionHistory";
 import AddLocation from "./pages/partner/AddLocation";
 import AddTicket from "./pages/partner/AddTicket";
 import DashboardPartner from "./pages/partner/DashBoardPartner";
@@ -111,6 +113,8 @@ const router = createBrowserRouter([
       { path: "location/wait-approve", element: <ListLocationWaitApprove /> },
       { path: "location/map/all", element: <MapAllLocation /> },
 
+      { path: "transaction", element: <TransactionHistoryAdmin /> },
+
       { path: "statistics/business", element: <StatisticsBusiness /> },
       { path: "statistics/ticket", element: <StatisticTicket /> },
       { path: "statistics/location", element: <StatisticsLocation /> },
@@ -138,6 +142,8 @@ const router = createBrowserRouter([
       { path: "ticket/list", element: <ListTicketPartner /> },
       { path: "ticket/detail/:isWaitRelease/:id", element: <DetailTicketPartner /> },
 
+      
+      { path: "transaction", element: <TransactionHistoryPartner /> },
       
       { path: "statistics/business", element: <PartnerStatisticsBusiness /> },
       { path: "statistics/ticket", element: <PartnerStatisticsTicket /> },

@@ -91,7 +91,9 @@ export const PARKING_SERVICE = {
     confirmOrder: "parking/order/confirm",
   },
   transaction: {
-    customerSearch: "parking/transaction/history"
+    customerSearch: "parking/transaction/history",
+    adminSearch: "parking/transaction/admin/history",
+    partnerSearch: "parking/transaction/partner/history",
   },
   deposit: {
     requestDeposit: "parking/deposit",

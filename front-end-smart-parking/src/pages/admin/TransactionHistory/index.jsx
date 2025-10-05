@@ -1,8 +1,9 @@
 import ChildContent from '@/components/layout/Customer/ChildContent';
-import { customerGetHistory } from '@/service/transactionService';
+import { useSelectMenu } from '@/hook/useSelectMenu';
+import { adminGetHistory } from '@/service/transactionService';
 import { setSearching } from '@/store/startSearchSlice';
 import { getDataApi } from '@/utils/api';
-import { MENU_CUSTOMER_ID, TYPE_TRANSACTION } from '@/utils/constants';
+import { MENU_ADMIN_ID, TYPE_TRANSACTION } from '@/utils/constants';
 import { formatCurrency } from '@/utils/number';
 import { convertDataSelectboxToObject, convertObjectToDataSelectBox } from '@/utils/object';
 import { showTotal } from '@/utils/table';
@@ -13,11 +14,11 @@ import { useEffect, useState } from 'react';
 import { ImCancelCircle } from "react-icons/im";
 import { IoMdCheckmarkCircleOutline } from 'react-icons/io';
 import { IoTimer } from 'react-icons/io5';
+import { TiWarning } from 'react-icons/ti';
 import { useDispatch, useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 import Search from './Search';
 import './style.css';
-import { useSelectMenu } from '@/hook/useSelectMenu';
-import { TiWarning } from 'react-icons/ti';
 
 const baseColumns = [
   {
@@ -26,6 +27,13 @@ const baseColumns = [
     key: "1",
     width: 50,
     align: "center"
+  },
+  {
+    title: "Người thanh toán",
+    dataIndex: "paymentPersonNamePrint",
+    key: "1.1",
+    align: "left",
+    width: 200
   },
   {
     title: "Mục đích",
@@ -94,7 +102,7 @@ const TransactionHistory = () => {
   const { select } = useSelectMenu();
 
   useEffect(() => {
-    select(MENU_CUSTOMER_ID.LICH_SU_GIAO_DICH);
+    select(MENU_ADMIN_ID.LICH_SU_GIAO_DICH);
     // eslint-disable-next-line react-hooks/exhaustive-deps 
   }, [])
 
@@ -150,6 +158,8 @@ const TransactionHistory = () => {
         item.paymentMethodPrint = "Số dư";
       }
 
+      item.paymentPersonNamePrint = <Link to={"/admin/account/customer/" + item.paymentBy}>{item.paymentPersonName}</Link>
+
       item.createdTime = dayjs(item.createdAt).format("HH:mm:ss DD/MM/YYYY");
       item.stt = (currentPage - 1) * pageSize + index + 1;
       return item;
@@ -173,7 +183,7 @@ const TransactionHistory = () => {
 
   const loadData = (newPagination) => {
     setData([])
-    customerGetHistory(dataSearch, newPagination.current - 1, pagination.pageSize)
+    adminGetHistory(dataSearch, newPagination.current - 1, pagination.pageSize)
       .then((response) => {
         const data = getDataApi(response);
         const total = data?.totalElements;

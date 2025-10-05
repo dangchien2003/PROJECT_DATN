@@ -2,6 +2,7 @@ import { HomeOutlined, UserOutlined } from "@ant-design/icons";
 import { BsCart4 } from "react-icons/bs";
 import { FaChartPie, FaLocationDot } from "react-icons/fa6";
 import { IoCard, IoTicket } from "react-icons/io5";
+import { RiChatHistoryFill } from "react-icons/ri"
 import { TbPigMoney } from "react-icons/tb";
 import { Link } from "react-router-dom";
 
@@ -76,6 +77,11 @@ export const ADMIN_MENU = [
     ],
   },
   {
+    key: "7",
+    icon: <RiChatHistoryFill style={{ fontSize: 20 }} />,
+    label: <Link to={"/admin/transaction"}>Lịch sử giao dịch</Link>
+  },
+  {
     key: "6",
     icon: <FaChartPie style={{ fontSize: 20 }} />,
     label: "Thống kê",
@@ -143,6 +149,11 @@ export const PARTNER_MENU = [
         label: <Link to={"/partner/ticket/list"}>Vé đã tạo</Link>,
       },
     ],
+  },
+  {
+    key: "4",
+    icon: <RiChatHistoryFill style={{ fontSize: 20 }} />,
+    label: <Link to={"/partner/transaction"}>Lịch sử giao dịch</Link>
   },
   {
     key: "5",

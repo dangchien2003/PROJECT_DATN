@@ -1,7 +1,5 @@
 import TableCustomTicketPurchased from "@/components/TableCustomTicketPurchased";
-import TkTicketPurchased from "@/components/TkTicketPurchased";
 import { Col, Row } from "antd";
-import React from "react";
 
 const TicketPurchased = ({info}) => {
   return (

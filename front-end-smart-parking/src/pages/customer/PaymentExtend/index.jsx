@@ -3,7 +3,6 @@ import ModalCustom from '@/components/ModalCustom';
 import PopConfirmCustom from '@/components/PopConfirmCustom';
 import { useLoading } from '@/hook/loading';
 import StepOrder from '@/pages/customer/OrderTicket/StepOrder';
-import { confirmOrder } from '@/service/orderService';
 import { minusRemaining } from '@/store/remainingSlice';
 import { getDataApi } from '@/utils/api';
 import { lineLoading, MENU_CUSTOMER_ID } from '@/utils/constants';
@@ -11,6 +10,8 @@ import { deleteCookie, getCookie } from '@/utils/cookie';
 import { formatCurrency } from '@/utils/number';
 import { toastError } from '@/utils/toast';
 // import bank from "@image/bank.png";
+import { useSelectMenu } from '@/hook/useSelectMenu';
+import { paymentExtend } from '@/service/ticketPurchasedService';
 import remainingImg from "@image/remaining.png";
 import vnpay from "@image/vnpay.png";
 import { Col, Row } from 'antd';
@@ -19,8 +20,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import PaymentSuccess from './PaymentSuccess';
 import './style.css';
-import { useSelectMenu } from '@/hook/useSelectMenu';
-import { paymentExtend } from '@/service/ticketPurchasedService';
 
 const PaymentExtend = () => {
   const [confirmRemaing, setConfirmRemaining] = useState(false);

@@ -1,26 +1,23 @@
 import SelectBoxLabelDash from "@/components/SelectBoxLabelDash";
 import TextFieldLabelDash from "@/components/TextFieldLabelDash";
-import { DATA_ACCOUNT_STATUS_SELECTBOX, GENDER } from "@/utils/constants";
-import { Button } from "antd";
-import imgExcel from "@image/excel.png";
-import { useEffect, useState } from "react";
-import CreateByExcel from "./CreateByExcel";
-import { updateObjectValue } from "@/utils/object";
 import { useRequireField } from "@/hook/useRequireField";
+import { DATA_ACCOUNT_STATUS_SELECTBOX, GENDER } from "@/utils/constants";
+import { updateObjectValue } from "@/utils/object";
+import { useEffect } from "react";
 
 const requireKeys = ["fullName", "email", "phoneNumber", "gender", "status"]
 const Account = ({data}) => {
   const {setRequireField} = useRequireField();
-  const [showViewCreateByExcel, setShowViewCreateByExcel] = useState(false);
+  // const [showViewCreateByExcel, setShowViewCreateByExcel] = useState(false);
   
   useEffect(()=> {
     setRequireField(requireKeys)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const handleClickCreateByExcel = () => {
-    setShowViewCreateByExcel(true);
-  };
+  // const handleClickCreateByExcel = () => {
+  //   setShowViewCreateByExcel(true);
+  // };
 
   const handleChange = (key, value) => {
     if (data) {
@@ -42,7 +39,7 @@ const Account = ({data}) => {
       >
         <h4 style={{ paddingBottom: 8 }}>Thông tin tài khoản</h4>
         <div>
-          <Button
+          {/* <Button
             color="cyan"
             variant="outlined"
             shape="round"
@@ -51,12 +48,12 @@ const Account = ({data}) => {
           >
             <img src={imgExcel} alt="excel" width={10} />
             Tạo bằng excel
-          </Button>
+          </Button> */}
         </div>
       </div>
-      {showViewCreateByExcel && (
+      {/* {showViewCreateByExcel && (
         <CreateByExcel setShowViewCreateByExcel={setShowViewCreateByExcel} />
-      )}
+      )} */}
       <div style={{ display: "flex", flexWrap: "wrap" }}>
         <TextFieldLabelDash
           label={"Tên khách hàng"}

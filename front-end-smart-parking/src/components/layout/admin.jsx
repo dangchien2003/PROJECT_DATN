@@ -23,7 +23,10 @@ const AdminLayout = () => {
 
   // kết nối websocket
   useEffect(() => {
-    WebSocket.connect();
+    let openWs = process.env.REACT_APP_OPEN_WS;
+    if (openWs === '1') {
+      WebSocket.connect();
+    }
     return () => WebSocket.disconnect();
   }, []);
   const handleOpenChange = (keys) => {

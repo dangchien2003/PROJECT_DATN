@@ -1,25 +1,22 @@
 import ChildContent from '@/components/layout/Customer/ChildContent';
+import LoadingComponent from '@/components/LoadingComponent';
+import { useSelectMenu } from '@/hook/useSelectMenu';
+import { extendRequest } from '@/service/ticketPurchasedService';
+import { getDataApi } from '@/utils/api';
+import { MENU_CUSTOMER_ID } from '@/utils/constants';
 import { getCookie, setCookie } from '@/utils/cookie';
+import { formatCurrency } from '@/utils/number';
+import { toastError } from '@/utils/toast';
 import logo from '@image/logo_parking.png';
 import { Button, Col, Flex, Row } from 'antd';
+import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
-import { FaUserAlt } from 'react-icons/fa';
-import { FaLocationDot } from 'react-icons/fa6';
-import { IoTicket, IoWarning } from 'react-icons/io5';
+import { IoTicket } from 'react-icons/io5';
 import { MdOutlineAccessTimeFilled } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 import StepOrder from '../OrderTicket/StepOrder';
 import ItemBill from './ItemBill';
 import './style.css';
-import { createOrder } from '@/service/orderService';
-import { getDataApi } from '@/utils/api';
-import dayjs from 'dayjs';
-import { toastError } from '@/utils/toast';
-import LoadingComponent from '@/components/LoadingComponent';
-import { formatCurrency } from '@/utils/number';
-import { useSelectMenu } from '@/hook/useSelectMenu';
-import { MENU_CUSTOMER_ID } from '@/utils/constants';
-import { extendRequest } from '@/service/ticketPurchasedService';
 
 const ConfirmExtend = () => {
   const navigate = useNavigate();
@@ -46,11 +43,6 @@ const ConfirmExtend = () => {
       navigate("/404")
     }
     setExtendInfo(data);
-    // data order
-    var ownersId = null;
-    if (data?.owner && Array.isArray(data.owner) && data.owner.length > 0) {
-      ownersId = data?.owner.map(item => item.id)
-    }
     const requestData = {
       ticketId: data?.ticketId,
       expires: data?.expires,

@@ -1,8 +1,9 @@
 import ChildContent from '@/components/layout/Customer/ChildContent';
-import { customerGetHistory } from '@/service/transactionService';
+import { useSelectMenu } from '@/hook/useSelectMenu';
+import { partnerGetHistory } from '@/service/transactionService';
 import { setSearching } from '@/store/startSearchSlice';
 import { getDataApi } from '@/utils/api';
-import { MENU_CUSTOMER_ID, TYPE_TRANSACTION } from '@/utils/constants';
+import { MENU_PARTNER_ID, TYPE_TRANSACTION } from '@/utils/constants';
 import { formatCurrency } from '@/utils/number';
 import { convertDataSelectboxToObject, convertObjectToDataSelectBox } from '@/utils/object';
 import { showTotal } from '@/utils/table';
@@ -13,11 +14,10 @@ import { useEffect, useState } from 'react';
 import { ImCancelCircle } from "react-icons/im";
 import { IoMdCheckmarkCircleOutline } from 'react-icons/io';
 import { IoTimer } from 'react-icons/io5';
+import { TiWarning } from 'react-icons/ti';
 import { useDispatch, useSelector } from 'react-redux';
 import Search from './Search';
 import './style.css';
-import { useSelectMenu } from '@/hook/useSelectMenu';
-import { TiWarning } from 'react-icons/ti';
 
 const baseColumns = [
   {
@@ -56,20 +56,6 @@ const baseColumns = [
     width: 150
   },
   {
-    title: "Trạng thái",
-    dataIndex: "statusPrint",
-    key: "3",
-    align: "left",
-    width: 150
-  },
-  // {
-  //   title: "Nội dung giao dịch",
-  //   dataIndex: "content",
-  //   key: "4",
-  //   align: "left",
-  //   width: 250
-  // },
-  {
     title: "Thời điểm giao dịch",
     dataIndex: "createdTime",
     key: "5",
@@ -94,7 +80,7 @@ const TransactionHistory = () => {
   const { select } = useSelectMenu();
 
   useEffect(() => {
-    select(MENU_CUSTOMER_ID.LICH_SU_GIAO_DICH);
+    select(MENU_PARTNER_ID.LICH_SU_GIAO_DICH);
     // eslint-disable-next-line react-hooks/exhaustive-deps 
   }, [])
 
@@ -109,36 +95,6 @@ const TransactionHistory = () => {
       }
 
       item.totalPrint = <div>{formatCurrency(item.total)}<sup>Đ</sup></div>;
-      // trạng thái
-      item.statusPrint = "";
-      if (item.status === 0) {
-        item.statusPrint = <div><IoTimer /> Chờ thanh toán</div>
-      } else if (item.status === 1) {
-        item.statusPrint = <div className='success'>
-          <IoTimer /> Đang xử lý
-        </div>
-      } else if (item.status === 2) {
-        item.statusPrint = <div className='success'>
-          <IoMdCheckmarkCircleOutline /> Đã thanh toán
-        </div>
-      } else if (item.status === 3) {
-        item.statusPrint = <div className='cancel'>
-          <ImCancelCircle /> Giao dịch hết hạn
-        </div>
-      } else if (item.status === 4) {
-        item.statusPrint = <div className='cancel'>
-          <ImCancelCircle /> Huỷ giao dịch
-        </div>
-      } else if (item.status === 5) {
-        item.statusPrint = <div className='cancel'>
-          <ImCancelCircle /> Lỗi giao dịch
-        </div>
-      } else if (item.status === 6) {
-        item.statusPrint = <div className='cancel'>
-          <TiWarning /> Giao dịch thành công nhưng không thể xử lý
-        </div>
-      }
-
 
       // phương thức thanh toán
       item.paymentMethodPrint = null;
@@ -173,7 +129,7 @@ const TransactionHistory = () => {
 
   const loadData = (newPagination) => {
     setData([])
-    customerGetHistory(dataSearch, newPagination.current - 1, pagination.pageSize)
+    partnerGetHistory(dataSearch, newPagination.current - 1, pagination.pageSize)
       .then((response) => {
         const data = getDataApi(response);
         const total = data?.totalElements;
