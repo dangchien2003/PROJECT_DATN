@@ -2,7 +2,7 @@ import LogoParking from "@/components/Logo"
 import MenuAccount from "@/components/MenuAccount"
 import Notifitation from "@/components/Notification"
 import useResponsiveKey from "@/hook/useReponsive"
-import { getAvatar } from "@/service/localStorageService"
+import { getActor, getAvatar } from "@/service/localStorageService"
 import { CUSTOMER_MENU } from "@/utils/menu"
 import noAvatar from '@image/no_avatar2.png'
 import { Menu } from "antd"
@@ -10,7 +10,7 @@ import Sider from "antd/es/layout/Sider"
 import { useEffect, useState } from "react"
 import { AiOutlineMenuFold, AiOutlineMenuUnfold } from "react-icons/ai"
 import { useSelector } from "react-redux"
-import { useLocation } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 import MenuCustom from "./Menu"
 import Remaining from "./Remaining"
 
@@ -22,6 +22,24 @@ const Header = () => {
   const authened = useSelector(state => state.authen);
   const { key } = useResponsiveKey();
   const avatar = getAvatar();
+  const navigate = useNavigate();
+  const checkAccess = () => {
+    let actor = getActor();
+    if (actor === "admin") {
+      navigate("/admin")
+    } else if (actor === "partner") {
+      navigate("/partner")
+    }
+  }
+
+  checkAccess();
+  useEffect(() => {
+    if (!authened) {
+      return;
+    }
+    checkAccess();
+  // eslint-disable-next-line react-hooks/exhaustive-deps 
+  }, [authened])
 
   useEffect(() => {
     const updateHeight = () => {
@@ -91,7 +109,7 @@ const Header = () => {
             <div class="account">
               {key !== 'xs' && <Remaining />}
               <MenuAccount
-                linkAvatar={ avatar || noAvatar}
+                linkAvatar={avatar || noAvatar}
               />
             </div>
           </>}

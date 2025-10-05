@@ -30,7 +30,7 @@ const CustomerLayout = () => {
   // kiểm tra token
   useEffect(() => {
     // không check token nếu ở trang đặt vé hoặc giới thiệu
-    if (pageSelecting === null || pageSelecting === 3 || authen) {
+    if (authen) {
       return;
     }
     const access = getAccessToken();
@@ -39,7 +39,8 @@ const CustomerLayout = () => {
         const result = getDataApi(respose);
         if (result === true) {
           dispatch(authened(true));
-        } else {
+        } 
+        else  {
           processRefreshToken();
         }
       })

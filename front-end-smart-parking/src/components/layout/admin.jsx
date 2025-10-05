@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import { Button, Layout, Menu, theme } from "antd";
 import { ADMIN_MENU } from "../../utils/menu";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import ContactTrouble from "../ContactTrouble";
 import Notifitation from "../Notification";
 import Account from "../Account";
@@ -10,7 +10,14 @@ import "./style.css";
 import { ToastContainer } from "react-toastify";
 import LogoParking from "../Logo";
 import WebSocket from "@/configs/websocket";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { getActor } from "@/service/localStorageService";
+import { authened } from "@/store/authenSlice";
+import { getDataApi } from "@/utils/api";
+import { toastError } from "@/utils/toast";
+import { checkAccessToken } from "@/service/authenticationService";
+import { processRefreshToken } from "@/configs/axiosConfig";
+import { getAccessToken } from "@/service/cookieService";
 const { Header, Sider, Content } = Layout;
 
 const AdminLayout = () => {
@@ -20,6 +27,52 @@ const AdminLayout = () => {
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
+
+  const authen = useSelector(state => state.authen);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const checkAccess = () => {
+    let actor = getActor();
+    if (actor !== "admin") {
+      navigate("/404")
+    }
+  }
+  checkAccess();
+  useEffect(() => {
+    if (!authen) {
+      return;
+    }
+    checkAccess();
+  // eslint-disable-next-line react-hooks/exhaustive-deps 
+  }, [authen]);
+
+  // kiểm tra token n 
+  useEffect(() => {
+    if (authen) {
+      return;
+    }
+    const access = getAccessToken();
+    if (access) {
+      checkAccessToken({ token: access }).then(respose => {
+        const result = getDataApi(respose);
+        if (result === true) {
+          dispatch(authened(true));
+        }
+        else {
+          processRefreshToken();
+        }
+      })
+        .catch(e => {
+          const response = getDataApi(e);
+          toastError(response.message);
+          dispatch(authened(false));
+        })
+    } else {
+      dispatch(authened(false));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
+  }, [selecting])
 
   // kết nối websocket
   useEffect(() => {
