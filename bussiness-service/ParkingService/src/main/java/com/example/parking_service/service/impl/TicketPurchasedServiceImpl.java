@@ -548,6 +548,7 @@ public class TicketPurchasedServiceImpl implements TicketPurchasedService {
                 .build();
         cacheService.putWithTTL("EXTEND-" + ticketPurchased.getId(), payment, 5, TimeUnit.MINUTES);
         cacheService.putWithTTL("EXTEND-EXPIRE-" + ticketPurchased.getId(), request.getExpires(), 5, TimeUnit.MINUTES);
+        cacheService.putWithTTL("EXTEND-TIME-" + ticketPurchased.getId(), minute, 5, TimeUnit.MINUTES);
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new AppException(ErrorCode.NO_ACCESS));
         CreateOrderResponse response = CreateOrderResponse.builder()
@@ -616,6 +617,7 @@ public class TicketPurchasedServiceImpl implements TicketPurchasedService {
     public void processExtendTicketSuccess(String ticketPurchasedId, Long total, String actionBy) {
         String keyCache = "EXTEND-EXPIRE-" + ticketPurchasedId;
         LocalDateTime expire = cacheService.get(keyCache, LocalDateTime.class);
+        Long timeExtend = cacheService.get("EXTEND-TIME-" + ticketPurchasedId, Long.class);
         cacheService.delete(keyCache);
         TicketPurchased ticketPurchased = ticketPurchaseRepository.findById(ticketPurchasedId)
                 .orElseThrow(null);
@@ -624,6 +626,7 @@ public class TicketPurchasedServiceImpl implements TicketPurchasedService {
         ticketPurchased.setExpires(expire);
         ticketPurchased.setExtendCount(extendCount);
         ticketPurchased.setPriceExtend(totalExtend);
+        ticketPurchased.setTimeExtend(ticketPurchased.getTimeExtend() + timeExtend);
         DataUtils.setDataAction(ticketPurchased, actionBy, false);
         ticketPurchaseRepository.save(ticketPurchased);
     }

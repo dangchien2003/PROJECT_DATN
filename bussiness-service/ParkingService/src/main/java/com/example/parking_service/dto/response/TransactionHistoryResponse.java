@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CusTransactionHistoryResponse {
+public class TransactionHistoryResponse {
     String paymentId;
 
     Integer type;
@@ -20,9 +20,15 @@ public class CusTransactionHistoryResponse {
 
     Long total;
 
+    Integer paymentMethod;
+
     Integer status;
 
     String content;
 
     LocalDateTime createdAt;
+
+    String paymentBy;
+
+    String paymentPersonName;
 }

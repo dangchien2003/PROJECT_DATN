@@ -12,10 +12,7 @@ import com.example.common.utils.RandomUtils;
 import com.example.common.utils.TimeUtil;
 import com.example.common.utils.context.UserContextHolder;
 import com.example.parking_service.dto.request.*;
-import com.example.parking_service.dto.response.CardResponse;
-import com.example.parking_service.dto.response.DetailCardByAdminResponse;
-import com.example.parking_service.dto.response.HistoryRequestAddCardResponse;
-import com.example.parking_service.dto.response.SearchCardByAdminResponse;
+import com.example.parking_service.dto.response.*;
 import com.example.parking_service.entity.Account;
 import com.example.parking_service.entity.Card;
 import com.example.parking_service.entity.Card_;
@@ -26,6 +23,7 @@ import com.example.parking_service.enums.TypeCard;
 import com.example.parking_service.mapper.CardMapper;
 import com.example.parking_service.repository.AccountRepository;
 import com.example.parking_service.repository.CardRepository;
+import com.example.parking_service.repository.TicketInOutRepository;
 import com.example.parking_service.repository.TicketPurchaseRepository;
 import com.example.parking_service.service.CardService;
 import com.example.parking_service.service.NotifyService;
@@ -52,8 +50,9 @@ import java.util.stream.Collectors;
 @Transactional
 @Slf4j
 public class CardServiceImpl implements CardService {
-    private final TicketPurchaseRepository ticketPurchaseRepository;
-    private final AccountRepository accountRepository;
+    TicketInOutRepository ticketInOutRepository;
+    TicketPurchaseRepository ticketPurchaseRepository;
+    AccountRepository accountRepository;
     CardRepository cardRepository;
     NotifyService notifyService;
     CardMapper cardMapper;
@@ -115,6 +114,9 @@ public class CardServiceImpl implements CardService {
         String ownerName = accountRepository.findById(accountId).get().getFullName();
         List<Integer> statusNotGet = List.of(CardStatus.CHO_DUYET, CardStatus.TU_CHOI, CardStatus.CHO_CAP);
         Page<Card> cards = cardRepository.findByAccountIdAndStatusNotIn(accountId, statusNotGet, pageQuery);
+        List<String> cardNumbers = cards.stream().map(Card::getNumberCard).toList();
+        List<UsedTimesByCardResponse> useTimes = ticketInOutRepository.countUsedTimeCard(cardNumbers);
+        Map<String, Long> useTimesMap = useTimes.stream().collect(Collectors.toMap(UsedTimesByCardResponse::getNumberCard, UsedTimesByCardResponse::getTimes));
         List<CardResponse> result = cards.map(item -> {
             CardResponse cardResponse = cardMapper.toCardResponse(item);
             if (cardResponse.getStatus().equals(CardStatus.CHO_KICH_HOAT)) {
@@ -125,7 +127,7 @@ public class CardServiceImpl implements CardService {
             if (cardResponse.getStatus().equals(CardStatus.DANG_HOAT_DONG)
                     || cardResponse.getStatus().equals(CardStatus.TAM_KHOA)
                     || cardResponse.getStatus().equals(CardStatus.KHOA_VINH_VIEN)) {
-                this.genUseTimes(cardResponse);
+                cardResponse.setUsedTimes(useTimesMap.getOrDefault(item.getNumberCard(), 0L));
             }
             return cardResponse;
         }).toList();
@@ -161,7 +163,8 @@ public class CardServiceImpl implements CardService {
         DataUtils.setDataAction(card, accountId, false);
         cardRepository.save(card);
         CardResponse cardResponse = cardMapper.toCardResponse(card);
-        this.genUseTimes(cardResponse);
+        List<UsedTimesByCardResponse> useTimes = ticketInOutRepository.countUsedTimeCard(List.of(cardResponse.getNumberCard()));
+        cardResponse.setUsedTimes(!useTimes.isEmpty() ? useTimes.getFirst().getTimes() : 0);
         return ApiResponse.builder()
                 .result(cardResponse)
                 .build();
@@ -374,7 +377,8 @@ public class CardServiceImpl implements CardService {
         DataUtils.setDataAction(card, accountId, false);
         cardRepository.save(card);
         CardResponse cardResponse = cardMapper.toCardResponse(card);
-        this.genUseTimes(cardResponse);
+        List<UsedTimesByCardResponse> useTimes = ticketInOutRepository.countUsedTimeCard(List.of(cardResponse.getNumberCard()));
+        cardResponse.setUsedTimes(!useTimes.isEmpty() ? useTimes.getFirst().getTimes() : 0);
         return ApiResponse.builder()
                 .result(cardResponse)
                 .build();
@@ -394,7 +398,8 @@ public class CardServiceImpl implements CardService {
         DataUtils.setDataAction(card, accountId, false);
         cardRepository.save(card);
         CardResponse cardResponse = cardMapper.toCardResponse(card);
-        this.genUseTimes(cardResponse);
+        List<UsedTimesByCardResponse> useTimes = ticketInOutRepository.countUsedTimeCard(List.of(cardResponse.getNumberCard()));
+        cardResponse.setUsedTimes(!useTimes.isEmpty() ? useTimes.getFirst().getTimes() : 0);
         return ApiResponse.builder()
                 .result(cardResponse)
                 .build();
@@ -426,7 +431,8 @@ public class CardServiceImpl implements CardService {
         DataUtils.setDataAction(card, accountId, false);
         cardRepository.save(card);
         CardResponse cardResponse = cardMapper.toCardResponse(card);
-        this.genUseTimes(cardResponse);
+        List<UsedTimesByCardResponse> useTimes = ticketInOutRepository.countUsedTimeCard(List.of(cardResponse.getNumberCard()));
+        cardResponse.setUsedTimes(!useTimes.isEmpty() ? useTimes.getFirst().getTimes() : 0);
         return ApiResponse.builder()
                 .result(cardResponse)
                 .build();
@@ -441,7 +447,8 @@ public class CardServiceImpl implements CardService {
         DataUtils.setDataAction(card, accountId, false);
         cardRepository.save(card);
         CardResponse cardResponse = cardMapper.toCardResponse(card);
-        this.genUseTimes(cardResponse);
+        List<UsedTimesByCardResponse> useTimes = ticketInOutRepository.countUsedTimeCard(List.of(cardResponse.getNumberCard()));
+        cardResponse.setUsedTimes(!useTimes.isEmpty() ? useTimes.getFirst().getTimes() : 0);
         return ApiResponse.builder()
                 .result(cardResponse)
                 .build();
@@ -453,7 +460,12 @@ public class CardServiceImpl implements CardService {
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND.withMessage("Không tìm thấy dữ liệu")));
         DetailCardByAdminResponse response = convertCardResponse(card);
         response.setRequestDate(card.getCreatedAt().toLocalDate());
-        response.setUsedTimes(random.nextLong(100));
+        if (response.getNumberCard() != null) {
+            List<UsedTimesByCardResponse> useTimes = ticketInOutRepository.countUsedTimeCard(List.of(response.getNumberCard()));
+            response.setUsedTimes(!useTimes.isEmpty() ? useTimes.getFirst().getTimes() : 0);
+        } else {
+            response.setUsedTimes(0L);
+        }
         return ApiResponse.builder()
                 .result(response)
                 .build();
@@ -491,10 +503,5 @@ public class CardServiceImpl implements CardService {
         response.setOwner(owner != null ? owner.getFullName() : null);
         response.setRequestCreateName(request != null ? request.getFullName() : null);
         return response;
-    }
-
-
-    void genUseTimes(CardResponse cardResponse) {
-        cardResponse.setUsedTimes(random.nextLong(100));
     }
 }

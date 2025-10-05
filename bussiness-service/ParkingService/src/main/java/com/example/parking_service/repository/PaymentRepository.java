@@ -16,7 +16,7 @@ import java.util.Optional;
 public interface PaymentRepository extends JpaRepository<Payment, String> {
     @Query("""
             select p from Payment p
-            where p.paymentBy = :paymentBy
+            where (:paymentBy is null or p.paymentBy = :paymentBy)
             and (:type is null or p.type = :type)
             and (:createdAtFrom is null or p.createdAt >= :createdAtFrom)
             and (:createdAtTo is null or p.createdAt <= :createdAtTo)
@@ -26,6 +26,33 @@ public interface PaymentRepository extends JpaRepository<Payment, String> {
             @Param("createdAtFrom") LocalDateTime transactionFrom,
             @Param("createdAtTo") LocalDateTime transactionTo,
             @Param("paymentBy") String paymentBy,
+            Pageable pageable
+    );
+
+    @Query(value = """
+            select p.* from Payment p
+              left join Order_Parking o on o.order_Id = p.object_Id and p.type = 0
+              left join Ticket_Purchased tp on tp.id = p.object_Id and p.type = 1
+              left join ticket t on (o.ticket_id = t.ticket_id or tp.ticket_id = t.ticket_id)
+            where p.status = 2 and (t.partner_id = :partnerId)
+            and (:type is null or p.type = :type)
+            and (:createdAtFrom is null or p.created_At >= :createdAtFrom)
+            and (:createdAtTo is null or p.created_At <= :createdAtTo)
+            """, countQuery = """
+                  select count(*) from Payment p
+                        left join Order_Parking o on o.order_Id = p.object_Id and p.type = 0
+                          left join Ticket_Purchased tp on tp.id = p.object_Id and p.type = 1
+                          left join ticket t on (o.ticket_id = t.ticket_id or tp.ticket_id = t.ticket_id)
+                        where p.status = 2 and t.partner_id = :partnerId
+                        and (:type is null or p.type = :type)
+                        and (:createdAtFrom is null or p.created_At >= :createdAtFrom)
+                        and (:createdAtTo is null or p.created_At <= :createdAtTo)
+            """, nativeQuery = true)
+    Page<Payment> partnerSearch(
+            @Param("partnerId") String partnerId,
+            @Param("type") Integer type,
+            @Param("createdAtFrom") LocalDateTime transactionFrom,
+            @Param("createdAtTo") LocalDateTime transactionTo,
             Pageable pageable
     );
 

@@ -24,7 +24,7 @@ public class CusTicketPurchasedDetailResponse {
     Integer useStatus;
     Long usedTimes;
     String contentPlate;
-    Integer timeExtend;
+    Long timeExtend;
     Integer timeUnitExtend;
     Long priceExtend;
     Integer createdQrCodeCount;

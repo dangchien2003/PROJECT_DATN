@@ -1,7 +1,8 @@
 package com.example.parking_service.controller;
 
 import com.example.common.dto.response.ApiResponse;
-import com.example.parking_service.dto.request.CusSearchHistoryTransactionRequest;
+import com.example.common.utils.context.UserContextHolder;
+import com.example.parking_service.dto.request.SearchHistoryTransactionRequest;
 import com.example.parking_service.service.TransactionService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,20 @@ public class TransactionController {
 
     @PostMapping("/history")
     @PreAuthorize("hasAnyAuthority('CUSTOMER')")
-    ApiResponse<Object> customerGetHistory(@RequestBody CusSearchHistoryTransactionRequest request, Pageable pageable) {
-        return transactionService.customerGetHistory(request, pageable);
+    ApiResponse<Object> customerGetHistory(@RequestBody SearchHistoryTransactionRequest request, Pageable pageable) {
+        String accountId = UserContextHolder.getContext().getUid();
+        return transactionService.getHistory(request, accountId, pageable);
+    }
+
+    @PostMapping("/admin/history")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    ApiResponse<Object> adminGetHistory(@RequestBody SearchHistoryTransactionRequest request, Pageable pageable) {
+        return transactionService.getHistory(request, null, pageable);
+    }
+
+    @PostMapping("/partner/history")
+    @PreAuthorize("hasAnyAuthority('PARTNER')")
+    ApiResponse<Object> partnerGetHistory(@RequestBody SearchHistoryTransactionRequest request, Pageable pageable) {
+        return transactionService.partnergetHistory(request, pageable);
     }
 }

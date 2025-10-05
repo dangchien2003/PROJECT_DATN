@@ -19,10 +19,7 @@ import com.example.parking_service.enums.TicketPurchasedStatus;
 import com.example.parking_service.mapper.LocationMapper;
 import com.example.parking_service.mapper.LocationModifyMapper;
 import com.example.parking_service.mapper.LocationWaitReleaseMapper;
-import com.example.parking_service.repository.AccountRepository;
-import com.example.parking_service.repository.LocationModifyRepository;
-import com.example.parking_service.repository.LocationRepository;
-import com.example.parking_service.repository.TicketPurchaseRepository;
+import com.example.parking_service.repository.*;
 import com.example.parking_service.service.LocationService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -48,6 +45,7 @@ import java.util.stream.Collectors;
 @Transactional
 @Slf4j
 public class LocationServiceImpl implements LocationService {
+    TicketInOutRepository ticketInOutRepository;
     LocationRepository locationRepository;
     LocationModifyRepository locationModifyRepository;
     AccountRepository accountRepository;
@@ -511,6 +509,9 @@ public class LocationServiceImpl implements LocationService {
         // lấy thông tin đối tác
         List<Account> partners = accountRepository.findAllById(partnerIds);
         Map<String, Account> partnersMap = partners.stream().collect(Collectors.toMap(Account::getId, item -> item));
+        List<Long> locationIds = result.stream().map(CustomerSearchLocationResponse::getLocationId).toList();
+        List<LocationUsedResponse> usedByLocation = ticketInOutRepository.countUsedAtLocation(locationIds);
+        Map<Long, Long> usedMap = usedByLocation.stream().collect(Collectors.toMap(LocationUsedResponse::getLocationId, LocationUsedResponse::getUsed));
         // map thêm tên đối tác
         result.forEach(item -> {
             Account partner = partnersMap.get(item.getPartnerId());
@@ -518,7 +519,8 @@ public class LocationServiceImpl implements LocationService {
                 item.setPartnerName(partner.getPartnerFullName());
             }
             // random used
-            item.setUsed(random.nextLong(item.getCapacity()));
+            long used = usedMap.getOrDefault(item.getLocationId(), 0L);
+            item.setUsed(used);
         });
         return ApiResponse.builder()
                 .result(new PageResponse<>(result, locations.getTotalPages(), locations.getTotalElements()))

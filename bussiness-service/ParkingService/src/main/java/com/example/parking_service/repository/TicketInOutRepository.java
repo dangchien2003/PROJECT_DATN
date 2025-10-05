@@ -1,13 +1,17 @@
 package com.example.parking_service.repository;
 
 import com.example.parking_service.dto.response.DetailTicketInOutResponse;
+import com.example.parking_service.dto.response.LocationUsedResponse;
 import com.example.parking_service.dto.response.TicketInOutByAccountResponse;
+import com.example.parking_service.dto.response.UsedTimesByCardResponse;
 import com.example.parking_service.entity.TicketInOut;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 public interface TicketInOutRepository extends JpaRepository<TicketInOut, Long> {
@@ -56,4 +60,20 @@ public interface TicketInOutRepository extends JpaRepository<TicketInOut, Long> 
                 and t.accountId = :accountId
             """)
     Page<TicketInOut> findByTicketId(String ticketId, String accountId, Pageable pageable);
+
+    @Query("""
+                    select new com.example.parking_service.dto.response.LocationUsedResponse(t.locationId, count(*))  from TicketInOut t
+                    where
+                    t.checkoutAt is null and t.checkinAt < CURRENT_TIMESTAMP
+                    and t.locationId in :locationIds
+                    group by t.locationId
+            """)
+    List<LocationUsedResponse> countUsedAtLocation(Collection<Long> locationIds);
+
+    @Query("""
+                    select new com.example.parking_service.dto.response.UsedTimesByCardResponse(t.numberCard, count(*))  from TicketInOut t
+                    where t.numberCard in :cardIds
+                    group by t.numberCard
+            """)
+    List<UsedTimesByCardResponse> countUsedTimeCard(Collection<String> cardIds);
 }

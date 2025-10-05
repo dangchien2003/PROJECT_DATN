@@ -36,9 +36,7 @@ public class TicketPurchased extends BaseEntity {
 
     Long price;
 
-    Integer timeExtend;
-
-    Integer timeUnitExtend;
+    Long timeExtend;
 
     @Column(columnDefinition = "0")
     Long priceExtend;
@@ -47,7 +45,7 @@ public class TicketPurchased extends BaseEntity {
     Integer extendCount;
 
     Integer status;
-    
+
     String cancelBy;
 
     String reason;

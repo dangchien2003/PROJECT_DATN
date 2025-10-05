@@ -13,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CusSearchHistoryTransactionRequest {
+public class SearchHistoryTransactionRequest {
     Integer type;
     List<LocalDateTime> transactionDate;
 }
