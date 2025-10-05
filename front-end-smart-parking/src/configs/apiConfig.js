@@ -57,6 +57,8 @@ export const PARKING_SERVICE = {
     historyInOutByAdmin: "parking/purchased/admin/history/:id",
     historyBuyTicket: "parking/purchased/history-buy-ticket",
     cancelTicket: "parking/purchased/cancel",
+    extendRequest: "parking/purchased/extend",
+    paymentExtend: "parking/purchased/confirm-extend",
   },
   authen: {
     login: "parking/auth/sign-in",
@@ -114,6 +116,7 @@ export const PARKING_SERVICE = {
   },
   checking: {
     historyByAdmin: "parking/checking/getByAccount",
+    historyByLocation: "parking/checking/getByLocation",
     detail: "parking/checking/detail",
     listByTicket: "checking/getByTicket",
   }

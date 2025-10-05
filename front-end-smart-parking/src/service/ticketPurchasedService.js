@@ -56,3 +56,11 @@ export async function getHistoryInOutByAdmin(id) {
   return await httpClient.get(replaceParamsUrl(PARKING_SERVICE.ticketPurchased.historyInOutByAdmin, { id }), {
   })
 }
+
+export async function extendRequest(requestData) {
+  return await httpClient.post(PARKING_SERVICE.ticketPurchased.extendRequest, requestData, {})
+}
+
+export async function paymentExtend(ticketId, paymentMethod) {
+  return await httpClient.post(PARKING_SERVICE.ticketPurchased.paymentExtend, {orderId: ticketId, paymentMethod}, {})
+}

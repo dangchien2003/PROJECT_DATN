@@ -51,7 +51,7 @@ const columns = [
   }
 ];
 
-const History = ({ id }) => {
+const History = ({ id, pushLastHistory }) => {
   const [viewDetailId, setViewDetailId] = useState(null);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -87,6 +87,7 @@ const History = ({ id }) => {
   const loadData = (newPagination) => {
     getHistoryInOut(id).then(response => {
       const result = getDataApi(response);
+      pushLastHistory(result.data?.[0])
       setData(convertResponseToDataTable(result.data, newPagination.current,
         newPagination.pageSize));
       setPagination({

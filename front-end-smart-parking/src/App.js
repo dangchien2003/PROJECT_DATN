@@ -54,6 +54,8 @@ import PartnerStatisticsTicket from "./pages/partner/statistics/PartnerStatistic
 import PartnerStatisticsLocation from "./pages/partner/statistics/PartnerStatisticsLocation";
 import PartnerStatisticsCustomer from "./pages/partner/statistics/PartnerStatisticsCustomer";
 import Home from "./pages/customer/Home";
+import ConfirmExtend from "./pages/customer/ConfirmExtend";
+import PaymentExtend from "./pages/customer/PaymentExtend";
 
 const router = createBrowserRouter([
   {
@@ -70,6 +72,8 @@ const router = createBrowserRouter([
       { path: "/payment/:id", element: <Payment /> },
       { path: "/list/ticket", element: <TicketList /> },
       { path: "/ticket/detail/:id", element: <DetailTicketCustomer /> },
+      { path: "/ticket/confirm-extend", element: <ConfirmExtend /> },
+      { path: "/ticket/extend/payment/:ticketId", element: <PaymentExtend /> },
       { path: "/card", element: <CardManager /> },
       { path: "/deposit", element: <Deposit /> },
       { path: "/account/transaction", element: <TransactionHistory /> },

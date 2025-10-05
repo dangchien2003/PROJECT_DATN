@@ -5,6 +5,7 @@ import { MdHistory } from "react-icons/md";
 import { PiSquaresFourDuotone } from "react-icons/pi";
 import PositionUsed from "./PositionUsed";
 import dayjs from 'dayjs'; 
+import History from "./History";
 
 const Action = ({ location }) => {
   const start = useRef(dayjs().subtract(1, "week"));
@@ -36,7 +37,7 @@ const Action = ({ location }) => {
         <PositionUsed startTime={start.current} endTime={end.current} capacity={location.capacity} locationId={location.locationId}/>
       </ModalCustom>}
       {showLichSu && <ModalCustom onClose={handleCloseModal}>
-        ávas
+        <History locationId={location.locationId}/>
       </ModalCustom>}
     </>
   );

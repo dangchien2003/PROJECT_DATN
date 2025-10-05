@@ -1,31 +1,31 @@
 import CheckboxWithDash from "@/components/CheckboxWithDash";
 import DateTimePickerWithSortLabelDash from "@/components/DateTimePickerWithSortLabelDash";
-import SelectBoxLabelDash from "@/components/SelectBoxLabelDash";
-import { useRequireField } from "@/hook/useRequireField";
-import { useMessageError } from "@/hook/validate";
-import { MENU_PARTNER_ID, TICKET_STATUS, VEHICLE } from "@/utils/constants";
-import { changeInput } from "@/utils/handleChange";
-import { convertObjectToDataSelectBox } from "@/utils/object";
-import { useEffect, useRef, useState } from "react"
-import dayjs from "dayjs"
-import { dateTimeAffterNow } from "@/utils/validate";
 import NumberInputWithSortLabelDash from "@/components/NumberInputWithSortLabelDash";
+import SelectBoxLabelDash from "@/components/SelectBoxLabelDash";
 import TextFieldLabelDash from "@/components/TextFieldLabelDash";
-import Action from "./Action";
-import SelectLocation from "./SelectLocation";
-import { useParams } from "react-router-dom";
-import { isNullOrUndefined } from "@/utils/data";
+import { useLoading } from "@/hook/loading";
+import { useRequireField } from "@/hook/useRequireField";
+import { useSelectMenu } from "@/hook/useSelectMenu";
+import { useMessageError } from "@/hook/validate";
 import { detail } from "@/service/ticketService";
 import { getDataApi } from "@/utils/api";
+import { MENU_PARTNER_ID, TICKET_STATUS, VEHICLE } from "@/utils/constants";
+import { isNullOrUndefined } from "@/utils/data";
+import { changeInput } from "@/utils/handleChange";
+import { convertObjectToDataSelectBox } from "@/utils/object";
 import { toastError } from "@/utils/toast";
-import { useLoading } from "@/hook/loading";
-import { useSelectMenu } from "@/hook/useSelectMenu";
+import { dateTimeAffterNow } from "@/utils/validate";
+import dayjs from "dayjs";
+import { useEffect, useRef, useState } from "react";
+import { useParams } from "react-router-dom";
+import Action from "./Action";
+import SelectLocation from "./SelectLocation";
 
-const indexKeys = ["name", "description", "vehicle", "status", "reason", "timeAppliedEdit", "priceTimeSlot", "priceDaySlot", "priceWeekSlot", "priceMonthSlot"]
+const indexKeys = ["name", "vehicle", "status", "reason", "timeAppliedEdit", "priceExtend", "priceTimeSlot", "priceDaySlot", "priceWeekSlot", "priceMonthSlot"]
 const AddTicket = () => {
   const { select } = useSelectMenu();
   const status = useRef(null)
-  const [requireKeys, setRequireKeys] = useState(["name", "description", "vehicle", "status", "timeAppliedEdit", "priceTimeSlot", "priceDaySlot", "priceWeekSlot", "priceMonthSlot"]);
+  const [requireKeys, setRequireKeys] = useState(["name", "vehicle", "status", "timeAppliedEdit", "priceExtend", "priceTimeSlot", "priceDaySlot", "priceWeekSlot", "priceMonthSlot"]);
   useEffect(() => {
     select(MENU_PARTNER_ID.QUAN_LY_VE_TAO_MOI);
     // eslint-disable-next-line react-hooks/exhaustive-deps 
@@ -89,6 +89,7 @@ const AddTicket = () => {
       dataModify.daySlot = !!result.priceDaySlot;
       dataModify.weekSlot = !!result.priceWeekSlot;
       dataModify.monthSlot = !!result.priceMonthSlot;
+      dataModify.priceExtend = result.priceExtend;
       // set lại giá
       changeCheckBox("price.time", result.priceTimeSlot);
       changeCheckBox("price.day", result.priceDaySlot);
@@ -200,7 +201,7 @@ const AddTicket = () => {
           callbackChangeValue={handleChange}
           maxLength={100}
         />
-        <TextFieldLabelDash
+        {/* <TextFieldLabelDash
           label={"Mô tả quyền lợi"}
           placeholder={"Nhập mô tả"}
           key={"description"}
@@ -208,7 +209,7 @@ const AddTicket = () => {
           defaultValue={dataModify?.description}
           callbackChangeValue={handleChange}
           maxLength={1000}
-        />
+        /> */}
         <SelectBoxLabelDash
           label={"Phương tiện sử dụng"}
           placeholder={"Chọn phương tiện"}
@@ -246,6 +247,17 @@ const AddTicket = () => {
           callbackChangeValue={handleChangeValueTimeApplied}
           min={dayjs().add(1, "day")}
           helpText="Thời gian áp dụng phải sau thời gian gửi yêu cầu ít nhất 1 ngày"
+        />
+        <NumberInputWithSortLabelDash
+          label={"Giá thêm giờ"}
+          placeholder={"Nhập giá thêm giờ"}
+          key={"Nhập giá vé tháng"}
+          itemKey={"priceExtend"}
+          defaultValue={dataModify?.priceExtend}
+          callbackChangeValue={handleChange}
+          addonAfter="/15 phút"
+          trend={false}
+          min={0}
         />
         <div style={{ display: "inline-block" }}>
           <CheckboxWithDash

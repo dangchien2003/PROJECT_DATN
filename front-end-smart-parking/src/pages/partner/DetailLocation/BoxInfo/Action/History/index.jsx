@@ -1,15 +1,15 @@
-import { historyCheckingByAdmin } from "@/service/accountService";
+import ButtonStatus from "@/components/ButtonStatus";
+import ModalCustom from "@/components/ModalCustom";
+import DetailHistory from "@/pages/admin/AccountCustomerInfo/DetailHistory";
+import { historyCheckingByLocation } from "@/service/checkingService";
 import { getDataApi } from "@/utils/api";
 import { showTotal } from "@/utils/table";
 import { convertToTime, formatTimestamp } from "@/utils/time";
 import { toastError } from "@/utils/toast";
 import { Table, Tooltip } from "antd";
+import dayjs from 'dayjs';
 import { useEffect, useState } from "react";
-import ButtonStatus from "../ButtonStatus";
-import dayjs from 'dayjs'
 import { FaEye } from "react-icons/fa6";
-import ModalCustom from "../ModalCustom";
-import DetailHistory from "@/pages/admin/AccountCustomerInfo/DetailHistory";
 
 const columns = [
   {
@@ -17,7 +17,7 @@ const columns = [
     dataIndex: "stt",
     key: "0",
     sorter: false,
-    width: 1,
+    width: 1
   },
   {
     title: "checkin",
@@ -41,13 +41,6 @@ const columns = [
     width: 150,
   },
   {
-    title: "Địa điểm",
-    dataIndex: "locationName",
-    key: "4",
-    sorter: false,
-    width: 200,
-  },
-  {
     title: "Chi tiết",
     dataIndex: "action",
     key: "5",
@@ -57,7 +50,7 @@ const columns = [
   },
 ];
 
-const TableCustomHistoryInOut = ({ accountId }) => {
+const History = ({ locationId }) => {
   const [detailId, setDetailId] = useState(null);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -115,7 +108,7 @@ const TableCustomHistoryInOut = ({ accountId }) => {
   const loadData = (newPagination) => {
     setLoading(true);
     setData([]);
-    historyCheckingByAdmin(accountId, newPagination.current - 1, newPagination.pageSize).then((response) => {
+    historyCheckingByLocation(locationId, newPagination.current - 1, newPagination.pageSize).then((response) => {
       const result = getDataApi(response);
       setData(
         convertResponseToDataTable(
@@ -144,12 +137,12 @@ const TableCustomHistoryInOut = ({ accountId }) => {
   };
 
   useEffect(() => {
-    if (accountId == null) {
+    if (locationId == null) {
       return;
     }
     loadData(pagination);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [accountId]);
+  }, [locationId]);
 
   return (
     <>
@@ -176,4 +169,4 @@ const TableCustomHistoryInOut = ({ accountId }) => {
   );
 };
 
-export default TableCustomHistoryInOut;
+export default History;

@@ -2,32 +2,54 @@ import ChildContent from '@/components/layout/Customer/ChildContent';
 import LoadingComponent from '@/components/LoadingComponent';
 import ModalCustom from '@/components/ModalCustom';
 import QrTicket from '@/components/QrTicket';
+import { useSelectMenu } from '@/hook/useSelectMenu';
 import { getDetail } from '@/service/ticketPurchasedService';
 import { getDataApi } from '@/utils/api';
 import { MENU_CUSTOMER_ID, TICKET_PURCHASED_STATUS } from '@/utils/constants';
 import { formatCurrency } from '@/utils/number';
 import { convertDataSelectboxToObject, convertObjectToDataSelectBox } from '@/utils/object';
 import { toastError } from '@/utils/toast';
-import { Col, Flex, Row, Slider, Tooltip } from 'antd';
+import { Button, Col, Flex, Row, Slider, Tooltip } from 'antd';
 import dayjs from 'dayjs';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { FaEye } from 'react-icons/fa6';
 import { GoDotFill } from "react-icons/go";
 import { IoTicket } from 'react-icons/io5';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
+import Extend from './Extend';
 import History from './History';
 import MoreView from './MoreView';
 import './style.css';
-import { useSelectMenu } from '@/hook/useSelectMenu';
+import PaymentOnlineComplete from '@/components/PaymentOnlineComplete';
 
 const ticketPurchasedStatus = convertDataSelectboxToObject(convertObjectToDataSelectBox(TICKET_PURCHASED_STATUS));
 const DetailTicket = () => {
+  const lastHistory = useRef(null);
   const { id } = useParams();
   const [loading, setLoading] = useState(true);
+  const [extend, setExtend] = useState(false);
+  const [extendTicketSuccess, setExtendTicketSuccess] = useState(null);
+  const [showFormExtend, setShowFormExtend] = useState(false);
   const [detail, setDetail] = useState(null);
   const [usedRatio, setUsedRatio] = useState(0);
   const [dataTicketShowQr, setDataTicketShowQr] = useState(null);
   const { select } = useSelectMenu();
+  const [param] = useSearchParams();
+
+  const keyRequesting = "wait_payment_extend";
+  // xử lý khi thanh toán vẻ online thành công
+  useEffect(() => {
+    if (param.get("vnp_TransactionStatus")) {
+      const depositRequestingSto = localStorage.getItem(keyRequesting);
+      if (depositRequestingSto === "1" && param.get("vnp_TransactionStatus") === "00") {
+        setExtendTicketSuccess(true);
+      } else if (depositRequestingSto === "1" && param.get("vnp_TransactionStatus") !== "00") {
+        setExtendTicketSuccess(false);
+      }
+    }
+    localStorage.removeItem(keyRequesting);
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
+  }, []);
 
   useEffect(() => {
     select(MENU_CUSTOMER_ID.VE_SU_DUNG);
@@ -68,6 +90,8 @@ const DetailTicket = () => {
       getUsedTimePercentage();
       idInterval = setInterval(getUsedTimePercentage, 60000)
     }
+    // kiểm tra gia hạn
+    checkExtend();
     return () => { clearInterval(idInterval) }
     // eslint-disable-next-line react-hooks/exhaustive-deps 
   }, [detail])
@@ -98,6 +122,17 @@ const DetailTicket = () => {
 
   const handleRefreshQrSuccess = () => {
     setDetail(pre => ({ ...pre, createdQrCodeCount: pre.createdQrCodeCount + 1 }));
+  }
+
+  const onLoadHistory = (item) => {
+    lastHistory.current = item;
+    checkExtend();
+  }
+
+  const checkExtend = () => {
+    if (detail && detail.useStatus === 2 && dayjs().isAfter(dayjs(detail.expires))) {
+      setExtend(true)
+    }
   }
   return (
     <div>
@@ -202,6 +237,9 @@ const DetailTicket = () => {
                         fontWeight: 'bold',
                       },
                     }} />
+                    {extend && <Flex justify='end'>
+                      <Button color="red" variant="solid" onClick={() => setShowFormExtend(true)}>Thêm thời gian</Button>
+                    </Flex>}
                   </>}
                 </div>
 
@@ -210,7 +248,7 @@ const DetailTicket = () => {
             <Col lg={12} md={12} sm={24} xs={24} className='history'>
               <h2 className='page-name'>Lịch sử</h2>
               <div className='padding-content'>
-                <History id={id} />
+                <History id={id} pushLastHistory={onLoadHistory} />
               </div>
             </Col>
           </Row>
@@ -218,6 +256,12 @@ const DetailTicket = () => {
       </ChildContent >
       {dataTicketShowQr && <ModalCustom onClose={handleCloseQr}>
         <QrTicket data={dataTicketShowQr} onRefresh={handleRefreshQrSuccess} />
+      </ModalCustom>}
+      {showFormExtend && <ModalCustom onClose={() => setShowFormExtend(false)}>
+        <Extend ticket={detail} />
+      </ModalCustom>}
+      {extendTicketSuccess !== null && <ModalCustom onClose={() => setExtendTicketSuccess(null)}>
+        <PaymentOnlineComplete success={extendTicketSuccess} />
       </ModalCustom>}
     </div >
   );
