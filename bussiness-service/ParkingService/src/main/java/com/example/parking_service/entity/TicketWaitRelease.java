@@ -49,6 +49,8 @@ public class TicketWaitRelease extends BaseEntity {
 
     Integer vehicle;
 
+    Long priceExtend;
+
     Long priceTimeSlot;
 
     Long priceDaySlot;

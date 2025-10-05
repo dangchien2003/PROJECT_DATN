@@ -6,6 +6,7 @@ import com.example.common.exception.AppException;
 import com.example.common.exception.ErrorCode;
 import com.example.common.utils.DataUtils;
 import com.example.common.utils.context.UserContextHolder;
+import com.example.parking_service.configuration.VnPayConfig;
 import com.example.parking_service.dto.request.ConfirmOrderRequest;
 import com.example.parking_service.dto.request.CreateOrderRequest;
 import com.example.parking_service.dto.response.CreateOrderResponse;
@@ -15,7 +16,6 @@ import com.example.parking_service.enums.*;
 import com.example.parking_service.repository.*;
 import com.example.parking_service.service.OrderService;
 import com.example.parking_service.service.TicketPurchasedService;
-import com.example.parking_service.service.VnPayService;
 import com.example.parking_service.utils.HttpUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -46,7 +46,6 @@ public class OrderServiceImpl implements OrderService {
     OrderRepository orderRepository;
     PaymentRepository paymentRepository;
     TicketPurchasedService ticketPurchasedService;
-    VnPayService vnPayService;
     ObjectMapper objectMapper;
 
     @Override
@@ -248,6 +247,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     PayOnlineResponse processPaymentByVNPAY(OrderParking order, HttpServletRequest http) throws UnsupportedEncodingException {
+        String domain = http.getHeader("from-domain");
         String actionBy = order.getPaymentBy();
         // cập nhật trạng thái đơn hàng
         order.setStatus(OrderStatus.DA_XAC_NHAN);
@@ -267,8 +267,8 @@ public class OrderServiceImpl implements OrderService {
         payment = paymentRepository.save(payment);
         // lấy url thanh toán
         String ip = HttpUtils.getClientIp(http);
-        PayOnlineResponse response = vnPayService.generateUrl(payment.getPaymentId(), payment.getTotal(), ip,
-                "thanh toan mua ve", UrlReturn.getListTicketUrl());
+        PayOnlineResponse response = VnPayConfig.generateUrl(payment.getPaymentId(), payment.getTotal(), ip,
+                "thanh toan mua ve", UrlReturn.getListTicketUrl(domain));
         return response;
     }
 

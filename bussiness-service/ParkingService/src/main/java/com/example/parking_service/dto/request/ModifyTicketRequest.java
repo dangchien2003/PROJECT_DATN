@@ -19,12 +19,13 @@ public class ModifyTicketRequest {
     Long ticketId;
     @NotBlank(message = "Tên vé không được để trống")
     String name;
-    @NotBlank(message = "Mô tả vé không được để trống")
-    String description;
+    //    @NotBlank(message = "Mô tả vé không được để trống")
+//    String description;
     @NotNull(message = "Thời gian áp dụng không được để trống")
     LocalDateTime timeAppliedEdit;
     @NotNull(message = "Phương tiện không được để trống")
     Integer vehicle;
+    Long priceExtend;
     Long priceTimeSlot;
     Long priceDaySlot;
     Long priceWeekSlot;

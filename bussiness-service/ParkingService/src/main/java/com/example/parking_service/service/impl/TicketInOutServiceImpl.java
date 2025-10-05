@@ -39,6 +39,15 @@ public class TicketInOutServiceImpl implements TicketInOutService {
     }
 
     @Override
+    public ApiResponse<Object> historyByLocation(Long locationId, String partnerId, Pageable pageable) {
+        Pageable pageQuery = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.Direction.DESC, "checkinAt");
+        Page<TicketInOutByAccountResponse> dataPage = ticketInOutRepository.findByLocationId(locationId, partnerId, pageQuery);
+        return ApiResponse.builder()
+                .result(new PageResponse<>(dataPage.getContent(), dataPage.getTotalPages(), dataPage.getTotalElements()))
+                .build();
+    }
+
+    @Override
     public ApiResponse<Object> detail(Long id) {
         return ApiResponse.builder()
                 .result(ticketInOutRepository.detail(id).get())

@@ -2,10 +2,10 @@ package com.example.parking_service.controller;
 
 import com.example.common.dto.response.ApiResponse;
 import com.example.common.utils.context.UserContextHolder;
-import com.example.parking_service.dto.request.CancelTicketPurchasedRequest;
-import com.example.parking_service.dto.request.CustomerSearchTicketPurchasedRequest;
-import com.example.parking_service.dto.request.PartnerSearchHistoryBuyTicketPurchasedRequest;
+import com.example.parking_service.dto.request.*;
 import com.example.parking_service.service.TicketPurchasedService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +13,8 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.UnsupportedEncodingException;
 
 @RestController
 @RequiredArgsConstructor
@@ -101,5 +103,15 @@ public class TicketPurchasedController {
             partnerId = UserContextHolder.getContext().getUid();
         }
         return ticketPurchasedService.adminHistory(id, partnerId, pageable);
+    }
+
+    @PostMapping("extend")
+    public ApiResponse<Object> extend(@Valid @RequestBody ExtendRequest request) throws JsonProcessingException {
+        return ticketPurchasedService.extend(request);
+    }
+
+    @PostMapping("confirm-extend")
+    public ApiResponse<Object> confirmExtend(@Valid @RequestBody ConfirmOrderRequest request, HttpServletRequest http) throws UnsupportedEncodingException {
+        return ticketPurchasedService.confirmExtend(request, http);
     }
 }

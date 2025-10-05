@@ -21,6 +21,7 @@ public class CusTicketPurchasedDetailResponse {
     String locationAddress;
     LocalDateTime startsValidity;
     LocalDateTime expires;
+    Integer useStatus;
     Long usedTimes;
     String contentPlate;
     Integer timeExtend;

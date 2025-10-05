@@ -6,8 +6,8 @@ import com.example.common.exception.AppException;
 import com.example.common.exception.ErrorCode;
 import com.example.common.utils.DataUtils;
 import com.example.common.utils.TimeUtil;
+import com.example.parking_service.configuration.VnPayConfig;
 import com.example.parking_service.dto.request.VnPayCheckTransactionRequest;
-import com.example.parking_service.dto.response.PayOnlineResponse;
 import com.example.parking_service.dto.response.VnPayCheckTransactionResponse;
 import com.example.parking_service.entity.Account;
 import com.example.parking_service.entity.Deposit;
@@ -25,21 +25,15 @@ import com.example.parking_service.service.VnPayService;
 import com.example.parking_service.utils.HttpUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -55,53 +49,6 @@ public class VnPayServiceImpl implements VnPayService {
     TicketPurchasedService ticketPurchasedService;
     VnPayClient vnPayClient;
     NotifyService notifyService;
-    @NonFinal
-    @Value("${vnPay.tmnCode}")
-    String vnpTmnCode;
-    @NonFinal
-    @Value("${vnPay.secret-key}")
-    String secretKey;
-    @NonFinal
-    @Value("${vnPay.url-payment}")
-    String vnpPayUrl;
-    @NonFinal
-    @Value("${vnPay.api-url}")
-    String url1;
-
-    @Override
-    public PayOnlineResponse generateUrl(String paymentId, long amount, String ipAddress, @NotNull String paymentTypeString, String returnUrl) throws UnsupportedEncodingException {
-        String vnpVersion = "2.1.0";
-        String vnpCommand = "pay";
-        String orderType = "other";
-
-        Map<String, String> vnpParams = new HashMap<>();
-        vnpParams.put("vnp_Version", vnpVersion);
-        vnpParams.put("vnp_Command", vnpCommand);
-        vnpParams.put("vnp_TmnCode", vnpTmnCode);
-        vnpParams.put("vnp_Amount", String.valueOf(amount * 100));
-        vnpParams.put("vnp_CurrCode", "VND");
-        vnpParams.put("vnp_TxnRef", paymentId);
-        vnpParams.put("vnp_OrderInfo", "Thanh toan yeu cau " + paymentTypeString.toLowerCase() + " cho don hang: " + paymentId);
-        vnpParams.put("vnp_OrderType", orderType);
-        vnpParams.put("vnp_Locale", "vn");
-        vnpParams.put("vnp_ReturnUrl", returnUrl);
-        vnpParams.put("vnp_IpAddr", ipAddress);
-
-        LocalDateTime now = LocalDateTime.now();
-        String vnpCreateDate = TimeUtil.formatLocalDateTime(now, "yyyyMMddHHmmss");
-        vnpParams.put("vnp_CreateDate", vnpCreateDate);
-        LocalDateTime expire = now.plusMinutes(30);
-        String vnpExpireDate = TimeUtil.formatLocalDateTime(expire, "yyyyMMddHHmmss");
-        vnpParams.put("vnp_ExpireDate", vnpExpireDate);
-
-        String queryUrl = this.getQueryUrl(vnpParams);
-        return PayOnlineResponse.builder()
-                .paymentMethod(PaymentMethod.VNPAY)
-                .total(amount)
-                .urlRedirect(vnpPayUrl + "?" + queryUrl)
-                .expire(expire)
-                .build();
-    }
 
     @Override
     public ApiResponse<Object> vnpayCallbackTransaction(HttpServletRequest request) {
@@ -127,14 +74,14 @@ public class VnPayServiceImpl implements VnPayService {
         // kiểm tra giao dịch với vnpay
         String vnpCreateDate = TimeUtil.formatLocalDateTime(payment.getCreatedAt(), "yyyyMMddHHmmss");
         // dữ liệu để hash
-        String hashData = String.join("|", vnpRequestId, vnpVersion, vnpCommand, vnpTmnCode, vnpTxnRef, paymentDate, vnpCreateDate, ipAddress, vnpOrderInfo);
-        String vnpSecureHash = this.hmacSHA512(secretKey, hashData);
+        String hashData = String.join("|", vnpRequestId, vnpVersion, vnpCommand, VnPayConfig.VNP_TMNCODE, vnpTxnRef, paymentDate, vnpCreateDate, ipAddress, vnpOrderInfo);
+        String vnpSecureHash = VnPayConfig.hmacSHA512(VnPayConfig.SECRET_KEY, hashData);
         // call vnpay
         VnPayCheckTransactionRequest checkRequest = VnPayCheckTransactionRequest.builder()
                 .vnpRequestId(vnpRequestId)
                 .vnpVersion(vnpVersion)
                 .vnpCommand(vnpCommand)
-                .vnpTmnCode(vnpTmnCode)
+                .vnpTmnCode(VnPayConfig.VNP_TMNCODE)
                 .vnpTxnRef(vnpTxnRef)
                 .vnpOrderInfo(vnpOrderInfo)
                 .vnpTransactionDate(paymentDate)
@@ -167,6 +114,8 @@ public class VnPayServiceImpl implements VnPayService {
             processCallbackTransactionDeposit(payment.getObjectId(), response.getVnpTransactionStatus(), actionBy);
         } else if (payment.getType().equals(PaymentType.MUA_VE)) {
             processCallbackTransactionBuyTicket(payment.getObjectId(), response.getVnpTransactionStatus(), actionBy);
+        } else if (payment.getType().equals(PaymentType.GIA_HAN)) {
+            ticketPurchasedService.processExtendTicketSuccess(payment.getObjectId(), payment.getTotal(), actionBy);
         } else {
             throw new AppException(ErrorCode.INVALID_DATA.withMessage("Chưa xử lý giao dịch cho nghiệp vụ này"));
         }
@@ -305,62 +254,10 @@ public class VnPayServiceImpl implements VnPayService {
             data.append(key).append("=").append(flatParams.get(key));
         }
 
-        String calculatedHash = this.hmacSHA512(secretKey, data.toString());
+        String calculatedHash = VnPayConfig.hmacSHA512(VnPayConfig.SECRET_KEY, data.toString());
 
         return receivedHash.equalsIgnoreCase(calculatedHash);
     }
-
-    public String getQueryUrl(Map fields) throws UnsupportedEncodingException {
-        List fieldNames = new ArrayList(fields.keySet());
-        Collections.sort(fieldNames);
-        StringBuilder hashData = new StringBuilder();
-        StringBuilder query = new StringBuilder();
-        Iterator itr = fieldNames.iterator();
-        while (itr.hasNext()) {
-            String fieldName = (String) itr.next();
-            String fieldValue = (String) fields.get(fieldName);
-            if ((fieldValue != null) && (fieldValue.length() > 0)) {
-                hashData.append(fieldName);
-                hashData.append('=');
-                hashData.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
-                query.append(URLEncoder.encode(fieldName, StandardCharsets.US_ASCII.toString()));
-                query.append('=');
-                query.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
-                if (itr.hasNext()) {
-                    query.append('&');
-                    hashData.append('&');
-                }
-            }
-        }
-
-        String queryUrl = query.toString();
-        String vnpSecureHash = hmacSHA512(secretKey, hashData.toString());
-        queryUrl += "&vnp_SecureHash=" + vnpSecureHash;
-        return queryUrl;
-    }
-
-    public String hmacSHA512(final String key, final String data) {
-        try {
-            if (key == null || data == null) {
-                throw new NullPointerException();
-            }
-            final Mac hmac512 = Mac.getInstance("HmacSHA512");
-            byte[] hmacKeyBytes = key.getBytes();
-            final SecretKeySpec secretKey = new SecretKeySpec(hmacKeyBytes, "HmacSHA512");
-            hmac512.init(secretKey);
-            byte[] dataBytes = data.getBytes(StandardCharsets.UTF_8);
-            byte[] result = hmac512.doFinal(dataBytes);
-            StringBuilder sb = new StringBuilder(2 * result.length);
-            for (byte b : result) {
-                sb.append(String.format("%02x", b & 0xff));
-            }
-            return sb.toString();
-
-        } catch (Exception ex) {
-            return "";
-        }
-    }
-
 
     public String hmacSHA256(final String key, final String data) {
         try {
@@ -384,5 +281,4 @@ public class VnPayServiceImpl implements VnPayService {
             return "";
         }
     }
-
 }

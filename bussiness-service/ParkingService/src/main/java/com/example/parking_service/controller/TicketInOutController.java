@@ -1,6 +1,7 @@
 package com.example.parking_service.controller;
 
 import com.example.common.dto.response.ApiResponse;
+import com.example.common.utils.context.UserContextHolder;
 import com.example.parking_service.service.TicketInOutService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -38,5 +39,14 @@ public class TicketInOutController {
             @RequestParam String ticketPurchasedId,
             Pageable pageable) {
         return ticketInOutService.historyByTicket(ticketPurchasedId, pageable);
+    }
+
+    @PreAuthorize("hasAuthority('PARTNER')")
+    @GetMapping("/getByLocation")
+    ApiResponse<Object> historyByLocation(
+            @RequestParam Long locationId,
+            Pageable pageable) {
+        String partnerId = UserContextHolder.getContext().getUid();
+        return ticketInOutService.historyByLocation(locationId, partnerId, pageable);
     }
 }

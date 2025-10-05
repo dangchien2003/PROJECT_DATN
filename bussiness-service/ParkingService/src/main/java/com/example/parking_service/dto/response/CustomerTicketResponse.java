@@ -14,9 +14,9 @@ public class CustomerTicketResponse {
     Long ticketId;
     String name;
     Integer vehicle;
+    Long priceExtend;
     Long priceTimeSlot;
     Long priceDaySlot;
     Long priceWeekSlot;
     Long priceMonthSlot;
-    String description;
 }

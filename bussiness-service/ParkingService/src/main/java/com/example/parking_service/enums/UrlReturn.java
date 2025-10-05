@@ -1,27 +1,20 @@
 package com.example.parking_service.enums;
 
-import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 public class UrlReturn {
 
-    private static String domainStatic;
-    @Value("${DOMAIN_FE}")
-    private String domainFromConfig;
-
-    public static String getDepositUrl() {
-        return domainStatic + "/deposit";
+    public static String getDepositUrl(String domainFe) {
+        return domainFe + "/deposit";
     }
 
-    public static String getListTicketUrl() {
-        return domainStatic + "/list/ticket";
+    public static String getListTicketUrl(String domainFe) {
+        return domainFe + "/list/ticket";
     }
 
-    @PostConstruct
-    public void init() {
-        domainStatic = domainFromConfig;
+    public static String getDetailTicketUrl(String domainFe, String ticketId) {
+        return domainFe + "/ticket/detail/" + ticketId;
     }
 }
 

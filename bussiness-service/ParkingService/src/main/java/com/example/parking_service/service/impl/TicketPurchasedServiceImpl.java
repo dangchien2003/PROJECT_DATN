@@ -9,27 +9,23 @@ import com.example.common.exception.ErrorCode;
 import com.example.common.utils.DataUtils;
 import com.example.common.utils.context.UserContextHolder;
 import com.example.parking_service.Specification.TicketPurchasedSpecification;
+import com.example.parking_service.configuration.VnPayConfig;
 import com.example.parking_service.dto.other.TicketQr;
-import com.example.parking_service.dto.request.CancelTicketPurchasedRequest;
-import com.example.parking_service.dto.request.CustomerSearchTicketPurchasedRequest;
-import com.example.parking_service.dto.request.PartnerSearchHistoryBuyTicketPurchasedRequest;
+import com.example.parking_service.dto.request.*;
 import com.example.parking_service.dto.response.*;
 import com.example.parking_service.entity.*;
-import com.example.parking_service.enums.CheckinStatus;
-import com.example.parking_service.enums.PermitEditContentPlate;
-import com.example.parking_service.enums.TicketPurchasedStatus;
-import com.example.parking_service.enums.TicketPurchasedUseStatus;
+import com.example.parking_service.enums.*;
 import com.example.parking_service.mapper.TicketPurchasedMapper;
-import com.example.parking_service.repository.LocationRepository;
-import com.example.parking_service.repository.TicketInOutRepository;
-import com.example.parking_service.repository.TicketPurchaseRepository;
-import com.example.parking_service.repository.TicketRepository;
+import com.example.parking_service.repository.*;
+import com.example.parking_service.service.CacheService;
 import com.example.parking_service.service.CryptoService;
 import com.example.parking_service.service.NotifyService;
 import com.example.parking_service.service.TicketPurchasedService;
+import com.example.parking_service.utils.HttpUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -42,9 +38,11 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
@@ -63,6 +61,9 @@ public class TicketPurchasedServiceImpl implements TicketPurchasedService {
     ObjectMapper objectMapper;
     CryptoService crypto;
     NotifyService notifyService;
+    CacheService cacheService;
+    AccountRepository accountRepository;
+    PaymentRepository paymentRepository;
 
     @Override
     public ApiResponse<Object> customerSearch(CustomerSearchTicketPurchasedRequest request, Pageable pageable) {
@@ -467,7 +468,7 @@ public class TicketPurchasedServiceImpl implements TicketPurchasedService {
                 }).toList();
             }
         } else {
-            // gia hạn
+            throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
         }
         ticketPurchasedSave = ticketPurchaseRepository.saveAll(ticketPurchasedSave);
         if (order.getExtendTicketId() == null) {
@@ -517,7 +518,128 @@ public class TicketPurchasedServiceImpl implements TicketPurchasedService {
                 }
             }
         } else {
-
+            throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
         }
+    }
+
+    @Override
+    public ApiResponse<Object> extend(ExtendRequest request) {
+        String accountId = UserContextHolder.getContext().getUid();
+        TicketPurchased ticketPurchased = ticketPurchaseRepository.findByIdAndAccountId(request.getTicketId(), accountId)
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND.withMessage("Vé không tồn tại")));
+        if (ticketPurchased.getUseStatus() != 2 || ticketPurchased.getExpires().isAfter(LocalDateTime.now())) {
+            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Vé không đủ điều kiện"));
+        }
+        Ticket ticket = ticketRepository.findById(ticketPurchased.getTicketId())
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND.withMessage("Vé bán không tồn tại")));
+        long minuteWithNow = ChronoUnit.MINUTES.between(LocalDateTime.now(), request.getExpires());
+        if (minuteWithNow < 15) {
+            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Hạn sử dụng phải lớn hơn hoặc bằng 15 phút"));
+        }
+        long minute = ChronoUnit.MINUTES.between(ticketPurchased.getExpires(), request.getExpires());
+        Long total = minute / 15 * ticket.getPriceExtend();
+        Payment payment = Payment.builder()
+                .objectId(ticketPurchased.getId())
+                .paymentBy(accountId)
+                .status(PaymentStatus.CHO_THANH_TOAN)
+                .type(PaymentType.GIA_HAN)
+                .fluctuation(Fluctuation.GIAM)
+                .total(total)
+                .build();
+        cacheService.putWithTTL("EXTEND-" + ticketPurchased.getId(), payment, 5, TimeUnit.MINUTES);
+        cacheService.putWithTTL("EXTEND-EXPIRE-" + ticketPurchased.getId(), request.getExpires(), 5, TimeUnit.MINUTES);
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new AppException(ErrorCode.NO_ACCESS));
+        CreateOrderResponse response = CreateOrderResponse.builder()
+                .createdAt(payment.getCreatedAt())
+                .personPaymentName(account.getFullName())
+                .email(account.getEmail())
+                .priceUnit(ticket.getPriceExtend())
+                .total(total)
+                .build();
+        return ApiResponse.builder()
+                .result(response)
+                .build();
+    }
+
+    @Override
+    public ApiResponse<Object> confirmExtend(ConfirmOrderRequest request, HttpServletRequest http) throws UnsupportedEncodingException {
+        if (!PaymentMethod.ALL_METHOD.contains(request.getPaymentMethod())) {
+            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Phương thức không được hỗ trợ"));
+        }
+        String keyCache = "EXTEND-" + request.getOrderId();
+        Payment payment = cacheService.get(keyCache, Payment.class);
+        cacheService.delete(keyCache);
+        if (payment == null) {
+            throw new AppException(ErrorCode.NOT_FOUND.withMessage("Yêu cầu đã hết hạn"));
+        }
+        String actionBy = UserContextHolder.getContext().getUid();
+        if (!Objects.equals(actionBy, payment.getPaymentBy())) {
+            throw new AppException(ErrorCode.NO_ACCESS);
+        }
+        if (PaymentMethod.SO_DU.equals(request.getPaymentMethod())) {
+            return ApiResponse.builder()
+                    .result(processPaymentByRemaining(payment))
+                    .build();
+        } else if (PaymentMethod.VNPAY.equals(request.getPaymentMethod())) {
+            return ApiResponse.builder()
+                    .result(processExtendByVNPAY(payment, http))
+                    .build();
+        } else {
+            throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
+        }
+    }
+
+    String processPaymentByRemaining(Payment payment) {
+        String actionBy = payment.getPaymentBy();
+        Account account = accountRepository.findByIdAndStatus(actionBy, AccountStatus.DANG_HOAT_DONG.getValue())
+                .orElseThrow(() -> new AppException(ErrorCode.NO_ACCESS));
+        // kiểm tra và cập nhật số dư
+        long afterRemaining = account.getBalance() - payment.getTotal();
+        if (afterRemaining < 0) {
+            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Số dư không đủ"));
+        } else {
+            account.setBalance(afterRemaining);
+            DataUtils.setDataAction(account, payment.getPaymentBy(), false);
+            accountRepository.save(account);
+        }
+        payment.setStatus(PaymentStatus.THANH_CONG);
+        payment.setPaymentMethod(PaymentMethod.SO_DU);
+        DataUtils.setDataAction(payment, actionBy, true);
+        payment = paymentRepository.save(payment);
+        // xử lý cấp vé
+        processExtendTicketSuccess(payment.getObjectId(), payment.getTotal(), actionBy);
+        return payment.getPaymentId();
+    }
+
+    @Override
+    public void processExtendTicketSuccess(String ticketPurchasedId, Long total, String actionBy) {
+        String keyCache = "EXTEND-EXPIRE-" + ticketPurchasedId;
+        LocalDateTime expire = cacheService.get(keyCache, LocalDateTime.class);
+        cacheService.delete(keyCache);
+        TicketPurchased ticketPurchased = ticketPurchaseRepository.findById(ticketPurchasedId)
+                .orElseThrow(null);
+        int extendCount = ticketPurchased.getExtendCount() != null ? ticketPurchased.getExtendCount() + 1 : 1;
+        long totalExtend = ticketPurchased.getExtendCount() != null ? ticketPurchased.getPriceExtend() + total : total;
+        ticketPurchased.setExpires(expire);
+        ticketPurchased.setExtendCount(extendCount);
+        ticketPurchased.setPriceExtend(totalExtend);
+        DataUtils.setDataAction(ticketPurchased, actionBy, false);
+        ticketPurchaseRepository.save(ticketPurchased);
+    }
+
+    PayOnlineResponse processExtendByVNPAY(Payment payment, HttpServletRequest http) throws UnsupportedEncodingException {
+        String domain = http.getHeader("from-domain");
+        String actionBy = payment.getPaymentBy();
+        // cập nhật trạng thái đơn hàng
+        payment.setStatus(PaymentStatus.CHO_THANH_TOAN);
+        payment.setPaymentMethod(PaymentMethod.VNPAY);
+        DataUtils.setDataAction(payment, actionBy, true);
+        paymentRepository.save(payment);
+        // lấy url thanh toán
+        String ip = HttpUtils.getClientIp(http);
+        PayOnlineResponse response = VnPayConfig.generateUrl(payment.getPaymentId(), payment.getTotal(), ip,
+                "thanh toan gia han ve", UrlReturn.getDetailTicketUrl(domain, payment.getObjectId()));
+        return response;
     }
 }

@@ -23,6 +23,14 @@ public interface TicketInOutRepository extends JpaRepository<TicketInOut, Long> 
     Page<TicketInOutByAccountResponse> findByAccountId(String accountId, Pageable pageable);
 
     @Query("""
+            select new com.example.parking_service.dto.response.TicketInOutByAccountResponse(
+            m.id, '' , m.checkinAt, m.checkoutAt) from TicketInOut m
+            join Location l on l.locationId = m.locationId
+            where l.locationId = :locationId and l.partnerId = :partnerId
+            """)
+    Page<TicketInOutByAccountResponse> findByLocationId(Long locationId, String partnerId, Pageable pageable);
+
+    @Query("""
                 select tio from TicketPurchased tp
                 right join TicketInOut tio on tio.ticketPurchasedId = tp.id
                 left join Ticket t on t.ticketId = tp.ticketId

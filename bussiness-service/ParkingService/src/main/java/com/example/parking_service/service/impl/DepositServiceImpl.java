@@ -6,6 +6,7 @@ import com.example.common.exception.AppException;
 import com.example.common.exception.ErrorCode;
 import com.example.common.utils.DataUtils;
 import com.example.common.utils.context.UserContextHolder;
+import com.example.parking_service.configuration.VnPayConfig;
 import com.example.parking_service.dto.request.AddDepositRequest;
 import com.example.parking_service.dto.response.DepositHistoryResponse;
 import com.example.parking_service.dto.response.PayOnlineResponse;
@@ -17,7 +18,6 @@ import com.example.parking_service.mapper.DepositMapper;
 import com.example.parking_service.repository.DepositRepository;
 import com.example.parking_service.repository.PaymentRepository;
 import com.example.parking_service.service.DepositService;
-import com.example.parking_service.service.VnPayService;
 import com.example.parking_service.utils.HttpUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
@@ -42,11 +42,11 @@ import java.util.List;
 public class DepositServiceImpl implements DepositService {
     DepositRepository depositRepository;
     PaymentRepository paymentRepository;
-    VnPayService vnPayService;
     DepositMapper depositMapper;
 
     @Override
     public ApiResponse<Object> requestDeposit(AddDepositRequest request, HttpServletRequest http) throws UnsupportedEncodingException {
+        String domain = http.getHeader("from-domain");
         String accountId = UserContextHolder.getContext().getUid();
         // validate
         if (request.getTotal() <= 0) {
@@ -74,7 +74,7 @@ public class DepositServiceImpl implements DepositService {
         // lấy url thanh toán
         PayOnlineResponse response = null;
         if (request.getPaymentMethod().equals(PaymentMethod.VNPAY)) {
-            response = vnPayService.generateUrl(payment.getPaymentId(), payment.getTotal(), HttpUtils.getClientIp(http), "nạp tiền", UrlReturn.getDepositUrl());
+            response = VnPayConfig.generateUrl(payment.getPaymentId(), payment.getTotal(), HttpUtils.getClientIp(http), "nạp tiền", UrlReturn.getDepositUrl(domain));
         } else {
             throw new AppException(ErrorCode.INVALID_DATA.withMessage("Phương thức thanh toán chưa hỗ trợ"));
         }

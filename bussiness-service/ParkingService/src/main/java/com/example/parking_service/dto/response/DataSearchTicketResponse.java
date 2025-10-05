@@ -50,6 +50,8 @@ public class DataSearchTicketResponse {
 
     Integer vehicle;
 
+    Long priceExtend;
+
     Long priceTimeSlot;
 
     Long priceDaySlot;
