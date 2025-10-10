@@ -169,7 +169,8 @@ public class LocationServiceImpl implements LocationService {
             response.setPartnerName(partner.getPartnerFullName());
         }
         // lượng chỗ đã sur dụng
-        response.setUsed(random.nextLong(response.getCapacity()));
+        List<LocationUsedResponse> used = ticketInOutRepository.countUsedAtLocation(List.of(response.getLocationId()));
+        response.setUsed(!used.isEmpty() ? used.getFirst().getUsed() : 0);
         return ApiResponse.builder()
                 .result(response)
                 .build();

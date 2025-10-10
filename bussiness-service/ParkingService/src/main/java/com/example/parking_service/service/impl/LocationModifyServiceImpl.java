@@ -111,6 +111,7 @@ public class LocationModifyServiceImpl implements LocationModifyService {
             locationWaitReleases.add(modifyEntity);
             // lưu
             locationModifyRepository.saveAll(locationWaitReleases);
+            // fake mặc định cho vào hàng đợi luôn
             insertScheduler(modifyEntity);
         } else {
             // xử lý khi từ chối duyệt
@@ -147,9 +148,9 @@ public class LocationModifyServiceImpl implements LocationModifyService {
     public ApiResponse<Object> modifyLocation(ModifyLocationRequest request) {
         String actionBy = UserContextHolder.getContext().getUid();
 //        Kiểm tra thời điểm áp dụng
-        if (!request.getTimeAppliedEdit().isAfter(LocalDateTime.now().plusDays(1))) {
-            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Thời điểm áp dụng phải sau hiện tại ít nhất 1 ngày"));
-        }
+//        if (!request.getTimeAppliedEdit().isAfter(LocalDateTime.now().plusDays(1))) {
+//            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Thời điểm áp dụng phải sau hiện tại ít nhất 1 ngày"));
+//        }
         // kiểm tra sự tôn tại bản ghi chính khi chỉnh sửa
         Location location = null;
         if (!DataUtils.isNullOrEmpty(request.getLocationId())) {

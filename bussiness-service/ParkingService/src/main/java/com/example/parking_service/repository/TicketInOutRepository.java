@@ -76,4 +76,7 @@ public interface TicketInOutRepository extends JpaRepository<TicketInOut, Long> 
                     group by t.numberCard
             """)
     List<UsedTimesByCardResponse> countUsedTimeCard(Collection<String> cardIds);
+
+    @Query("select m from TicketInOut m where m.ticketPurchasedId = :ticketId order by m.checkinAt desc limit 1")
+    Optional<TicketInOut> findNewChecking(String ticketId);
 }

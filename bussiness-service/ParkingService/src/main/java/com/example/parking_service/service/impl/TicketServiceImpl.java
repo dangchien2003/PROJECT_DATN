@@ -494,10 +494,10 @@ public class TicketServiceImpl implements TicketService {
     @Override
     public ApiResponse<Object> modifyTicket(ModifyTicketRequest request) {
         // kiểm tra thời gian áp dụng
-        Duration duration = Duration.between(LocalDateTime.now(), request.getTimeAppliedEdit());
-        if (duration.toDays() < 1) {
-            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Thời gian áp dụng chưa tuân thủ thời gian tối thiểu"));
-        }
+//        Duration duration = Duration.between(LocalDateTime.now(), request.getTimeAppliedEdit());
+//        if (duration.toDays() < 1) {
+//            throw new AppException(ErrorCode.INVALID_DATA.withMessage("Thời gian áp dụng chưa tuân thủ thời gian tối thiểu"));
+//        }
         String partnerId = UserContextHolder.getContext().getUid();
         boolean isCreate = false;
         Ticket ticket = null;
@@ -545,6 +545,7 @@ public class TicketServiceImpl implements TicketService {
             ticketWaitRelease = ticketWaitReleaseRepository.save(ticketWaitRelease);
             // lưu địa điểm chờ áp dụng
             saveLocationUse(request, ticketWaitRelease, partnerId);
+            insertScheduler(ticketWaitRelease);
         }
         return ApiResponse.builder().build();
     }

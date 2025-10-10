@@ -20,6 +20,8 @@ public interface CardRepository extends JpaRepository<Card, Long> {
 
     Optional<Card> findByIdAndAccountId(Long id, String accountId);
 
+    Optional<Card> findByNumberCard(String numberCard);
+
     Page<Card> findByAccountIdAndStatusNotIn(String accountId, List<Integer> statusNotGet, Pageable pageable);
 
     @Query("""

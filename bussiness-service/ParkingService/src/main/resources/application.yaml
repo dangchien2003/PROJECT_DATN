@@ -77,3 +77,7 @@ logging:
         kafka: ERROR
       springframework:
         kafka: ERROR
+cloudinary:
+  cloud_name: dis2ybh5i
+  api_key: ${CLOUDINARY_KEY}
+  api_secret: ${CLOUDINARY_SECRET}
