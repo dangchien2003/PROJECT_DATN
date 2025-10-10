@@ -58,6 +58,7 @@ import PartnerStatisticsCustomer from "./pages/partner/statistics/PartnerStatist
 import Home from "./pages/customer/Home";
 import ConfirmExtend from "./pages/customer/ConfirmExtend";
 import PaymentExtend from "./pages/customer/PaymentExtend";
+import Checking from "./pages/Checking";
 
 const router = createBrowserRouter([
   {
@@ -150,6 +151,10 @@ const router = createBrowserRouter([
       { path: "statistics/location", element: <PartnerStatisticsLocation /> },
       { path: "statistics/customer", element: <PartnerStatisticsCustomer /> },
     ]
+  },
+    {
+    path: "/checking",
+    element: <Checking />,
   },
   {
     path: "/*",

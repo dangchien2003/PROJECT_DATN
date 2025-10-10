@@ -247,7 +247,8 @@ const AddLocation = ({ isModify = false }) => {
           formatShowTime={"HH:mm"}
           placeholder={"Chọn thời điểm áp dụng"}
           defaultValue={dataModify?.timeAppliedEdit}
-          min={dayjs().add(1, "day")}
+          // min={dayjs().add(1, "day")}
+          min={dayjs()}
           key={"tgad"}
           itemKey={"timeAppliedEdit"}
           callbackChangeValue={handleChangeValueInputOrder}

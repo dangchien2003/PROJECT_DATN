@@ -122,17 +122,17 @@ const AddTicket = () => {
 
   const handleChangeValueTimeApplied = (key, value) => {
     changeInput(dataModify, key, value);
-    try {
-      if (value) {
-        if (!dateTimeAffterNow(1, "day", value)) {
-          pushMessage("timeAppliedEdit", "Dữ không hợp lệ");
-        } else {
-          deleteKey(key)
-        }
-      }
-    } catch (error) {
-      pushMessage("timeAppliedEdit", "Có lỗi xảy ra");
-    }
+    // try {
+    //   if (value) {
+    //     if (!dateTimeAffterNow(1, "day", value)) {
+    //       pushMessage("timeAppliedEdit", "Dữ không hợp lệ");
+    //     } else {
+    //       deleteKey(key)
+    //     }
+    //   }
+    // } catch (error) {
+    //   pushMessage("timeAppliedEdit", "Có lỗi xảy ra");
+    // }
   }
 
   // kiểm tra dữ liệu thời gian áp dụng mỗi giây
@@ -245,7 +245,8 @@ const AddTicket = () => {
           key={"timeAppliedEdit"}
           itemKey={"timeAppliedEdit"}
           callbackChangeValue={handleChangeValueTimeApplied}
-          min={dayjs().add(1, "day")}
+          // min={dayjs().add(1, "day")}
+          min={dayjs()}
           helpText="Thời gian áp dụng phải sau thời gian gửi yêu cầu ít nhất 1 ngày"
         />
         <NumberInputWithSortLabelDash
