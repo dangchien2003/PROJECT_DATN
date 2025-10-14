@@ -414,6 +414,7 @@ public class TicketPurchasedServiceImpl implements TicketPurchasedService {
                 TicketPurchased ticketPurchased = null;
                 try {
                     ticketPurchased = TicketPurchased.builder()
+                            .id(id)
                             .accountId(order.getPaymentBy())
                             .ticketId(order.getTicketId())
                             .locationId(order.getLocationId())

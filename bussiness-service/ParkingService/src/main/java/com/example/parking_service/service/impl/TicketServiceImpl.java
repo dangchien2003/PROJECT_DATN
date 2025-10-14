@@ -555,11 +555,12 @@ public class TicketServiceImpl implements TicketService {
         if (request.getLocationUse() == null || !request.getLocationUse().isEmpty()) {
             Long countExist = locationRepository.countByPartnerIdAndStatusAndLocationIdIn(partnerId, LocationStatus.DA_DUYET_DANG_HOAT_DONG.getValue(), request.getLocationUse());
             // so sánh tất cả địa điểm có đang hoạt động hay không
-            if (countExist != request.getLocationUse().size()) {
-                throw new AppException(ErrorCode.NOT_FOUND.withMessage("Không tìm thấy địa điểm"));
-            }
+//            if (countExist != request.getLocationUse().size()) {
+//                throw new AppException(ErrorCode.NOT_FOUND.withMessage("Không tìm thấy địa điểm"));
+//            }
         }
-        for (Long item : request.getLocationUse()) {
+        Set<Long> locationIds = new HashSet<>(request.getLocationUse());
+        for (Long item : locationIds) {
             TicketLocation ticketLocation = TicketLocation.builder()
                     .objectId(ticketWaitRelease.getId())
                     .type(TypeTicket.CHO_AP_DUNG.getValue())

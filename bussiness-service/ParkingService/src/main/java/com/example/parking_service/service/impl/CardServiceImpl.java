@@ -193,7 +193,7 @@ public class CardServiceImpl implements CardService {
         });
         List<Account> accountList = accountRepository.findAllById(requesterIds);
         Map<String, String> accountsMap = accountList.stream().collect(
-                Collectors.toMap(Account::getId, Account::getFullName));
+                Collectors.toMap(Account::getId, item -> item.getFullName() != null ? item.getFullName() : item.getEmail()));
         List<SearchCardByAdminResponse> response = cardPage.map(item -> {
             SearchCardByAdminResponse itemResponse = cardMapper.toSearchCardByAdminResponse(item);
             itemResponse.setRequestName(accountsMap.get(item.getRequestCreateBy()));
@@ -230,7 +230,7 @@ public class CardServiceImpl implements CardService {
         });
         List<Account> accountList = accountRepository.findAllById(requesterIds);
         Map<String, String> accountsMap = accountList.stream().collect(
-                Collectors.toMap(Account::getId, Account::getFullName));
+                Collectors.toMap(Account::getId, item -> item.getFullName() != null ? item.getFullName() : item.getEmail()));
         List<SearchCardByAdminResponse> response = cardPage.map(item -> {
             SearchCardByAdminResponse itemResponse = cardMapper.toSearchCardByAdminResponse(item);
             itemResponse.setRequestName(accountsMap.get(item.getRequestCreateBy()));
