@@ -116,6 +116,7 @@ const httpClient = axios.create({
   headers: {
     "Content-Type": "application/json",
     "from-domain": window.location.origin,
+    "ngrok-skip-browser-warning": "true",
   },
   timeout: 60000,
 });

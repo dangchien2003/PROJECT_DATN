@@ -14,24 +14,44 @@ import { isNullOrUndefined } from "@/utils/data";
 import { changeInput } from "@/utils/handleChange";
 import { convertObjectToDataSelectBox } from "@/utils/object";
 import { toastError } from "@/utils/toast";
-import { dateTimeAffterNow } from "@/utils/validate";
 import dayjs from "dayjs";
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import Action from "./Action";
 import SelectLocation from "./SelectLocation";
 
-const indexKeys = ["name", "vehicle", "status", "reason", "timeAppliedEdit", "priceExtend", "priceTimeSlot", "priceDaySlot", "priceWeekSlot", "priceMonthSlot"]
+const indexKeys = [
+  "name",
+  "vehicle",
+  "status",
+  "reason",
+  "timeAppliedEdit",
+  "priceExtend",
+  "priceTimeSlot",
+  "priceDaySlot",
+  "priceWeekSlot",
+  "priceMonthSlot",
+];
 const AddTicket = () => {
   const { select } = useSelectMenu();
-  const status = useRef(null)
-  const [requireKeys, setRequireKeys] = useState(["name", "vehicle", "status", "timeAppliedEdit", "priceExtend", "priceTimeSlot", "priceDaySlot", "priceWeekSlot", "priceMonthSlot"]);
+  const status = useRef(null);
+  const [requireKeys, setRequireKeys] = useState([
+    "name",
+    "vehicle",
+    "status",
+    "timeAppliedEdit",
+    "priceExtend",
+    "priceTimeSlot",
+    "priceDaySlot",
+    "priceWeekSlot",
+    "priceMonthSlot",
+  ]);
   useEffect(() => {
     select(MENU_PARTNER_ID.QUAN_LY_VE_TAO_MOI);
-    // eslint-disable-next-line react-hooks/exhaustive-deps 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const { setRequireField } = useRequireField();
-  const { reset, pushMessage, deleteKey, deleteManyKey } = useMessageError()
+  const { reset, deleteKey, deleteManyKey } = useMessageError();
   const [timeSlotChecked, setTimeSlotChecked] = useState(true);
   const [daySlotChecked, setDaySlotChecked] = useState(true);
   const [weekSlotChecked, setWeekSlotChecked] = useState(true);
@@ -54,67 +74,70 @@ const AddTicket = () => {
     priceWeekSlot: null,
     priceMonthSlot: null,
     locationUse: [],
-    status: null
-  })
+    status: null,
+  });
 
   useEffect(() => {
     setRequireField(requireKeys);
-    // eslint-disable-next-line react-hooks/exhaustive-deps 
-  }, [requireKeys])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [requireKeys]);
 
   useEffect(() => {
     // reset form
-    reset()
-    setRequireField(requireKeys)
+    reset();
+    setRequireField(requireKeys);
     // xác định hành động
-    setIsmodify(!isNullOrUndefined(id))
+    setIsmodify(!isNullOrUndefined(id));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, []);
 
   useEffect(() => {
     if (!isModify) return;
     // lấy dữ liệu bản ghi
-    showLoad("Đang tải dữ liệu")
-    detail(id).then((response) => {
-      const result = getDataApi(response);
-      // setData
-      dataModify.ticketId = result.ticketId;
-      dataModify.name = result.name;
-      dataModify.status = result.status;
-      status.current = result.status;
-      dataModify.description = result.description;
-      dataModify.timeAppliedEdit = result.timeAppliedEdit;
-      dataModify.vehicle = result.vehicle;
-      dataModify.timeSlot = !!result.priceTimeSlot;
-      dataModify.daySlot = !!result.priceDaySlot;
-      dataModify.weekSlot = !!result.priceWeekSlot;
-      dataModify.monthSlot = !!result.priceMonthSlot;
-      dataModify.priceExtend = result.priceExtend;
-      // set lại giá
-      changeCheckBox("price.time", result.priceTimeSlot);
-      changeCheckBox("price.day", result.priceDaySlot);
-      changeCheckBox("price.week", result.priceWeekSlot);
-      changeCheckBox("price.month", result.priceMonthSlot);
-      dataModify.locationUse = result.locationUse;
-      // lưu lại dữ liệu
-      setDataModify({ ...dataModify });
-    }).catch((error) => {
-      const response = getDataApi(error);
-      toastError(response.message);
-      return;
-    }).finally(() => {
-      hideLoad();
-    });
+    showLoad("Đang tải dữ liệu");
+    detail(id)
+      .then((response) => {
+        const result = getDataApi(response);
+        // setData
+        dataModify.ticketId = result.ticketId;
+        dataModify.name = result.name;
+        dataModify.status = result.status;
+        status.current = result.status;
+        dataModify.description = result.description;
+        dataModify.timeAppliedEdit = result.timeAppliedEdit;
+        dataModify.vehicle = result.vehicle;
+        dataModify.timeSlot = !!result.priceTimeSlot;
+        dataModify.daySlot = !!result.priceDaySlot;
+        dataModify.weekSlot = !!result.priceWeekSlot;
+        dataModify.monthSlot = !!result.priceMonthSlot;
+        dataModify.priceExtend = result.priceExtend;
+        // set lại giá
+        changeCheckBox("price.time", result.priceTimeSlot);
+        changeCheckBox("price.day", result.priceDaySlot);
+        changeCheckBox("price.week", result.priceWeekSlot);
+        changeCheckBox("price.month", result.priceMonthSlot);
+        dataModify.locationUse = result.locationUse;
+        // lưu lại dữ liệu
+        setDataModify({ ...dataModify });
+      })
+      .catch((error) => {
+        const response = getDataApi(error);
+        toastError(response.message);
+        return;
+      })
+      .finally(() => {
+        hideLoad();
+      });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isModify])
+  }, [isModify]);
 
   const handleChange = (key, value) => {
-    if (key === 'status' && isModify && value !== status.current) {
+    if (key === "status" && isModify && value !== status.current) {
       if (!requireKeys.includes("reason")) {
-        setRequireKeys(prev => [...prev, "reason"]);
+        setRequireKeys((prev) => [...prev, "reason"]);
       }
-    } else if (key === 'status' && isModify && value === status.current) {
-      setRequireKeys(prev => prev.filter(item => item !== "reason"));
+    } else if (key === "status" && isModify && value === status.current) {
+      setRequireKeys((prev) => prev.filter((item) => item !== "reason"));
       deleteKey("reason");
     }
     changeInput(dataModify, key, value);
@@ -133,21 +156,23 @@ const AddTicket = () => {
     // } catch (error) {
     //   pushMessage("timeAppliedEdit", "Có lỗi xảy ra");
     // }
-  }
+  };
 
   // kiểm tra dữ liệu thời gian áp dụng mỗi giây
   useEffect(() => {
     let id = setInterval(() => {
       if (dataModify?.timeAppliedEdit) {
-        handleChangeValueTimeApplied("timeAppliedEdit", dataModify?.timeAppliedEdit);
+        handleChangeValueTimeApplied(
+          "timeAppliedEdit",
+          dataModify?.timeAppliedEdit
+        );
       }
-    }, 1000)
+    }, 1000);
     return () => {
       clearInterval(id);
-    }
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
+  }, []);
 
   const changeCheckBox = (key, value) => {
     changeInput(dataModify, key, value);
@@ -182,15 +207,19 @@ const AddTicket = () => {
     setWeekSlotChecked(dataModify.weekSlot);
     setMonthSlotChecked(dataModify.monthSlot);
     // set require
-    setRequireKeys(requireKeys.concat(keysPush).filter(item => !keysMove.includes(item)))
+    setRequireKeys(
+      requireKeys.concat(keysPush).filter((item) => !keysMove.includes(item))
+    );
     deleteManyKey(keysMove);
-    keysMove.forEach(item => {
+    keysMove.forEach((item) => {
       changeInput(dataModify, item, null);
-    })
-  }
+    });
+  };
   return (
     <div>
-      <h3 style={{ paddingBottom: 8 }}>{isModify ? "Chỉnh sửa thông tin vé" : "Thêm mới vé"}</h3>
+      <h3 style={{ paddingBottom: 8 }}>
+        {isModify ? "Chỉnh sửa thông tin vé" : "Thêm mới vé"}
+      </h3>
       <div style={{ display: "flex", flexWrap: "wrap" }}>
         <TextFieldLabelDash
           label={"Tên vé"}
@@ -222,19 +251,23 @@ const AddTicket = () => {
         />
         <SelectBoxLabelDash
           label={"Trạng thái"}
-          data={convertObjectToDataSelectBox(TICKET_STATUS).filter(item => item.value !== 0 && item.value !== 4)}
+          data={convertObjectToDataSelectBox(TICKET_STATUS).filter(
+            (item) => item.value !== 0 && item.value !== 4
+          )}
           defaultValue={dataModify.status}
           itemKey={"status"}
           callbackChangeValue={handleChange}
           placeholder={"Chọn trạng thái"}
         />
-        {isModify && <TextFieldLabelDash
-          label={"Lý do thay đổi trạng thái"}
-          placeholder={"Nhập lý do"}
-          itemKey={"reason"}
-          callbackChangeValue={handleChange}
-          disable={status.current === dataModify.status}
-        />}
+        {isModify && (
+          <TextFieldLabelDash
+            label={"Lý do thay đổi trạng thái"}
+            placeholder={"Nhập lý do"}
+            itemKey={"reason"}
+            callbackChangeValue={handleChange}
+            disable={status.current === dataModify.status}
+          />
+        )}
         <DateTimePickerWithSortLabelDash
           label="Thời điểm áp dụng"
           sort={false}
@@ -268,17 +301,19 @@ const AddTicket = () => {
             itemKey={"timeSlot"}
             callbackChangeValue={changeCheckBox}
           />
-          {timeSlotChecked && <NumberInputWithSortLabelDash
-            label={"Nhập giá 1 giờ"}
-            placeholder={"Nhập giá vé 1 giờ"}
-            key={"Nhập giá vé 1 giờ"}
-            itemKey={"priceTimeSlot"}
-            defaultValue={dataModify?.price?.time}
-            callbackChangeValue={handleChange}
-            addonAfter="đ/giờ"
-            trend={false}
-            min={0}
-          />}
+          {timeSlotChecked && (
+            <NumberInputWithSortLabelDash
+              label={"Nhập giá 1 giờ"}
+              placeholder={"Nhập giá vé 1 giờ"}
+              key={"Nhập giá vé 1 giờ"}
+              itemKey={"priceTimeSlot"}
+              defaultValue={dataModify?.price?.time}
+              callbackChangeValue={handleChange}
+              addonAfter="đ/giờ"
+              trend={false}
+              min={0}
+            />
+          )}
         </div>
         <div style={{ display: "inline-block" }}>
           <CheckboxWithDash
@@ -288,17 +323,19 @@ const AddTicket = () => {
             itemKey={"daySlot"}
             callbackChangeValue={changeCheckBox}
           />
-          {daySlotChecked && <NumberInputWithSortLabelDash
-            label={"Nhập giá 1 ngày"}
-            placeholder={"Nhập giá vé ngày"}
-            key={"Nhập giá vé ngày"}
-            itemKey={"priceDaySlot"}
-            defaultValue={dataModify?.price?.day}
-            callbackChangeValue={handleChange}
-            addonAfter="đ"
-            trend={false}
-            min={0}
-          />}
+          {daySlotChecked && (
+            <NumberInputWithSortLabelDash
+              label={"Nhập giá 1 ngày"}
+              placeholder={"Nhập giá vé ngày"}
+              key={"Nhập giá vé ngày"}
+              itemKey={"priceDaySlot"}
+              defaultValue={dataModify?.price?.day}
+              callbackChangeValue={handleChange}
+              addonAfter="đ"
+              trend={false}
+              min={0}
+            />
+          )}
         </div>
         <div style={{ display: "inline-block" }}>
           <CheckboxWithDash
@@ -308,17 +345,19 @@ const AddTicket = () => {
             itemKey={"weekSlot"}
             callbackChangeValue={changeCheckBox}
           />
-          {weekSlotChecked && <NumberInputWithSortLabelDash
-            label={"Nhập giá 1 tuần"}
-            placeholder={"Nhập giá vé tuần"}
-            key={"Nhập giá vé tuần"}
-            itemKey={"priceWeekSlot"}
-            defaultValue={dataModify?.price?.week}
-            callbackChangeValue={handleChange}
-            addonAfter="đ"
-            trend={false}
-            min={0}
-          />}
+          {weekSlotChecked && (
+            <NumberInputWithSortLabelDash
+              label={"Nhập giá 1 tuần"}
+              placeholder={"Nhập giá vé tuần"}
+              key={"Nhập giá vé tuần"}
+              itemKey={"priceWeekSlot"}
+              defaultValue={dataModify?.price?.week}
+              callbackChangeValue={handleChange}
+              addonAfter="đ"
+              trend={false}
+              min={0}
+            />
+          )}
         </div>
         <div style={{ display: "inline-block" }}>
           <CheckboxWithDash
@@ -328,26 +367,33 @@ const AddTicket = () => {
             itemKey={"monthSlot"}
             callbackChangeValue={changeCheckBox}
           />
-          {monthSlotChecked && <NumberInputWithSortLabelDash
-            label={"Nhập giá 1 tháng"}
-            placeholder={"Nhập giá vé tháng"}
-            key={"Nhập giá vé tháng"}
-            itemKey={"priceMonthSlot"}
-            defaultValue={dataModify?.price?.month}
-            callbackChangeValue={handleChange}
-            addonAfter="đ"
-            trend={false}
-            min={0}
-          />}
+          {monthSlotChecked && (
+            <NumberInputWithSortLabelDash
+              label={"Nhập giá 1 tháng"}
+              placeholder={"Nhập giá vé tháng"}
+              key={"Nhập giá vé tháng"}
+              itemKey={"priceMonthSlot"}
+              defaultValue={dataModify?.price?.month}
+              callbackChangeValue={handleChange}
+              addonAfter="đ"
+              trend={false}
+              min={0}
+            />
+          )}
         </div>
       </div>
       <div>
         <h4 style={{ paddingBottom: 8 }}>Chọn địa điểm áp dụng</h4>
         <SelectLocation data={dataModify} />
       </div>
-      <Action isModify={isModify} data={dataModify} requireKeys={requireKeys} indexKey={indexKeys} />
+      <Action
+        isModify={isModify}
+        data={dataModify}
+        requireKeys={requireKeys}
+        indexKey={indexKeys}
+      />
     </div>
-  )
-}
+  );
+};
 
-export default AddTicket
+export default AddTicket;
