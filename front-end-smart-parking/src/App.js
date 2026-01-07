@@ -59,6 +59,7 @@ import Home from "./pages/customer/Home";
 import ConfirmExtend from "./pages/customer/ConfirmExtend";
 import PaymentExtend from "./pages/customer/PaymentExtend";
 import Checking from "./pages/Checking";
+import Host from "./Host";
 
 const router = createBrowserRouter([
   {
@@ -82,7 +83,7 @@ const router = createBrowserRouter([
       { path: "/account/transaction", element: <TransactionHistory /> },
       { path: "/account/change-password", element: <ChangePassword /> },
       { path: "/home", element: <Home /> },
-    ]
+    ],
   },
   { path: "authen", element: <Authen /> },
   { path: "register", element: <Authen /> },
@@ -98,7 +99,7 @@ const router = createBrowserRouter([
       { path: "account/partner/:id", element: <PartnerInfo /> },
       { path: "account/customer/:id", element: <AccountCustomerInfo /> },
       { path: "account/create", element: <CreateAccount /> },
-       { path: "account/change-password", element: <ChangePassword /> },
+      { path: "account/change-password", element: <ChangePassword /> },
       { path: "account/*", element: <AccountCustomerList /> },
 
       { path: "ticket", element: <ListTicket /> },
@@ -136,34 +137,37 @@ const router = createBrowserRouter([
       { path: "location/detail/:tab/:id", element: <DetailLocationPartner /> },
       { path: "account/partner/:id", element: <PartnerInfo /> },
       { path: "account/customer/:id", element: <AccountCustomerInfo /> },
-       { path: "account/change-password", element: <ChangePassword /> },
+      { path: "account/change-password", element: <ChangePassword /> },
 
       { path: "ticket/add", element: <AddTicket waitRelease={false} /> },
       { path: "ticket/edit/:id", element: <AddTicket waitRelease={false} /> },
       { path: "ticket/list", element: <ListTicketPartner /> },
-      { path: "ticket/detail/:isWaitRelease/:id", element: <DetailTicketPartner /> },
+      {
+        path: "ticket/detail/:isWaitRelease/:id",
+        element: <DetailTicketPartner />,
+      },
 
-      
       { path: "transaction", element: <TransactionHistoryPartner /> },
-      
+
       { path: "statistics/business", element: <PartnerStatisticsBusiness /> },
       { path: "statistics/ticket", element: <PartnerStatisticsTicket /> },
       { path: "statistics/location", element: <PartnerStatisticsLocation /> },
       { path: "statistics/customer", element: <PartnerStatisticsCustomer /> },
-    ]
+    ],
   },
-    {
+  {
     path: "/checking",
     element: <Checking />,
   },
   {
     path: "/*",
     element: <NotFound />,
-  }
+  },
 ]);
 function App() {
   return (
     <div>
+      <Host />
       <FullPageLoading />
       <RouterProvider router={router} />
     </div>

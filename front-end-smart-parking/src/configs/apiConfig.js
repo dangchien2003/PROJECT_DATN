@@ -1,4 +1,18 @@
-export const API_BASE_URL = 'http://localhost:8080/api/'
+export const API_BASE_URL = "http://localhost:8080/api/";
+const LS_API_HOST = "api_host";
+export const saveApiHost = (host) => {
+  localStorage.setItem(LS_API_HOST, host);
+};
+
+export const getApiHost = () => {
+  const host = localStorage.getItem(LS_API_HOST);
+  console.log(host);
+  return host === null || host === "" ? API_BASE_URL : host; // string | null
+};
+
+export const clearApiHost = () => {
+  localStorage.removeItem(LS_API_HOST);
+};
 
 export const PARKING_SERVICE = {
   account: {
@@ -62,8 +76,8 @@ export const PARKING_SERVICE = {
   },
   authen: {
     login: "parking/auth/sign-in",
-    checkAccess: "parking/auth/check-token", 
-    refreshToken: "parking/auth/refresh", 
+    checkAccess: "parking/auth/check-token",
+    refreshToken: "parking/auth/refresh",
     registration: "parking/auth/registration",
     confirmRegis: "parking/auth/confirm-regis",
     forget: "parking/auth/forget",
@@ -84,7 +98,7 @@ export const PARKING_SERVICE = {
     linkTicket: "parking/card/link-ticket",
     unlinkTicket: "parking/card/cancel-link-ticket/:id",
     madeCard: "parking/card/made-card/:id",
-    detailCardByadmin: "parking/card/admin/detail"
+    detailCardByadmin: "parking/card/admin/detail",
   },
   order: {
     createOrder: "parking/order",
@@ -104,16 +118,21 @@ export const PARKING_SERVICE = {
     getTicketOfCustomer: "parking/statistical/ticket-of-customer",
     getTransactionOfCustomer: "parking/statistical/transaction-of-customer",
     getTicketOfPartner: "parking/statistical/ticket-of-partner",
-    StatisticalTicketWaitReleaseOfPartner: "parking/statistical/ticket-wait-approve-of-partner",
+    StatisticalTicketWaitReleaseOfPartner:
+      "parking/statistical/ticket-wait-approve-of-partner",
     getAllLocationOfPartner: "parking/location/list/coordinates-of-partner",
-    getListTicketPurchaseOfPartner: "parking/statistical/ticket-purchased-of-partner",
+    getListTicketPurchaseOfPartner:
+      "parking/statistical/ticket-purchased-of-partner",
     getLocationOfPartner: "parking/statistical/location-of-partner",
-    getLocationWaitReleaseOfPartner: "parking/statistical/location-wait-release-of-partner",
-    getLocationWaitApproveOfPartner: "parking/statistical/location-wait-approve-of-partner",
+    getLocationWaitReleaseOfPartner:
+      "parking/statistical/location-wait-release-of-partner",
+    getLocationWaitApproveOfPartner:
+      "parking/statistical/location-wait-approve-of-partner",
     getStatisticalCardAtHomeByAdmin: "parking/statistical/card-at-home-admin",
     getStatisticalPieAtHomeByAdmin: "parking/statistical/pie-at-home-admin",
     getStatisticalAreaAtHomeByAdmin: "parking/statistical/area-at-home-admin",
-    thongKeDoanhThuThangTheoDoiTac: "parking/statistical/thong-ke-doanh-thu-thang-theo-doi-tac",
+    thongKeDoanhThuThangTheoDoiTac:
+      "parking/statistical/thong-ke-doanh-thu-thang-theo-doi-tac",
     statisticQuery: "parking/statistical/statistic-query",
   },
   checking: {
@@ -121,13 +140,13 @@ export const PARKING_SERVICE = {
     historyByLocation: "parking/checking/getByLocation",
     detail: "parking/checking/detail",
     listByTicket: "checking/getByTicket",
-  }
-}
+  },
+};
 
 export const NOTIFY_SERVICE = {
   notify: {
     countViewNotYet: "notify/count/viewed-not-yet",
     getAllNotify: "notify/get/all",
-    viewedAll: "notify/view/all"
-  }
-}
+    viewedAll: "notify/view/all",
+  },
+};

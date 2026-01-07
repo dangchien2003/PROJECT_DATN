@@ -26,6 +26,7 @@ export default function Checking() {
   const [plateImageIn, setPlateImageIn] = useState(null);
   const [plateImageOut, setPlateImageOut] = useState(null);
   const [palateIn, setPlateIn] = useState(null);
+  const [locatonId, setLocationId] = useState(null);
 
   const pasteAreaRef = useRef(null);
 
@@ -105,8 +106,8 @@ export default function Checking() {
   };
 
   const handleSubmitIn = async () => {
-      setPlateIn(null);
-      setPlateImageOut(null);
+    setPlateIn(null);
+    setPlateImageOut(null);
     if (!plateImageIn) {
       toastError("Vui lòng chọn ảnh biển số");
       return;
@@ -127,7 +128,7 @@ export default function Checking() {
     formData.append("file", pngFile);
     formData.append("method", method);
     formData.append("content", content);
-    formData.append("locationId", 1);
+    formData.append("locationId", locatonId);
 
     // Gửi bằng Axios
     httpClient.post("http://localhost:8080/api/parking/checking/checkin", formData, {
@@ -163,7 +164,7 @@ export default function Checking() {
     formData.append("file", pngFile);
     formData.append("method", method);
     formData.append("content", content);
-    formData.append("locationId", 1);
+    formData.append("locationId", locatonId);
     // Gửi bằng Axios
     httpClient.post("http://localhost:8080/api/parking/checking/checkout", formData, {
       skipAuth: true,
@@ -198,6 +199,12 @@ export default function Checking() {
           </div>
         )}
       </div>
+      <Input
+        placeholder="Nhập địa điểm"
+        value={locatonId}
+        onChange={(e) => setLocationId(e.target.value)}
+        style={{ marginBottom: 10 }}
+      />
       <Radio.Group
         value={method}
         onChange={(e) => setMethod(e.target.value)}
