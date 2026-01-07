@@ -51,7 +51,7 @@ const columns = [
   }
 ];
 
-const History = ({ id }) => {
+const History = ({ id, pushLastHistory }) => {
   const [viewDetailId, setViewDetailId] = useState(null);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -87,7 +87,7 @@ const History = ({ id }) => {
   const loadData = (newPagination) => {
     getHistoryInOut(id).then(response => {
       const result = getDataApi(response);
-      result.data = [{checkinAt: "2025-11-11T11:11:11", checkoutAt: "2025-11-11T11:15:15", status: 1, id: 1}]
+      pushLastHistory(result.data?.[0])
       setData(convertResponseToDataTable(result.data, newPagination.current,
         newPagination.pageSize));
       setPagination({
@@ -134,7 +134,7 @@ const History = ({ id }) => {
         className='table'
       />}
       {viewDetailId && <ModalCustom onClose={handleCloseViewDetail}>
-        <DetailHistory />
+        <DetailHistory id={viewDetailId}/>
       </ModalCustom>}
     </div>
   );

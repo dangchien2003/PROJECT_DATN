@@ -1,0 +1,55 @@
+footer {
+  background-color: #0a2e52;
+  /* Xanh đậm đồng bộ header */
+  color: #fff;
+  padding: 40px 20px 20px;
+  margin-top: 40px;
+  font-family: Arial, sans-serif;
+}
+
+.footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 30px;
+}
+
+.footer-container h2,
+.footer-container h3 {
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.footer-container p,
+.footer-container a {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #d1d5db;
+  text-decoration: none;
+}
+
+.footer-container a:hover {
+  color: #ff8c1a;
+  /* Cam nhấn */
+  text-decoration: underline;
+}
+
+.footer-links ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-links li {
+  margin-bottom: 8px;
+}
+
+.footer-bottom {
+  text-align: center;
+  font-size: 13px;
+  color: #9ca3af;
+  margin-top: 30px;
+  border-top: 1px solid #1f3b57;
+  padding-top: 15px;
+}

@@ -30,6 +30,8 @@ import OrderTicket from "./pages/customer/OrderTicket";
 import Payment from "./pages/customer/Payment";
 import TicketList from "./pages/customer/TicketList";
 import TransactionHistory from "./pages/customer/TransactionHistory";
+import TransactionHistoryAdmin from "./pages/admin/TransactionHistory";
+import TransactionHistoryPartner from "./pages/partner/TransactionHistory";
 import AddLocation from "./pages/partner/AddLocation";
 import AddTicket from "./pages/partner/AddTicket";
 import DashboardPartner from "./pages/partner/DashBoardPartner";
@@ -54,6 +56,10 @@ import PartnerStatisticsTicket from "./pages/partner/statistics/PartnerStatistic
 import PartnerStatisticsLocation from "./pages/partner/statistics/PartnerStatisticsLocation";
 import PartnerStatisticsCustomer from "./pages/partner/statistics/PartnerStatisticsCustomer";
 import Home from "./pages/customer/Home";
+import ConfirmExtend from "./pages/customer/ConfirmExtend";
+import PaymentExtend from "./pages/customer/PaymentExtend";
+import Checking from "./pages/Checking";
+import Host from "./Host";
 
 const router = createBrowserRouter([
   {
@@ -70,12 +76,14 @@ const router = createBrowserRouter([
       { path: "/payment/:id", element: <Payment /> },
       { path: "/list/ticket", element: <TicketList /> },
       { path: "/ticket/detail/:id", element: <DetailTicketCustomer /> },
+      { path: "/ticket/confirm-extend", element: <ConfirmExtend /> },
+      { path: "/ticket/extend/payment/:ticketId", element: <PaymentExtend /> },
       { path: "/card", element: <CardManager /> },
       { path: "/deposit", element: <Deposit /> },
       { path: "/account/transaction", element: <TransactionHistory /> },
       { path: "/account/change-password", element: <ChangePassword /> },
       { path: "/home", element: <Home /> },
-    ]
+    ],
   },
   { path: "authen", element: <Authen /> },
   { path: "register", element: <Authen /> },
@@ -91,7 +99,7 @@ const router = createBrowserRouter([
       { path: "account/partner/:id", element: <PartnerInfo /> },
       { path: "account/customer/:id", element: <AccountCustomerInfo /> },
       { path: "account/create", element: <CreateAccount /> },
-       { path: "account/change-password", element: <ChangePassword /> },
+      { path: "account/change-password", element: <ChangePassword /> },
       { path: "account/*", element: <AccountCustomerList /> },
 
       { path: "ticket", element: <ListTicket /> },
@@ -106,6 +114,8 @@ const router = createBrowserRouter([
       { path: "location/detail/:tab/:id", element: <DetailLocation /> },
       { path: "location/wait-approve", element: <ListLocationWaitApprove /> },
       { path: "location/map/all", element: <MapAllLocation /> },
+
+      { path: "transaction", element: <TransactionHistoryAdmin /> },
 
       { path: "statistics/business", element: <StatisticsBusiness /> },
       { path: "statistics/ticket", element: <StatisticTicket /> },
@@ -127,28 +137,37 @@ const router = createBrowserRouter([
       { path: "location/detail/:tab/:id", element: <DetailLocationPartner /> },
       { path: "account/partner/:id", element: <PartnerInfo /> },
       { path: "account/customer/:id", element: <AccountCustomerInfo /> },
-       { path: "account/change-password", element: <ChangePassword /> },
+      { path: "account/change-password", element: <ChangePassword /> },
 
       { path: "ticket/add", element: <AddTicket waitRelease={false} /> },
       { path: "ticket/edit/:id", element: <AddTicket waitRelease={false} /> },
       { path: "ticket/list", element: <ListTicketPartner /> },
-      { path: "ticket/detail/:isWaitRelease/:id", element: <DetailTicketPartner /> },
+      {
+        path: "ticket/detail/:isWaitRelease/:id",
+        element: <DetailTicketPartner />,
+      },
 
-      
+      { path: "transaction", element: <TransactionHistoryPartner /> },
+
       { path: "statistics/business", element: <PartnerStatisticsBusiness /> },
       { path: "statistics/ticket", element: <PartnerStatisticsTicket /> },
       { path: "statistics/location", element: <PartnerStatisticsLocation /> },
       { path: "statistics/customer", element: <PartnerStatisticsCustomer /> },
-    ]
+    ],
+  },
+  {
+    path: "/checking",
+    element: <Checking />,
   },
   {
     path: "/*",
     element: <NotFound />,
-  }
+  },
 ]);
 function App() {
   return (
     <div>
+      <Host />
       <FullPageLoading />
       <RouterProvider router={router} />
     </div>

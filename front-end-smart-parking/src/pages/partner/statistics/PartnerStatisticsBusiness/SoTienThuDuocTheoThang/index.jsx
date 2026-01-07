@@ -16,18 +16,19 @@ const SoTienThuDuocTheoThang = ({ year }) => {
 ),
                partner_revenue AS (
                    SELECT
-                       MONTH(op.created_at) as revenue_month,
-                       SUM(op.total) as parking_revenue
+                       MONTH(p.created_at) as revenue_month,
+                       SUM(p.total) as parking_revenue
                    FROM
-                       order_parking op
-                           JOIN
-                       ticket t ON op.ticket_id = t.ticket_id
+                       payment p
+                           JOIN order_parking op on op.order_id = p.object_id 
+                       join ticket t ON op.ticket_id = t.ticket_id
                    WHERE
                        t.partner_id = '${partnerId}'
-                     AND YEAR(op.created_at) = ${year}
-                     AND op.status = 2
+                     AND YEAR(p.created_at) = ${year}
+                     AND p.status = 2
+                     and p.type = 0
                    GROUP BY
-                       MONTH(op.created_at)
+                       MONTH(p.created_at)
 
                    UNION ALL
 
@@ -36,8 +37,8 @@ const SoTienThuDuocTheoThang = ({ year }) => {
                        SUM(p.total) as ticket_revenue
                    FROM
                        payment p
-                           JOIN
-                       ticket t ON p.object_id = t.ticket_id
+                          JOIN ticket_purchased tp ON p.object_id = tp.id
+                         JOIN ticket t on tp.ticket_id = t.ticket_id
                    WHERE
                        t.partner_id = '${partnerId}'
                      AND YEAR(p.created_at) = ${year}

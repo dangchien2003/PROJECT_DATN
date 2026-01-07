@@ -1,24 +1,22 @@
 import BoxCheckBox from "@/components/BoxCheckBox"
 import BoxTextField from "@/components/BoxTextField"
-import { TICKET_STATUS, VEHICLE } from "@/utils/constants"
-import { formatTimestamp } from "@/utils/time"
-import OtherInfoModify from "./OtherInfoModify"
-import { Button, Flex } from "antd"
-import { MdOutlineCancel } from "react-icons/md"
-import { formatCurrency } from "@/utils/number"
-import { Typography } from "antd";
-import { useEffect, useState } from "react"
-import { useLoading } from "@/hook/loading"
-import PopConfirmCustom from "@/components/PopConfirmCustom"
-import { convertObjectToDataSelectBox } from "@/utils/object"
-import BoxTextArea from "@/components/BoxTextArea"
-import MessageReject from "@/components/MessageReject"
-import { adminCancelRelease } from "@/service/ticketService"
-import { toastError, toastSuccess } from "@/utils/toast"
-import { useMessageError } from "@/hook/validate"
-import { getDataApi } from "@/utils/api"
-import LocationUseTicket from "@/components/LocationUseTicket"
 import HistoryTicketSold from "@/components/HistoryTicketSold"
+import LocationUseTicket from "@/components/LocationUseTicket"
+import MessageReject from "@/components/MessageReject"
+import PopConfirmCustom from "@/components/PopConfirmCustom"
+import { useLoading } from "@/hook/loading"
+import { useMessageError } from "@/hook/validate"
+import { adminCancelRelease } from "@/service/ticketService"
+import { getDataApi } from "@/utils/api"
+import { TICKET_STATUS, VEHICLE } from "@/utils/constants"
+import { formatCurrency } from "@/utils/number"
+import { convertObjectToDataSelectBox } from "@/utils/object"
+import { formatTimestamp } from "@/utils/time"
+import { toastError, toastSuccess } from "@/utils/toast"
+import { Button, Flex, Typography } from "antd"
+import { useEffect, useState } from "react"
+import { MdOutlineCancel } from "react-icons/md"
+import OtherInfoModify from "./OtherInfoModify"
 const { Title } = Typography;
 
 const BoxPrice = ({ checked, price, label }) => {
@@ -125,7 +123,7 @@ const BoxInfo = ({ data, isWaitApprove, widthPage }) => {
           <BoxTextField label="Phương tiện sử dụng" value={VEHICLE[data?.vehicle] ? VEHICLE[data?.vehicle].name : null} disabled={true} colorGray={false} key={"ptsd"} />
           <BoxTextField label="Trạng thái" value={ticketStatus[data?.status].label} disabled={true} colorGray={false} key={"tt"} />
           <BoxTextField label="Lý do thay đổi trạng thái" value={data?.reason} disabled={true} colorGray={false} key={"ldtdtt"} />
-          <BoxTextArea label={"Quyền lợi"} value={data.description} rows={5} disabled={true} key={"ql"} />
+          {/* <BoxTextArea label={"Quyền lợi"} value={data.description} rows={5} disabled={true} key={"ql"} /> */}
         </div>
         {/* price */}
         <div>

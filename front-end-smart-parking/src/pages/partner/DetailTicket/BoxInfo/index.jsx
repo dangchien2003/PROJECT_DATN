@@ -1,25 +1,23 @@
 import BoxCheckBox from "@/components/BoxCheckBox"
 import BoxTextField from "@/components/BoxTextField"
-import { TICKET_STATUS, VEHICLE } from "@/utils/constants"
-import { formatTimestamp } from "@/utils/time"
-import OtherInfoModify from "./OtherInfoModify"
-import { Button, Flex} from "antd"
-import { MdOutlineCancel } from "react-icons/md"
-import { formatCurrency } from "@/utils/number"
-import { Typography } from "antd";
-import { useEffect, useState } from "react"
-import { useLoading } from "@/hook/loading"
-import PopConfirmCustom from "@/components/PopConfirmCustom"
-import { convertObjectToDataSelectBox } from "@/utils/object"
-import BoxTextArea from "@/components/BoxTextArea"
-import { checkExistWaitRelease, partnerCancelRelease } from "@/service/ticketService"
-import { toastError, toastSuccess } from "@/utils/toast"
-import { getDataApi } from "@/utils/api"
-import { isNullOrUndefined } from "@/utils/data"
-import { FaEdit } from "react-icons/fa"
-import { useNavigate } from "react-router-dom"
-import LocationUseTicket from "@/components/LocationUseTicket"
 import HistoryTicketSold from "@/components/HistoryTicketSold"
+import LocationUseTicket from "@/components/LocationUseTicket"
+import PopConfirmCustom from "@/components/PopConfirmCustom"
+import { useLoading } from "@/hook/loading"
+import { checkExistWaitRelease, partnerCancelRelease } from "@/service/ticketService"
+import { getDataApi } from "@/utils/api"
+import { TICKET_STATUS, VEHICLE } from "@/utils/constants"
+import { isNullOrUndefined } from "@/utils/data"
+import { formatCurrency } from "@/utils/number"
+import { convertObjectToDataSelectBox } from "@/utils/object"
+import { formatTimestamp } from "@/utils/time"
+import { toastError, toastSuccess } from "@/utils/toast"
+import { Button, Flex, Typography } from "antd"
+import { useEffect, useState } from "react"
+import { FaEdit } from "react-icons/fa"
+import { MdOutlineCancel } from "react-icons/md"
+import { useNavigate } from "react-router-dom"
+import OtherInfoModify from "./OtherInfoModify"
 const { Title } = Typography;
 
 const BoxPrice = ({ checked, price, label }) => {
@@ -142,9 +140,9 @@ const BoxInfo = ({ data, isWaitRelease, widthPage, existWaitReleaseInput }) => {
           <BoxTextField label="Lần chỉnh sửa" value={data?.modifyCount} disabled={true} colorGray={false} key={"lcs"} />
           <BoxTextField label="Thời gian phát hành" value={formatTimestamp(data?.releasedTime, "DD/MM/YYYY HH:mm")} disabled={true} colorGray={false} key={"tgph"} />
           <BoxTextField label="Phương tiện sử dụng" value={VEHICLE[data?.vehicle] ? VEHICLE[data?.vehicle].name : null} disabled={true} colorGray={false} key={"ptsd"} />
-          <BoxTextField label="Trạng thái" value={ticketStatus[data?.status].label} disabled={true} colorGray={false} key={"tt"} />
+          <BoxTextField label="Trạng thái" value={ticketStatus[data?.status]?.label} disabled={true} colorGray={false} key={"tt"} />
           <BoxTextField label="Lý do thay đổi trạng thái" value={data?.reason} disabled={true} colorGray={false} key={"ldtđtt"} />
-          <BoxTextArea label={"Quyền lợi"} value={data.description} rows={5} disabled={true} />
+          {/* <BoxTextArea label={"Quyền lợi"} value={data.description} rows={5} disabled={true} /> */}
         </div>
         {/* price */}
         <div>

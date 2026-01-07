@@ -1,16 +1,17 @@
-import React, { useEffect, useState } from "react";
+import WebSocket from "@/configs/websocket";
+import { getActor } from "@/service/localStorageService";
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import { Button, Layout, Menu, theme } from "antd";
-import { PARTNER_MENU } from "../../utils/menu";
-import { Outlet } from "react-router-dom";
-import ContactTrouble from "../ContactTrouble";
-import Notifitation from "../Notification";
-import Account from "../Account";
-import "./style.css";
-import { ToastContainer } from "react-toastify";
-import LogoParking from "../Logo";
-import WebSocket from "@/configs/websocket";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { Outlet, useNavigate } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import { PARTNER_MENU } from "../../utils/menu";
+import Account from "../Account";
+import ContactTrouble from "../ContactTrouble";
+import LogoParking from "../Logo";
+import Notifitation from "../Notification";
+import "./style.css";
 const { Header, Sider, Content } = Layout;
 
 const PartnerLayout = () => {
@@ -20,10 +21,30 @@ const PartnerLayout = () => {
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
+  const authen = useSelector(state => state.authen);
+  const navigate = useNavigate();
+
+  const checkAccess = () => {
+    let actor = getActor();
+    if (actor !== "partner") {
+      navigate("/404")
+    }
+  }
+  checkAccess();
+  useEffect(() => {
+    if (!authen) {
+      return;
+    }
+    checkAccess();
+  // eslint-disable-next-line react-hooks/exhaustive-deps 
+  }, [authen]);
 
   // kết nối websocket
   useEffect(() => {
-    // WebSocket.connect();
+    let openWs = process.env.REACT_APP_OPEN_WS;
+    if (openWs === '1') {
+      WebSocket.connect();
+    }
     return () => WebSocket.disconnect();
   }, []);
   const handleOpenChange = (keys) => {

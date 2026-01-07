@@ -44,18 +44,18 @@ const Home = () => {
   const accountId = getAccountId();
   useEffect(() => {
     const query = `
-      select sum(quality_ticket) as data from order_parking
+      select coalesce(sum(quality_ticket), 0) as data from order_parking
       where payment_by = '${accountId}'
       and YEAR(created_at) = ${year}
       and month(created_at) = ${month}
       and status = 2
       UNION ALL
-      select count(DISTINCT location_id) as data from ticket_in_out
+      select coalesce(count(DISTINCT location_id), 0) as data from ticket_in_out
       where created_by = '${accountId}'
         and YEAR(created_at) = ${year}
         and month(created_at) = ${month}
       UNION ALL
-      select sum(total) as data from payment
+      select coalesce(sum(total), 0) as data from payment
       where payment_by = '${accountId}'
         and YEAR(created_at) = ${year}
         and month(created_at) = ${month}

@@ -237,7 +237,7 @@ export const TICKET_STATUS = {
   },
   DA_HUY: {
     value: 3,
-    label: "Đã huỷ",
+    label: "Huỷ",
     color: "danger",
   },
   TU_CHOI: {
@@ -269,6 +269,14 @@ export const LOCATION_STATUS = {
     color: "danger",
   },
 };
+
+export const LOCATION_STATUS_SELECRBOX = [
+  { value: 0, label: "Chờ duyệt" },
+  { value: 1, label: "Đang hoạt động" },
+  { value: 3, label: "Tạm dừng hoạt động" },
+  { value: 4, label: "Ngừng hoạt động" },
+  { value: 5, label: "Bị từ chối" }
+]
 
 export const LOCALTION_MODIFY_STATUS = {
   CHO_DUYET: {
@@ -574,6 +582,8 @@ export const MENU_ADMIN_ID = {
   DIA_DIEM_DANH_SACH: "5.2",
   DIA_DIEM_CHO_DUYET: "5.3",
 
+  LICH_SU_GIAO_DICH: "7",
+
   THONG_KE: "6",
   THONG_KE_DOANH_THU: "6.1",
   THONG_KE_VE: "6.2",
@@ -593,6 +603,8 @@ export const MENU_PARTNER_ID = {
   QUAN_LY_VE: "3",
   QUAN_LY_VE_TAO_MOI: "3.1",
   QUAN_LY_VE_DANH_SACH: "3.2",
+
+  LICH_SU_GIAO_DICH: "4",
 
   BAO_CAO_THONG_KE: "5",
   BAO_CAO_THONG_KE_DOANH_THU: "5.1",

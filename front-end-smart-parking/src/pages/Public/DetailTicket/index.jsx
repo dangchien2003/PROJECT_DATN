@@ -74,6 +74,7 @@ const DetailTicket = () => {
               <div className='text'>
                 <h2 className='upper'>{data?.name}</h2>
                 <div>Phương tiện: {!isNullOrUndefined(data?.vehicle) && VEHICLE[data.vehicle].label}</div>
+                <div>Phí thêm giờ: {formatCurrency(data?.priceExtend)}đ/15 phút</div>
               </div>
               <Flex className='price-wrapper'>
                 <div className='price'>
@@ -90,12 +91,12 @@ const DetailTicket = () => {
                   <Flex className='price-item' align='center'>
                     <img src={day} alt="day" />
                     {data?.priceDaySlot ?
-                      <span>
+                      <div>
                         <span className='price-slot'>
                           {getPrice(data.priceDaySlot)}
                         </span>
                         <sup> Đ</sup>/Ngày
-                      </span> : <span className='price-slot'>--</span>}
+                      </div> : <span className='price-slot'>--</span>}
                   </Flex>
                 </div>
                 <div className='price'>

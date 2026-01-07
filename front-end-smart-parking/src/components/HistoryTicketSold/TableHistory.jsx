@@ -4,10 +4,13 @@ import { getDataApi } from "@/utils/api";
 import { showTotal } from "@/utils/table";
 import { formatTimestamp } from "@/utils/time";
 import { toastError } from "@/utils/toast";
-import { Table } from "antd";
+import { Table, Tooltip } from "antd";
 import { useEffect, useState } from "react";
+import { FaBan, FaEye } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import ModalCustom from "../ModalCustom";
+import CancelTicket from "./CancelTicket";
+import DetailTicket from "./DetailTicket";
 
 const baseColumns = [
   {
@@ -65,6 +68,7 @@ const baseColumns = [
     key: "7",
     sorter: false,
     width: 150,
+    align: "center",
     fixed: "right"
   },
 ];
@@ -76,17 +80,27 @@ const dataComboboxTinhTrang = {
 }
 
 const TableHistory = ({ dataSearch }) => {
-  const navigate = useNavigate()
   const { isSearching } = useSelector(state => state.startSearch)
   const dispatch = useDispatch();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [showConfirmCancel, setShowConfirmCancel] = useState(null);
+  const [showDetail, setShowDetail] = useState(null);
   const [firstSearch, setFirstSearch] = useState(false);
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 10,
     total: 0,
   });
+
+  const handleCancelTicket = (item) => {
+    setShowConfirmCancel(item);
+  }
+
+  const closeModal = () => {
+    setShowDetail(null);
+    setShowConfirmCancel(null);
+  }
 
   const convertResponseToDataTable = (data, currentPage, pageSize) => {
     return data.map((item, index) => {
@@ -96,6 +110,20 @@ const TableHistory = ({ dataSearch }) => {
       item.tgBatDau = formatTimestamp(item.startsValidity, "DD/MM/YYYY HH:mm")
       item.hetHan = formatTimestamp(item.expires, "DD/MM/YYYY HH:mm")
       item.soLan = item.usedTimes;
+      item.action = (
+        <div style={{ display: "flex", gap: 16, alignItems: "center", justifyContent: "center" }}>
+          <Tooltip title="Chi tiết">
+            <div onClick={() => setShowDetail(item)}>
+              <FaEye style={{ fontSize: 21, cursor: 'pointer'}} />
+            </div>
+          </Tooltip>
+          {(item.status === 1 || item.status === 2) && <Tooltip title="Huỷ vé">
+            <div onClick={() => handleCancelTicket(item)}>
+              <FaBan style={{ fontSize: 21, cursor: 'pointer', color: "red" }} />
+            </div>
+          </Tooltip>}
+        </div>
+      );
       item.stt = (currentPage - 1) * pageSize + index + 1;
       return item;
     });
@@ -144,22 +172,36 @@ const TableHistory = ({ dataSearch }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSearching]);
   return (
-    <Table
-      columns={baseColumns}
-      dataSource={data}
-      rowKey="modifyId"
-      loading={loading}
-      scroll={{
-        x: "max-content",
-      }}
-      onChange={handleTableChange}
-      pagination={{
-        ...pagination,
-        showSizeChanger: true,
-        pageSizeOptions: ["10", "20", "50", "100"],
-        showTotal: showTotal,
-      }}
-    />
+    <>
+      <Table
+        columns={baseColumns}
+        dataSource={data}
+        rowKey="modifyId"
+        loading={loading}
+        scroll={{
+          x: "max-content",
+        }}
+        onChange={handleTableChange}
+        pagination={{
+          ...pagination,
+          showSizeChanger: true,
+          pageSizeOptions: ["10", "20", "50", "100"],
+          showTotal: showTotal,
+        }}
+      />
+      {
+        showConfirmCancel &&
+        <CancelTicket data={showConfirmCancel} handleClose={closeModal} />
+      }
+      {
+        showDetail &&
+        <ModalCustom onClose={closeModal}>
+          <div style={{margin: 30}}>
+            <DetailTicket id={showDetail.id}/>
+          </div>
+        </ModalCustom>
+      }
+    </>
   );
 };
 

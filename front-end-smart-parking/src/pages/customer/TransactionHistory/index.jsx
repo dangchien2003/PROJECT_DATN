@@ -49,19 +49,26 @@ const baseColumns = [
     width: 150
   },
   {
+    title: "Phương thức",
+    dataIndex: "paymentMethodPrint",
+    key: "3.1",
+    align: "left",
+    width: 150
+  },
+  {
     title: "Trạng thái",
     dataIndex: "statusPrint",
     key: "3",
     align: "left",
     width: 150
   },
-  {
-    title: "Nội dung giao dịch",
-    dataIndex: "content",
-    key: "4",
-    align: "left",
-    width: 250
-  },
+  // {
+  //   title: "Nội dung giao dịch",
+  //   dataIndex: "content",
+  //   key: "4",
+  //   align: "left",
+  //   width: 250
+  // },
   {
     title: "Thời điểm giao dịch",
     dataIndex: "createdTime",
@@ -139,6 +146,8 @@ const TransactionHistory = () => {
         item.paymentMethodPrint = "VNPAY";
       } else if (item.paymentMethod === 2) {
         item.paymentMethodPrint = "Ngân hàng";
+      } else if (item.paymentMethod === 0) {
+        item.paymentMethodPrint = "Số dư";
       }
 
       item.createdTime = dayjs(item.createdAt).format("HH:mm:ss DD/MM/YYYY");

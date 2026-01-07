@@ -47,7 +47,7 @@ const DetailLocation = () => {
         const result = getDataApi(response);
         setDataModify(result);
         if(!isNullOrUndefined(result?.locationId)) {
-          getDataRoot(dataModify.locationId);
+          getDataRoot(result.locationId);
         }
       })
       .catch((error) => {
