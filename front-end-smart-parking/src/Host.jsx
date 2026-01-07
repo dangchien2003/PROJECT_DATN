@@ -6,7 +6,7 @@ import httpClient from "./configs/axiosConfig";
 import { getApiHost, saveApiHost } from "./configs/apiConfig";
 
 const Host = () => {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const [host, setHost] = useState(getApiHost());
   const onClose = () => {
     setOpen(false);
