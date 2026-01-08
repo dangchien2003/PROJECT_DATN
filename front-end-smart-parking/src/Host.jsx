@@ -1,4 +1,4 @@
-import { Button, Drawer } from "antd";
+import { Button, Checkbox, Drawer } from "antd";
 import React, { useState } from "react";
 import { CiPen } from "react-icons/ci";
 import TextFieldLabelDash from "./components/TextFieldLabelDash";
@@ -7,6 +7,7 @@ import { getApiHost, saveApiHost } from "./configs/apiConfig";
 
 const Host = () => {
   const [open, setOpen] = useState(false);
+  const [openWS, setOpenWS] = useState(localStorage.getItem("openWS") === "1");
   const [host, setHost] = useState(getApiHost());
   const onClose = () => {
     setOpen(false);
@@ -21,10 +22,15 @@ const Host = () => {
     }
     saveApiHost(hostNew);
     httpClient.defaults.baseURL = hostNew;
+    // lưu websocket
+    localStorage.setItem("openWS", openWS ? 1 : 0);
   };
   return (
     <div>
-      <span style={{ position: "fixed" }} onClick={() => setOpen(true)}>
+      <span
+        style={{ position: "fixed", zIndex: 1000 }}
+        onClick={() => setOpen(true)}
+      >
         <CiPen />
       </span>
       <Drawer
@@ -48,6 +54,13 @@ const Host = () => {
           >
             http://localhost:8080
           </Button>
+        </div>
+        <div>
+          <Checkbox
+            checked={openWS}
+            onChange={(val) => setOpenWS(val.target.checked)}
+          />
+          Mở Websocket
         </div>
         <div style={{ padding: 10 }}>
           <Button color="primary" variant="solid" onClick={onSave}>
