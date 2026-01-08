@@ -1,18 +1,33 @@
 const path = require("path");
 
 module.exports = {
+  cache: {
+    type: "filesystem", // Lưu cache vào hệ thống file
+  },
   module: {
     rules: [
       {
         test: /\.svg$/,
-        use: ["@svgr/webpack"],
+        use: [
+          {
+            loader: "thread-loader", // Tận dụng đa luồng
+          },
+          "@svgr/webpack",
+        ],
       },
       {
         test: /\.(png|jpe?g|gif)$/i,
-        type: "asset/resource",
-        generator: {
-          filename: "static/media/[name].[hash][ext]",
-        },
+        use: [
+          {
+            loader: "thread-loader", // Tận dụng đa luồng
+          },
+          {
+            loader: "file-loader",
+            options: {
+              name: "static/media/[name].[hash].[ext]",
+            },
+          },
+        ],
       },
     ],
   },
@@ -20,5 +35,6 @@ module.exports = {
     alias: {
       "@image": path.resolve(__dirname, "src/assets/image"),
     },
+    extensions: [".js", ".jsx", ".json"], // Giới hạn phần mở rộng
   },
 };
