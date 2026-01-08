@@ -15,34 +15,36 @@ import "./style.css";
 const { Header, Sider, Content } = Layout;
 
 const PartnerLayout = () => {
-  const selecting = useSelector(state => state.menuSelect);
+  const selecting = useSelector((state) => state.menuSelect);
   const [openKeys, setOpenKeys] = useState([]);
   const [collapsed, setCollapsed] = useState(false);
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
-  const authen = useSelector(state => state.authen);
+  const authen = useSelector((state) => state.authen);
   const navigate = useNavigate();
 
   const checkAccess = () => {
     let actor = getActor();
     if (actor !== "partner") {
-      navigate("/404")
+      navigate("/404");
     }
-  }
+  };
   checkAccess();
   useEffect(() => {
     if (!authen) {
       return;
     }
     checkAccess();
-  // eslint-disable-next-line react-hooks/exhaustive-deps 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authen]);
 
   // kết nối websocket
   useEffect(() => {
-    let openWs = process.env.REACT_APP_OPEN_WS;
-    if (openWs === '1') {
+    // let openWs = process.env.REACT_APP_OPEN_WS;
+    let openWs = localStorage.getItem("openWS");
+
+    if (openWs === "1") {
       WebSocket.connect();
     }
     return () => WebSocket.disconnect();
@@ -57,16 +59,18 @@ const PartnerLayout = () => {
       const parentKey = selecting.includes(".")
         ? selecting.split(".")[0]
         : selecting;
-      setOpenKeys(prev =>
+      setOpenKeys((prev) =>
         prev.includes(parentKey) ? prev : [...prev, parentKey]
       );
     }
-  }, [selecting])
+  }, [selecting]);
   return (
     <Layout style={{ minHeight: "100vh" }}>
       <ToastContainer />
       <Sider trigger={null} collapsible collapsed={collapsed}>
-        <div className="demo-logo-vertical"><LogoParking /></div>
+        <div className="demo-logo-vertical">
+          <LogoParking />
+        </div>
         <Menu
           theme="dark"
           mode="inline"

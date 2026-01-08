@@ -21,7 +21,6 @@ import PartnerInfo from "./pages/admin/PartnerInfo";
 import PartnerList from "./pages/admin/PartnerList";
 import RequestApproveTicket from "./pages/admin/RequestApproveTicket";
 import Authen from "./pages/Authen";
-import ComponentDemo from "./pages/ComponentDemo";
 import CardManager from "./pages/customer/CardManager";
 import ConfirmOrder from "./pages/customer/ConfirmOrder";
 import Deposit from "./pages/customer/Deposit";
@@ -93,7 +92,6 @@ const router = createBrowserRouter([
     path: "/admin",
     element: <AdminLayout />,
     children: [
-      { path: "demo", element: <ComponentDemo /> },
       { index: true, element: <DashBoardAdmin /> },
       { path: "account/partner", element: <PartnerList /> },
       { path: "account/partner/:id", element: <PartnerInfo /> },
@@ -129,7 +127,6 @@ const router = createBrowserRouter([
     path: "/partner",
     element: <PartnerLayout />,
     children: [
-      { path: "demo", element: <ComponentDemo /> },
       { index: true, element: <DashboardPartner /> },
       { path: "location/add", element: <AddLocation isModify={false} /> },
       { path: "location/edit/:id", element: <AddLocation isModify={true} /> },

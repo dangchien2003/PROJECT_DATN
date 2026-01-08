@@ -21,63 +21,64 @@ import { getAccessToken } from "@/service/cookieService";
 const { Header, Sider, Content } = Layout;
 
 const AdminLayout = () => {
-  const selecting = useSelector(state => state.menuSelect);
+  const selecting = useSelector((state) => state.menuSelect);
   const [collapsed, setCollapsed] = useState(false);
   const [openKeys, setOpenKeys] = useState([]);
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
 
-  const authen = useSelector(state => state.authen);
+  const authen = useSelector((state) => state.authen);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const checkAccess = () => {
     let actor = getActor();
     if (actor !== "admin") {
-      navigate("/404")
+      navigate("/404");
     }
-  }
+  };
   checkAccess();
   useEffect(() => {
     if (!authen) {
       return;
     }
     checkAccess();
-  // eslint-disable-next-line react-hooks/exhaustive-deps 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authen]);
 
-  // kiểm tra token n 
+  // kiểm tra token n
   useEffect(() => {
     if (authen) {
       return;
     }
     const access = getAccessToken();
     if (access) {
-      checkAccessToken({ token: access }).then(respose => {
-        const result = getDataApi(respose);
-        if (result === true) {
-          dispatch(authened(true));
-        }
-        else {
-          processRefreshToken();
-        }
-      })
-        .catch(e => {
+      checkAccessToken({ token: access })
+        .then((respose) => {
+          const result = getDataApi(respose);
+          if (result === true) {
+            dispatch(authened(true));
+          } else {
+            processRefreshToken();
+          }
+        })
+        .catch((e) => {
           const response = getDataApi(e);
           toastError(response.message);
           dispatch(authened(false));
-        })
+        });
     } else {
       dispatch(authened(false));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps 
-  }, [selecting])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selecting]);
 
   // kết nối websocket
   useEffect(() => {
-    let openWs = process.env.REACT_APP_OPEN_WS;
-    if (openWs === '1') {
+    // let openWs = process.env.REACT_APP_OPEN_WS;
+    let openWs = localStorage.getItem("openWS");
+    if (openWs === "1") {
       WebSocket.connect();
     }
     return () => WebSocket.disconnect();
@@ -92,7 +93,7 @@ const AdminLayout = () => {
       const parentKey = selecting.includes(".")
         ? selecting.split(".")[0]
         : selecting;
-      setOpenKeys(prev =>
+      setOpenKeys((prev) =>
         prev.includes(parentKey) ? prev : [...prev, parentKey]
       );
     }
@@ -102,7 +103,9 @@ const AdminLayout = () => {
     <Layout style={{ minHeight: "100vh" }}>
       <ToastContainer />
       <Sider trigger={null} collapsible collapsed={collapsed}>
-        <div className="demo-logo-vertical"><LogoParking /></div>
+        <div className="demo-logo-vertical">
+          <LogoParking />
+        </div>
         <Menu
           theme="dark"
           mode="inline"

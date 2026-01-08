@@ -1,7 +1,8 @@
 // services/WebSocketService.js
-import { getAccountId } from '@/service/localStorageService';
-import { Client } from '@stomp/stompjs';
-import SockJS from 'sockjs-client';
+import { getAccountId } from "@/service/localStorageService";
+import { Client } from "@stomp/stompjs";
+import SockJS from "sockjs-client";
+import { getApiHost } from "./apiConfig";
 
 class WebSocketConfig {
   constructor() {
@@ -11,15 +12,16 @@ class WebSocketConfig {
   }
 
   connect = (onConnectCallback) => {
+    console.log("WebSocket connecting...");
     if (this.client) return;
-
-    const socket = new SockJS('http://localhost:8083/ws');
+    const domain = getApiHost().slice(0, -5); // loại bỏ '/api/'
+    const socket = new SockJS(`${domain}/ws`);
     this.client = new Client({
       webSocketFactory: () => socket,
       debug: () => {}, // tắt log
       reconnectDelay: 5000,
       connectHeaders: {
-        'user-id': getAccountId()
+        "user-id": getAccountId(),
       },
       onConnect: () => {
         this.queueSubscribe.forEach(({ topic, callback }) => {
@@ -54,7 +56,7 @@ class WebSocketConfig {
         destination,
         body: JSON.stringify(body),
         headers: {
-          'user-id': getAccountId(),
+          "user-id": getAccountId(),
         },
       });
     }
@@ -68,4 +70,4 @@ class WebSocketConfig {
 }
 
 const WebSocket = new WebSocketConfig();
-export default WebSocket; 
+export default WebSocket;
