@@ -4,9 +4,9 @@ spring:
   application:
     name: ParkingService
   datasource:
-    url: jdbc:mysql://localhost:3306/datn_parking
-    username: root
-    password:
+    url: ${DB_URL}
+    username: ${DB_USER_NAME}
+    password: ${DB_PASS}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     show-sql: true
@@ -34,7 +34,7 @@ spring:
             token-uri: https://oauth2.googleapis.com/token
             user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: ${KAFKA_URL}
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer

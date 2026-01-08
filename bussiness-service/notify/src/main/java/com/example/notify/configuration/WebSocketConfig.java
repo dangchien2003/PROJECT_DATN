@@ -19,18 +19,19 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
         // Enable a simple in-memory broker
-        config.enableSimpleBroker("/topic", "/queue"); // nơi client sẽ lắng nghe
-        config.setApplicationDestinationPrefixes("/app"); // prefix client gửi đến
-        config.setUserDestinationPrefix("/user"); // theo sau là thông tin user /user
+        config.enableSimpleBroker("/topic", "/queue");
+        config.setApplicationDestinationPrefixes("/app");
+        config.setUserDestinationPrefix("/user");
     }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        // Endpoint để client kết nối WebSocket
-        registry.addEndpoint("/ws").setAllowedOriginPatterns("*").withSockJS();
+        // Cho phép origin frontend (và SockJS fallback)
+        registry.addEndpoint("/ws")
+                .setAllowedOriginPatterns("http://localhost:3000", "http://127.0.0.1:3000")
+                .withSockJS();
     }
 
-    // gán user vào WebSocket session
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
         registration.interceptors(new ChannelInterceptor() {
@@ -53,4 +54,5 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
             }
         });
     }
+
 }

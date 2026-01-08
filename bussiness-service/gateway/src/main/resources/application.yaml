@@ -11,7 +11,7 @@ spring:
       globalcors:
         add-to-simple-url-handler-mapping: true
         cors-configurations:
-          '[/**]':
+          '[/api/**]':
             allowedOrigins:
               - "http://localhost:3000"
               - "http://127.0.0.1:3000"
@@ -40,3 +40,14 @@ spring:
             - Path=${app.api-prefix}/notify/**
           filters:
             - StripPrefix=2
+        - id: notify-sockjs-http
+          uri: http://localhost:8083
+          predicates:
+            - Path=/ws/** # forward SockJS info (HTTP) requests
+          filters:
+            - StripPrefix=0
+        - id: notify-sockjs-ws
+          uri: ws://localhost:8083
+          predicates:
+            - Path=/ws/** # forward websocket upgrade & other websocket paths
+

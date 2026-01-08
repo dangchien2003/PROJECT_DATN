@@ -38,7 +38,8 @@ public class SecurityConfig {
             "/location/suggestions",
             "/location/customer/detail",
             "statistical/statistic-query",
-            "/checking/**"
+            "/checking/**",
+            "/api/cache",
     };
     CustomJwtDecoder customJwtDecoder;
     JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;

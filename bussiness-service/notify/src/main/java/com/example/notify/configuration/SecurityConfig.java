@@ -26,7 +26,8 @@ import java.util.List;
 public class SecurityConfig {
     @NonFinal
     static final String[] PUBLIC_ENDPOINT = {
-            "/ws/**"
+            "/ws/**",
+            "/ws/info/"
     };
     CustomJwtDecoder customJwtDecoder;
     JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
@@ -41,6 +42,7 @@ public class SecurityConfig {
                                 .anyRequest()
                                 .authenticated()
                 );
+
         httpSecurity.oauth2ResourceServer(oauth2 ->
                 oauth2.jwt(jwtConfigurer ->
                                 jwtConfigurer
@@ -48,9 +50,12 @@ public class SecurityConfig {
                                         .jwtAuthenticationConverter(jwtAuthenticationConverter()))
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint)
         );
+
+        // Bật CORS bằng CorsConfigurationSource và tắt CSRF
         httpSecurity
 //                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable());
+
         return httpSecurity.build();
     }
 
@@ -68,8 +73,12 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(List.of("*")); // Hoặc giới hạn origin nếu cần
-        configuration.setAllowedMethods(List.of("*"));
+        // Chỉ thêm origin frontend bạn dùng
+        configuration.setAllowedOriginPatterns(List.of(
+                "http://localhost:3000",
+                "http://127.0.0.1:3000"
+        ));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
 
